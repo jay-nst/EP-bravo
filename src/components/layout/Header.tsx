@@ -48,7 +48,7 @@ export default function Header() {
       <div className="h-full px-4 flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Link
-            href="/map"
+            href="/"
             className="text-base font-semibold tracking-tight flex items-center gap-2"
             style={{ color: 'var(--text)' }}
           >
