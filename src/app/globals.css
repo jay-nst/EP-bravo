@@ -158,6 +158,17 @@ body {
   border-top-color: var(--border) !important;
 }
 
+/* --- Interactive Card Hover --- */
+a[class*="rounded-xl"],
+a[class*="rounded-lg"] {
+  transition: border-color 0.2s ease-out, background-color 0.2s ease-out;
+}
+
+a[class*="rounded-xl"]:hover,
+a[class*="rounded-lg"]:hover {
+  border-color: var(--text-muted) !important;
+}
+
 /* --- Scrollbar --- */
 ::-webkit-scrollbar {
   width: 6px;
