@@ -1,26 +1,233 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
+/* ==========================================================
+   EarthPaper Design System — "Quiet Observatory"
+   Source of truth: DESIGN.md + Figma 2026 UI Design System
+   ========================================================== */
+
+/* --- Dark Mode (Default) --- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #0E0E10;
+  --surface: #1A1A1F;
+  --surface-elevated: #242429;
+  --text: #E8E4DF;
+  --text-muted: #8A8680;
+  --accent: #1bbfa8;
+  --accent-hover: #35d9c0;
+  --secondary: #5B8C6F;
+  --border: #2A2A2F;
+
+  /* Semantic */
+  --success: #4A9E6B;
+  --warning: #C8923A;
+  --error: #C45C4A;
+
+  /* Typography */
+  --font-display: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-body: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Menlo', 'Consolas', monospace;
+  --letter-spacing: -0.2px;
+
+  /* Spacing (4px base) */
+  --space-2xs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Motion */
+  --ease-enter: ease-out;
+  --ease-exit: ease-in;
+  --ease-move: ease-in-out;
+  --duration-micro: 80ms;
+  --duration-short: 200ms;
+  --duration-medium: 350ms;
+
+  /* Layout */
+  --header-height: 52px;
+  --panel-width: 280px;
+  --panel-bg: rgba(14, 14, 16, 0.88);
+  --header-bg: rgba(14, 14, 16, 0.85);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+/* --- Light Mode Override --- */
+@media (prefers-color-scheme: light) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #F5F3EF;
+    --surface: #FFFFFF;
+    --surface-elevated: #EDEAE5;
+    --text: #1A1A1F;
+    --text-muted: #6B6660;
+    --border: #D9D5CF;
+    --panel-bg: rgba(245, 243, 239, 0.92);
+    --header-bg: rgba(245, 243, 239, 0.90);
   }
 }
 
+/* --- Tailwind v4 Theme --- */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-text-primary: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-secondary: var(--secondary);
+  --color-border: var(--border);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-panel-bg: var(--panel-bg);
+  --color-header-bg: var(--header-bg);
+}
+
+/* --- Base Styles --- */
+html {
+  font-family: var(--font-body);
+  letter-spacing: var(--letter-spacing);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Typography Utilities --- */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum' 1;
+}
+
+/* --- Floating Panel Glass Effect --- */
+.glass-panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glass-header {
+  background: var(--header-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* --- Mapbox Overrides --- */
+.mapboxgl-ctrl-group {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.mapboxgl-ctrl-group button {
+  border-color: var(--border) !important;
+}
+
+.mapboxgl-ctrl-group button + button {
+  border-top-color: var(--border) !important;
+}
+
+/* --- Scrollbar --- */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* --- Earth Pulse Animations --- */
+@keyframes ep-orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ep-pulse-dot {
+  0%, 100% { opacity: 0; transform: scale(0); }
+  10% { opacity: 1; transform: scale(1); }
+  80% { opacity: 0.7; transform: scale(1); }
+}
+
+@keyframes ep-pulse-ring {
+  0% { opacity: 0.5; transform: scale(1); }
+  100% { opacity: 0; transform: scale(3); }
+}
+
+@keyframes ep-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes ep-sweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ep-drift {
+  0% { transform: translateX(0%) rotate(-5deg); }
+  50% { transform: translateX(8%) rotate(-3deg); }
+  100% { transform: translateX(0%) rotate(-5deg); }
+}
+
+@keyframes ep-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes ep-count-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* --- Cinematic Daily Earth --- */
+.cinematic-scroll {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  scrollbar-width: none;
+}
+
+.cinematic-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.cinematic-section {
+  scroll-snap-align: start;
+}
+
+@keyframes cinematic-fade-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cinematic-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.08; }
+  50% { transform: scale(1.05); opacity: 0.12; }
 }
