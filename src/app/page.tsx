@@ -162,16 +162,27 @@ export default async function HomePage() {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 h-full">
               <div
-                className="aspect-[4/3] md:aspect-auto flex flex-col items-center justify-center p-6"
-                style={{ background: 'var(--surface)', minHeight: '220px' }}
+                className="aspect-[4/3] md:aspect-auto flex flex-col items-center justify-center p-6 relative overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, #0a1a15 0%, #0d2818 30%, #0a1612 60%, #111a14 100%)',
+                  minHeight: '220px',
+                }}
               >
+                {/* Satellite grid overlay */}
                 <div
-                  className="w-14 h-14 rounded-full flex items-center justify-center text-2xl mb-3"
-                  style={{ background: 'rgba(27, 191, 168, 0.1)' }}
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    backgroundImage: 'linear-gradient(rgba(27,191,168,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(27,191,168,0.06) 1px, transparent 1px)',
+                    backgroundSize: '24px 24px',
+                  }}
+                />
+                <div
+                  className="w-14 h-14 rounded-full flex items-center justify-center text-2xl mb-3 relative z-10"
+                  style={{ background: 'rgba(27, 191, 168, 0.12)', border: '1px solid rgba(27,191,168,0.2)' }}
                 >
                   <span style={{ color: 'var(--accent)' }}>&#127758;</span>
                 </div>
-                <p className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
+                <p className="text-xs font-mono relative z-10" style={{ color: 'var(--accent)', opacity: 0.7 }}>
                   {today.satellite} · {today.resolution}
                 </p>
               </div>
@@ -335,10 +346,19 @@ export default async function HomePage() {
                   }}
                 >
                   <div
-                    className="w-20 h-20 flex-shrink-0 rounded-lg flex items-center justify-center"
-                    style={{ background: i === 0 ? 'var(--surface-elevated)' : 'var(--surface)' }}
+                    className="w-20 h-20 flex-shrink-0 rounded-lg flex items-center justify-center relative overflow-hidden"
+                    style={{
+                      background: `linear-gradient(${135 + i * 45}deg, #0d1a14 0%, #0a1612 50%, #111a17 100%)`,
+                    }}
                   >
-                    <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        backgroundImage: 'linear-gradient(rgba(27,191,168,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(27,191,168,0.05) 1px, transparent 1px)',
+                        backgroundSize: '12px 12px',
+                      }}
+                    />
+                    <span className="text-xs font-medium relative z-10" style={{ color: 'var(--accent)', opacity: 0.6 }}>
                       {post.category}
                     </span>
                   </div>
@@ -461,10 +481,19 @@ export default async function HomePage() {
                 style={{ border: '1px solid var(--border)' }}
               >
                 <div
-                  className="aspect-[3/2] flex items-center justify-center"
-                  style={{ background: 'var(--surface)' }}
+                  className="aspect-[3/2] flex items-center justify-center relative overflow-hidden"
+                  style={{
+                    background: `linear-gradient(${120 + (Number(item.id) * 30)}deg, #0a1a15 0%, #0d2216 40%, #0f1a12 100%)`,
+                  }}
                 >
-                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{item.category}</span>
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      backgroundImage: 'linear-gradient(rgba(27,191,168,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(27,191,168,0.04) 1px, transparent 1px)',
+                      backgroundSize: '16px 16px',
+                    }}
+                  />
+                  <span className="text-xs relative z-10" style={{ color: 'var(--accent)', opacity: 0.5 }}>{item.category}</span>
                 </div>
                 <div className="p-2.5 space-y-0.5">
                   <p className="text-xs font-medium truncate" style={{ color: 'var(--text)' }}>

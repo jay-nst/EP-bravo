@@ -48,7 +48,12 @@ export default function LoginPage() {
       />
       <div className="w-full max-w-sm space-y-8 relative z-10">
         <div className="text-center">
-          <Link href="/" className="text-2xl font-semibold tracking-tight" style={{ color: 'var(--text)' }}>
+          <Link href="/" className="text-2xl font-semibold tracking-tight inline-flex items-center gap-2.5 justify-center" style={{ color: 'var(--text)' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="1.5" />
+              <ellipse cx="12" cy="12" rx="10" ry="4" stroke="var(--accent)" strokeWidth="1" transform="rotate(-30 12 12)" opacity="0.6" />
+              <circle cx="18.5" cy="7" r="1.5" fill="var(--accent)" opacity="0.8" />
+            </svg>
             EARTHPAPER
           </Link>
           <p className="mt-2 text-sm" style={{ color: 'var(--text-muted)' }}>

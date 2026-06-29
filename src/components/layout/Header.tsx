@@ -49,9 +49,14 @@ export default function Header() {
         <div className="flex items-center gap-6">
           <Link
             href="/map"
-            className="text-base font-semibold tracking-tight"
+            className="text-base font-semibold tracking-tight flex items-center gap-2"
             style={{ color: 'var(--text)' }}
           >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="1.5" />
+              <ellipse cx="12" cy="12" rx="10" ry="4" stroke="var(--accent)" strokeWidth="1" transform="rotate(-30 12 12)" opacity="0.6" />
+              <circle cx="18.5" cy="7" r="1.5" fill="var(--accent)" opacity="0.8" />
+            </svg>
             EARTHPAPER
           </Link>
           <nav className="flex gap-0.5">
