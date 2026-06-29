@@ -55,12 +55,19 @@ export default function PostsPage() {
         >
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div
-              className="aspect-[16/9] lg:aspect-auto flex items-center justify-center"
-              style={{ background: 'var(--surface)', minHeight: '240px' }}
+              className="aspect-[16/9] lg:aspect-auto flex items-center justify-center relative overflow-hidden"
+              style={{ background: 'linear-gradient(135deg, #0a1a15 0%, #0d2818 30%, #0a1612 60%, #111a14 100%)', minHeight: '240px' }}
             >
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  backgroundImage: 'linear-gradient(rgba(27,191,168,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(27,191,168,0.05) 1px, transparent 1px)',
+                  backgroundSize: '20px 20px',
+                }}
+              />
               <span
-                className="text-sm font-medium px-3 py-1.5 rounded"
-                style={{ background: 'var(--surface-elevated)', color: 'var(--text-muted)' }}
+                className="text-sm font-medium px-3 py-1.5 rounded relative z-10"
+                style={{ background: 'rgba(36,36,41,0.8)', color: 'var(--text-muted)' }}
               >
                 {filtered[0].category}
               </span>
@@ -104,12 +111,19 @@ export default function PostsPage() {
             style={{ border: '1px solid var(--border)' }}
           >
             <div
-              className="aspect-[16/9] flex items-center justify-center"
-              style={{ background: 'var(--surface)' }}
+              className="aspect-[16/9] flex items-center justify-center relative overflow-hidden"
+              style={{ background: 'linear-gradient(135deg, #0a1a15 0%, #0d2216 40%, #0f1a12 100%)' }}
             >
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  backgroundImage: 'linear-gradient(rgba(27,191,168,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(27,191,168,0.04) 1px, transparent 1px)',
+                  backgroundSize: '16px 16px',
+                }}
+              />
               <span
-                className="text-xs font-medium px-2 py-1 rounded"
-                style={{ background: 'var(--surface-elevated)', color: 'var(--text-muted)' }}
+                className="text-xs font-medium px-2 py-1 rounded relative z-10"
+                style={{ background: 'rgba(36,36,41,0.8)', color: 'var(--text-muted)' }}
               >
                 {post.category}
               </span>

@@ -39,7 +39,7 @@ export default function ExplorePage() {
                 <div
                   className="flex flex-col items-center justify-center p-8"
                   style={{
-                    background: 'var(--surface)',
+                    background: 'linear-gradient(135deg, #1a1510 0%, #151210 50%, #1a1612 100%)',
                     clipPath: `inset(0 ${100 - sliderPos}% 0 0)`,
                     position: 'absolute',
                     inset: 0,
@@ -57,7 +57,7 @@ export default function ExplorePage() {
                   </p>
                 </div>
                 <div className="col-span-2 flex flex-col items-center justify-center p-8"
-                  style={{ background: 'var(--surface-elevated)' }}
+                  style={{ background: 'linear-gradient(135deg, #0a1a15 0%, #0d2216 50%, #0f1a12 100%)' }}
                 >
                   <span className="text-xs font-mono tracking-wider mb-2" style={{ color: 'var(--accent)' }}>
                     AFTER
