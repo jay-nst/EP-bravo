@@ -525,10 +525,53 @@ export default async function HomePage() {
 
       {/* Footer */}
       <footer
-        className="py-6 px-4 text-center text-xs"
+        className="py-8 px-4"
         style={{ borderTop: '1px solid var(--border)', color: 'var(--text-muted)' }}
       >
-        EarthPaper by SI Analytics
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between gap-6 mb-6">
+            <div>
+              <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text)' }}>
+                EARTHPAPER
+              </p>
+              <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                위성 영상 셀프서비스 포털
+              </p>
+            </div>
+            <div className="flex gap-10">
+              <div className="space-y-2">
+                <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>서비스</p>
+                <nav className="flex flex-col gap-1.5">
+                  <Link href="/map" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>위성 지도</Link>
+                  <Link href="/chat" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>AI 채팅</Link>
+                  <Link href="/tasking" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>촬영 요청</Link>
+                </nav>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>콘텐츠</p>
+                <nav className="flex flex-col gap-1.5">
+                  <Link href="/daily" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>오늘의 지구</Link>
+                  <Link href="/posts" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>뉴스</Link>
+                  <Link href="/explore" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>탐색</Link>
+                </nav>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>계정</p>
+                <nav className="flex flex-col gap-1.5">
+                  <Link href="/login" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>로그인</Link>
+                  <Link href="/signup" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>회원가입</Link>
+                  <Link href="/portal" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>내 주문</Link>
+                </nav>
+              </div>
+            </div>
+          </div>
+          <div
+            className="pt-4 text-center text-xs"
+            style={{ borderTop: '1px solid var(--border)', color: 'var(--text-muted)' }}
+          >
+            &copy; {new Date().getFullYear()} SI Analytics. All rights reserved.
+          </div>
+        </div>
       </footer>
     </div>
   );
