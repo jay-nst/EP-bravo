@@ -113,22 +113,29 @@ export default function QuizPage() {
         style={{ border: '1px solid var(--border)' }}
       >
         <div
-          className="aspect-[16/10] flex flex-col items-center justify-center p-8 text-center"
-          style={{ background: 'var(--surface)' }}
+          className="aspect-[16/10] flex flex-col items-center justify-center p-8 text-center relative overflow-hidden"
+          style={{ background: 'linear-gradient(135deg, #0a1a15 0%, #0d2818 30%, #0a1612 60%, #111a14 100%)' }}
         >
           <div
-            className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4"
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              backgroundImage: 'linear-gradient(rgba(27,191,168,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(27,191,168,0.05) 1px, transparent 1px)',
+              backgroundSize: '20px 20px',
+            }}
+          />
+          <div
+            className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 relative z-10"
             style={{ background: 'rgba(27,191,168,0.08)' }}
           >
             <span style={{ color: 'var(--accent)' }}>&#128752;</span>
           </div>
           <p
-            className="text-sm leading-relaxed max-w-md"
+            className="text-sm leading-relaxed max-w-md relative z-10"
             style={{ color: 'var(--text-muted)' }}
           >
             {quiz.imageHint}
           </p>
-          <p className="text-xs font-mono mt-3" style={{ color: 'var(--text-muted)', opacity: 0.5 }}>
+          <p className="text-xs font-mono mt-3 relative z-10" style={{ color: 'var(--text-muted)', opacity: 0.5 }}>
             실제 위성 영상이 여기에 표시됩니다
           </p>
         </div>

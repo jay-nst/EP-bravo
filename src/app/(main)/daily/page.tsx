@@ -109,12 +109,12 @@ export default function DailyEarthPage() {
 
                 {/* Image placeholder */}
                 <div
-                  className="mx-auto rounded-2xl overflow-hidden mb-8"
+                  className="mx-auto rounded-2xl overflow-hidden mb-8 relative"
                   style={{
                     width: '100%',
                     maxWidth: '520px',
                     aspectRatio: '16/10',
-                    background: 'var(--surface)',
+                    background: `linear-gradient(${135 + i * 45}deg, #0a1a15 0%, #0d2818 30%, #0a1612 60%, #111a14 100%)`,
                     border: '1px solid var(--border)',
                     display: 'flex',
                     flexDirection: 'column',
@@ -127,12 +127,19 @@ export default function DailyEarthPage() {
                   }}
                 >
                   <div
-                    className="w-16 h-16 rounded-full flex items-center justify-center text-3xl"
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      backgroundImage: 'linear-gradient(rgba(27,191,168,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(27,191,168,0.05) 1px, transparent 1px)',
+                      backgroundSize: '20px 20px',
+                    }}
+                  />
+                  <div
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-3xl relative z-10"
                     style={{ background: 'rgba(27,191,168,0.08)' }}
                   >
                     <span style={{ color: 'var(--accent)' }}>&#127758;</span>
                   </div>
-                  <p className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
+                  <p className="text-xs font-mono relative z-10" style={{ color: 'var(--text-muted)' }}>
                     {item.satellite} &middot; {item.resolution}
                   </p>
                 </div>
