@@ -90,9 +90,19 @@ export default function PortalPage() {
       </h1>
 
       {orders.length === 0 ? (
-        <div className="text-center py-16">
-          <p className="mb-4" style={{ color: 'var(--text-muted)' }}>주문 내역이 없습니다</p>
-          <a href="/map" className="text-sm" style={{ color: 'var(--accent)' }}>
+        <div className="text-center py-16 space-y-3">
+          <div
+            className="w-14 h-14 rounded-full mx-auto flex items-center justify-center text-2xl"
+            style={{ background: 'var(--surface)' }}
+          >
+            &#127758;
+          </div>
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>아직 주문 내역이 없습니다</p>
+          <a
+            href="/map"
+            className="inline-block text-sm px-5 py-2.5 rounded-lg font-medium transition-colors"
+            style={{ background: 'var(--accent)', color: '#0E0E10' }}
+          >
             지도에서 영상 구매하기
           </a>
         </div>

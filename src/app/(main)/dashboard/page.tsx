@@ -80,12 +80,18 @@ export default async function DashboardPage() {
                     ))}
               </div>
             ) : (
-              <div className="text-center py-8">
+              <div className="text-center py-8 space-y-3">
+                <div
+                  className="w-12 h-12 rounded-full mx-auto flex items-center justify-center text-xl"
+                  style={{ background: 'rgba(27,191,168,0.08)' }}
+                >
+                  &#127758;
+                </div>
                 <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                  아직 활동 내역이 없습니다.
+                  아직 활동 내역이 없습니다
                 </p>
-                <Link href="/map" className="text-sm mt-2 inline-block" style={{ color: 'var(--accent)' }}>
-                  지도에서 영상을 검색해보세요
+                <Link href="/map" className="text-sm inline-block px-4 py-2 rounded-lg transition-colors" style={{ background: 'var(--accent)', color: '#0E0E10' }}>
+                  지도에서 영상 검색하기
                 </Link>
               </div>
             )}

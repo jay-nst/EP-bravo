@@ -135,8 +135,21 @@ export default function PostsPage() {
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center py-16">
-          <p style={{ color: 'var(--text-muted)' }}>이 카테고리에 아직 게시물이 없습니다</p>
+        <div className="text-center py-16 space-y-3">
+          <div
+            className="w-14 h-14 rounded-full mx-auto flex items-center justify-center text-2xl"
+            style={{ background: 'var(--surface)' }}
+          >
+            &#128752;
+          </div>
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>이 카테고리에 아직 게시물이 없습니다</p>
+          <button
+            onClick={() => setActiveCategory('all')}
+            className="text-sm px-4 py-2 rounded-lg transition-colors"
+            style={{ background: 'var(--surface)', color: 'var(--accent)', border: '1px solid var(--border)' }}
+          >
+            전체 보기
+          </button>
         </div>
       )}
     </div>
