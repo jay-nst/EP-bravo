@@ -60,17 +60,29 @@
   --header-bg: rgba(14, 14, 16, 0.85);
 }
 
-/* --- Light Mode Override --- */
+/* --- Light Mode Override (opt-in via class only) --- */
+:root.light {
+  --bg: #F5F3EF;
+  --surface: #FFFFFF;
+  --surface-elevated: #EDEAE5;
+  --text: #1A1A1F;
+  --text-muted: #6B6660;
+  --border: #D9D5CF;
+  --panel-bg: rgba(245, 243, 239, 0.92);
+  --header-bg: rgba(245, 243, 239, 0.90);
+}
+
+/* --- Force dark theme regardless of system preference --- */
 @media (prefers-color-scheme: light) {
-  :root {
-    --bg: #F5F3EF;
-    --surface: #FFFFFF;
-    --surface-elevated: #EDEAE5;
-    --text: #1A1A1F;
-    --text-muted: #6B6660;
-    --border: #D9D5CF;
-    --panel-bg: rgba(245, 243, 239, 0.92);
-    --header-bg: rgba(245, 243, 239, 0.90);
+  :root:not(.light) {
+    --bg: #0E0E10;
+    --surface: #1A1A1F;
+    --surface-elevated: #242429;
+    --text: #E8E4DF;
+    --text-muted: #8A8680;
+    --border: #2A2A2F;
+    --panel-bg: rgba(14, 14, 16, 0.88);
+    --header-bg: rgba(14, 14, 16, 0.85);
   }
 }
 

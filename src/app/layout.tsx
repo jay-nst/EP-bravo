@@ -21,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className="h-full">
+    <html lang="ko" className="h-full dark" style={{ colorScheme: 'dark' }}>
       <body suppressHydrationWarning>{children}</body>
     </html>
   );
