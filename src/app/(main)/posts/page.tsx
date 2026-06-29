@@ -115,7 +115,7 @@ export default function PostsPage() {
               </span>
             </div>
             <div className="p-4 space-y-2">
-              <h3 className="text-sm font-semibold leading-snug" style={{ color: 'var(--text)' }}>
+              <h3 className="text-base font-semibold leading-snug" style={{ color: 'var(--text)' }}>
                 {post.title}
               </h3>
               <p className="text-xs leading-relaxed line-clamp-2" style={{ color: 'var(--text-muted)' }}>

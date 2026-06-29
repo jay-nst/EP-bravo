@@ -51,7 +51,7 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Activity Feed */}
         <section className="lg:col-span-2 space-y-3">
-          <h2 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
+          <h2 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>
             최근 활동
           </h2>
           <div

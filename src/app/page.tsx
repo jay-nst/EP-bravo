@@ -316,7 +316,7 @@ export default async function HomePage() {
           {/* News Feed — 2/3 */}
           <div className="lg:col-span-2 space-y-5">
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
+              <h2 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>
                 최근 소식
               </h2>
               <Link href="/posts" className="text-xs" style={{ color: 'var(--accent)' }}>
@@ -343,7 +343,7 @@ export default async function HomePage() {
                     </span>
                   </div>
                   <div className="flex-1 min-w-0 space-y-1">
-                    <h3 className="text-sm font-semibold truncate" style={{ color: 'var(--text)' }}>
+                    <h3 className="text-base font-semibold truncate" style={{ color: 'var(--text)' }}>
                       {post.title}
                     </h3>
                     <p className="text-xs line-clamp-2 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
@@ -367,7 +367,7 @@ export default async function HomePage() {
             {/* Before/After Preview */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
+                <h3 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
                   변화 기록
                 </h3>
                 <Link href="/explore" className="text-xs" style={{ color: 'var(--accent)' }}>
@@ -445,7 +445,7 @@ export default async function HomePage() {
       <section className="px-4 py-8" style={{ borderTop: '1px solid var(--border)' }}>
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
+            <h2 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>
               지난 지구 기록
             </h2>
             <Link href="/daily" className="text-xs" style={{ color: 'var(--accent)' }}>
@@ -484,7 +484,7 @@ export default async function HomePage() {
       <section className="px-4 py-10" style={{ borderTop: '1px solid var(--border)' }}>
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
+            <h2 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>
               영상 가격
             </h2>
             <Link href="/map" className="text-xs" style={{ color: 'var(--accent)' }}>
@@ -611,7 +611,7 @@ function QuizWidget() {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
+        <h3 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
           오늘의 퀴즈
         </h3>
         <Link href="/quiz" className="text-xs" style={{ color: 'var(--accent)' }}>

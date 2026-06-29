@@ -24,7 +24,7 @@ export default function ExplorePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main: Before/After Viewer */}
         <div className="lg:col-span-2 space-y-6">
-          <h2 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
+          <h2 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>
             Before / After
           </h2>
 
@@ -143,7 +143,7 @@ export default function ExplorePage() {
 
         {/* Sidebar: Earth Score */}
         <aside className="space-y-6">
-          <h2 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
+          <h2 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>
             Earth Score
           </h2>
 
@@ -179,7 +179,7 @@ export default function ExplorePage() {
             className="rounded-xl p-5 space-y-4"
             style={{ border: '1px solid var(--border)' }}
           >
-            <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
+            <h3 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
               획득한 배지
             </h3>
             <div className="grid grid-cols-3 gap-3">
@@ -197,7 +197,7 @@ export default function ExplorePage() {
             className="rounded-xl p-5 space-y-3"
             style={{ border: '1px solid var(--border)' }}
           >
-            <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
+            <h3 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
               이번 주 리더보드
             </h3>
             <div className="space-y-2">
