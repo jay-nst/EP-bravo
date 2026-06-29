@@ -65,15 +65,41 @@ export default function SignupPage() {
   } as React.CSSProperties;
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--bg)' }}>
-      <div className="w-full max-w-sm space-y-8">
+    <div
+      className="min-h-screen flex items-center justify-center px-4 relative"
+      style={{ background: 'var(--bg)' }}
+    >
+      {/* Subtle grid background */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: 'radial-gradient(rgba(27,191,168,0.04) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+        }}
+      />
+      <div className="w-full max-w-sm space-y-8 relative z-10">
         <div className="text-center">
-          <Link href="/" className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
+          <Link href="/" className="text-2xl font-semibold tracking-tight inline-flex items-center gap-2.5 justify-center" style={{ color: 'var(--text)' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="1.5" />
+              <ellipse cx="12" cy="12" rx="10" ry="4" stroke="var(--accent)" strokeWidth="1" transform="rotate(-30 12 12)" opacity="0.6" />
+              <circle cx="18.5" cy="7" r="1.5" fill="var(--accent)" opacity="0.8" />
+            </svg>
             EARTHPAPER
           </Link>
           <p className="mt-2 text-sm" style={{ color: 'var(--text-muted)' }}>
             새 계정 만들기
           </p>
+          <div
+            className="mt-3 mx-auto"
+            style={{
+              width: '32px',
+              height: '2px',
+              background: 'var(--accent)',
+              borderRadius: '1px',
+              opacity: 0.6,
+            }}
+          />
         </div>
 
         <form onSubmit={handleSignup} className="space-y-4">
