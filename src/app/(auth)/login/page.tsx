@@ -34,15 +34,36 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--bg)' }}>
-      <div className="w-full max-w-sm space-y-8">
+    <div
+      className="min-h-screen flex items-center justify-center px-4 relative"
+      style={{ background: 'var(--bg)' }}
+    >
+      {/* Subtle grid background */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: 'radial-gradient(rgba(27,191,168,0.04) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+        }}
+      />
+      <div className="w-full max-w-sm space-y-8 relative z-10">
         <div className="text-center">
-          <Link href="/" className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
+          <Link href="/" className="text-2xl font-semibold tracking-tight" style={{ color: 'var(--text)' }}>
             EARTHPAPER
           </Link>
           <p className="mt-2 text-sm" style={{ color: 'var(--text-muted)' }}>
             위성 영상 셀프서비스 포털
           </p>
+          <div
+            className="mt-3 mx-auto"
+            style={{
+              width: '32px',
+              height: '2px',
+              background: 'var(--accent)',
+              borderRadius: '1px',
+              opacity: 0.6,
+            }}
+          />
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
