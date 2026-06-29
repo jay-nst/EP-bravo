@@ -401,20 +401,34 @@ export default async function HomePage() {
               >
                 <div className="grid grid-cols-2">
                   <div
-                    className="aspect-[4/3] flex flex-col items-center justify-center p-3"
-                    style={{ background: 'var(--surface)' }}
+                    className="aspect-[4/3] flex flex-col items-center justify-center p-3 relative overflow-hidden"
+                    style={{ background: 'linear-gradient(135deg, #1a1510 0%, #151210 50%, #1a1612 100%)' }}
                   >
-                    <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>BEFORE</span>
-                    <span className="text-sm font-mono mt-1" style={{ color: 'var(--text-muted)' }}>
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        backgroundImage: 'linear-gradient(rgba(200,146,58,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(200,146,58,0.04) 1px, transparent 1px)',
+                        backgroundSize: '14px 14px',
+                      }}
+                    />
+                    <span className="text-xs font-mono relative z-10" style={{ color: 'var(--warning)' }}>BEFORE</span>
+                    <span className="text-sm font-mono mt-1 relative z-10" style={{ color: 'var(--text-muted)' }}>
                       {featuredBA.beforeDate}
                     </span>
                   </div>
                   <div
-                    className="aspect-[4/3] flex flex-col items-center justify-center p-3"
-                    style={{ background: 'var(--surface-elevated)' }}
+                    className="aspect-[4/3] flex flex-col items-center justify-center p-3 relative overflow-hidden"
+                    style={{ background: 'linear-gradient(135deg, #0a1a15 0%, #0d2216 50%, #0f1a12 100%)' }}
                   >
-                    <span className="text-xs font-mono" style={{ color: 'var(--accent)' }}>AFTER</span>
-                    <span className="text-sm font-mono mt-1" style={{ color: 'var(--text)' }}>
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        backgroundImage: 'linear-gradient(rgba(27,191,168,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(27,191,168,0.05) 1px, transparent 1px)',
+                        backgroundSize: '14px 14px',
+                      }}
+                    />
+                    <span className="text-xs font-mono relative z-10" style={{ color: 'var(--accent)' }}>AFTER</span>
+                    <span className="text-sm font-mono mt-1 relative z-10" style={{ color: 'var(--text)' }}>
                       {featuredBA.afterDate}
                     </span>
                   </div>
