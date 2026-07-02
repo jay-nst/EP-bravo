@@ -6,10 +6,14 @@
     "CEO Review (plan-ceo-review) - PASS WITH CONDITIONS",
     "Eng Review (plan-eng-review) - PASS WITH CONDITIONS",
     "Design Review Round 1 (2026-06-29) - FINDING-001~012 수정 완료",
-    "Design Review Round 2 (2026-07-02) - FINDING-014~017 수정 완료"
+    "Design Review Round 2 (2026-07-02) - FINDING-014~017 수정 완료",
+    "Office Hours - EarthPaper Homepage 설계 완료",
+    "Wireframe v4.4 완성 (Magazine Grid + Core CTA + SimCity 데이터 오버레이)",
+    "Design Doc 작성 + Adversarial Review 통과 (7건 발견/수정, 8/10)"
   ],
   "in_progress": [],
   "remaining_tasks": [
+    "plan-eng-review 실행 (Design Doc 대상, 바로 시작 가능)",
     "Sprint A 구현 시작 - 리뷰 완료 후",
     "실제 위성 영상 이미지 교체 (플레이스홀더 → 실 데이터)",
     "인증 후 페이지 (dashboard, map, portal, chat, tasking) 디자인 리뷰"
@@ -21,23 +25,34 @@
     "Dashboard v4.2: glass-morphism 3-column floating panels over Mapbox satellite background",
     "Design system: Quiet Observatory 미학, Pretendard Variable + IBM Plex Mono",
     "Color: dark-first (#0E0E10 bg, #1bbfa8 accent mint)",
-    "Layout: Map-first + floating panel, 4px compact spacing"
+    "Layout: Map-first + floating panel, 4px compact spacing",
+    "EarthPaper Homepage: Magazine Grid (2/3 + 1/3), A+B capability pattern",
+    "Depot → Core 통합 (지도 + 데이터 오버레이 + 분석 도구 + 영상 구매)",
+    "MVP Narrowest Wedge: Tempest 단일 레인, 나머지 Coming Soon",
+    "Core 데이터 오버레이: SimCity 스타일 4-플랫폼 레이어 시각화",
+    "플랫폼 컬러: Tempest=#C45C4A, Predict=#4A9EC4, Warden=#6B8A5E, Nexus=#C8923A, Core=#8A8680"
   ],
+  "next_action": {
+    "skill": "/plan-eng-review",
+    "target": "Design Doc (~/.gstack/projects/earthpaper/jayoh-master-design-20260702-175837.md)",
+    "scope": "EarthPaper Homepage 아키텍처, 데이터 모델, API 계약, 테스트 전략 리뷰",
+    "resume_instruction": "/plan-eng-review 실행 → Design Doc 선택 → Step 0부터 진행"
+  },
+  "design_doc": {
+    "path": "~/.gstack/projects/earthpaper/jayoh-master-design-20260702-175837.md",
+    "status": "APPROVED",
+    "review_score": "8/10",
+    "wireframe": "https://claude.ai/code/artifact/eff89543-dd31-4333-b153-2a106dae1d16"
+  },
   "design_review_history": {
     "round1_date": "2026-06-29",
-    "round1_findings": "FINDING-001~012 (다크테마, 타이포, 터치타겟, 로그인/회원가입 브랜딩, Empty State, 위성느낌 썸네일, hover 피드백, focus-visible)",
-    "round1_commits": "0ed8232~6412ccb",
+    "round1_findings": "FINDING-001~012",
     "round2_date": "2026-07-02",
-    "round2_findings": "FINDING-014~017 (히어로CTA 터치타겟, 푸터 터치타겟, 보조링크 터치타겟, Before/After 텍스트겹침)",
-    "round2_commits": "113fa13~1fc9071",
+    "round2_findings": "FINDING-014~017",
     "current_scores": {
       "design": "B+",
       "ai_slop": "A",
       "performance": "A (LCP 247ms)"
-    },
-    "deferred": [
-      "푸터 링크 높이 36px (44px 미달, 보조 요소이므로 허용)",
-      "실제 위성 영상 교체 후 비주얼 재평가 필요"
-    ]
+    }
   }
 }
