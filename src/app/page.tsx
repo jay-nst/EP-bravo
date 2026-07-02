@@ -240,7 +240,7 @@ export default async function HomePage() {
                         </p>
                       </div>
                     </div>
-                    <Link href="/dashboard" className="text-xs py-3 px-2" style={{ color: 'var(--accent)' }}>
+                    <Link href="/dashboard" className="text-xs py-3.5 px-2" style={{ color: 'var(--accent)' }}>
                       대시보드 →
                     </Link>
                   </div>
@@ -276,7 +276,7 @@ export default async function HomePage() {
                         상위 15%
                       </p>
                     </div>
-                    <Link href="/explore" className="text-xs py-3 px-2" style={{ color: 'var(--accent)' }}>
+                    <Link href="/explore" className="text-xs py-3.5 px-2" style={{ color: 'var(--accent)' }}>
                       자세히
                     </Link>
                   </div>
@@ -330,7 +330,7 @@ export default async function HomePage() {
               <h2 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>
                 최근 소식
               </h2>
-              <Link href="/posts" className="text-xs py-3 px-2" style={{ color: 'var(--accent)' }}>
+              <Link href="/posts" className="text-xs py-3.5 px-2" style={{ color: 'var(--accent)' }}>
                 전체 보기 →
               </Link>
             </div>
@@ -390,7 +390,7 @@ export default async function HomePage() {
                 <h3 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
                   변화 기록
                 </h3>
-                <Link href="/explore" className="text-xs py-3 px-2" style={{ color: 'var(--accent)' }}>
+                <Link href="/explore" className="text-xs py-3.5 px-2" style={{ color: 'var(--accent)' }}>
                   더 보기 →
                 </Link>
               </div>
@@ -482,7 +482,7 @@ export default async function HomePage() {
             <h2 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>
               지난 지구 기록
             </h2>
-            <Link href="/daily" className="text-xs py-3 px-2" style={{ color: 'var(--accent)' }}>
+            <Link href="/daily" className="text-xs py-3.5 px-2" style={{ color: 'var(--accent)' }}>
               전체 아카이브 →
             </Link>
           </div>
@@ -530,7 +530,7 @@ export default async function HomePage() {
             <h2 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>
               영상 가격
             </h2>
-            <Link href="/map" className="text-xs py-3 px-2" style={{ color: 'var(--accent)' }}>
+            <Link href="/map" className="text-xs py-3.5 px-2" style={{ color: 'var(--accent)' }}>
               지도에서 구매 →
             </Link>
           </div>
@@ -700,7 +700,7 @@ function QuizWidget() {
         <h3 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
           오늘의 퀴즈
         </h3>
-        <Link href="/quiz" className="text-xs py-3 px-2" style={{ color: 'var(--accent)' }}>
+        <Link href="/quiz" className="text-xs py-3.5 px-2" style={{ color: 'var(--accent)' }}>
           풀어보기 →
         </Link>
       </div>
