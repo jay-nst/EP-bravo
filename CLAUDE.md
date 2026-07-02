@@ -1,9 +1,16 @@
 @AGENTS.md
 
-## Session Continuity
+## Session Continuity (자동 체크포인트)
 
-세션 시작 시 `.claude/session-state.json`을 읽어서 이전 작업 상태를 확인한다.
-디자인 리뷰, 기능 구현 등 주요 마일스톤마다 이 파일을 업데이트한다.
+세션 시작 시 반드시 `.claude/session-state.json`을 읽어서 이전 작업 상태를 확인한다.
+
+다음 시점에 `.claude/session-state.json`을 자동 업데이트한다:
+- 스킬(/design-review, /qa 등) 완료 시
+- 세션 종료 전 (사용자가 끝내겠다고 하면)
+
+형식: `{"timestamp", "branch", "last_commit", "completed_tasks", "in_progress", "remaining_tasks", "blockers", "test_status", "decisions_made"}`
+
+이전 세션 상태를 추측하거나 환각하지 않는다 — 파일이 곧 기억이다.
 
 ## Project: EarthPaper
 
