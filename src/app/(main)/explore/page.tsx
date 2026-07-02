@@ -37,7 +37,7 @@ export default function ExplorePage() {
             <div className="relative" style={{ background: 'var(--surface)' }}>
               <div className="grid grid-cols-2" style={{ minHeight: '300px' }}>
                 <div
-                  className="flex flex-col items-center justify-center p-8"
+                  className="flex flex-col items-start justify-end p-5"
                   style={{
                     background: 'linear-gradient(135deg, #1a1510 0%, #151210 50%, #1a1612 100%)',
                     clipPath: `inset(0 ${100 - sliderPos}% 0 0)`,
@@ -46,28 +46,22 @@ export default function ExplorePage() {
                     zIndex: 2,
                   }}
                 >
-                  <span className="text-xs font-mono tracking-wider mb-2" style={{ color: 'var(--warning)' }}>
+                  <span className="text-xs font-mono tracking-wider mb-1" style={{ color: 'var(--warning)' }}>
                     BEFORE
                   </span>
-                  <span className="text-2xl font-mono" style={{ color: 'var(--text-muted)' }}>
+                  <span className="text-lg font-mono" style={{ color: 'var(--text-muted)' }}>
                     {selectedBA.beforeDate}
                   </span>
-                  <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>
-                    실제 위성 영상
-                  </p>
                 </div>
-                <div className="col-span-2 flex flex-col items-center justify-center p-8"
+                <div className="col-span-2 flex flex-col items-end justify-end p-5"
                   style={{ background: 'linear-gradient(135deg, #0a1a15 0%, #0d2216 50%, #0f1a12 100%)' }}
                 >
-                  <span className="text-xs font-mono tracking-wider mb-2" style={{ color: 'var(--accent)' }}>
+                  <span className="text-xs font-mono tracking-wider mb-1" style={{ color: 'var(--accent)' }}>
                     AFTER
                   </span>
-                  <span className="text-2xl font-mono" style={{ color: 'var(--text)' }}>
+                  <span className="text-lg font-mono" style={{ color: 'var(--text)' }}>
                     {selectedBA.afterDate}
                   </span>
-                  <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>
-                    실제 위성 영상
-                  </p>
                 </div>
               </div>
               {/* Slider control */}
