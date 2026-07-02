@@ -123,14 +123,14 @@ export default async function HomePage() {
               <div className="flex gap-3 justify-center md:justify-start pt-1">
                 <Link
                   href="/map"
-                  className="px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                  className="px-5 py-3 rounded-lg text-sm font-medium transition-colors"
                   style={{ background: 'var(--accent)', color: '#0E0E10' }}
                 >
                   지도에서 탐색
                 </Link>
                 <Link
                   href="/daily"
-                  className="px-5 py-2.5 rounded-lg text-sm transition-colors"
+                  className="px-5 py-3 rounded-lg text-sm transition-colors"
                   style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
                 >
                   오늘의 지구
@@ -240,7 +240,7 @@ export default async function HomePage() {
                         </p>
                       </div>
                     </div>
-                    <Link href="/dashboard" className="text-xs py-2 px-1" style={{ color: 'var(--accent)' }}>
+                    <Link href="/dashboard" className="text-xs py-3 px-2" style={{ color: 'var(--accent)' }}>
                       대시보드 →
                     </Link>
                   </div>
@@ -276,7 +276,7 @@ export default async function HomePage() {
                         상위 15%
                       </p>
                     </div>
-                    <Link href="/explore" className="text-xs py-2 px-1" style={{ color: 'var(--accent)' }}>
+                    <Link href="/explore" className="text-xs py-3 px-2" style={{ color: 'var(--accent)' }}>
                       자세히
                     </Link>
                   </div>
@@ -330,7 +330,7 @@ export default async function HomePage() {
               <h2 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>
                 최근 소식
               </h2>
-              <Link href="/posts" className="text-xs py-2 px-1" style={{ color: 'var(--accent)' }}>
+              <Link href="/posts" className="text-xs py-3 px-2" style={{ color: 'var(--accent)' }}>
                 전체 보기 →
               </Link>
             </div>
@@ -390,7 +390,7 @@ export default async function HomePage() {
                 <h3 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
                   변화 기록
                 </h3>
-                <Link href="/explore" className="text-xs py-2 px-1" style={{ color: 'var(--accent)' }}>
+                <Link href="/explore" className="text-xs py-3 px-2" style={{ color: 'var(--accent)' }}>
                   더 보기 →
                 </Link>
               </div>
@@ -482,7 +482,7 @@ export default async function HomePage() {
             <h2 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>
               지난 지구 기록
             </h2>
-            <Link href="/daily" className="text-xs py-2 px-1" style={{ color: 'var(--accent)' }}>
+            <Link href="/daily" className="text-xs py-3 px-2" style={{ color: 'var(--accent)' }}>
               전체 아카이브 →
             </Link>
           </div>
@@ -530,7 +530,7 @@ export default async function HomePage() {
             <h2 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>
               영상 가격
             </h2>
-            <Link href="/map" className="text-xs py-2 px-1" style={{ color: 'var(--accent)' }}>
+            <Link href="/map" className="text-xs py-3 px-2" style={{ color: 'var(--accent)' }}>
               지도에서 구매 →
             </Link>
           </div>
@@ -584,26 +584,26 @@ export default async function HomePage() {
             <div className="flex gap-10">
               <div className="space-y-2">
                 <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>서비스</p>
-                <nav className="flex flex-col gap-1.5">
-                  <Link href="/map" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>위성 지도</Link>
-                  <Link href="/chat" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>AI 채팅</Link>
-                  <Link href="/tasking" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>촬영 요청</Link>
+                <nav className="flex flex-col gap-0.5">
+                  <Link href="/map" className="text-xs py-2.5 hover:underline" style={{ color: 'var(--text-muted)' }}>위성 지도</Link>
+                  <Link href="/chat" className="text-xs py-2.5 hover:underline" style={{ color: 'var(--text-muted)' }}>AI 채팅</Link>
+                  <Link href="/tasking" className="text-xs py-2.5 hover:underline" style={{ color: 'var(--text-muted)' }}>촬영 요청</Link>
                 </nav>
               </div>
               <div className="space-y-2">
                 <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>콘텐츠</p>
-                <nav className="flex flex-col gap-1.5">
-                  <Link href="/daily" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>오늘의 지구</Link>
-                  <Link href="/posts" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>뉴스</Link>
-                  <Link href="/explore" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>탐색</Link>
+                <nav className="flex flex-col gap-0.5">
+                  <Link href="/daily" className="text-xs py-2.5 hover:underline" style={{ color: 'var(--text-muted)' }}>오늘의 지구</Link>
+                  <Link href="/posts" className="text-xs py-2.5 hover:underline" style={{ color: 'var(--text-muted)' }}>뉴스</Link>
+                  <Link href="/explore" className="text-xs py-2.5 hover:underline" style={{ color: 'var(--text-muted)' }}>탐색</Link>
                 </nav>
               </div>
               <div className="space-y-2">
                 <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>계정</p>
-                <nav className="flex flex-col gap-1.5">
-                  <Link href="/login" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>로그인</Link>
-                  <Link href="/signup" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>회원가입</Link>
-                  <Link href="/portal" className="text-xs py-1 hover:underline" style={{ color: 'var(--text-muted)' }}>내 주문</Link>
+                <nav className="flex flex-col gap-0.5">
+                  <Link href="/login" className="text-xs py-2.5 hover:underline" style={{ color: 'var(--text-muted)' }}>로그인</Link>
+                  <Link href="/signup" className="text-xs py-2.5 hover:underline" style={{ color: 'var(--text-muted)' }}>회원가입</Link>
+                  <Link href="/portal" className="text-xs py-2.5 hover:underline" style={{ color: 'var(--text-muted)' }}>내 주문</Link>
                 </nav>
               </div>
             </div>
@@ -700,7 +700,7 @@ function QuizWidget() {
         <h3 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
           오늘의 퀴즈
         </h3>
-        <Link href="/quiz" className="text-xs py-2 px-1" style={{ color: 'var(--accent)' }}>
+        <Link href="/quiz" className="text-xs py-3 px-2" style={{ color: 'var(--accent)' }}>
           풀어보기 →
         </Link>
       </div>
