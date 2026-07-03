@@ -6,6 +6,7 @@ import AoiPanel from '@/components/map/AoiPanel';
 import type { SatelliteType } from '@/types/database';
 import { createClient } from '@/lib/supabase/client';
 import { requestTossPayment } from '@/lib/toss/widget';
+import { DEMO_USER } from '@/lib/demo-user';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
@@ -63,17 +64,11 @@ export default function MapPage() {
 
       const { orderId, amount, orderName } = await res.json();
 
-      // Step 2: Get user email for Toss customerKey
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      // Step 3: Redirect to Toss payment
       await requestTossPayment({
         orderId,
         amount,
         orderName,
-        customerEmail: user?.email || 'anonymous',
+        customerEmail: DEMO_USER.email,
       });
     } catch (err) {
       if (err instanceof Error && err.message.includes('canceled')) {

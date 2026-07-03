@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { useEffect, useState } from 'react';
+import { DEMO_USER } from '@/lib/demo-user';
 
 interface TaskingRequest {
   id: string;
@@ -22,7 +22,6 @@ const STATUS_LABELS: Record<string, { text: string; color: string }> = {
 };
 
 export default function TaskingPage() {
-  const supabase = useMemo(() => createClient(), []);
   const [requests, setRequests] = useState<TaskingRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -30,24 +29,20 @@ export default function TaskingPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const [contactEmail, setContactEmail] = useState('');
+  const [contactEmail, setContactEmail] = useState<string>(DEMO_USER.email);
   const [contactPhone, setContactPhone] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [notes, setNotes] = useState('');
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user?.email) setContactEmail(data.user.email);
-    });
-
     fetch('/api/tasking')
       .then((r) => r.json())
       .then((data) => {
         if (data.requests) setRequests(data.requests);
       })
       .finally(() => setLoading(false));
-  }, [supabase]);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

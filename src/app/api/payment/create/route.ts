@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { calculatePrice, validateAoi, calculateAreaKm2 } from '@/lib/geo';
 import type { SatelliteType } from '@/types/database';
+import { DEMO_USER } from '@/lib/demo-user';
 
 const createOrderSchema = z.object({
   catalogItemId: z.string().uuid(),
@@ -16,15 +17,8 @@ const createOrderSchema = z.object({
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
-  // Verify authenticated user
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 });
-  }
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id ?? DEMO_USER.id;
 
   // Parse and validate request body
   const body = await request.json();
@@ -70,7 +64,7 @@ export async function POST(request: NextRequest) {
   const { data: order, error: orderError } = await admin
     .from('orders')
     .insert({
-      user_id: user.id,
+      user_id: userId,
       catalog_item_id: catalogItemId,
       aoi: polygon,
       aoi_area_km2: areaKm2,

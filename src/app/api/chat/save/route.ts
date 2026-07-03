@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { DEMO_USER } from '@/lib/demo-user';
 
 const saveSchema = z.object({
   sessionId: z.string().uuid(),
@@ -13,14 +14,8 @@ const saveSchema = z.object({
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 });
-  }
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id ?? DEMO_USER.id;
 
   const body = await request.json();
   const parsed = saveSchema.safeParse(body);
@@ -54,7 +49,7 @@ export async function POST(request: NextRequest) {
 
   // Update user token usage
   await admin.rpc('increment_chat_tokens', {
-    user_id: user.id,
+    user_id: userId,
     token_count: tokens,
   });
 

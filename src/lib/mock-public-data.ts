@@ -1,4 +1,4 @@
-import type { AirQualityReading, AwsObservation, TrafficLink } from '@/types/public-data';
+import type { AirQualityReading, AwsObservation, TrafficLink, WeatherForecast, WildfireReport, EarthquakeEvent } from '@/types/public-data';
 
 function gradeFromPm25(pm25: number): AirQualityReading['grade'] {
   if (pm25 <= 15) return 'good';
@@ -227,6 +227,118 @@ export function awsToGeoJSON(stations: AwsObservation[]): GeoJSON.FeatureCollect
         windSpeed: s.windSpeed,
         rainfall1h: s.rainfall1h,
         observedAt: s.observedAt,
+      },
+    })),
+  };
+}
+
+export const MOCK_WEATHER_FORECAST: WeatherForecast[] = [
+  { id: 'wf-001', name: '서울', lat: 37.5665, lng: 126.9780, temperature: 29, sky: 'partly_cloudy', precipitation: 'none', precipAmount: 0, humidity: 72, windSpeed: 2.3, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-002', name: '인천', lat: 37.4563, lng: 126.7052, temperature: 27, sky: 'cloudy', precipitation: 'none', precipAmount: 0, humidity: 78, windSpeed: 3.8, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-003', name: '수원', lat: 37.2636, lng: 127.0286, temperature: 30, sky: 'partly_cloudy', precipitation: 'none', precipAmount: 0, humidity: 68, windSpeed: 1.9, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-004', name: '춘천', lat: 37.8813, lng: 127.7300, temperature: 31, sky: 'clear', precipitation: 'none', precipAmount: 0, humidity: 58, windSpeed: 1.2, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-005', name: '강릉', lat: 37.7519, lng: 128.8761, temperature: 27, sky: 'overcast', precipitation: 'rain', precipAmount: 2.5, humidity: 85, windSpeed: 3.1, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-006', name: '대전', lat: 36.3504, lng: 127.3845, temperature: 32, sky: 'partly_cloudy', precipitation: 'none', precipAmount: 0, humidity: 62, windSpeed: 1.4, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-007', name: '청주', lat: 36.6424, lng: 127.4890, temperature: 33, sky: 'clear', precipitation: 'none', precipAmount: 0, humidity: 58, windSpeed: 1.0, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-008', name: '대구', lat: 35.8714, lng: 128.6014, temperature: 34, sky: 'clear', precipitation: 'none', precipAmount: 0, humidity: 52, windSpeed: 0.9, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-009', name: '부산', lat: 35.1796, lng: 129.0756, temperature: 28, sky: 'cloudy', precipitation: 'shower', precipAmount: 5.0, humidity: 80, windSpeed: 3.5, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-010', name: '울산', lat: 35.5384, lng: 129.3114, temperature: 30, sky: 'partly_cloudy', precipitation: 'none', precipAmount: 0, humidity: 70, windSpeed: 2.6, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-011', name: '광주', lat: 35.1595, lng: 126.8526, temperature: 31, sky: 'cloudy', precipitation: 'rain', precipAmount: 8.0, humidity: 78, windSpeed: 1.8, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-012', name: '전주', lat: 35.8242, lng: 127.1480, temperature: 32, sky: 'overcast', precipitation: 'rain', precipAmount: 12.0, humidity: 82, windSpeed: 2.0, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-013', name: '제주', lat: 33.4996, lng: 126.5312, temperature: 28, sky: 'overcast', precipitation: 'rain', precipAmount: 15.0, humidity: 88, windSpeed: 5.2, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-014', name: '서귀포', lat: 33.2541, lng: 126.5600, temperature: 29, sky: 'cloudy', precipitation: 'shower', precipAmount: 3.0, humidity: 84, windSpeed: 4.1, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-015', name: '속초', lat: 38.2070, lng: 128.5918, temperature: 26, sky: 'overcast', precipitation: 'rain', precipAmount: 6.0, humidity: 86, windSpeed: 3.6, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-016', name: '원주', lat: 37.3422, lng: 127.9201, temperature: 31, sky: 'partly_cloudy', precipitation: 'none', precipAmount: 0, humidity: 63, windSpeed: 1.3, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-017', name: '포항', lat: 36.0190, lng: 129.3435, temperature: 29, sky: 'cloudy', precipitation: 'none', precipAmount: 0, humidity: 74, windSpeed: 2.8, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-018', name: '목포', lat: 34.8118, lng: 126.3922, temperature: 29, sky: 'overcast', precipitation: 'rain', precipAmount: 10.0, humidity: 85, windSpeed: 4.5, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-019', name: '여수', lat: 34.7604, lng: 127.6622, temperature: 28, sky: 'cloudy', precipitation: 'shower', precipAmount: 4.0, humidity: 82, windSpeed: 3.9, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-020', name: '안동', lat: 36.5684, lng: 128.7294, temperature: 33, sky: 'clear', precipitation: 'none', precipAmount: 0, humidity: 55, windSpeed: 0.8, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-021', name: '진주', lat: 35.1800, lng: 128.1076, temperature: 32, sky: 'partly_cloudy', precipitation: 'none', precipAmount: 0, humidity: 60, windSpeed: 1.1, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-022', name: '천안', lat: 36.8151, lng: 127.1139, temperature: 31, sky: 'partly_cloudy', precipitation: 'none', precipAmount: 0, humidity: 65, windSpeed: 1.5, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-023', name: '군산', lat: 35.9676, lng: 126.7369, temperature: 28, sky: 'overcast', precipitation: 'rain', precipAmount: 7.0, humidity: 83, windSpeed: 4.0, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-024', name: '홍성', lat: 36.6011, lng: 126.6603, temperature: 30, sky: 'cloudy', precipitation: 'none', precipAmount: 0, humidity: 70, windSpeed: 2.2, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-025', name: '태백', lat: 37.1648, lng: 128.9855, temperature: 24, sky: 'overcast', precipitation: 'rain', precipAmount: 4.0, humidity: 87, windSpeed: 3.4, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-026', name: '고양', lat: 37.6584, lng: 126.8320, temperature: 28, sky: 'partly_cloudy', precipitation: 'none', precipAmount: 0, humidity: 71, windSpeed: 2.1, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-027', name: '성남', lat: 37.4200, lng: 127.1267, temperature: 29, sky: 'partly_cloudy', precipitation: 'none', precipAmount: 0, humidity: 67, windSpeed: 1.6, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-028', name: '용인', lat: 37.2411, lng: 127.1776, temperature: 30, sky: 'clear', precipitation: 'none', precipAmount: 0, humidity: 64, windSpeed: 1.3, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-029', name: '창원', lat: 35.2280, lng: 128.6811, temperature: 31, sky: 'partly_cloudy', precipitation: 'none', precipAmount: 0, humidity: 68, windSpeed: 1.8, forecastTime: '2026-07-03T15:00:00' },
+  { id: 'wf-030', name: '경주', lat: 35.8562, lng: 129.2247, temperature: 32, sky: 'clear', precipitation: 'none', precipAmount: 0, humidity: 60, windSpeed: 1.5, forecastTime: '2026-07-03T15:00:00' },
+];
+
+export const MOCK_WILDFIRE_REPORTS: WildfireReport[] = [
+  { id: 'wf-fire-001', name: '강원 양양 산불', lat: 38.0755, lng: 128.6186, status: 'active', affectedArea: 85, startedAt: '2026-07-02T14:30:00', description: '양양군 서면 일대 산림 화재. 소방헬기 4대 투입, 주민 대피 완료.' },
+  { id: 'wf-fire-002', name: '경북 울진 산불', lat: 36.9931, lng: 129.4005, status: 'active', affectedArea: 210, startedAt: '2026-07-01T11:20:00', description: '울진군 북면 산림 대형 화재. 특별재난지역 선포 검토 중.' },
+  { id: 'wf-fire-003', name: '충남 보령 산불', lat: 36.3327, lng: 126.6130, status: 'contained', affectedArea: 12, startedAt: '2026-07-02T16:45:00', description: '보령시 청라면 야산 화재. 진화율 85%, 잔불 정리 중.' },
+  { id: 'wf-fire-004', name: '경남 밀양 산불', lat: 35.5037, lng: 128.7486, status: 'extinguished', affectedArea: 5, startedAt: '2026-07-01T09:10:00', description: '밀양시 상남면 소규모 산불. 당일 완전 진화.' },
+  { id: 'wf-fire-005', name: '강원 삼척 산불', lat: 37.4500, lng: 129.1652, status: 'active', affectedArea: 150, startedAt: '2026-07-02T08:00:00', description: '삼척시 근덕면 해안 인접 산림 화재. 강풍으로 확산 우려.' },
+  { id: 'wf-fire-006', name: '전남 해남 산불', lat: 34.5736, lng: 126.5990, status: 'contained', affectedArea: 28, startedAt: '2026-07-02T13:20:00', description: '해남군 삼산면 산림 화재. 진화율 92%.' },
+  { id: 'wf-fire-007', name: '경북 안동 산불', lat: 36.5684, lng: 128.7294, status: 'extinguished', affectedArea: 8, startedAt: '2026-06-30T15:40:00', description: '안동시 와룡면 소규모 화재. 조기 발견으로 신속 진화.' },
+  { id: 'wf-fire-008', name: '강원 정선 산불', lat: 37.3807, lng: 128.6610, status: 'active', affectedArea: 45, startedAt: '2026-07-03T06:15:00', description: '정선군 임계면 고지대 산불. 접근 곤란으로 헬기 집중 투입.' },
+];
+
+export const MOCK_EARTHQUAKE_EVENTS: EarthquakeEvent[] = [
+  { id: 'eq-001', lat: 35.7649, lng: 129.1900, magnitude: 3.8, depth: 12, location: '경북 경주시 남남서쪽 8km', occurredAt: '2026-07-03T02:14:32', maxIntensity: 4 },
+  { id: 'eq-002', lat: 36.1090, lng: 129.3700, magnitude: 2.5, depth: 8, location: '경북 포항시 북구 북쪽 11km', occurredAt: '2026-07-02T18:45:11', maxIntensity: 2 },
+  { id: 'eq-003', lat: 35.1500, lng: 129.0800, magnitude: 2.1, depth: 15, location: '부산 해운대구 동쪽 해역 6km', occurredAt: '2026-07-02T09:22:05', maxIntensity: 1 },
+  { id: 'eq-004', lat: 33.5200, lng: 126.2500, magnitude: 3.2, depth: 18, location: '제주특별자치도 서쪽 해역 32km', occurredAt: '2026-07-01T14:08:47', maxIntensity: 3 },
+  { id: 'eq-005', lat: 36.7700, lng: 126.9200, magnitude: 2.8, depth: 10, location: '충남 홍성군 북쪽 5km', occurredAt: '2026-07-01T06:33:19', maxIntensity: 3 },
+  { id: 'eq-006', lat: 38.2100, lng: 128.0500, magnitude: 2.3, depth: 20, location: '강원 인제군 북서쪽 14km', occurredAt: '2026-06-30T22:17:55', maxIntensity: 2 },
+  { id: 'eq-007', lat: 35.8800, lng: 129.7500, magnitude: 4.1, depth: 9, location: '경북 경주시 동쪽 해역 45km', occurredAt: '2026-06-29T11:52:30', maxIntensity: 5 },
+  { id: 'eq-008', lat: 34.3000, lng: 127.5800, magnitude: 2.0, depth: 22, location: '전남 여수시 남쪽 해역 18km', occurredAt: '2026-06-28T03:41:08', maxIntensity: 1 },
+];
+
+export function weatherForecastToGeoJSON(forecasts: WeatherForecast[]): GeoJSON.FeatureCollection {
+  return {
+    type: 'FeatureCollection',
+    features: forecasts.map((f) => ({
+      type: 'Feature' as const,
+      geometry: { type: 'Point' as const, coordinates: [f.lng, f.lat] },
+      properties: {
+        id: f.id,
+        name: f.name,
+        temperature: f.temperature,
+        sky: f.sky,
+        precipitation: f.precipitation,
+        precipAmount: f.precipAmount,
+        humidity: f.humidity,
+        windSpeed: f.windSpeed,
+        forecastTime: f.forecastTime,
+      },
+    })),
+  };
+}
+
+export function wildfireToGeoJSON(reports: WildfireReport[]): GeoJSON.FeatureCollection {
+  return {
+    type: 'FeatureCollection',
+    features: reports.map((r) => ({
+      type: 'Feature' as const,
+      geometry: { type: 'Point' as const, coordinates: [r.lng, r.lat] },
+      properties: {
+        id: r.id,
+        name: r.name,
+        status: r.status,
+        affectedArea: r.affectedArea,
+        startedAt: r.startedAt,
+        description: r.description,
+      },
+    })),
+  };
+}
+
+export function earthquakeToGeoJSON(events: EarthquakeEvent[]): GeoJSON.FeatureCollection {
+  return {
+    type: 'FeatureCollection',
+    features: events.map((e) => ({
+      type: 'Feature' as const,
+      geometry: { type: 'Point' as const, coordinates: [e.lng, e.lat] },
+      properties: {
+        id: e.id,
+        magnitude: e.magnitude,
+        depth: e.depth,
+        location: e.location,
+        occurredAt: e.occurredAt,
+        maxIntensity: e.maxIntensity,
       },
     })),
   };

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { DEMO_USER } from '@/lib/demo-user';
 
 export async function GET(
   _request: NextRequest,
@@ -8,20 +9,14 @@ export async function GET(
   const { id } = await params;
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 });
-  }
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id ?? DEMO_USER.id;
 
   const { data: order, error } = await supabase
     .from('orders')
     .select('id, status, clip_result_url, error_message, updated_at')
     .eq('id', id)
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .single();
 
   if (error || !order) {

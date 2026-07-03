@@ -13,9 +13,11 @@ import type { TempestSeverity } from '@/types/tempest';
 import { createClient } from '@/lib/supabase/client';
 import { requestTossPayment } from '@/lib/toss/widget';
 import { trackEvent } from '@/lib/analytics';
+import { DEMO_USER } from '@/lib/demo-user';
 import type { PublicLayerId } from '@/types/public-data';
 import { MAP_STYLES } from '@/components/map/EarthMap';
 import type { MapStyleId } from '@/components/map/EarthMap';
+import { LayerAnimationController, LAYER_ANIMATION_MAP } from '@/lib/layer-animations';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
@@ -53,6 +55,32 @@ const AIR_QUALITY_COLORS: Record<string, string> = {
   hazardous: '#9C27B0',
 };
 
+const SKY_COLORS: Record<string, string> = {
+  clear: '#FFD54F',
+  partly_cloudy: '#90CAF9',
+  cloudy: '#78909C',
+  overcast: '#546E7A',
+};
+
+const SKY_LABELS: Record<string, string> = {
+  clear: '맑음',
+  partly_cloudy: '구름조금',
+  cloudy: '구름많음',
+  overcast: '흐림',
+};
+
+const WILDFIRE_STATUS_COLORS: Record<string, string> = {
+  active: '#FF3D00',
+  contained: '#FF9100',
+  extinguished: '#66BB6A',
+};
+
+const WILDFIRE_STATUS_LABELS: Record<string, string> = {
+  active: '진화중',
+  contained: '진화거의완료',
+  extinguished: '진화완료',
+};
+
 const INITIAL_LAYERS: OverlayLayer[] = [
   {
     id: 'tempest',
@@ -79,6 +107,27 @@ const INITIAL_LAYERS: OverlayLayer[] = [
     id: 'traffic',
     label: '도로 소통',
     color: '#EF5350',
+    enabled: false,
+    featureCount: 0,
+  },
+  {
+    id: 'weather-forecast',
+    label: '단기예보',
+    color: '#64B5F6',
+    enabled: false,
+    featureCount: 0,
+  },
+  {
+    id: 'wildfire',
+    label: '산불',
+    color: '#FF6D00',
+    enabled: false,
+    featureCount: 0,
+  },
+  {
+    id: 'earthquake',
+    label: '지진',
+    color: '#D32F2F',
     enabled: false,
     featureCount: 0,
   },
@@ -124,13 +173,28 @@ const TEMPEST_LABEL_LAYER = 'tempest-overlay-label';
 const PUBLIC_LAYER_IDS: Record<PublicLayerId, { source: string; layers: string[] }> = {
   'air-quality': {
     source: 'public-air-quality',
-    layers: ['air-quality-heatmap', 'air-quality-circle', 'air-quality-label'],
+    layers: ['air-quality-heatmap', 'air-quality-pulse', 'air-quality-circle', 'air-quality-label'],
   },
   'aws-weather': {
     source: 'public-aws-weather',
     layers: ['aws-weather-circle', 'aws-weather-label'],
   },
-  'traffic': { source: 'public-traffic', layers: ['traffic-line'] },
+  'traffic': {
+    source: 'public-traffic',
+    layers: ['traffic-glow', 'traffic-line'],
+  },
+  'weather-forecast': {
+    source: 'public-weather-forecast',
+    layers: ['weather-temp-heatmap', 'weather-precip-ring', 'weather-forecast-circle', 'weather-forecast-label'],
+  },
+  'wildfire': {
+    source: 'public-wildfire',
+    layers: ['wildfire-glow', 'wildfire-circle', 'wildfire-label'],
+  },
+  'earthquake': {
+    source: 'public-earthquake',
+    layers: ['earthquake-ripple-3', 'earthquake-ripple-2', 'earthquake-ripple-1', 'earthquake-circle', 'earthquake-label'],
+  },
   'buildings-3d': { source: '', layers: ['buildings-3d-extrusion'] },
 };
 
@@ -145,7 +209,12 @@ export default function CorePage() {
   const [sidebarTab, setSidebarTab] = useState<'layers' | 'purchase'>('layers');
   const [mapStyleId, setMapStyleId] = useState<MapStyleId>('dark');
   const mapRef = useRef<mapboxgl.Map | null>(null);
+  const animRef = useRef<LayerAnimationController | null>(null);
   const supabase = useMemo(() => createClient(), []);
+
+  useEffect(() => {
+    return () => { animRef.current?.dispose(); };
+  }, []);
 
   const handleAoiChange = useCallback((newAoi: AoiSelection | null) => {
     setAoi(newAoi);
@@ -160,27 +229,52 @@ export default function CorePage() {
     map.addSource(PUBLIC_LAYER_IDS['air-quality'].source, { type: 'geojson', data: EMPTY_FC });
     map.addSource(PUBLIC_LAYER_IDS['aws-weather'].source, { type: 'geojson', data: EMPTY_FC });
     map.addSource(PUBLIC_LAYER_IDS['traffic'].source, { type: 'geojson', data: EMPTY_FC });
+    map.addSource(PUBLIC_LAYER_IDS['weather-forecast'].source, { type: 'geojson', data: EMPTY_FC });
+    map.addSource(PUBLIC_LAYER_IDS['wildfire'].source, { type: 'geojson', data: EMPTY_FC });
+    map.addSource(PUBLIC_LAYER_IDS['earthquake'].source, { type: 'geojson', data: EMPTY_FC });
 
     map.addLayer({
       id: 'air-quality-heatmap',
       type: 'heatmap',
       source: PUBLIC_LAYER_IDS['air-quality'].source,
       layout: { visibility: 'none' },
-      maxzoom: 12,
+      maxzoom: 16,
       paint: {
-        'heatmap-weight': ['interpolate', ['linear'], ['get', 'pm25'], 0, 0, 50, 1],
-        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 5, 0.5, 12, 2],
-        'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 5, 20, 12, 40],
+        'heatmap-weight': ['interpolate', ['linear'], ['get', 'pm25'], 0, 0, 25, 0.4, 50, 0.8, 80, 1],
+        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 5, 0.4, 10, 1, 14, 1.8],
+        'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 5, 20, 10, 40, 14, 60, 16, 80],
         'heatmap-color': [
           'interpolate', ['linear'], ['heatmap-density'],
           0, 'rgba(0,0,0,0)',
-          0.2, '#4CAF50',
-          0.4, '#FFC107',
-          0.6, '#FF9800',
-          0.8, '#F44336',
-          1, '#9C27B0',
+          0.1, 'rgba(76,175,80,0.3)',
+          0.25, 'rgba(76,175,80,0.6)',
+          0.4, 'rgba(255,193,7,0.65)',
+          0.55, 'rgba(255,152,0,0.7)',
+          0.7, 'rgba(244,67,54,0.75)',
+          0.85, 'rgba(156,39,176,0.8)',
+          1, 'rgba(120,0,160,0.85)',
         ],
-        'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0.8, 12, 0.4],
+        'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 5, 0.75, 10, 0.65, 14, 0.5, 16, 0.35],
+      },
+    });
+
+    map.addLayer({
+      id: 'air-quality-pulse',
+      type: 'circle',
+      source: PUBLIC_LAYER_IDS['air-quality'].source,
+      layout: { visibility: 'none' },
+      minzoom: 8,
+      paint: {
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 10, 14, 18],
+        'circle-color': [
+          'match', ['get', 'grade'],
+          'unhealthy', AIR_QUALITY_COLORS.unhealthy,
+          'very_unhealthy', AIR_QUALITY_COLORS.very_unhealthy,
+          'hazardous', AIR_QUALITY_COLORS.hazardous,
+          'rgba(0,0,0,0)',
+        ],
+        'circle-blur': 1,
+        'circle-opacity': 0,
       },
     });
 
@@ -260,6 +354,25 @@ export default function CorePage() {
     });
 
     map.addLayer({
+      id: 'traffic-glow',
+      type: 'line',
+      source: PUBLIC_LAYER_IDS['traffic'].source,
+      layout: { visibility: 'none', 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': [
+          'match', ['get', 'congestion'],
+          'congested', '#EF5350',
+          'slow', '#FFA726',
+          'smooth', '#66BB6A',
+          '#8A8680',
+        ],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 10, 6, 14, 12],
+        'line-opacity': 0.12,
+        'line-blur': 4,
+      },
+    });
+
+    map.addLayer({
       id: 'traffic-line',
       type: 'line',
       source: PUBLIC_LAYER_IDS['traffic'].source,
@@ -274,6 +387,246 @@ export default function CorePage() {
         ],
         'line-width': ['interpolate', ['linear'], ['zoom'], 10, 2, 14, 5],
         'line-opacity': 0.8,
+      },
+    });
+
+    // Weather forecast layers
+    map.addLayer({
+      id: 'weather-temp-heatmap',
+      type: 'heatmap',
+      source: PUBLIC_LAYER_IDS['weather-forecast'].source,
+      layout: { visibility: 'none' },
+      maxzoom: 12,
+      paint: {
+        'heatmap-weight': [
+          'interpolate', ['linear'], ['get', 'temperature'],
+          -10, 0, 0, 0.3, 15, 0.5, 25, 0.8, 35, 1,
+        ],
+        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1],
+        'heatmap-color': [
+          'interpolate', ['linear'], ['heatmap-density'],
+          0, 'rgba(0,0,0,0)',
+          0.2, 'rgba(33,102,172,0.4)',
+          0.4, 'rgba(103,169,207,0.5)',
+          0.6, 'rgba(253,219,199,0.5)',
+          0.8, 'rgba(239,138,98,0.6)',
+          1, 'rgba(178,24,43,0.7)',
+        ],
+        'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 5, 30, 10, 50],
+        'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 10, 0.6, 12, 0],
+      },
+    });
+
+    map.addLayer({
+      id: 'weather-precip-ring',
+      type: 'circle',
+      source: PUBLIC_LAYER_IDS['weather-forecast'].source,
+      layout: { visibility: 'none' },
+      filter: ['>', ['get', 'precipitation'], 0],
+      paint: {
+        'circle-radius': 14,
+        'circle-color': 'rgba(0,0,0,0)',
+        'circle-stroke-width': 2.5,
+        'circle-stroke-color': '#42A5F5',
+        'circle-stroke-opacity': 0,
+      },
+    });
+
+    map.addLayer({
+      id: 'weather-forecast-circle',
+      type: 'circle',
+      source: PUBLIC_LAYER_IDS['weather-forecast'].source,
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 6, 10, 10, 14, 16],
+        'circle-color': [
+          'match', ['get', 'sky'],
+          'clear', SKY_COLORS.clear,
+          'partly_cloudy', SKY_COLORS.partly_cloudy,
+          'cloudy', SKY_COLORS.cloudy,
+          'overcast', SKY_COLORS.overcast,
+          SKY_COLORS.partly_cloudy,
+        ],
+        'circle-stroke-width': 2,
+        'circle-stroke-color': 'rgba(14,14,16,0.7)',
+        'circle-opacity': 0.85,
+      },
+    });
+
+    map.addLayer({
+      id: 'weather-forecast-label',
+      type: 'symbol',
+      source: PUBLIC_LAYER_IDS['weather-forecast'].source,
+      layout: {
+        visibility: 'none',
+        'text-field': ['concat', ['to-string', ['get', 'temperature']], '°'],
+        'text-size': 11,
+        'text-font': ['DIN Pro Bold', 'Arial Unicode MS Regular'],
+        'text-offset': [0, 0],
+        'text-anchor': 'center',
+        'text-allow-overlap': true,
+      },
+      paint: {
+        'text-color': '#0E0E10',
+        'text-halo-color': 'rgba(255,255,255,0.3)',
+        'text-halo-width': 0.5,
+      },
+    });
+
+    // Wildfire layers
+    map.addLayer({
+      id: 'wildfire-glow',
+      type: 'circle',
+      source: PUBLIC_LAYER_IDS['wildfire'].source,
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': [
+          'case',
+          ['==', ['get', 'status'], 'active'],
+          ['interpolate', ['linear'], ['get', 'affectedArea'],
+            5, 18, 50, 28, 100, 38, 200, 48,
+          ],
+          ['interpolate', ['linear'], ['get', 'affectedArea'],
+            5, 10, 50, 16, 100, 24, 200, 32,
+          ],
+        ],
+        'circle-color': [
+          'match', ['get', 'status'],
+          'active', '#FF3D00',
+          'contained', '#FF9100',
+          'extinguished', '#66BB6A',
+          '#FF3D00',
+        ],
+        'circle-blur': 1,
+        'circle-opacity': [
+          'case',
+          ['==', ['get', 'status'], 'active'], 0.2,
+          0.06,
+        ],
+      },
+    });
+
+    map.addLayer({
+      id: 'wildfire-circle',
+      type: 'circle',
+      source: PUBLIC_LAYER_IDS['wildfire'].source,
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': [
+          'interpolate', ['linear'],
+          ['get', 'affectedArea'],
+          5, 6,
+          50, 12,
+          100, 18,
+          200, 24,
+        ],
+        'circle-color': [
+          'match', ['get', 'status'],
+          'active', WILDFIRE_STATUS_COLORS.active,
+          'contained', WILDFIRE_STATUS_COLORS.contained,
+          'extinguished', WILDFIRE_STATUS_COLORS.extinguished,
+          WILDFIRE_STATUS_COLORS.active,
+        ],
+        'circle-stroke-width': 2,
+        'circle-stroke-color': 'rgba(14,14,16,0.7)',
+        'circle-opacity': [
+          'match', ['get', 'status'],
+          'active', 0.9,
+          'contained', 0.7,
+          'extinguished', 0.5,
+          0.7,
+        ],
+      },
+    });
+
+    map.addLayer({
+      id: 'wildfire-label',
+      type: 'symbol',
+      source: PUBLIC_LAYER_IDS['wildfire'].source,
+      layout: {
+        visibility: 'none',
+        'text-field': ['get', 'name'],
+        'text-size': 10,
+        'text-offset': [0, 2.0],
+        'text-anchor': 'top',
+        'text-max-width': 10,
+      },
+      minzoom: 7,
+      paint: {
+        'text-color': '#E8E4DF',
+        'text-halo-color': 'rgba(14,14,16,0.8)',
+        'text-halo-width': 1,
+      },
+    });
+
+    // Earthquake layers — ripple rings (animated)
+    for (let i = 3; i >= 1; i--) {
+      map.addLayer({
+        id: `earthquake-ripple-${i}`,
+        type: 'circle',
+        source: PUBLIC_LAYER_IDS['earthquake'].source,
+        layout: { visibility: 'none' },
+        paint: {
+          'circle-radius': [
+            'interpolate', ['linear'], ['get', 'magnitude'],
+            2.0, 6, 3.0, 10, 4.0, 16, 5.0, 24,
+          ],
+          'circle-color': 'rgba(0,0,0,0)',
+          'circle-stroke-width': 1.5,
+          'circle-stroke-color': [
+            'interpolate', ['linear'], ['get', 'magnitude'],
+            2.0, '#FFD54F', 3.0, '#FF9800', 4.0, '#F44336', 5.0, '#B71C1C',
+          ],
+          'circle-opacity': 0,
+        },
+      });
+    }
+
+    map.addLayer({
+      id: 'earthquake-circle',
+      type: 'circle',
+      source: PUBLIC_LAYER_IDS['earthquake'].source,
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': [
+          'interpolate', ['linear'],
+          ['get', 'magnitude'],
+          2.0, 6,
+          3.0, 10,
+          4.0, 16,
+          5.0, 24,
+        ],
+        'circle-color': [
+          'interpolate', ['linear'],
+          ['get', 'magnitude'],
+          2.0, '#FFD54F',
+          3.0, '#FF9800',
+          4.0, '#F44336',
+          5.0, '#B71C1C',
+        ],
+        'circle-stroke-width': 2,
+        'circle-stroke-color': 'rgba(14,14,16,0.7)',
+        'circle-opacity': 0.8,
+      },
+    });
+
+    map.addLayer({
+      id: 'earthquake-label',
+      type: 'symbol',
+      source: PUBLIC_LAYER_IDS['earthquake'].source,
+      layout: {
+        visibility: 'none',
+        'text-field': ['concat', 'M', ['to-string', ['get', 'magnitude']]],
+        'text-size': 11,
+        'text-font': ['DIN Pro Bold', 'Arial Unicode MS Regular'],
+        'text-offset': [0, 0],
+        'text-anchor': 'center',
+        'text-allow-overlap': true,
+      },
+      paint: {
+        'text-color': '#FFFFFF',
+        'text-halo-color': 'rgba(14,14,16,0.6)',
+        'text-halo-width': 1,
       },
     });
 
@@ -341,7 +694,93 @@ export default function CorePage() {
     map.on('click', 'air-quality-circle', (e) => createPublicPopup(map, e, 'air'));
     map.on('click', 'aws-weather-circle', (e) => createPublicPopup(map, e, 'aws'));
 
-    (['air-quality-circle', 'aws-weather-circle'] as const).forEach((layerId) => {
+    map.on('click', 'weather-forecast-circle', async (e) => {
+      const feature = e.features?.[0];
+      if (!feature?.properties) return;
+      const props = feature.properties;
+      const coords = (feature.geometry as GeoJSON.Point).coordinates.slice() as [number, number];
+      const skyColor = SKY_COLORS[props.sky] ?? SKY_COLORS.partly_cloudy;
+      const skyLabel = SKY_LABELS[props.sky] ?? props.sky;
+      const precipLabel = props.precipitation === 'none' ? '' : props.precipitation === 'rain' ? '비' : props.precipitation === 'snow' ? '눈' : props.precipitation === 'rain_snow' ? '비/눈' : '소나기';
+
+      const popupEl = document.createElement('div');
+      popupEl.style.cssText = 'max-width:240px;font-family:var(--font-pretendard),sans-serif;';
+      popupEl.innerHTML = `
+        <div style="padding:8px;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${skyColor}"></span>
+            <span style="font-size:13px;font-weight:600;color:#E8E4DF;">${props.name}</span>
+          </div>
+          <div style="font-size:11px;color:#8A8680;line-height:1.8;">
+            <span style="color:${skyColor};font-weight:500;">${skyLabel}</span>${precipLabel ? ` · ${precipLabel}` : ''}<br/>
+            🌡️ <b style="color:#E8E4DF">${props.temperature ?? '-'}°C</b> · 💧 ${props.humidity ?? '-'}%<br/>
+            💨 ${props.windSpeed ?? '-'} m/s${props.precipAmount > 0 ? ` · 🌧️ ${props.precipAmount} mm` : ''}
+          </div>
+        </div>
+      `;
+
+      const mapboxgl = await import('mapbox-gl');
+      new mapboxgl.Popup({ closeButton: true, maxWidth: '260px', className: 'ep-popup' })
+        .setLngLat(coords).setDOMContent(popupEl).addTo(map);
+    });
+
+    map.on('click', 'wildfire-circle', async (e) => {
+      const feature = e.features?.[0];
+      if (!feature?.properties) return;
+      const props = feature.properties;
+      const coords = (feature.geometry as GeoJSON.Point).coordinates.slice() as [number, number];
+      const statusColor = WILDFIRE_STATUS_COLORS[props.status] ?? WILDFIRE_STATUS_COLORS.active;
+      const statusLabel = WILDFIRE_STATUS_LABELS[props.status] ?? props.status;
+
+      const popupEl = document.createElement('div');
+      popupEl.style.cssText = 'max-width:260px;font-family:var(--font-pretendard),sans-serif;';
+      popupEl.innerHTML = `
+        <div style="padding:8px;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${statusColor}"></span>
+            <span style="font-size:11px;font-weight:500;color:${statusColor};">${statusLabel}</span>
+          </div>
+          <p style="font-size:13px;font-weight:600;color:#E8E4DF;margin:0 0 4px;">${props.name}</p>
+          <p style="font-size:11px;color:#8A8680;margin:0 0 6px;line-height:1.5;">${props.description ?? ''}</p>
+          <div style="font-size:11px;color:#8A8680;font-family:'IBM Plex Mono',monospace;">
+            피해면적 ${props.affectedArea} ha · ${props.startedAt?.slice(0, 10) ?? ''}
+          </div>
+        </div>
+      `;
+
+      const mapboxgl = await import('mapbox-gl');
+      new mapboxgl.Popup({ closeButton: true, maxWidth: '280px', className: 'ep-popup' })
+        .setLngLat(coords).setDOMContent(popupEl).addTo(map);
+    });
+
+    map.on('click', 'earthquake-circle', async (e) => {
+      const feature = e.features?.[0];
+      if (!feature?.properties) return;
+      const props = feature.properties;
+      const coords = (feature.geometry as GeoJSON.Point).coordinates.slice() as [number, number];
+
+      const popupEl = document.createElement('div');
+      popupEl.style.cssText = 'max-width:260px;font-family:var(--font-pretendard),sans-serif;';
+      popupEl.innerHTML = `
+        <div style="padding:8px;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#D32F2F"></span>
+            <span style="font-size:11px;font-weight:500;color:#EF5350;">규모 ${props.magnitude} · 진도 ${props.maxIntensity}</span>
+          </div>
+          <p style="font-size:13px;font-weight:600;color:#E8E4DF;margin:0 0 4px;">${props.location}</p>
+          <div style="font-size:11px;color:#8A8680;font-family:'IBM Plex Mono',monospace;line-height:1.8;">
+            깊이 ${props.depth} km<br/>
+            ${props.occurredAt?.replace('T', ' ') ?? ''}
+          </div>
+        </div>
+      `;
+
+      const mapboxgl = await import('mapbox-gl');
+      new mapboxgl.Popup({ closeButton: true, maxWidth: '280px', className: 'ep-popup' })
+        .setLngLat(coords).setDOMContent(popupEl).addTo(map);
+    });
+
+    (['air-quality-circle', 'aws-weather-circle', 'weather-forecast-circle', 'wildfire-circle', 'earthquake-circle'] as const).forEach((layerId) => {
       map.on('mouseenter', layerId, () => { map.getCanvas().style.cursor = 'pointer'; });
       map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; });
     });
@@ -510,6 +949,11 @@ export default function CorePage() {
       addTempestOverlay(map);
       addPublicDataLayers(map);
 
+      if (!animRef.current) {
+        animRef.current = new LayerAnimationController();
+      }
+      animRef.current.attach(map);
+
       setLayers((prev) => {
         prev.forEach((l) => {
           if (l.id === 'tempest' && !l.enabled) {
@@ -526,6 +970,8 @@ export default function CorePage() {
               pubConfig.layers.forEach((layerId) => {
                 if (map.getLayer(layerId)) map.setLayoutProperty(layerId, 'visibility', 'visible');
               });
+              const animId = LAYER_ANIMATION_MAP[l.id];
+              if (animId && animRef.current) animRef.current.start(animId);
             });
           }
         });
@@ -581,6 +1027,15 @@ export default function CorePage() {
             map.setLayoutProperty(mapLayerId, 'visibility', turning_on ? 'visible' : 'none');
           }
         });
+
+        const animId = LAYER_ANIMATION_MAP[layerId];
+        if (animId && animRef.current) {
+          if (turning_on) {
+            animRef.current.start(animId);
+          } else {
+            animRef.current.stop(animId);
+          }
+        }
       }
     },
     [layers, fetchPublicLayerData],
@@ -608,15 +1063,11 @@ export default function CorePage() {
       }
 
       const { orderId, amount, orderName } = await res.json();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
       await requestTossPayment({
         orderId,
         amount,
         orderName,
-        customerEmail: user?.email || 'anonymous',
+        customerEmail: DEMO_USER.email,
       });
     } catch (err) {
       if (err instanceof Error && err.message.includes('canceled')) {
@@ -789,6 +1240,104 @@ export default function CorePage() {
                         <span
                           className="w-2 h-2 rounded-full"
                           style={{ background: AIR_QUALITY_COLORS[key] }}
+                        />
+                        <span
+                          className="text-xs"
+                          style={{ color: 'var(--text-muted)' }}
+                        >
+                          {label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Weather Forecast Legend */}
+              {layers.find((l) => l.id === 'weather-forecast')?.enabled && (
+                <div>
+                  <h3
+                    className="text-xs font-mono tracking-wider uppercase mb-2"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    하늘 상태
+                  </h3>
+                  <div className="space-y-1">
+                    {([
+                      ['clear', '맑음'],
+                      ['partly_cloudy', '구름조금'],
+                      ['cloudy', '구름많음'],
+                      ['overcast', '흐림'],
+                    ] as const).map(([key, label]) => (
+                      <div key={key} className="flex items-center gap-2 px-2.5 py-1">
+                        <span
+                          className="w-2 h-2 rounded-full"
+                          style={{ background: SKY_COLORS[key] }}
+                        />
+                        <span
+                          className="text-xs"
+                          style={{ color: 'var(--text-muted)' }}
+                        >
+                          {label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Wildfire Legend */}
+              {layers.find((l) => l.id === 'wildfire')?.enabled && (
+                <div>
+                  <h3
+                    className="text-xs font-mono tracking-wider uppercase mb-2"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    산불 상태
+                  </h3>
+                  <div className="space-y-1">
+                    {([
+                      ['active', '진화중'],
+                      ['contained', '진화거의완료'],
+                      ['extinguished', '진화완료'],
+                    ] as const).map(([key, label]) => (
+                      <div key={key} className="flex items-center gap-2 px-2.5 py-1">
+                        <span
+                          className="w-2 h-2 rounded-sm"
+                          style={{ background: WILDFIRE_STATUS_COLORS[key] }}
+                        />
+                        <span
+                          className="text-xs"
+                          style={{ color: 'var(--text-muted)' }}
+                        >
+                          {label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Earthquake Legend */}
+              {layers.find((l) => l.id === 'earthquake')?.enabled && (
+                <div>
+                  <h3
+                    className="text-xs font-mono tracking-wider uppercase mb-2"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    지진 규모
+                  </h3>
+                  <div className="space-y-1">
+                    {([
+                      [2.0, '#FFD54F', '2.0+'],
+                      [3.0, '#FF9800', '3.0+'],
+                      [4.0, '#F44336', '4.0+'],
+                      [5.0, '#B71C1C', '5.0+'],
+                    ] as const).map(([mag, color, label]) => (
+                      <div key={mag} className="flex items-center gap-2 px-2.5 py-1">
+                        <span
+                          className="w-2 h-2 rounded-full"
+                          style={{ background: color }}
                         />
                         <span
                           className="text-xs"

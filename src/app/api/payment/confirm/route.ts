@@ -5,6 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { confirmPayment, cancelPayment, TossError } from '@/lib/toss/client';
 import { invokeLambdaClip } from '@/lib/aws/lambda';
 import { generatePresignedUrl } from '@/lib/aws/s3';
+import { DEMO_USER } from '@/lib/demo-user';
 
 const confirmSchema = z.object({
   paymentKey: z.string(),
@@ -22,14 +23,8 @@ const confirmSchema = z.object({
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 });
-  }
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id ?? DEMO_USER.id;
 
   const body = await request.json();
   const parsed = confirmSchema.safeParse(body);
@@ -49,7 +44,7 @@ export async function POST(request: NextRequest) {
     .from('orders')
     .select('*')
     .eq('id', orderId)
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .eq('status', 'pending')
     .single();
 
@@ -75,7 +70,7 @@ export async function POST(request: NextRequest) {
     // Create payment record (held state)
     await admin.from('payments').insert({
       order_id: orderId,
-      user_id: user.id,
+      user_id: userId,
       pg_payment_key: paymentKey,
       amount,
       status: 'held',
@@ -108,7 +103,7 @@ export async function POST(request: NextRequest) {
 
     const outputBucket =
       process.env.CLIP_OUTPUT_BUCKET || 'earthpaper-clips';
-    const outputKey = `clips/${user.id}/${orderId}.tif`;
+    const outputKey = `clips/${userId}/${orderId}.tif`;
 
     const clipResult = await invokeLambdaClip({
       cogUrl: catalogItem.cog_url,
@@ -147,7 +142,7 @@ export async function POST(request: NextRequest) {
 
     await admin.from('downloads').insert({
       order_id: orderId,
-      user_id: user.id,
+      user_id: userId,
       file_url: clipResultUrl,
       file_size: clipResult.fileSize,
       expires_at: expiresAt.toISOString(),

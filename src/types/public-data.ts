@@ -34,8 +34,43 @@ export interface TrafficLink {
   coordinates: [number, number][];
 }
 
+export interface WeatherForecast extends PublicDataStation {
+  temperature: number | null;
+  sky: 'clear' | 'partly_cloudy' | 'cloudy' | 'overcast';
+  precipitation: 'none' | 'rain' | 'rain_snow' | 'snow' | 'shower';
+  precipAmount: number | null;
+  humidity: number | null;
+  windSpeed: number | null;
+  forecastTime: string;
+}
+
+export interface WildfireReport {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  status: 'active' | 'contained' | 'extinguished';
+  affectedArea: number;
+  startedAt: string;
+  description: string;
+}
+
+export interface EarthquakeEvent {
+  id: string;
+  lat: number;
+  lng: number;
+  magnitude: number;
+  depth: number;
+  location: string;
+  occurredAt: string;
+  maxIntensity: number;
+}
+
 export type PublicLayerId =
   | 'air-quality'
   | 'aws-weather'
   | 'traffic'
-  | 'buildings-3d';
+  | 'buildings-3d'
+  | 'weather-forecast'
+  | 'wildfire'
+  | 'earthquake';

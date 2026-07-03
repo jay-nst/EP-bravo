@@ -5,6 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { validateUserInput, getSystemPrompt } from '@/lib/llm/security';
 import { streamChat } from '@/lib/llm/provider';
 import { CHAT_LIMITS } from '@/constants/satellite';
+import { DEMO_USER } from '@/lib/demo-user';
 
 const chatSchema = z.object({
   sessionId: z.string().uuid(),
@@ -14,14 +15,8 @@ const chatSchema = z.object({
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 });
-  }
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id ?? DEMO_USER.id;
 
   const body = await request.json();
   const parsed = chatSchema.safeParse(body);
@@ -47,7 +42,7 @@ export async function POST(request: NextRequest) {
   const { data: profile } = await supabase
     .from('profiles')
     .select('plan, chat_tokens_used, chat_tokens_limit')
-    .eq('id', user.id)
+    .eq('id', userId)
     .single();
 
   if (!profile) {
@@ -67,7 +62,7 @@ export async function POST(request: NextRequest) {
     .from('chat_sessions')
     .select('id')
     .eq('id', sessionId)
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .single();
 
   if (sessionError || !session) {

@@ -1,24 +1,19 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { DEMO_USER } from '@/lib/demo-user';
 
 // GET: List user's chat sessions
 export async function GET() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 });
-  }
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id ?? DEMO_USER.id;
 
   const { data: sessions, error } = await supabase
     .from('chat_sessions')
     .select('*')
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .order('updated_at', { ascending: false });
 
   if (error) {
@@ -35,20 +30,14 @@ export async function GET() {
 export async function POST() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 });
-  }
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id ?? DEMO_USER.id;
 
   const admin = createAdminClient();
   const { data: session, error } = await admin
     .from('chat_sessions')
     .insert({
-      user_id: user.id,
+      user_id: userId,
       title: '새 대화',
     })
     .select()

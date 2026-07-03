@@ -1,11 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import type { User } from '@supabase/supabase-js';
-import NotificationBell from './NotificationBell';
+import { usePathname } from 'next/navigation';
 
 const NAV_ITEMS = [
   { href: '/daily', label: '오늘의지구' },
@@ -19,26 +15,6 @@ const NAV_ITEMS = [
 
 export default function Header() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const supabase = useMemo(() => createClient(), []);
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [supabase]);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push('/');
-  };
 
   return (
     <header
@@ -91,46 +67,16 @@ export default function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-3">
-          {user ? (
-            <>
-              <NotificationBell />
-              <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                {user.email}
-              </span>
-              <button
-                onClick={handleSignOut}
-                className="text-sm px-3 py-1.5 rounded-md transition-colors"
-                style={{ color: 'var(--text-muted)' }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = 'var(--text)';
-                  e.currentTarget.style.background = 'var(--surface)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = 'var(--text-muted)';
-                  e.currentTarget.style.background = 'transparent';
-                }}
-              >
-                로그아웃
-              </button>
-            </>
-          ) : (
-            <Link
-              href="/login"
-              className="text-sm px-4 py-1.5 rounded-md font-medium transition-colors"
-              style={{
-                background: 'var(--accent)',
-                color: '#0E0E10',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--accent-hover)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'var(--accent)';
-              }}
-            >
-              로그인
-            </Link>
-          )}
+          <span
+            className="text-xs px-3 py-1 rounded-full"
+            style={{
+              background: 'var(--surface-elevated)',
+              color: 'var(--text-muted)',
+              border: '1px solid var(--border)',
+            }}
+          >
+            Demo
+          </span>
         </div>
       </div>
     </header>

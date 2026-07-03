@@ -31,6 +31,8 @@ interface EarthMapProps {
   onCatalogSelect?: (itemId: string) => void;
   onMapReady?: (map: mapboxgl.Map) => void;
   mapStyleId?: MapStyleId;
+  hideControls?: boolean;
+  initialStyle?: MapStyleId;
 }
 
 // Design tokens for map layers
@@ -44,6 +46,8 @@ export default function EarthMap({
   onCatalogSelect,
   onMapReady,
   mapStyleId = 'satellite',
+  hideControls = false,
+  initialStyle,
 }: EarthMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -210,34 +214,40 @@ export default function EarthMap({
 
     mapboxgl.accessToken = token;
 
+    const styleId = initialStyle ?? mapStyleId;
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: MAP_STYLES[mapStyleId].url,
+      style: MAP_STYLES[styleId].url,
       center: [127.0, 37.5],
       zoom: 6,
+      ...(hideControls ? { attributionControl: false, interactive: true } : {}),
     });
 
-    draw.current = new MapboxDraw({
-      displayControlsDefault: false,
-      controls: {
-        polygon: true,
-        trash: true,
-      },
-      defaultMode: 'simple_select',
-    });
+    if (!hideControls) {
+      draw.current = new MapboxDraw({
+        displayControlsDefault: false,
+        controls: {
+          polygon: true,
+          trash: true,
+        },
+        defaultMode: 'simple_select',
+      });
 
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
-    map.current.addControl(draw.current, 'top-left');
+      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+      map.current.addControl(draw.current, 'top-left');
+    }
 
     map.current.on('load', () => {
       setIsLoaded(true);
-      if (mapStyleId === 'dark') applyDarkStyleOverrides(map.current!);
+      if (styleId === 'dark') applyDarkStyleOverrides(map.current!);
       onMapReady?.(map.current!);
     });
-    map.current.on('draw.create', handleDrawUpdate);
-    map.current.on('draw.update', handleDrawUpdate);
-    map.current.on('draw.delete', () => onAoiChange?.(null));
-    map.current.on('moveend', handleMapMove);
+    if (!hideControls) {
+      map.current.on('draw.create', handleDrawUpdate);
+      map.current.on('draw.update', handleDrawUpdate);
+      map.current.on('draw.delete', () => onAoiChange?.(null));
+      map.current.on('moveend', handleMapMove);
+    }
 
     return () => {
       if (searchTimeout.current) clearTimeout(searchTimeout.current);

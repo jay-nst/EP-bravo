@@ -29,9 +29,7 @@ export async function POST(request: Request) {
 
     const supabase = await createClient();
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
 
     const { error } = await supabase.from('analytics_events').insert({
       user_id: user?.id ?? null,

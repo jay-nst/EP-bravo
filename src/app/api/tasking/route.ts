@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { DEMO_USER } from '@/lib/demo-user';
 
 const taskingSchema = z.object({
   aoi: z.object({
@@ -19,19 +20,13 @@ const taskingSchema = z.object({
 export async function GET() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 });
-  }
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id ?? DEMO_USER.id;
 
   const { data: requests, error } = await supabase
     .from('tasking_requests')
     .select('*')
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -48,14 +43,8 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 });
-  }
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id ?? DEMO_USER.id;
 
   const body = await request.json();
   const parsed = taskingSchema.safeParse(body);
@@ -73,7 +62,7 @@ export async function POST(request: NextRequest) {
   const { data: req, error } = await admin
     .from('tasking_requests')
     .insert({
-      user_id: user.id,
+      user_id: userId,
       aoi: JSON.stringify(aoi),
       preferred_date_from: preferredDateFrom || null,
       preferred_date_to: preferredDateTo || null,
