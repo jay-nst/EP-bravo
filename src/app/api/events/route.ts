@@ -5,6 +5,7 @@ const VALID_EVENT_TYPES = new Set([
   'cta_click',
   'page_view',
   'layer_toggle',
+  'map_style_change',
   'form_submit',
 ]);
 

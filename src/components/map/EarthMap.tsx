@@ -5,6 +5,7 @@ import mapboxgl from 'mapbox-gl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { calculateAreaKm2, calculatePrice, validateAoi } from '@/lib/geo';
 import type { SatelliteType, CatalogItem } from '@/types/database';
+import { applyDarkStyleOverrides } from '@/lib/map-style-overrides';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
@@ -16,11 +17,20 @@ interface AoiSelection {
   validationError: string | null;
 }
 
+export type MapStyleId = 'satellite' | 'dark' | 'night-nav';
+
+export const MAP_STYLES: Record<MapStyleId, { url: string; label: string; icon: string }> = {
+  satellite: { url: 'mapbox://styles/mapbox/satellite-streets-v12', label: '위성', icon: '🛰️' },
+  dark: { url: 'mapbox://styles/mapbox/dark-v11', label: '다크', icon: '🌑' },
+  'night-nav': { url: 'mapbox://styles/mapbox/navigation-night-v1', label: '야간', icon: '🗺️' },
+};
+
 interface EarthMapProps {
   onAoiChange?: (aoi: AoiSelection | null) => void;
   satellite?: SatelliteType;
   onCatalogSelect?: (itemId: string) => void;
   onMapReady?: (map: mapboxgl.Map) => void;
+  mapStyleId?: MapStyleId;
 }
 
 // Design tokens for map layers
@@ -33,6 +43,7 @@ export default function EarthMap({
   satellite = 'observer',
   onCatalogSelect,
   onMapReady,
+  mapStyleId = 'satellite',
 }: EarthMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -201,7 +212,7 @@ export default function EarthMap({
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/satellite-streets-v12',
+      style: MAP_STYLES[mapStyleId].url,
       center: [127.0, 37.5],
       zoom: 6,
     });
@@ -220,6 +231,7 @@ export default function EarthMap({
 
     map.current.on('load', () => {
       setIsLoaded(true);
+      if (mapStyleId === 'dark') applyDarkStyleOverrides(map.current!);
       onMapReady?.(map.current!);
     });
     map.current.on('draw.create', handleDrawUpdate);
@@ -234,6 +246,21 @@ export default function EarthMap({
       draw.current = null;
     };
   }, [handleDrawUpdate, onAoiChange, handleMapMove, onMapReady]);
+
+  const prevStyleRef = useRef(mapStyleId);
+
+  useEffect(() => {
+    if (!map.current || !isLoaded) return;
+    if (prevStyleRef.current === mapStyleId) return;
+    prevStyleRef.current = mapStyleId;
+
+    const m = map.current;
+    m.setStyle(MAP_STYLES[mapStyleId].url);
+    m.once('style.load', () => {
+      if (mapStyleId === 'dark') applyDarkStyleOverrides(m);
+      onMapReady?.(m);
+    });
+  }, [mapStyleId, isLoaded, onMapReady]);
 
   useEffect(() => {
     if (isLoaded) searchCatalog();

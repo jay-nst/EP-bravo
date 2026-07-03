@@ -1,58 +1,77 @@
 {
-  "timestamp": "2026-07-02",
+  "timestamp": "2026-07-03",
   "branch": "master",
-  "last_commit": "1fc9071",
+  "last_commit": "a281c42",
   "completed_tasks": [
-    "CEO Review (plan-ceo-review) - PASS WITH CONDITIONS",
-    "Eng Review (plan-eng-review) - PASS WITH CONDITIONS",
-    "Design Review Round 1 (2026-06-29) - FINDING-001~012 수정 완료",
-    "Design Review Round 2 (2026-07-02) - FINDING-014~017 수정 완료",
-    "Office Hours - EarthPaper Homepage 설계 완료",
-    "Wireframe v4.4 완성 (Magazine Grid + Core CTA + SimCity 데이터 오버레이)",
-    "Design Doc 작성 + Adversarial Review 통과 (7건 발견/수정, 8/10)"
+    "T1-T7: Homepage + Core 지도 + 이벤트 트래킹 + 테스트",
+    "지도 스타일 스위처 (satellite/dark/night-nav 3종)",
+    "다크맵 커스텀 스타일링 (민트 경계선 + 앰버 도로 + 무채색 배경)",
+    "Admin-2 경계 (시/군/구) 커스텀 레이어 추가",
+    "공공데이터 레이어 프레임워크 (source/layer 추가, 토글, 스타일 변경 시 복원)",
+    "대기오염 레이어 — 실제 AirKorea API 연동 (측정소정보+실시간 병합, 500개 측정소)",
+    "AWS 기상 레이어 — mock 61개 전국 도시",
+    "도로소통 레이어 — mock 25개 서울 주요도로 (실 도로 geometry 부재)",
+    "3D 건물 레이어 (Mapbox composite fill-extrusion)",
+    "버스GPS 레이어 삭제 (API 발급 불가)",
+    "mock 데이터 확장 (대기오염 40개, AWS 61개, 도로 25개)",
+    "Design Review Round 1-2 완료 (B+ / A / A)"
   ],
   "in_progress": [],
   "remaining_tasks": [
-    "plan-eng-review 실행 (Design Doc 대상, 바로 시작 가능)",
-    "Sprint A 구현 시작 - 리뷰 완료 후",
+    "도로소통 실제 API 연동 (ITS 교통소통정보 키 발급 대기 + 표준노드링크 파일 다운로드)",
+    "Sprint A 나머지: dashboard v4.2, portal, chat, tasking 페이지",
     "실제 위성 영상 이미지 교체 (플레이스홀더 → 실 데이터)",
-    "인증 후 페이지 (dashboard, map, portal, chat, tasking) 디자인 리뷰"
+    "모바일 반응형 (별도 스프린트로 연기)"
   ],
-  "blockers": [],
-  "test_status": "vitest 설정됨, 테스트 미작성",
+  "blockers": [
+    "도로소통 API: data.go.kr 교통소통정보 키 발급 필요 (https://www.data.go.kr/data/15040463/openapi.do)",
+    "도로소통 geometry: 표준노드링크 파일 다운로드 필요 (https://www.data.go.kr/data/15025526/fileData.do)"
+  ],
+  "test_status": "vitest 설정, analytics/mock-tempest 테스트 통과",
   "decisions_made": [
-    "Sprint A scope: 6 pages (dashboard v4.2, map, portal, chat, tasking, landing/login/signup)",
-    "Dashboard v4.2: glass-morphism 3-column floating panels over Mapbox satellite background",
-    "Design system: Quiet Observatory 미학, Pretendard Variable + IBM Plex Mono",
-    "Color: dark-first (#0E0E10 bg, #1bbfa8 accent mint)",
-    "Layout: Map-first + floating panel, 4px compact spacing",
-    "EarthPaper Homepage: Magazine Grid (2/3 + 1/3), A+B capability pattern",
-    "Depot → Core 통합 (지도 + 데이터 오버레이 + 분석 도구 + 영상 구매)",
-    "MVP Narrowest Wedge: Tempest 단일 레인, 나머지 Coming Soon",
-    "Core 데이터 오버레이: SimCity 스타일 4-플랫폼 레이어 시각화",
-    "플랫폼 컬러: Tempest=#C45C4A, Predict=#4A9EC4, Warden=#6B8A5E, Nexus=#C8923A, Core=#8A8680"
+    "지도 기본 스타일: dark (mapbox dark-v11)",
+    "다크맵 커스텀: 경계선 민트, 도로 앰버, 나머지 무채색",
+    "대기오염 API: 측정소정보 API로 좌표 가져와서 실시간 데이터와 stationName으로 병합",
+    "측정소 좌표 24시간 인메모리 캐시",
+    "AWS 기상: 공공기관 한정 API → mock 유지",
+    "버스GPS: TAGO 사업자등록증 불일치 → 레이어 삭제",
+    "도로소통: ITS API 키 발급 시도 예정, 현재 mock (실 도로 geometry 없이는 부자연스러움)"
   ],
-  "next_action": {
-    "skill": "/plan-eng-review",
-    "target": "Design Doc (~/.gstack/projects/earthpaper/jayoh-master-design-20260702-175837.md)",
-    "scope": "EarthPaper Homepage 아키텍처, 데이터 모델, API 계약, 테스트 전략 리뷰",
-    "resume_instruction": "/plan-eng-review 실행 → Design Doc 선택 → Step 0부터 진행"
+  "api_keys": {
+    "DATA_GO_KR_AIR_QUALITY_KEY": "설정됨 (.env.local) — 대기오염 + 측정소정보 동일 키",
+    "DATA_GO_KR_AWS_KEY": "설정됨 (.env.local) — API 자체가 공공기관 한정이라 미사용"
   },
-  "design_doc": {
-    "path": "~/.gstack/projects/earthpaper/jayoh-master-design-20260702-175837.md",
-    "status": "APPROVED",
-    "review_score": "8/10",
-    "wireframe": "https://claude.ai/code/artifact/eff89543-dd31-4333-b153-2a106dae1d16"
-  },
-  "design_review_history": {
-    "round1_date": "2026-06-29",
-    "round1_findings": "FINDING-001~012",
-    "round2_date": "2026-07-02",
-    "round2_findings": "FINDING-014~017",
-    "current_scores": {
-      "design": "B+",
-      "ai_slop": "A",
-      "performance": "A (LCP 247ms)"
+  "public_data_layers": {
+    "air-quality": {
+      "status": "실제 API 연동 완료",
+      "api": "AirKorea ArpltnInforInqireSvc + MsrstnInfoInqireSvc",
+      "stations": 500,
+      "route": "src/app/api/layers/air-quality/route.ts"
+    },
+    "aws-weather": {
+      "status": "mock (API 미지원)",
+      "stations": 61,
+      "route": "src/app/api/layers/aws-weather/route.ts"
+    },
+    "traffic": {
+      "status": "mock (API 키 발급 대기)",
+      "links": 25,
+      "route": "src/app/api/layers/traffic/route.ts",
+      "next_step": "ITS 교통소통정보 키 발급 + 표준노드링크 파일"
+    },
+    "buildings-3d": {
+      "status": "Mapbox composite vector tiles",
+      "route": "없음 (클라이언트 사이드)"
     }
+  },
+  "key_files": {
+    "map_style_overrides": "src/lib/map-style-overrides.ts",
+    "mock_public_data": "src/lib/mock-public-data.ts",
+    "public_data_types": "src/types/public-data.ts",
+    "core_page": "src/app/(main)/core/page.tsx",
+    "earth_map": "src/components/map/EarthMap.tsx",
+    "air_quality_route": "src/app/api/layers/air-quality/route.ts",
+    "aws_weather_route": "src/app/api/layers/aws-weather/route.ts",
+    "traffic_route": "src/app/api/layers/traffic/route.ts"
   }
 }
