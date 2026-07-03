@@ -1,3 +1,7 @@
+'use client';
+
+import { trackEvent } from '@/lib/analytics';
+
 const PLATFORM_META = {
   predict: {
     name: 'Predict',
@@ -61,6 +65,7 @@ export default function ComingSoonLane({ platform }: { platform: PlatformKey }) 
           {meta.description}
         </p>
         <button
+          onClick={() => trackEvent('cta_click', 'coming_soon_notify', { platform })}
           className="text-xs px-4 py-2 rounded-md transition-colors"
           style={{
             border: '1px solid var(--accent)',

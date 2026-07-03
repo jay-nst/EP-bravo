@@ -1,0 +1,53 @@
+import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+
+const VALID_EVENT_TYPES = new Set([
+  'cta_click',
+  'page_view',
+  'layer_toggle',
+  'form_submit',
+]);
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+
+    if (!body.event_type || !body.event_name) {
+      return NextResponse.json(
+        { error: 'event_type과 event_name은 필수입니다' },
+        { status: 400 },
+      );
+    }
+
+    if (!VALID_EVENT_TYPES.has(body.event_type)) {
+      return NextResponse.json(
+        { error: '유효하지 않은 event_type입니다' },
+        { status: 400 },
+      );
+    }
+
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const { error } = await supabase.from('analytics_events').insert({
+      user_id: user?.id ?? null,
+      event_type: body.event_type,
+      event_name: body.event_name,
+      properties: body.properties ?? {},
+      page_path: body.page_path ?? null,
+      session_id: body.session_id ?? null,
+    });
+
+    if (error) {
+      console.error('Event insert error:', error.message);
+      return NextResponse.json({ error: '이벤트 저장 실패' }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true }, { status: 201 });
+  } catch {
+    return NextResponse.json({ error: '잘못된 요청입니다' }, { status: 400 });
+  }
+}

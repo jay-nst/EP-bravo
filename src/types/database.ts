@@ -149,3 +149,20 @@ export interface TaskingRequest {
   status: TaskingStatus;
   created_at: string;
 }
+
+export type AnalyticsEventType =
+  | 'cta_click'
+  | 'page_view'
+  | 'layer_toggle'
+  | 'form_submit';
+
+export interface AnalyticsEvent {
+  id: string;
+  user_id: string | null;
+  event_type: AnalyticsEventType;
+  event_name: string;
+  properties: Record<string, unknown>;
+  page_path: string | null;
+  session_id: string | null;
+  created_at: string;
+}

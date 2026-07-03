@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import TrackedLink from '@/components/ui/TrackedLink';
 import { POSTS } from '@/lib/sample-data';
 import { TEMPEST_LANE_CARDS } from '@/lib/mock-tempest';
 import type { TempestLaneCard } from '@/types/tempest';
@@ -6,6 +7,7 @@ import PlatformBar from '@/components/home/PlatformBar';
 import ComingSoonLane from '@/components/home/ComingSoonLane';
 import CoreCTA from '@/components/home/CoreCTA';
 import EPOriginal from '@/components/home/EPOriginal';
+import NewsletterForm from '@/components/home/NewsletterForm';
 
 const SEVERITY_BADGE: Record<string, { bg: string; text: string }> = {
   critical: { bg: 'rgba(196,92,74,0.15)', text: 'var(--color-tempest)' },
@@ -153,28 +155,7 @@ export default function HomePage() {
               매주 위성이 포착한 지구의 변화를 받아보세요.
             </p>
           </div>
-          <form
-            className="flex gap-2 w-full sm:w-auto"
-            action="#"
-          >
-            <input
-              type="email"
-              placeholder="이메일 주소"
-              className="flex-1 sm:w-56 px-3 py-2 rounded-md text-sm"
-              style={{
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                color: 'var(--text)',
-              }}
-            />
-            <button
-              type="submit"
-              className="px-4 py-2 rounded-md text-sm font-medium"
-              style={{ background: 'var(--accent)', color: '#0E0E10' }}
-            >
-              구독
-            </button>
-          </form>
+          <NewsletterForm />
         </div>
       </section>
 
@@ -317,8 +298,10 @@ function TempestCard({ card }: { card: TempestLaneCard }) {
   const badge = SEVERITY_BADGE[card.severity] ?? SEVERITY_BADGE.moderate;
 
   return (
-    <Link
+    <TrackedLink
       href={`/tempest/${card.id}`}
+      eventName="tempest_card"
+      eventProperties={{ card_id: card.id, severity: card.severity, event_type: card.event_type }}
       className="block rounded-lg overflow-hidden transition-colors"
       style={{ border: '1px solid var(--border)' }}
     >
@@ -385,6 +368,6 @@ function TempestCard({ card }: { card: TempestLaneCard }) {
           )}
         </div>
       </div>
-    </Link>
+    </TrackedLink>
   );
 }

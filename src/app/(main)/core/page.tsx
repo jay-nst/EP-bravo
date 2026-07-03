@@ -12,6 +12,7 @@ import type { SatelliteType } from '@/types/database';
 import type { TempestSeverity } from '@/types/tempest';
 import { createClient } from '@/lib/supabase/client';
 import { requestTossPayment } from '@/lib/toss/widget';
+import { trackEvent } from '@/lib/analytics';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
@@ -255,6 +256,9 @@ export default function CorePage() {
 
   const handleLayerToggle = useCallback(
     (layerId: string) => {
+      const currentState = layers.find((l) => l.id === layerId)?.enabled ?? false;
+      trackEvent('layer_toggle', layerId, { enabled: !currentState });
+
       setLayers((prev) =>
         prev.map((l) => (l.id === layerId ? { ...l, enabled: !l.enabled } : l)),
       );

@@ -1,5 +1,7 @@
 'use client';
 
+import { trackEvent } from '@/lib/analytics';
+
 const PLATFORMS = [
   { id: 'all', label: 'All', color: 'var(--text)' },
   { id: 'tempest', label: 'Tempest', color: 'var(--color-tempest)' },
@@ -36,7 +38,10 @@ export default function PlatformBar() {
         {PLATFORMS.map((p) => (
           <button
             key={p.id}
-            onClick={() => scrollToLane(p.id)}
+            onClick={() => {
+              trackEvent('cta_click', 'platform_bar_chip', { platform: p.id });
+              scrollToLane(p.id);
+            }}
             className="flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium whitespace-nowrap transition-colors"
             style={{ color: 'var(--text-muted)', minHeight: '36px' }}
             onMouseEnter={(e) => {

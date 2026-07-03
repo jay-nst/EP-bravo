@@ -1,9 +1,11 @@
-import Link from 'next/link';
+import TrackedLink from '@/components/ui/TrackedLink';
 
 export default function CoreCTA() {
   return (
-    <Link
+    <TrackedLink
       href="/core"
+      eventName="core_cta"
+      eventProperties={{ source: 'homepage_sidebar' }}
       className="block rounded-lg overflow-hidden transition-colors group"
       style={{ border: '1px solid var(--border)' }}
     >
@@ -59,6 +61,6 @@ export default function CoreCTA() {
           </span>
         </div>
       </div>
-    </Link>
+    </TrackedLink>
   );
 }
