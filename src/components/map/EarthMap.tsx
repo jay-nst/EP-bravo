@@ -20,6 +20,7 @@ interface EarthMapProps {
   onAoiChange?: (aoi: AoiSelection | null) => void;
   satellite?: SatelliteType;
   onCatalogSelect?: (itemId: string) => void;
+  onMapReady?: (map: mapboxgl.Map) => void;
 }
 
 // Design tokens for map layers
@@ -31,6 +32,7 @@ export default function EarthMap({
   onAoiChange,
   satellite = 'observer',
   onCatalogSelect,
+  onMapReady,
 }: EarthMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -218,6 +220,7 @@ export default function EarthMap({
 
     map.current.on('load', () => {
       setIsLoaded(true);
+      onMapReady?.(map.current!);
     });
     map.current.on('draw.create', handleDrawUpdate);
     map.current.on('draw.update', handleDrawUpdate);
@@ -230,7 +233,7 @@ export default function EarthMap({
       map.current = null;
       draw.current = null;
     };
-  }, [handleDrawUpdate, onAoiChange, handleMapMove]);
+  }, [handleDrawUpdate, onAoiChange, handleMapMove, onMapReady]);
 
   useEffect(() => {
     if (isLoaded) searchCatalog();

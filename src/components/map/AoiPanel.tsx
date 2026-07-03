@@ -18,6 +18,7 @@ interface AoiPanelProps {
   onPurchase: () => void;
   purchasing?: boolean;
   hasCatalogItem?: boolean;
+  bare?: boolean;
 }
 
 export default function AoiPanel({
@@ -27,15 +28,13 @@ export default function AoiPanel({
   onPurchase,
   purchasing = false,
   hasCatalogItem = false,
+  bare = false,
 }: AoiPanelProps) {
   const config = SATELLITE_CONFIG[satellite];
   const canPurchase = aoi && !aoi.validationError && hasCatalogItem && !purchasing;
 
-  return (
-    <div
-      className="w-80 glass-panel border-l flex flex-col gap-4 overflow-y-auto p-4"
-      style={{ borderColor: 'var(--border)' }}
-    >
+  const content = (
+    <>
       <h2 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>
         영상 구매
       </h2>
@@ -177,6 +176,17 @@ export default function AoiPanel({
           </button>
         </>
       )}
+    </>
+  );
+
+  if (bare) return content;
+
+  return (
+    <div
+      className="w-80 glass-panel border-l flex flex-col gap-4 overflow-y-auto p-4"
+      style={{ borderColor: 'var(--border)' }}
+    >
+      {content}
     </div>
   );
 }
