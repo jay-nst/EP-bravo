@@ -155,7 +155,8 @@ export type AnalyticsEventType =
   | 'page_view'
   | 'layer_toggle'
   | 'map_style_change'
-  | 'form_submit';
+  | 'form_submit'
+  | 'chat_from_home';
 
 export interface AnalyticsEvent {
   id: string;

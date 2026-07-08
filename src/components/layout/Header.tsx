@@ -2,27 +2,48 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState, useRef, useEffect } from 'react';
 
-const NAV_ITEMS = [
-  { href: '/daily', label: '오늘의지구' },
-  { href: '/posts', label: '위성뷰' },
-  { href: '/quiz', label: '퀴즈' },
-  { href: '/explore', label: '탐색' },
-  { href: '/map', label: '지도' },
-  { href: '/chat', label: '채팅' },
-  { href: '/portal', label: '내 주문' },
+const SERVICES = [
+  { key: 'tempest', label: 'Tempest', desc: '재난 모니터링', color: '#C45C4A', href: '/tempest' },
+  { key: 'predict', label: 'Predict', desc: 'AI 예측 분석', color: '#4A9EC4', href: '/predict' },
+  { key: 'warden', label: 'Warden', desc: '환경 감시', color: '#6B8A5E', href: '/warden' },
+  { key: 'nexus', label: 'Nexus', desc: '데이터 마켓', color: '#C8923A', href: '/nexus' },
+  { key: 'core', label: 'Core', desc: '위성 지도', color: '#8A8680', href: '/core' },
 ] as const;
 
 export default function Header() {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const handleEnter = () => {
+    clearTimeout(timerRef.current);
+    setMenuOpen(true);
+  };
+
+  const handleLeave = () => {
+    timerRef.current = setTimeout(() => setMenuOpen(false), 200);
+  };
+
+  useEffect(() => {
+    return () => clearTimeout(timerRef.current);
+  }, []);
 
   return (
     <header
-      className="glass-header border-b sticky top-0 z-50"
-      style={{ borderColor: 'var(--border)', height: 'var(--header-height)' }}
+      className="border-b sticky top-0 z-50"
+      style={{
+        borderColor: 'var(--border)',
+        height: 'var(--header-height)',
+        background: 'var(--glass-bg, rgba(14,14,16,0.88))',
+        backdropFilter: 'blur(12px)',
+      }}
     >
-      <div className="h-full px-4 flex items-center justify-between">
+      <div className="h-full px-6 flex items-center justify-between">
         <div className="flex items-center gap-6">
+          {/* Logo */}
           <Link
             href="/"
             className="text-base font-semibold tracking-tight flex items-center gap-2"
@@ -35,48 +56,88 @@ export default function Header() {
             </svg>
             EARTHPAPER
           </Link>
-          <nav className="flex gap-0.5">
-            {NAV_ITEMS.map(({ href, label }) => {
-              const isActive = pathname.startsWith(href);
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  className="px-3 py-1.5 text-sm rounded-md transition-colors"
+
+          <nav className="flex items-center gap-1">
+            {/* 오늘의 지구 */}
+            <Link
+              href="/daily"
+              className="px-3 py-1.5 text-sm rounded-md transition-colors"
+              style={{
+                color: pathname.startsWith('/daily') ? 'var(--accent)' : 'var(--text-muted)',
+                background: pathname.startsWith('/daily') ? 'var(--surface-elevated)' : 'transparent',
+              }}
+            >
+              오늘의 지구
+            </Link>
+
+            {/* 서비스 드롭다운 */}
+            <div
+              ref={menuRef}
+              className="relative"
+              onMouseEnter={handleEnter}
+              onMouseLeave={handleLeave}
+            >
+              <button
+                className="px-3 py-1.5 text-sm rounded-md transition-colors flex items-center gap-1"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                서비스
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+
+              {menuOpen && (
+                <div
+                  className="absolute top-full left-0 mt-1 py-2 rounded-lg"
                   style={{
-                    color: isActive ? 'var(--accent)' : 'var(--text-muted)',
-                    background: isActive ? 'var(--surface-elevated)' : 'transparent',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.color = 'var(--text)';
-                      e.currentTarget.style.background = 'var(--surface)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.color = 'var(--text-muted)';
-                      e.currentTarget.style.background = 'transparent';
-                    }
+                    background: 'var(--surface)',
+                    border: '1px solid var(--border)',
+                    minWidth: 220,
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
                   }}
                 >
-                  {label}
-                </Link>
-              );
-            })}
+                  {SERVICES.map((s) => (
+                    <Link
+                      key={s.key}
+                      href={s.href}
+                      className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-[var(--surface-elevated)]"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <span
+                        className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold"
+                        style={{ background: `${s.color}25`, color: s.color }}
+                      >
+                        {s.label[0]}
+                      </span>
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: s.color }}>{s.label}</p>
+                        <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{s.desc}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </nav>
         </div>
+
+        {/* Right side */}
         <div className="flex items-center gap-3">
-          <span
-            className="text-xs px-3 py-1 rounded-full"
-            style={{
-              background: 'var(--surface-elevated)',
-              color: 'var(--text-muted)',
-              border: '1px solid var(--border)',
-            }}
+          <Link
+            href="/login"
+            className="text-xs px-3 py-1.5 rounded-md transition-colors"
+            style={{ color: 'var(--text-muted)' }}
           >
-            Demo
-          </span>
+            로그인
+          </Link>
+          <Link
+            href="/signup"
+            className="text-xs px-4 py-1.5 rounded-md font-medium"
+            style={{ background: 'var(--accent)', color: '#0E0E10' }}
+          >
+            시작하기
+          </Link>
         </div>
       </div>
     </header>

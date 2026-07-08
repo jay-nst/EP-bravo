@@ -38,4 +38,16 @@
 **Priority:** P2
 **Depends on:** T1 (DESIGN.md 작성)
 
+### 테스트 인프라 구축
+
+**What:** Vitest 테스트 패턴 정립 + API 라우트/컴포넌트 테스트 기반 구축
+
+**Why:** 프로젝트 전체에 테스트 파일이 0개. vitest.config.ts는 있으나 테스트 디렉토리/파일 없음. Homepage v2 카드 컴포넌트부터 시작하되, API 라우트 테스트와 컴포넌트 테스트 패턴을 정립해야 이후 기능에도 적용 가능.
+
+**Context:** T4(Homepage v2 카드 테스트)에서 첫 테스트를 작성하면서 패턴이 정립될 예정. 이 TODO는 그 패턴을 프로젝트 전체로 확장하는 작업. React 19 + Next.js 16 환경에서 vitest + @testing-library/react 조합 검증 필요. API 라우트 테스트는 NextRequest mock 패턴 정립 필요.
+
+**Effort:** M
+**Priority:** P2
+**Depends on:** Homepage v2 Phase 1 (카드 분리) 완료
+
 ## Completed

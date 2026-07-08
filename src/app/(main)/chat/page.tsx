@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { useEffect, useRef, useState } from 'react';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -14,165 +13,89 @@ interface ChatSession {
   updated_at: string;
 }
 
+const MOCK_RESPONSES: Record<string, string> = {
+  default:
+    '안녕하세요! 위성 영상 관련 질문에 답변해드리겠습니다. 촬영 요청, 가격, 해상도, 데이터 형식 등 무엇이든 물어보세요.',
+  해상도:
+    'EarthPaper에서 제공하는 위성 영상 해상도는 위성에 따라 다릅니다:\n\n• SpaceEye-T: 25cm (초고해상도)\n• Observer: 50cm\n• Kompsat-3A: 55cm\n• Sentinel-2: 10m (무료)\n\n용도에 맞는 해상도를 선택하시면 됩니다.',
+  가격: '위성 영상 가격은 위성 종류와 면적에 따라 결정됩니다:\n\n• SpaceEye-T: $15/km²\n• Observer: $12/km²\n• Kompsat-3A: $10/km²\n\n최소 주문 면적은 위성별로 다르며, /tasking 페이지에서 직접 영역을 그려 예상 가격을 확인할 수 있습니다.',
+  촬영: '새로운 위성 촬영을 요청하시려면:\n\n1. /tasking 페이지로 이동\n2. "+ 새 요청" 클릭\n3. 지도에서 촬영할 영역 그리기\n4. 희망 촬영 날짜와 연락처 입력\n5. 제출\n\n접수 후 1-2일 내 검토 결과를 안내드립니다.',
+};
+
+function getMockResponse(message: string): string {
+  const lower = message.toLowerCase();
+  if (lower.includes('해상도') || lower.includes('resolution')) return MOCK_RESPONSES['해상도'];
+  if (lower.includes('가격') || lower.includes('price') || lower.includes('비용')) return MOCK_RESPONSES['가격'];
+  if (lower.includes('촬영') || lower.includes('요청') || lower.includes('tasking')) return MOCK_RESPONSES['촬영'];
+  return MOCK_RESPONSES['default'];
+}
+
 export default function ChatPage() {
-  const supabase = useMemo(() => createClient(), []);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [streaming, setStreaming] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     fetch('/api/chat/sessions')
       .then((r) => r.json())
       .then((data) => {
         if (data.sessions) setSessions(data.sessions);
-      });
+      })
+      .catch(() => {});
   }, []);
-
-  useEffect(() => {
-    if (!sessionId) {
-      setMessages([]);
-      return;
-    }
-    supabase
-      .from('chat_messages')
-      .select('role, content')
-      .eq('session_id', sessionId)
-      .order('created_at', { ascending: true })
-      .then(({ data }) => {
-        if (data) {
-          setMessages(
-            data.map((m) => ({
-              role: m.role as 'user' | 'assistant',
-              content: m.content,
-            })),
-          );
-        }
-      });
-  }, [sessionId, supabase]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const createSession = async () => {
-    const res = await fetch('/api/chat/sessions', { method: 'POST' });
-    const data = await res.json();
-    if (data.session) {
-      setSessions((prev) => [data.session, ...prev]);
-      setSessionId(data.session.id);
-      setMessages([]);
-    }
+  const createSession = () => {
+    const newSession: ChatSession = {
+      id: `sess-${Date.now()}`,
+      title: '새 대화',
+      updated_at: new Date().toISOString(),
+    };
+    setSessions((prev) => [newSession, ...prev]);
+    setSessionId(newSession.id);
+    setMessages([]);
   };
 
   const sendMessage = async () => {
     if (!input.trim() || streaming) return;
 
-    let currentSessionId = sessionId;
-
-    if (!currentSessionId) {
-      const res = await fetch('/api/chat/sessions', { method: 'POST' });
-      const data = await res.json();
-      if (!data.session) {
-        setError('세션 생성 실패');
-        return;
-      }
-      currentSessionId = data.session.id;
-      setSessions((prev) => [data.session, ...prev]);
-      setSessionId(currentSessionId);
+    if (!sessionId) {
+      const newSession: ChatSession = {
+        id: `sess-${Date.now()}`,
+        title: input.trim().slice(0, 20),
+        updated_at: new Date().toISOString(),
+      };
+      setSessions((prev) => [newSession, ...prev]);
+      setSessionId(newSession.id);
     }
 
     const userMessage = input.trim();
     setInput('');
-    setError(null);
     setMessages((prev) => [...prev, { role: 'user', content: userMessage }]);
     setStreaming(true);
 
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sessionId: currentSessionId,
-          message: userMessage,
-        }),
+    const response = getMockResponse(userMessage);
+    setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
+
+    let displayed = '';
+    for (let i = 0; i < response.length; i++) {
+      displayed += response[i];
+      const current = displayed;
+      await new Promise((r) => setTimeout(r, 15));
+      setMessages((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = { role: 'assistant', content: current };
+        return updated;
       });
-
-      if (!res.ok) {
-        const errData = await res.json();
-        setError(errData.error || '오류가 발생했습니다');
-        setStreaming(false);
-        return;
-      }
-
-      const reader = res.body?.getReader();
-      if (!reader) {
-        setError('스트림을 읽을 수 없습니다');
-        setStreaming(false);
-        return;
-      }
-
-      let assistantContent = '';
-      setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
-
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
-
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          const payload = line.slice(6).trim();
-          if (payload === '[DONE]') continue;
-
-          try {
-            const parsed = JSON.parse(payload);
-            if (parsed.text) {
-              assistantContent += parsed.text;
-              setMessages((prev) => {
-                const updated = [...prev];
-                updated[updated.length - 1] = {
-                  role: 'assistant',
-                  content: assistantContent,
-                };
-                return updated;
-              });
-            }
-            if (parsed.error) {
-              setError(parsed.error);
-            }
-          } catch {
-            // skip malformed JSON
-          }
-        }
-      }
-
-      if (assistantContent) {
-        await fetch('/api/chat/save', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            sessionId: currentSessionId,
-            content: assistantContent,
-            tokens: Math.ceil(assistantContent.length / 4),
-          }),
-        });
-      }
-    } catch {
-      setError('네트워크 오류가 발생했습니다');
-    } finally {
-      setStreaming(false);
     }
+
+    setStreaming(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -184,7 +107,6 @@ export default function ChatPage() {
 
   return (
     <div className="flex" style={{ height: 'calc(100vh - var(--header-height))' }}>
-      {/* Sidebar */}
       <aside
         className="w-60 flex flex-col"
         style={{ borderRight: '1px solid var(--border)', background: 'var(--surface)' }}
@@ -202,7 +124,10 @@ export default function ChatPage() {
           {sessions.map((s) => (
             <button
               key={s.id}
-              onClick={() => setSessionId(s.id)}
+              onClick={() => {
+                setSessionId(s.id);
+                setMessages([]);
+              }}
               className="w-full text-left px-3 py-2 text-sm rounded-md mb-0.5 truncate transition-colors"
               style={{
                 color: sessionId === s.id ? 'var(--accent)' : 'var(--text-muted)',
@@ -215,18 +140,35 @@ export default function ChatPage() {
         </div>
       </aside>
 
-      {/* Chat area */}
       <main className="flex-1 flex flex-col">
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.length === 0 && (
             <div className="flex items-center justify-center h-full">
-              <div className="text-center">
-                <p className="text-lg font-medium mb-2" style={{ color: 'var(--text-muted)' }}>
+              <div className="text-center space-y-3">
+                <p className="text-lg font-medium" style={{ color: 'var(--text-muted)' }}>
                   위성 영상 전문 어시스턴트
                 </p>
                 <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                   위성 영상 촬영, 가격, 해상도 등에 대해 질문하세요
                 </p>
+                <div className="flex flex-wrap gap-2 justify-center pt-2">
+                  {['해상도 비교', '가격 안내', '촬영 요청 방법'].map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => {
+                        setInput(q);
+                      }}
+                      className="px-3 py-1.5 text-xs rounded-lg transition-colors"
+                      style={{
+                        background: 'var(--surface)',
+                        color: 'var(--text-muted)',
+                        border: '1px solid var(--border)',
+                      }}
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -255,23 +197,9 @@ export default function ChatPage() {
           <div ref={messagesEndRef} />
         </div>
 
-        {error && (
-          <div
-            className="mx-4 mb-2 px-4 py-2 rounded-lg text-sm"
-            style={{
-              background: 'rgba(196, 92, 74, 0.15)',
-              border: '1px solid rgba(196, 92, 74, 0.3)',
-              color: 'var(--error)',
-            }}
-          >
-            {error}
-          </div>
-        )}
-
         <div className="p-4" style={{ borderTop: '1px solid var(--border)' }}>
           <div className="max-w-3xl mx-auto flex gap-2">
             <textarea
-              ref={textareaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}

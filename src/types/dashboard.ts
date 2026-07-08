@@ -29,8 +29,19 @@ export interface DailyScene {
   thumbnail_url: string | null;
 }
 
+export interface EditorPick {
+  id: string;
+  tag: string;
+  title: string;
+  description: string;
+  link_url: string;
+  published_at: string;
+  source: string;
+}
+
 export interface DashboardSummary {
   dailyScene: DailyScene | null;
+  editorPick: EditorPick | null;
   recentOrders: {
     id: string;
     status: string;

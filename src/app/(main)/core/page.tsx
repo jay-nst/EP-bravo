@@ -210,6 +210,8 @@ export default function CorePage() {
   const [mapStyleId, setMapStyleId] = useState<MapStyleId>('dark');
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const animRef = useRef<LayerAnimationController | null>(null);
+  const layerDataCache = useRef<Record<string, GeoJSON.FeatureCollection>>({});
+  const layerEnabledRef = useRef<Record<string, boolean>>({ tempest: true });
   const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
@@ -983,17 +985,19 @@ export default function CorePage() {
 
   const handleLayerToggle = useCallback(
     async (layerId: string) => {
-      const currentState = layers.find((l) => l.id === layerId)?.enabled ?? false;
-      trackEvent('layer_toggle', layerId, { enabled: !currentState });
+      const wasEnabled = layerEnabledRef.current[layerId] ?? false;
+      const turning_on = !wasEnabled;
+      layerEnabledRef.current[layerId] = turning_on;
+
+      trackEvent('layer_toggle', layerId, { enabled: turning_on });
 
       setLayers((prev) =>
-        prev.map((l) => (l.id === layerId ? { ...l, enabled: !l.enabled } : l)),
+        prev.map((l) => (l.id === layerId ? { ...l, enabled: turning_on } : l)),
       );
 
       if (layerId === 'tempest' && mapRef.current) {
         const map = mapRef.current;
-        const tempestLayer = layers.find((l) => l.id === 'tempest');
-        const newVisibility = tempestLayer?.enabled ? 'none' : 'visible';
+        const newVisibility = turning_on ? 'visible' : 'none';
 
         [TEMPEST_FILL_LAYER, TEMPEST_OUTLINE_LAYER, TEMPEST_POINT_LAYER, TEMPEST_LABEL_LAYER].forEach(
           (id) => {
@@ -1007,17 +1011,19 @@ export default function CorePage() {
       const publicLayerConfig = PUBLIC_LAYER_IDS[layerId as PublicLayerId];
       if (publicLayerConfig && mapRef.current) {
         const map = mapRef.current;
-        const turning_on = !currentState;
 
-        if (turning_on) {
+        if (turning_on && !layerDataCache.current[layerId]) {
           const geojson = await fetchPublicLayerData(layerId as PublicLayerId);
-          if (geojson && publicLayerConfig.source) {
-            const source = map.getSource(publicLayerConfig.source) as mapboxgl.GeoJSONSource | undefined;
-            if (source) {
-              source.setData(geojson);
-              setLayers((prev) =>
-                prev.map((l) => l.id === layerId ? { ...l, featureCount: geojson.features.length } : l),
-              );
+          if (geojson) {
+            layerDataCache.current[layerId] = geojson;
+            if (publicLayerConfig.source) {
+              const source = map.getSource(publicLayerConfig.source) as mapboxgl.GeoJSONSource | undefined;
+              if (source) {
+                source.setData(geojson);
+                setLayers((prev) =>
+                  prev.map((l) => l.id === layerId ? { ...l, featureCount: geojson.features.length } : l),
+                );
+              }
             }
           }
         }
@@ -1038,7 +1044,7 @@ export default function CorePage() {
         }
       }
     },
-    [layers, fetchPublicLayerData],
+    [fetchPublicLayerData],
   );
 
   const handlePurchase = useCallback(async () => {
