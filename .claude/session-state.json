@@ -1,7 +1,7 @@
 {
   "timestamp": "2026-07-08",
   "branch": "master",
-  "last_commit": "7f4d7d4",
+  "last_commit": "pending",
   "completed_tasks": [
     "T1-T7: Homepage + Core 지도 + 이벤트 트래킹 + 테스트",
     "지도 스타일 스위처 (satellite/dark/night-nav 3종)",
@@ -18,10 +18,17 @@
     "실 콘텐츠 채우기: EP 70개 기사 + YouTube 181개 영상에서 22개 피드 아이템 큐레이션",
     "YouTube Shorts 5개 직접 재생 (iframe embed, thumbnail-first lazy load)",
     "인터랙티브 콘텐츠 페이지: /interactive/north-korean-shipyards (스크롤 애니메이션 + 5개 사이트)",
-    "인터랙티브 페이지에 실제 S3 위성영상 적용 (5개 사이트 Before/After 이미지)"
+    "인터랙티브 페이지에 실제 S3 위성영상 적용 (5개 사이트 Before/After 이미지)",
+    "플랫폼 구조 재편: PPT 기반으로 Northpaper(국방), Warden(기후컴플라이언스), Predict(자산금융) 확장",
+    "Tempest → Citadel 리브랜딩 (재난 + 도시관리 합병, WoW 시타델 모티프)"
   ],
   "in_progress": [],
   "remaining_tasks": [
+    "Citadel 내부 코드 리네이밍: types/tempest.ts → types/citadel.ts, mock-tempest.ts → mock-citadel.ts, TempestSeverity → CitadelSeverity",
+    "Citadel 랜딩 페이지 (/citadel)",
+    "Northpaper 랜딩 페이지 (/northpaper)",
+    "Warden 랜딩 페이지 (/warden)",
+    "Predict → predicthings.com 외부 링크 처리",
     "T1: Feed API multi-type filter",
     "T2: Hero Static Map",
     "T3: Breaking Strip USGS API",
@@ -41,8 +48,19 @@
     "Hero → /interactive/north-korean-shipyards 내부 라우트 (외부 EP Post가 아님)",
     "Shorts: YouTube iframe embed (thumbnail-first pattern으로 lazy load)",
     "인터랙티브 콘텐츠: IntersectionObserver 기반 스크롤 리빌 + 플로팅 네비게이션",
-    "위성영상: ep.naraspace.com S3에서 직접 로딩 (earthpaper.s3.ap-northeast-2.amazonaws.com)"
+    "위성영상: ep.naraspace.com S3에서 직접 로딩 (earthpaper.s3.ap-northeast-2.amazonaws.com)",
+    "플랫폼 5개 체제: Citadel(재난·도시관제), Predict(자산·금융), Warden(기후·컴플라이언스), Northpaper(국방·안보), Nexus(데이터마켓)",
+    "Tempest+정부도시 합병 → Citadel (WoW 시타델 모티프, 도시 방어 거점 이미지)",
+    "Predict는 predicthings.com 외부 서비스로 연결",
+    "Core는 플랫폼 섹션에서 제외 (Nexus와 공유)"
   ],
+  "platform_structure": {
+    "citadel": { "color": "#C45C4A", "desc": "재난 · 도시 관제", "href": "/citadel", "prev_name": "Tempest" },
+    "predict": { "color": "#4A9EC4", "desc": "자산 검증 · 금융", "href": "/predict", "external": "predicthings.com" },
+    "warden": { "color": "#6B8A5E", "desc": "기후 · 컴플라이언스", "href": "/warden" },
+    "northpaper": { "color": "#3D5A80", "desc": "국방 · 안보", "href": "/northpaper" },
+    "nexus": { "color": "#C8923A", "desc": "데이터 마켓", "href": "/nexus" }
+  },
   "page_structure": {
     "/": "에디토리얼 매거진 메인 (DashboardClient)",
     "/interactive/north-korean-shipyards": "인터랙티브 롱폼 (ShipyardsInteractive)",

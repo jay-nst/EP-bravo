@@ -25,7 +25,7 @@
   --error: #C45C4A;
 
   /* Platform Colors */
-  --color-tempest: #C45C4A;
+  --color-citadel: #C45C4A;
   --color-predict: #4A9EC4;
   --color-warden: #6B8A5E;
   --color-nexus: #C8923A;
@@ -109,7 +109,7 @@
   --color-error: var(--error);
   --color-panel-bg: var(--panel-bg);
   --color-header-bg: var(--header-bg);
-  --color-tempest: var(--color-tempest);
+  --color-citadel: var(--color-citadel);
   --color-predict: var(--color-predict);
   --color-warden: var(--color-warden);
   --color-nexus: var(--color-nexus);

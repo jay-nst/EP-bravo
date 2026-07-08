@@ -4,7 +4,7 @@ import { trackEvent } from '@/lib/analytics';
 
 const PLATFORMS = [
   { id: 'all', label: 'All', color: 'var(--text)' },
-  { id: 'tempest', label: 'Tempest', color: 'var(--color-tempest)' },
+  { id: 'citadel', label: 'Citadel', color: 'var(--color-citadel)' },
   { id: 'predict', label: 'Predict', color: 'var(--color-predict)' },
   { id: 'warden', label: 'Warden', color: 'var(--color-warden)' },
   { id: 'nexus', label: 'Nexus', color: 'var(--color-nexus)' },

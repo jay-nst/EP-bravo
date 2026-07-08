@@ -83,8 +83,8 @@ const WILDFIRE_STATUS_LABELS: Record<string, string> = {
 
 const INITIAL_LAYERS: OverlayLayer[] = [
   {
-    id: 'tempest',
-    label: 'Tempest',
+    id: 'citadel',
+    label: 'Citadel',
     color: '#C45C4A',
     enabled: true,
     featureCount: TEMPEST_GEOJSON.features.length,
@@ -211,7 +211,7 @@ export default function CorePage() {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const animRef = useRef<LayerAnimationController | null>(null);
   const layerDataCache = useRef<Record<string, GeoJSON.FeatureCollection>>({});
-  const layerEnabledRef = useRef<Record<string, boolean>>({ tempest: true });
+  const layerEnabledRef = useRef<Record<string, boolean>>({ citadel: true });
   const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
@@ -958,7 +958,7 @@ export default function CorePage() {
 
       setLayers((prev) => {
         prev.forEach((l) => {
-          if (l.id === 'tempest' && !l.enabled) {
+          if (l.id === 'citadel' && !l.enabled) {
             [TEMPEST_FILL_LAYER, TEMPEST_OUTLINE_LAYER, TEMPEST_POINT_LAYER, TEMPEST_LABEL_LAYER].forEach((id) => {
               if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
             });
@@ -995,7 +995,7 @@ export default function CorePage() {
         prev.map((l) => (l.id === layerId ? { ...l, enabled: turning_on } : l)),
       );
 
-      if (layerId === 'tempest' && mapRef.current) {
+      if (layerId === 'citadel' && mapRef.current) {
         const map = mapRef.current;
         const newVisibility = turning_on ? 'visible' : 'none';
 
@@ -1357,8 +1357,8 @@ export default function CorePage() {
                 </div>
               )}
 
-              {/* Tempest Events list */}
-              {layers.find((l) => l.id === 'tempest')?.enabled && (
+              {/* Citadel Events list */}
+              {layers.find((l) => l.id === 'citadel')?.enabled && (
                 <div>
                   <h3
                     className="text-xs font-mono tracking-wider uppercase mb-2"

@@ -221,9 +221,9 @@ export default function ShipyardsInteractive() {
             style={{ opacity: visible[0] !== false ? 1 : 0, transform: visible[0] !== false ? 'translateY(0)' : 'translateY(30px)' }}
           >
             <div className="flex items-center gap-2 mb-6">
-              <span className="inline-block w-8 h-px" style={{ background: 'var(--accent)' }} />
-              <span className="text-xs font-mono tracking-[0.15em] uppercase font-semibold" style={{ color: 'var(--accent)' }}>
-                EarthPaper Original · 방위 분석
+              <span className="inline-block w-8 h-px" style={{ background: '#3D5A80' }} />
+              <span className="text-xs font-mono tracking-[0.15em] uppercase font-semibold" style={{ color: '#3D5A80' }}>
+                Northpaper Original · 방위 분석
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold leading-[1.15] mb-6" style={{ color: 'var(--text)' }}>

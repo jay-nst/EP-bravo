@@ -1,4 +1,4 @@
-export type FeedType = 'analysis' | 'shorts' | 'trending' | 'news' | 'community' | 'report' | 'tempest';
+export type FeedType = 'analysis' | 'shorts' | 'trending' | 'news' | 'community' | 'report' | 'citadel' | 'warden' | 'predict' | 'northpaper';
 
 export interface FeedItem {
   id: string;
@@ -65,7 +65,10 @@ export const FEED_BADGE_COLORS: Record<FeedType, string> = {
   news: '#8b5cf6',
   community: '#10b981',
   report: '#f97316',
-  tempest: '#C45C4A',
+  citadel: '#C45C4A',
+  warden: '#6B8A5E',
+  predict: '#4A9EC4',
+  northpaper: '#3D5A80',
 };
 
 export const FEED_LABELS: Record<FeedType, string> = {
@@ -75,5 +78,8 @@ export const FEED_LABELS: Record<FeedType, string> = {
   news: '뉴스',
   community: '커뮤니티',
   report: '리포트',
-  tempest: '재난',
+  citadel: '재난 · 도시',
+  warden: '기후·환경',
+  predict: '자산·금융',
+  northpaper: '국방·안보',
 };

@@ -7,38 +7,40 @@ import type { FeedItem, DashboardSummary } from '@/types/dashboard';
 import { trackEvent } from '@/lib/analytics';
 
 const PLATFORMS = [
-  { key: 'tempest', label: 'Tempest', desc: '재난 모니터링', color: '#C45C4A', href: '/tempest' },
-  { key: 'predict', label: 'Predict', desc: 'AI 예측 분석', color: '#4A9EC4', href: '/predict' },
-  { key: 'warden', label: 'Warden', desc: '환경 감시', color: '#6B8A5E', href: '/warden' },
+  { key: 'citadel', label: 'Citadel', desc: '재난 · 도시 관제', color: '#C45C4A', href: '/citadel' },
+  { key: 'predict', label: 'Predict', desc: '자산 검증 · 금융', color: '#4A9EC4', href: '/predict' },
+  { key: 'warden', label: 'Warden', desc: '기후 · 컴플라이언스', color: '#6B8A5E', href: '/warden' },
+  { key: 'northpaper', label: 'Northpaper', desc: '국방 · 안보', color: '#3D5A80', href: '/northpaper' },
   { key: 'nexus', label: 'Nexus', desc: '데이터 마켓', color: '#C8923A', href: '/nexus' },
-  { key: 'core', label: 'Core', desc: '위성 지도', color: '#8A8680', href: '/core' },
 ] as const;
 
 const CURATED_ITEMS = [
-  { platform: 'tempest', color: '#C45C4A', badge: 'CRITICAL · WILDFIRE', title: 'Santa Rosa Island 산불 확산 및 피해 범위 위성 추적', sub: 'California, USA · 3일 전' },
+  { platform: 'warden', color: '#6B8A5E', badge: 'METHANE · EU 규제', title: '국내 정유시설 메탄 배출 위성 검증', sub: '울산/여수 · 1일 전' },
+  { platform: 'citadel', color: '#C45C4A', badge: 'CRITICAL · WILDFIRE', title: 'Santa Rosa Island 산불 확산 및 피해 범위 위성 추적', sub: 'California, USA · 3일 전' },
+  { platform: 'predict', color: '#4A9EC4', badge: 'ASSET · SOLAR', title: '태양광 발전소 패널 이상 탐지 — 위성 자산 검증', sub: '전남 해남 · 2일 전' },
+  { platform: 'northpaper', color: '#3D5A80', badge: 'DEFENSE · SHIPYARD', title: '위성이 포착한 북한 5대 조선소 구조 변화', sub: 'North Korea · 3일 전' },
+  { platform: 'warden', color: '#6B8A5E', badge: 'EUDR · 공급망', title: 'EUDR 공급망 검증 — 코코아 원산지 산림 전용 모니터링', sub: "Côte d'Ivoire · 3일 전" },
+  { platform: 'predict', color: '#4A9EC4', badge: 'COMMODITY · OIL', title: '호르무즈 해협 봉쇄 후 원유 이동 경로 위성 분석', sub: 'Fujairah/Yanbu · 4일 전' },
+  { platform: 'citadel', color: '#C45C4A', badge: 'CRITICAL · FLOOD', title: '자메이카 홍수 피해 위성영상 분석', sub: 'Jamaica · 5일 전' },
+  { platform: 'warden', color: '#6B8A5E', badge: 'PALM OIL · FOREST', title: '동남아 팜 플랜테이션 확장 감시 — 보르네오 위성 분석', sub: 'Borneo · 9일 전' },
   { platform: 'predict', color: '#4A9EC4', badge: 'AI FORECAST · 97%', title: '미국 옥수수 수확량 예측 — AI 모델 97% 정확도', sub: 'US Corn Belt · 8일 전' },
-  { platform: 'tempest', color: '#C45C4A', badge: 'CRITICAL · FLOOD', title: '자메이카 홍수 피해 위성영상 분석', sub: 'Jamaica · 5일 전' },
-  { platform: 'warden', color: '#6B8A5E', badge: 'FOREST LOSS', title: 'Raja Ampat 니켈 채굴 허가 취소 후 산림 변화', sub: 'Indonesia · 5일 전' },
-  { platform: 'nexus', color: '#C8923A', badge: 'FINANCE', title: '호르무즈 해협 봉쇄 후 원유 이동 경로 위성 분석', sub: 'Fujairah/Yanbu · 4일 전' },
-  { platform: 'tempest', color: '#C45C4A', badge: 'HIGH · WILDFIRE', title: '2026 파타고니아 산불 64,468ha 피해 분석', sub: 'Patagonia, Chile · 10일 전' },
-  { platform: 'predict', color: '#4A9EC4', badge: 'CHANGE DETECTION', title: '이란 핵시설 공습 피해 위성영상 분석', sub: 'Iran · 10일 전' },
-  { platform: 'warden', color: '#6B8A5E', badge: 'DROUGHT', title: '제주 가뭄 및 해양 열파 위성 모니터링', sub: '제주도 · 12일 전' },
+  { platform: 'northpaper', color: '#3D5A80', badge: 'DEFENSE · NUCLEAR', title: '이란 핵시설 공습 피해 위성영상 분석', sub: 'Iran · 10일 전' },
 ];
 
 const TRENDING_SUBJECTS = [
-  { rank: 1, title: 'Santa Rosa Island 산불', clicks: '14.2k', badge: 'tempest' },
-  { rank: 2, title: '북한 조선소 변화', clicks: '9.8k', badge: 'tempest' },
-  { rank: 3, title: '호르무즈 해협 원유 봉쇄', clicks: '7.1k', badge: 'nexus' },
-  { rank: 4, title: '이란 핵시설 공습', clicks: '5.4k', badge: 'predict' },
-  { rank: 5, title: '파타고니아 대형 산불', clicks: '4.2k', badge: 'warden' },
+  { rank: 1, title: 'EU 메탄 규제 위성 검증', clicks: '14.2k', badge: 'warden' },
+  { rank: 2, title: 'Santa Rosa Island 산불', clicks: '11.5k', badge: 'citadel' },
+  { rank: 3, title: '태양광 자산 검증', clicks: '9.1k', badge: 'predict' },
+  { rank: 4, title: '북한 조선소 변화', clicks: '8.3k', badge: 'northpaper' },
+  { rank: 5, title: 'EUDR 코코아 공급망', clicks: '6.7k', badge: 'warden' },
 ];
 
 const POPULAR_POSTS = [
-  { rank: 1, title: '위성이 포착한 북한 5대 조선소 — 사라진 선박의 행방', author: 'EP편집팀', views: '2.5k' },
-  { rank: 2, title: 'Santa Rosa Island 산불 확산 위성 추적', author: 'EP편집팀', views: '1.8k' },
-  { rank: 3, title: '호르무즈 봉쇄 후 원유 이동 경로 분석', author: 'EP편집팀', views: '1.4k' },
-  { rank: 4, title: 'NASA 아르테미스 II K-RadCube 탑재', author: 'Nara Space', views: '1.1k' },
-  { rank: 5, title: '미국 옥수수 수확량 예측 97% 정확도 달성', author: 'EP편집팀', views: '980' },
+  { rank: 1, title: '국내 정유시설 메탄 배출 위성 검증 — EU 규제 대응', author: 'Warden팀', views: '3.1k' },
+  { rank: 2, title: '태양광 발전소 패널 이상 탐지 — 위성 자산 검증', author: 'Predict팀', views: '2.4k' },
+  { rank: 3, title: 'Santa Rosa Island 산불 확산 위성 추적', author: 'Citadel팀', views: '1.8k' },
+  { rank: 4, title: 'EUDR 코코아 원산지 산림 전용 모니터링', author: 'Warden팀', views: '1.5k' },
+  { rank: 5, title: '호르무즈 봉쇄 후 원유 이동 경로 분석', author: 'Predict팀', views: '1.2k' },
 ];
 
 export default function DashboardClient() {
@@ -130,7 +132,7 @@ export default function DashboardClient() {
 
   const editorPick = summary?.editorPick;
   const shortsItems = feedItems.filter((i) => i.type === 'shorts');
-  const analysisItems = feedItems.filter((i) => i.type === 'analysis');
+  const platformItems = feedItems.filter((i) => ['predict', 'warden', 'northpaper', 'analysis'].includes(i.type));
   const newsItems = feedItems.filter((i) => i.type === 'news');
 
   const CHAT_SUGGESTIONS = [
@@ -161,7 +163,7 @@ export default function DashboardClient() {
           className="absolute top-0 right-0 w-[55%] h-full pointer-events-none"
           style={{
             background:
-              'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(27,191,168,0.02) 3px, rgba(27,191,168,0.02) 4px), radial-gradient(ellipse at 60% 50%, rgba(91,140,111,0.1), transparent 70%)',
+              'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(61,90,128,0.03) 3px, rgba(61,90,128,0.03) 4px), radial-gradient(ellipse at 60% 50%, rgba(61,90,128,0.12), transparent 70%)',
           }}
         />
         {editorPick ? (
@@ -169,8 +171,8 @@ export default function DashboardClient() {
             <div className="max-w-6xl mx-auto px-6 py-16">
               <div className="flex items-center gap-2 mb-5">
                 <span className="inline-block w-6 h-px" style={{ background: 'var(--accent)' }} />
-                <span className="text-xs font-mono tracking-[0.15em] uppercase font-semibold" style={{ color: 'var(--accent)' }}>
-                  EarthPaper Original
+                <span className="text-xs font-mono tracking-[0.15em] uppercase font-semibold" style={{ color: '#3D5A80' }}>
+                  Northpaper Original · 방위 분석
                 </span>
               </div>
               <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-4 max-w-2xl" style={{ color: 'var(--text)' }}>
@@ -281,12 +283,12 @@ export default function DashboardClient() {
               </div>
             </div>
 
-            {/* Analysis 2×2 Grid */}
-            {analysisItems.length > 0 && (
+            {/* Platform Feed Grid */}
+            {platformItems.length > 0 && (
               <div>
-                <SectionHeader title="분석 리포트" icon="●" linkText="더 보기" linkHref="/analysis" />
+                <SectionHeader title="플랫폼 리포트" icon="●" linkText="더 보기" linkHref="/analysis" />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {analysisItems.slice(0, 4).map((item) => (
+                  {platformItems.slice(0, 6).map((item) => (
                     <AnalysisCard key={item.id} item={item} />
                   ))}
                 </div>
@@ -600,15 +602,15 @@ function ShortsCard({ item }: { item: FeedItem }) {
   );
 }
 
+const PLATFORM_LABEL: Record<string, { label: string; color: string }> = {
+  predict: { label: 'PREDICT', color: '#4A9EC4' },
+  warden: { label: 'WARDEN', color: '#6B8A5E' },
+  northpaper: { label: 'NORTHPAPER', color: '#3D5A80' },
+  analysis: { label: 'ANALYSIS', color: '#22d3ee' },
+};
+
 function AnalysisCard({ item }: { item: FeedItem }) {
-  const analysisType = String(item.metadata.analysis_type ?? '');
-  const typeLabels: Record<string, string> = {
-    change_detection: 'CHANGE DETECTION',
-    ndvi: 'NDVI ANALYSIS',
-    urban_heat_island: 'URBAN HEAT ISLAND',
-    weekly_report: 'WEEKLY REPORT',
-  };
-  const typeLabel = typeLabels[analysisType] ?? analysisType.toUpperCase();
+  const pl = PLATFORM_LABEL[item.type] ?? { label: item.type.toUpperCase(), color: 'var(--text-muted)' };
   const location = String(item.metadata.location ?? '');
 
   const inner = (
@@ -620,7 +622,7 @@ function AnalysisCard({ item }: { item: FeedItem }) {
         </div>
       </div>
       <div className="p-4">
-        <p className="text-[10px] font-mono tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>{typeLabel}</p>
+        <p className="text-[10px] font-mono tracking-wider mb-1" style={{ color: pl.color }}>{pl.label}</p>
         <p className="text-sm font-semibold leading-snug mb-1 group-hover:text-[var(--accent)] transition-colors" style={{ color: 'var(--text)' }}>
           {item.title}
         </p>

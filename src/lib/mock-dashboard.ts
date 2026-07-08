@@ -1,10 +1,10 @@
 import type { FeedItem, DashboardSummary, WatchlistArea } from '@/types/dashboard';
 
 export const MOCK_FEED_ITEMS: FeedItem[] = [
-  // === TEMPEST (Disaster) ===
+  // === CITADEL (재난 · 도시 관제) ===
   {
     id: 'ep-disaster-1',
-    type: 'tempest',
+    type: 'citadel',
     title: 'Santa Rosa Island 산불 확산 및 피해 범위 위성 추적',
     description: 'Santa Rosa Island 산불의 확산 경로와 피해 면적을 위성영상으로 분석. 시계열 비교를 통한 연소 범위 산출.',
     thumbnail_url: null,
@@ -15,7 +15,7 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
   },
   {
     id: 'ep-disaster-2',
-    type: 'tempest',
+    type: 'citadel',
     title: '자메이카 홍수 피해 위성영상 분석',
     description: '통신망과 도로가 차단된 자메이카 홍수 피해 지역을 위성영상으로 피해 면적 산출 및 복구 우선순위 분석.',
     thumbnail_url: null,
@@ -26,7 +26,7 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
   },
   {
     id: 'ep-disaster-3',
-    type: 'tempest',
+    type: 'citadel',
     title: '2026 파타고니아 산불 피해 분석 (64,468ha)',
     description: '위성 기반 심각도 평가 및 확산 속도 분석. dNBR 지수로 산불 피해 등급 분류.',
     thumbnail_url: null,
@@ -37,7 +37,7 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
   },
   {
     id: 'ep-disaster-4',
-    type: 'tempest',
+    type: 'citadel',
     title: '가나 Akosombo 댐 방류 및 Volta강 홍수 확산 분석',
     description: 'Akosombo 댐 긴급 방류 후 Volta강 유역 범람 면적 변화를 위성으로 추적.',
     thumbnail_url: null,
@@ -48,7 +48,7 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
   },
   {
     id: 'ep-disaster-5',
-    type: 'tempest',
+    type: 'citadel',
     title: '2026 전남 광양 산불 분석 (NDMI, dNBR)',
     description: '전남 광양시 산불 피해 범위 및 산림 수분 변화를 NDMI, dNBR 지수로 분석.',
     thumbnail_url: null,
@@ -58,10 +58,10 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
     published_at: '2026-06-20T09:00:00Z',
   },
 
-  // === ANALYSIS ===
+  // === PREDICT (자산 검증 · 금융) ===
   {
-    id: 'ep-analysis-1',
-    type: 'analysis',
+    id: 'ep-predict-1',
+    type: 'predict',
     title: '호르무즈 해협 봉쇄 후 원유 이동 경로 위성 분석',
     description: 'Port of Fujairah와 Yanbu Commercial Port의 원유 저장탱크 변화를 위성으로 추적. 글로벌 공급망 리스크 진단.',
     thumbnail_url: null,
@@ -71,19 +71,8 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
     published_at: '2026-07-04T10:00:00Z',
   },
   {
-    id: 'ep-analysis-2',
-    type: 'analysis',
-    title: 'Raja Ampat 니켈 채굴 허가 취소 후 산림 변화',
-    description: '인도네시아 Raja Ampat 니켈 채굴 허가 취소 이후 산림 손실이 멈췄는지 위성영상으로 검증.',
-    thumbnail_url: null,
-    link_url: 'https://ep.naraspace.com/post/contents/indonesia-raja-ampat-nickel-mining-permits-forest-loss',
-    link_action: 'external',
-    metadata: { analysis_type: 'ndvi', location: 'Raja Ampat, Indonesia' },
-    published_at: '2026-07-03T08:00:00Z',
-  },
-  {
-    id: 'ep-analysis-3',
-    type: 'analysis',
+    id: 'ep-predict-2',
+    type: 'predict',
     title: '미국 옥수수 수확량 예측 (97% 정확도 모델)',
     description: '2024-2025 미국 Corn Belt 위성 기반 수확량 예측. Nara Space AI 모델 97% 정확도 달성.',
     thumbnail_url: null,
@@ -93,14 +82,95 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
     published_at: '2026-06-30T11:00:00Z',
   },
   {
-    id: 'ep-analysis-4',
-    type: 'analysis',
+    id: 'ep-predict-3',
+    type: 'predict',
+    title: '태양광 발전소 패널 이상 탐지 — 위성 기반 자산 검증',
+    description: '전남 해남 태양광 단지 위성영상 분석. 패널 열화·파손 구간 자동 검출로 금융기관 자산 실사 지원.',
+    thumbnail_url: null,
+    link_url: null,
+    link_action: 'external',
+    metadata: { analysis_type: 'asset_verification', location: '전남 해남', asset_type: 'solar' },
+    published_at: '2026-07-06T09:00:00Z',
+  },
+  {
+    id: 'ep-predict-4',
+    type: 'predict',
+    title: '범용 자산 검증 — 물류 창고 재고 추정 위성 분석',
+    description: '쿠팡 물류센터 주차장·야적장 변화를 위성으로 추적, 분기별 재고 회전율 시그널 산출.',
+    thumbnail_url: null,
+    link_url: null,
+    link_action: 'external',
+    metadata: { analysis_type: 'asset_verification', location: '경기 이천', asset_type: 'logistics' },
+    published_at: '2026-07-01T10:00:00Z',
+  },
+
+  // === WARDEN (기후 · 컴플라이언스) ===
+  {
+    id: 'ep-warden-1',
+    type: 'warden',
+    title: 'Raja Ampat 니켈 채굴 허가 취소 후 산림 변화',
+    description: '인도네시아 Raja Ampat 니켈 채굴 허가 취소 이후 산림 손실이 멈췄는지 위성영상으로 검증.',
+    thumbnail_url: null,
+    link_url: 'https://ep.naraspace.com/post/contents/indonesia-raja-ampat-nickel-mining-permits-forest-loss',
+    link_action: 'external',
+    metadata: { analysis_type: 'ndvi', location: 'Raja Ampat, Indonesia' },
+    published_at: '2026-07-03T08:00:00Z',
+  },
+  {
+    id: 'ep-warden-2',
+    type: 'warden',
+    title: '국내 정유시설 메탄 배출 위성 검증 — EU 규제 대응',
+    description: '울산·여수 석유화학 단지의 메탄 배출량을 위성 분광 데이터로 정량화. EU 메탄 규제(2027) 사전 대비.',
+    thumbnail_url: null,
+    link_url: null,
+    link_action: 'external',
+    metadata: { analysis_type: 'methane', location: '울산/여수', compliance: 'EU Methane Regulation' },
+    published_at: '2026-07-07T08:00:00Z',
+  },
+  {
+    id: 'ep-warden-3',
+    type: 'warden',
+    title: 'EUDR 공급망 검증 — 코코아 원산지 산림 전용 모니터링',
+    description: 'EU 산림전용규제(EUDR) 시행에 따라 코트디부아르·가나 코코아 농장의 산림 전용 여부를 위성으로 검증.',
+    thumbnail_url: null,
+    link_url: null,
+    link_action: 'external',
+    metadata: { analysis_type: 'ndvi', location: "Côte d'Ivoire / Ghana", compliance: 'EUDR' },
+    published_at: '2026-07-05T11:00:00Z',
+  },
+  {
+    id: 'ep-warden-4',
+    type: 'warden',
+    title: '동남아 팜 플랜테이션 확장 감시 — 보르네오 위성 분석',
+    description: '보르네오 열대우림 내 팜유 플랜테이션 신규 개간 면적을 분기별 위성영상으로 추적.',
+    thumbnail_url: null,
+    link_url: null,
+    link_action: 'external',
+    metadata: { analysis_type: 'ndvi', location: 'Borneo, Malaysia/Indonesia', compliance: 'EUDR' },
+    published_at: '2026-06-29T09:00:00Z',
+  },
+
+  // === NORTHPAPER (국방 · 안보) ===
+  {
+    id: 'ep-northpaper-1',
+    type: 'northpaper',
+    title: '위성이 포착한 북한 5대 조선소 구조 변화',
+    description: '남포, 신포, 마양도, 청진, 라진 — 5개 핵심 조선소·항만의 위성영상 비교 분석.',
+    thumbnail_url: null,
+    link_url: '/interactive/north-korean-shipyards',
+    link_action: 'navigate',
+    metadata: { analysis_type: 'change_detection', location: 'North Korea', platform: 'northpaper' },
+    published_at: '2026-07-05T08:00:00Z',
+  },
+  {
+    id: 'ep-northpaper-2',
+    type: 'northpaper',
     title: '이란 핵시설 공습 피해 위성영상 분석',
     description: '이란 핵시설에 대한 공습 피해를 위성영상으로 확인. 시설 구조 변화 및 피해 규모 평가.',
     thumbnail_url: null,
     link_url: 'https://ep.naraspace.com/post/contents/iran-nuclear-facilities-airstrike-damage-satellite',
     link_action: 'external',
-    metadata: { analysis_type: 'change_detection', location: 'Iran' },
+    metadata: { analysis_type: 'change_detection', location: 'Iran', platform: 'northpaper' },
     published_at: '2026-06-28T15:00:00Z',
   },
 
@@ -245,12 +315,12 @@ export const MOCK_DASHBOARD_SUMMARY: DashboardSummary = {
   },
   editorPick: {
     id: 'ep-original-1',
-    tag: '방위',
+    tag: 'Northpaper',
     title: '위성이 포착한 북한 5대 조선소 — 사라진 선박의 행방',
     description: '북한 주요 조선소 5곳의 구조 변화를 고해상도 위성영상으로 분석합니다. 선박 건조 현황, 시설 확장, 그리고 사라진 선박들의 이동 경로를 추적합니다.',
-    link_url: 'https://ep.naraspace.com/post/contents/satellite-imagery-changes-five-major-north-korean-shipyards-ports',
+    link_url: '/interactive/north-korean-shipyards',
     published_at: '2026-07-05T08:00:00Z',
-    source: 'EarthPaper 편집팀',
+    source: 'Northpaper 편집팀',
   },
   recentOrders: [
     { id: 'ord-1', status: 'completed', aoi_area_km2: 42, total_price: 630, created_at: '2026-07-02T10:00:00Z' },

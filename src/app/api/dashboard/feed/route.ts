@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { MOCK_FEED_ITEMS } from '@/lib/mock-dashboard';
 import type { FeedType } from '@/types/dashboard';
 
-const VALID_TYPES = new Set<string>(['all', 'analysis', 'shorts', 'trending', 'news', 'community', 'report', 'tempest']);
+const VALID_TYPES = new Set<string>(['all', 'analysis', 'shorts', 'trending', 'news', 'community', 'report', 'citadel']);
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
