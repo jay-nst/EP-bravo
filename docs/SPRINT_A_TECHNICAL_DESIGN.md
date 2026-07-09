@@ -80,7 +80,7 @@ Sprint A
 | A3-07 | PWA manifest.ts | `manifest.ts` | 완료 | **아이콘 PNG 참조 수정 필요** |
 | A3-08 | 알림 Realtime 전환 | (미구현) | **TODO** | 현재 polling, 섹션 5.6 참조 |
 | A3-09 | Supabase 이메일 템플릿 한글화 | (미구현) | **TODO** | 확인/비밀번호 재설정 |
-| A3-10 | 대시보드 v4.2 (Professional Discovery + Discovery Feed) 적용 | (미구현) | **TODO** | 섹션 8.5 참조 |
+| A3-10 | 대시보드 v4.2 → Bloomberg 에디토리얼 매거진 (Breaking Strip + Live Feed + Shorts + 플랫폼 리포트) | DashboardClient.tsx | **완료** | 3컬럼 Floating Panels → 단일 스크롤 매거진으로 변경 |
 
 ---
 
@@ -246,7 +246,7 @@ auth.users (Supabase 관리)
 | `tasking_status` | received, reviewing, quoted, accepted, rejected | 촬영 요청 상태 |
 | `chat_role` | user, assistant, system | 채팅 메시지 역할 |
 | `notification_type` | order_completed, order_failed, tasking_update, system | 알림 종류 |
-| `feed_type` | analysis, shorts, trending, news, community, report | Discovery Feed 콘텐츠 타입 |
+| `feed_type` | analysis, shorts, trending, news, community, report, citadel, predict, warden, northpaper | Discovery Feed + 플랫폼별 콘텐츠 타입 |
 
 ### 4.3 공간 인덱스
 
@@ -1597,7 +1597,7 @@ s3://earthpaper-clips/        # 클리핑 결과
 | catalog/search | west/south/east/north: 경위도 범위, satellite: enum, limit: 1~100 |
 | chat | sessionId: UUID, message: string |
 | chat/save | sessionId: UUID, content: string |
-| dashboard/feed | type: feed_type enum, cursor: ISO 8601, limit: 1~20 |
+| dashboard/feed | type: feed_type enum, cursor: ISO 8601, limit: 1~50 |
 | dashboard/watchlist POST | name: string (1~50자), geometry: Polygon 구조 |
 
 ### 12.3 LLM 보안 (F8)
@@ -1793,8 +1793,13 @@ earthpaper/
 | 단위 테스트 | Vitest | `geo.ts` (면적 계산, AOI 검증, 가격 계산) | 통과 |
 | 단위 테스트 | Vitest | `security.ts` (입력 검증, 인젝션 탐지) | 통과 |
 | 단위 테스트 | Vitest | `order.ts` (주문 유틸리티) | 통과 |
-| API 테스트 | (계획) | 각 API Route 입력 검증, 인증 차단 | - |
+| 단위 테스트 | Vitest | `mock-dashboard.ts` (ID 고유성, 타입 유효성, /ko/ URL, YouTube ID, 플랫폼 커버리지) | 통과 |
+| 단위 테스트 | Vitest | Feed API 로직 (필터링, 정렬, 커서 페이지네이션, limit 클램핑) | 통과 |
+| 단위 테스트 | Vitest | Analytics (이벤트 트래킹) | 통과 |
+| API 테스트 | (계획) | 각 API Route 입력 검증 | - |
 | E2E 테스트 | (계획) | 결제 플로우, 채팅 플로우 | - |
+
+**총 71개 테스트 통과 (7 파일)**, `npm test` 또는 `vitest run`으로 실행.
 
 ### 15.2 추가 테스트 계획
 
@@ -1852,7 +1857,7 @@ chat:
 | P2-1 | 알림 Realtime 전환 | M | polling -> Supabase Realtime subscription |
 | P2-2 | 다운로드 만료 처리 | S | 만료된 downloads 표시 처리 |
 | P2-3 | 채팅 Realtime | M | 현재 polling -> Realtime subscription |
-| P2-4 | 대시보드 v4.2 적용 | L | Professional Discovery + Discovery Feed UI + 서비스 연결 (섹션 8.5) |
+| P2-4 | ~~대시보드 v4.2 적용~~ | ~~L~~ | **완료** — Bloomberg 에디토리얼 매거진으로 구현. Breaking Strip + Live Feed + Shorts + 플랫폼 리포트 |
 
 ### Sprint B 예정
 

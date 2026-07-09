@@ -132,13 +132,6 @@ export default function Header() {
           >
             로그인
           </Link>
-          <Link
-            href="/signup"
-            className="text-xs px-4 py-1.5 rounded-md font-medium"
-            style={{ background: 'var(--accent)', color: '#0E0E10' }}
-          >
-            시작하기
-          </Link>
         </div>
       </div>
     </header>

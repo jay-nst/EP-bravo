@@ -27,8 +27,16 @@
 - Round 2 (2026-07-02): FINDING-014~017 — 히어로CTA/푸터/보조링크 터치타겟, Before/After 텍스트겹침
 - Deferred: 푸터 링크 36px (허용), 실 위성영상 교체 후 재평가
 
-## Remaining Work
+## Current State (2026-07-09)
 
-- Sprint A 구현 시작 (dashboard v4.2, map, portal, chat, tasking)
+Homepage Bloomberg 스타일 에디토리얼 매거진 레이아웃 완성.
+플랫폼 5개 랜딩페이지 완성 (Citadel, Predict, Warden, Northpaper, Nexus).
+인증 제거, DEMO_USER fallback. Vitest 71개 테스트 통과.
+
+### Remaining Work
+
+- T1: Feed API → Supabase 실 데이터 연동 (스키마 설계 선행 필요)
+- 기상청/지진/산불 API 연동 (키 발급 필요)
+- 실제 위성 영상 이미지 교체 (현재 placeholder)
 - 인증 후 페이지 디자인 리뷰
-- 실제 위성 영상 이미지 교체
+- 모바일 반응형 (별도 스프린트)

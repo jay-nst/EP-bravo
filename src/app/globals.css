@@ -130,6 +130,8 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 /* --- Typography Utilities --- */

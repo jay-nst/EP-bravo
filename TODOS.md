@@ -6,7 +6,7 @@
 
 **What:** CTR/D7/전환율 시각화 대시보드 구축 (Plausible, PostHog, 또는 자체 구현)
 
-**Why:** Design Doc의 성공 지표 4개(Core CTA CTR 8%, Tempest CTR 12%, EP Original D7 15%, 구매 전환율 2%)를 측정하려면 이벤트 데이터를 시각화하는 대시보드가 필요. 8B에서 기본 이벤트 트래킹은 추가하지만 대시보드는 별도.
+**Why:** Design Doc의 성공 지표 4개(Core CTA CTR 8%, Citadel CTR 12%, EP Original D7 15%, 구매 전환율 2%)를 측정하려면 이벤트 데이터를 시각화하는 대시보드가 필요. 8B에서 기본 이벤트 트래킹은 추가하지만 대시보드는 별도.
 
 **Context:** MVP에 Supabase 이벤트 테이블 + CTA 클릭 로깅 추가 예정(8B 결정). 이 이벤트 데이터를 시각화하는 대시보드는 배포 후 작업. Plausible(셀프 호스트 가능, 가벼움) vs PostHog(기능 풍부, 무거움) 선택 필요. SQL 직접 조회로 시작해도 됨.
 
@@ -32,7 +32,7 @@
 
 **Why:** D10에서 모바일 전략(사이드바 분해)은 결정했지만, 구체적 브레이크포인트와 터치 타겟 스펙이 없으면 구현자가 임의로 정함. 반응형 일관성 보장 필요.
 
-**Context:** T1(DESIGN.md 작성)에서 globals.css 토큰 추출 시 함께 진행 가능. 모바일에서 Core CTA는 Hero 아래, EP Original은 Tempest 레인 뒤에 삽입하는 전략이 결정됨(D10).
+**Context:** T1(DESIGN.md 작성)에서 globals.css 토큰 추출 시 함께 진행 가능. 모바일에서 Core CTA는 Hero 아래, EP Original은 Citadel 레인 뒤에 삽입하는 전략이 결정됨(D10).
 
 **Effort:** S
 **Priority:** P2

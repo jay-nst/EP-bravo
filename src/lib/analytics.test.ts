@@ -61,7 +61,7 @@ describe('trackEvent', () => {
   it('restores session ID from sessionStorage', async () => {
     sessionStorageMock['ep_session_id'] = 'existing-session-abc';
     const { trackEvent } = await import('./analytics');
-    trackEvent('layer_toggle', 'tempest', {});
+    trackEvent('layer_toggle', 'citadel', {});
 
     const text = await (sendBeaconSpy.mock.calls[0][1] as Blob).text();
     expect(JSON.parse(text).session_id).toBe('existing-session-abc');

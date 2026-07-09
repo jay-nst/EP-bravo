@@ -1,14 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { TEMPEST_GEOJSON, TEMPEST_LANE_CARDS } from './mock-tempest';
+import { CITADEL_GEOJSON, CITADEL_LANE_CARDS } from './mock-citadel';
 
-describe('TEMPEST_GEOJSON', () => {
+describe('CITADEL_GEOJSON', () => {
   it('is a valid FeatureCollection', () => {
-    expect(TEMPEST_GEOJSON.type).toBe('FeatureCollection');
-    expect(TEMPEST_GEOJSON.features.length).toBeGreaterThan(0);
+    expect(CITADEL_GEOJSON.type).toBe('FeatureCollection');
+    expect(CITADEL_GEOJSON.features.length).toBeGreaterThan(0);
   });
 
   it('all features have required properties', () => {
-    for (const feature of TEMPEST_GEOJSON.features) {
+    for (const feature of CITADEL_GEOJSON.features) {
       expect(feature.type).toBe('Feature');
       expect(feature.properties.id).toBeTruthy();
       expect(feature.properties.event_type).toBeTruthy();
@@ -21,38 +21,38 @@ describe('TEMPEST_GEOJSON', () => {
 
   it('severity values are valid', () => {
     const validSeverities = ['critical', 'high', 'moderate', 'low'];
-    for (const feature of TEMPEST_GEOJSON.features) {
+    for (const feature of CITADEL_GEOJSON.features) {
       expect(validSeverities).toContain(feature.properties.severity);
     }
   });
 
   it('event_type values are valid', () => {
     const validTypes = ['earthquake', 'flood', 'wildfire', 'typhoon', 'landslide', 'volcanic'];
-    for (const feature of TEMPEST_GEOJSON.features) {
+    for (const feature of CITADEL_GEOJSON.features) {
       expect(validTypes).toContain(feature.properties.event_type);
     }
   });
 
   it('timestamps are valid ISO 8601', () => {
-    for (const feature of TEMPEST_GEOJSON.features) {
+    for (const feature of CITADEL_GEOJSON.features) {
       const date = new Date(feature.properties.timestamp);
       expect(date.getTime()).not.toBeNaN();
     }
   });
 
   it('features have unique IDs', () => {
-    const ids = TEMPEST_GEOJSON.features.map((f) => f.properties.id);
+    const ids = CITADEL_GEOJSON.features.map((f) => f.properties.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 });
 
-describe('TEMPEST_LANE_CARDS', () => {
+describe('CITADEL_LANE_CARDS', () => {
   it('has at least 1 card', () => {
-    expect(TEMPEST_LANE_CARDS.length).toBeGreaterThan(0);
+    expect(CITADEL_LANE_CARDS.length).toBeGreaterThan(0);
   });
 
   it('all cards have required fields', () => {
-    for (const card of TEMPEST_LANE_CARDS) {
+    for (const card of CITADEL_LANE_CARDS) {
       expect(card.id).toBeTruthy();
       expect(card.title).toBeTruthy();
       expect(card.summary).toBeTruthy();
@@ -63,7 +63,7 @@ describe('TEMPEST_LANE_CARDS', () => {
   });
 
   it('cards have unique IDs', () => {
-    const ids = TEMPEST_LANE_CARDS.map((c) => c.id);
+    const ids = CITADEL_LANE_CARDS.map((c) => c.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 });

@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { FeedItem, DashboardSummary } from '@/types/dashboard';
 import { trackEvent } from '@/lib/analytics';
+import dynamic from 'next/dynamic';
+
+const MiniMap = dynamic(() => import('./MiniMap'), { ssr: false });
 
 const PLATFORMS = [
   { key: 'citadel', label: 'Citadel', desc: '재난 · 도시 관제', color: '#C45C4A', href: '/citadel' },
@@ -15,16 +18,16 @@ const PLATFORMS = [
 ] as const;
 
 const CURATED_ITEMS = [
-  { platform: 'warden', color: '#6B8A5E', badge: 'METHANE · EU 규제', title: '국내 정유시설 메탄 배출 위성 검증', sub: '울산/여수 · 1일 전' },
-  { platform: 'citadel', color: '#C45C4A', badge: 'CRITICAL · WILDFIRE', title: 'Santa Rosa Island 산불 확산 및 피해 범위 위성 추적', sub: 'California, USA · 3일 전' },
-  { platform: 'predict', color: '#4A9EC4', badge: 'ASSET · SOLAR', title: '태양광 발전소 패널 이상 탐지 — 위성 자산 검증', sub: '전남 해남 · 2일 전' },
-  { platform: 'northpaper', color: '#3D5A80', badge: 'DEFENSE · SHIPYARD', title: '위성이 포착한 북한 5대 조선소 구조 변화', sub: 'North Korea · 3일 전' },
-  { platform: 'warden', color: '#6B8A5E', badge: 'EUDR · 공급망', title: 'EUDR 공급망 검증 — 코코아 원산지 산림 전용 모니터링', sub: "Côte d'Ivoire · 3일 전" },
-  { platform: 'predict', color: '#4A9EC4', badge: 'COMMODITY · OIL', title: '호르무즈 해협 봉쇄 후 원유 이동 경로 위성 분석', sub: 'Fujairah/Yanbu · 4일 전' },
-  { platform: 'citadel', color: '#C45C4A', badge: 'CRITICAL · FLOOD', title: '자메이카 홍수 피해 위성영상 분석', sub: 'Jamaica · 5일 전' },
-  { platform: 'warden', color: '#6B8A5E', badge: 'PALM OIL · FOREST', title: '동남아 팜 플랜테이션 확장 감시 — 보르네오 위성 분석', sub: 'Borneo · 9일 전' },
-  { platform: 'predict', color: '#4A9EC4', badge: 'AI FORECAST · 97%', title: '미국 옥수수 수확량 예측 — AI 모델 97% 정확도', sub: 'US Corn Belt · 8일 전' },
-  { platform: 'northpaper', color: '#3D5A80', badge: 'DEFENSE · NUCLEAR', title: '이란 핵시설 공습 피해 위성영상 분석', sub: 'Iran · 10일 전' },
+  { platform: 'warden', color: '#6B8A5E', badge: 'METHANE · EU 규제', title: '국내 정유시설 메탄 배출 위성 검증', sub: '울산/여수 · 1일 전', href: '/warden' },
+  { platform: 'citadel', color: '#C45C4A', badge: 'CRITICAL · WILDFIRE', title: 'Santa Rosa Island 산불 확산 및 피해 범위 위성 추적', sub: 'California, USA · 3일 전', href: 'https://ep.naraspace.com/ko/post/contents/santa-rosa-island-wildfire-satellite-analysis' },
+  { platform: 'predict', color: '#4A9EC4', badge: 'ASSET · SOLAR', title: '태양광 발전소 패널 이상 탐지 — 위성 자산 검증', sub: '전남 해남 · 2일 전', href: '/predict' },
+  { platform: 'northpaper', color: '#3D5A80', badge: 'DEFENSE · SHIPYARD', title: '위성이 포착한 북한 5대 조선소 구조 변화', sub: 'North Korea · 3일 전', href: 'https://ep.naraspace.com/ko/post/contents/satellite-imagery-changes-five-major-north-korean-shipyards-ports' },
+  { platform: 'warden', color: '#6B8A5E', badge: 'EUDR · 공급망', title: 'EUDR 공급망 검증 — 코코아 원산지 산림 전용 모니터링', sub: "Côte d'Ivoire · 3일 전", href: '/warden' },
+  { platform: 'predict', color: '#4A9EC4', badge: 'COMMODITY · OIL', title: '호르무즈 해협 봉쇄 후 원유 이동 경로 위성 분석', sub: 'Fujairah/Yanbu · 4일 전', href: 'https://ep.naraspace.com/ko/post/contents/strait-of-hormuz-blockade-oil-rerouting-fujairah-yanbu' },
+  { platform: 'citadel', color: '#C45C4A', badge: 'CRITICAL · FLOOD', title: '자메이카 홍수 피해 위성영상 분석', sub: 'Jamaica · 5일 전', href: 'https://ep.naraspace.com/ko/post/contents/disaster-impact-jamaica-flood-damage-satellite-imagery' },
+  { platform: 'warden', color: '#6B8A5E', badge: 'PALM OIL · FOREST', title: '동남아 팜 플랜테이션 확장 감시 — 보르네오 위성 분석', sub: 'Borneo · 9일 전', href: '/warden' },
+  { platform: 'predict', color: '#4A9EC4', badge: 'AI FORECAST · 97%', title: '미국 옥수수 수확량 예측 — AI 모델 97% 정확도', sub: 'US Corn Belt · 8일 전', href: 'https://ep.naraspace.com/ko/post/contents/2025-us-corn-yield-prediction' },
+  { platform: 'northpaper', color: '#3D5A80', badge: 'DEFENSE · NUCLEAR', title: '이란 핵시설 공습 피해 위성영상 분석', sub: 'Iran · 10일 전', href: 'https://ep.naraspace.com/ko/post/contents/airstrike-damage-to-irans-nuclear-facilities-the-truth-seen-from-satellite-imagery' },
 ];
 
 const TRENDING_SUBJECTS = [
@@ -62,7 +65,7 @@ export default function DashboardClient() {
   const loadFeed = useCallback(async () => {
     setFeedLoading(true);
     try {
-      const params = new URLSearchParams({ type: 'all', limit: '30' });
+      const params = new URLSearchParams({ type: 'all', limit: '50' });
       const res = await fetch(`/api/dashboard/feed?${params}`);
       const data = await res.json();
       setFeedItems(data.items);
@@ -143,6 +146,9 @@ export default function DashboardClient() {
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: 'var(--bg)' }}>
+      {/* ===== BREAKING STRIP ===== */}
+      <BreakingStrip items={feedItems} />
+
       {/* ===== FEATURED HERO (Bloomberg-style) ===== */}
       <section
         className="relative overflow-hidden cursor-pointer"
@@ -152,18 +158,30 @@ export default function DashboardClient() {
           borderBottom: '1px solid var(--border)',
         }}
       >
+        {/* Satellite background image */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: 'url(https://earthpaper.s3.ap-northeast-2.amazonaws.com/post/v2/editor/48/en-20260430-north-korea-nampo-port-and-nampo-shipyard.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 40%',
+            opacity: 0.45,
+          }}
+        />
+        {/* Left-side gradient overlay for text readability */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              'linear-gradient(to right, rgba(14,14,16,0.97) 0%, rgba(14,14,16,0.7) 55%, transparent 100%)',
+              'linear-gradient(to right, rgba(14,14,16,0.97) 0%, rgba(14,14,16,0.82) 45%, rgba(14,14,16,0.4) 75%, rgba(14,14,16,0.25) 100%)',
           }}
         />
+        {/* Subtle scanline texture */}
         <div
-          className="absolute top-0 right-0 w-[55%] h-full pointer-events-none"
+          className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(61,90,128,0.03) 3px, rgba(61,90,128,0.03) 4px), radial-gradient(ellipse at 60% 50%, rgba(61,90,128,0.12), transparent 70%)',
+              'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(27,191,168,0.015) 3px, rgba(27,191,168,0.015) 4px)',
           }}
         />
         {editorPick ? (
@@ -215,27 +233,35 @@ export default function DashboardClient() {
           className="flex gap-4 px-6 overflow-x-auto"
           style={{ scrollbarWidth: 'none' }}
         >
-          {CURATED_ITEMS.map((item, i) => (
-            <div
-              key={i}
-              className="flex-shrink-0 w-[280px] p-4 rounded-lg cursor-pointer transition-colors hover:bg-[var(--surface-elevated)]"
-              style={{ border: `1px solid ${item.color}30`, background: `${item.color}08` }}
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded uppercase"
-                  style={{ background: `${item.color}20`, color: item.color }}
-                >
-                  {item.badge}
-                </span>
-              </div>
-              <p className="text-sm font-medium leading-snug mb-2" style={{ color: 'var(--text)' }}>
-                {item.title}
-              </p>
-              <p className="text-[11px] font-mono" style={{ color: 'var(--text-muted)' }}>
-                {item.sub}
-              </p>
-            </div>
-          ))}
+          {CURATED_ITEMS.map((item, i) => {
+            const isExternal = item.href.startsWith('http');
+            const CardTag = isExternal ? 'a' : Link;
+            const linkProps = isExternal
+              ? { href: item.href, target: '_blank' as const, rel: 'noopener noreferrer' }
+              : { href: item.href };
+            return (
+              <CardTag
+                key={i}
+                {...linkProps}
+                className="flex-shrink-0 w-[280px] p-4 rounded-lg cursor-pointer transition-colors hover:bg-[var(--surface-elevated)] no-underline"
+                style={{ border: `1px solid ${item.color}30`, background: `${item.color}08`, textDecoration: 'none' }}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded uppercase"
+                    style={{ background: `${item.color}20`, color: item.color }}
+                  >
+                    {item.badge}
+                  </span>
+                </div>
+                <p className="text-sm font-medium leading-snug mb-2" style={{ color: 'var(--text)' }}>
+                  {item.title}
+                </p>
+                <p className="text-[11px] font-mono" style={{ color: 'var(--text-muted)' }}>
+                  {item.sub}
+                </p>
+              </CardTag>
+            );
+          })}
         </div>
       </section>
 
@@ -409,15 +435,8 @@ export default function DashboardClient() {
                 <p className="text-xs font-medium tracking-wider" style={{ color: 'var(--text-muted)' }}>오늘의 지구</p>
                 <Link href="/core" className="text-xs font-mono" style={{ color: 'var(--accent)' }}>Core →</Link>
               </div>
-              <div className="rounded-lg mb-3 overflow-hidden relative" style={{ height: 100, background: 'var(--surface)' }}>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div style={{ width: 60, height: 70, background: 'rgba(27,191,168,0.15)', borderRadius: '30% 40% 35% 45%', position: 'relative' }}>
-                    <span className="absolute top-2 left-3 w-1.5 h-1.5 rounded-full" style={{ background: 'var(--accent)', animation: 'pulse-dot 2s ease-in-out infinite' }} />
-                    <span className="absolute top-5 right-2 w-1.5 h-1.5 rounded-full" style={{ background: '#C45C4A', animation: 'pulse-dot 2s ease-in-out 0.5s infinite' }} />
-                    <span className="absolute bottom-4 left-5 w-1 h-1 rounded-full" style={{ background: 'var(--accent)', animation: 'pulse-dot 2s ease-in-out 1s infinite' }} />
-                  </div>
-                </div>
-                <div className="absolute top-2 left-2 text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>36.5°N 127.5°E</div>
+              <div className="mb-3">
+                <MiniMap />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <MetricItem label="활성 재난" value="2" suffix="건" color="#C45C4A" />
@@ -637,6 +656,7 @@ function AnalysisCard({ item }: { item: FeedItem }) {
     </div>
   );
 
+  if (item.link_url && item.link_action === 'external') return <a href={item.link_url} target="_blank" rel="noopener noreferrer">{inner}</a>;
   if (item.link_url) return <Link href={item.link_url}>{inner}</Link>;
   return inner;
 }
@@ -678,4 +698,114 @@ function QuickActionBtn({ href, icon, label, onClick }: { href?: string; icon: s
     return <Link href={href} className={cls} style={style}><span className="text-lg">{icon}</span><span className="text-xs" style={{ color: 'var(--text-muted)' }}>{label}</span></Link>;
   }
   return <button onClick={onClick} className={cls} style={style}><span className="text-lg">{icon}</span><span className="text-xs" style={{ color: 'var(--text-muted)' }}>{label}</span></button>;
+}
+
+const SEVERITY_LABEL: Record<string, { text: string; color: string }> = {
+  critical: { text: 'CRITICAL', color: '#C45C4A' },
+  high: { text: 'HIGH', color: '#E07B5F' },
+  medium: { text: 'MEDIUM', color: '#C8923A' },
+};
+
+function BreakingStrip({ items }: { items: FeedItem[] }) {
+  const citadelItems = items
+    .filter((i) => i.type === 'citadel')
+    .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [flipState, setFlipState] = useState<'idle' | 'flip-out' | 'flip-in'>('idle');
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (citadelItems.length <= 1) return;
+    intervalRef.current = setInterval(() => {
+      setFlipState('flip-out');
+      setTimeout(() => {
+        setCurrentIdx((prev) => (prev + 1) % citadelItems.length);
+        setFlipState('flip-in');
+        setTimeout(() => setFlipState('idle'), 400);
+      }, 400);
+    }, 8000);
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [citadelItems.length]);
+
+  if (citadelItems.length === 0) return null;
+  const current = citadelItems[currentIdx % citadelItems.length];
+  if (!current) return null;
+
+  const sev = SEVERITY_LABEL[String(current.metadata.severity)] ?? { text: 'ALERT', color: '#C8923A' };
+  const location = String(current.metadata.location ?? '');
+  const isExternal = current.link_url?.startsWith('http');
+
+  const flipTransform =
+    flipState === 'flip-out' ? 'rotateX(90deg)' :
+    flipState === 'flip-in' ? 'rotateX(-90deg)' : 'rotateX(0deg)';
+  const flipOpacity = flipState === 'idle' ? 1 : 0;
+
+  const inner = (
+    <div className="max-w-6xl mx-auto px-6 py-2 flex items-center gap-3" style={{ perspective: 600 }}>
+      <span className="inline-flex items-center gap-1.5 flex-shrink-0" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: '#C45C4A' }}>
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C45C4A', animation: 'pulse-dot 1.5s ease-in-out infinite' }} />
+        CITADEL
+      </span>
+
+      <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+        <div
+          style={{
+            transform: flipTransform,
+            opacity: flipOpacity,
+            transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease',
+            transformOrigin: flipState === 'flip-out' ? 'bottom center' : 'top center',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
+          <span
+            className="flex-shrink-0"
+            style={{
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: 9,
+              fontWeight: 700,
+              letterSpacing: '0.08em',
+              color: sev.color,
+              padding: '1px 5px',
+              borderRadius: 2,
+              background: `${sev.color}18`,
+            }}
+          >
+            {sev.text}
+          </span>
+          <span className="truncate" style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)' }}>
+            {current.title}
+          </span>
+          {location && (
+            <span className="flex-shrink-0 hidden sm:inline" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: 'var(--text-muted)' }}>
+              {location}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {citadelItems.length > 1 && (
+        <span className="flex-shrink-0" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 9, color: 'var(--text-muted)' }}>
+          {(currentIdx % citadelItems.length) + 1}/{citadelItems.length}
+        </span>
+      )}
+    </div>
+  );
+
+  const wrapStyle = {
+    background: 'rgba(196, 92, 74, 0.06)',
+    borderBottom: '1px solid rgba(196, 92, 74, 0.15)',
+    textDecoration: 'none' as const,
+    display: 'block' as const,
+  };
+
+  if (isExternal && current.link_url) {
+    return <a href={current.link_url} target="_blank" rel="noopener noreferrer" style={wrapStyle}>{inner}</a>;
+  }
+  if (current.link_url) {
+    return <Link href={current.link_url} style={wrapStyle}>{inner}</Link>;
+  }
+  return <div style={wrapStyle}>{inner}</div>;
 }

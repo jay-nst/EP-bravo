@@ -1,12 +1,18 @@
 # EarthPaper UI Design Brief
 
-> Figma 프로토타입 기준: https://www.figma.com/proto/l4wvGeL6vN5TZZiSP4DvaU/어스페이퍼_Jay?node-id=17-142&starting-point-node-id=71:40
+> **구현 상태 (2026-07-09)**: 이 문서는 초기 설계 단계의 Figma 기반 브리프입니다.
+> 실제 구현은 Bloomberg 스타일 에디토리얼 매거진 레이아웃으로 변경되었습니다.
+> 현재 구현 상태는 `DESIGN.md`와 `.claude/session-state.json`을 참조하세요.
+> 인증이 제거되어 DEMO_USER fallback을 사용합니다.
+> 3컬럼 Floating Panels 구조는 폐기되고, 단일 스크롤 매거진 레이아웃으로 대체되었습니다.
+
+> Figma 프로토타입 (초기 참조용): https://www.figma.com/proto/l4wvGeL6vN5TZZiSP4DvaU/어스페이퍼_Jay?node-id=17-142&starting-point-node-id=71:40
 
 ## 제품 개요
 
-위성 영상(Observer 1.5m, SpaceEye-T 25cm) 셀프서비스 구매 포털.
-로그인 후 포털 대시보드가 메인 화면이며, 오늘의 위성 사진, 트렌딩 위치, 내 주문 현황,
-서비스 바로가기를 한눈에 볼 수 있는 B2B SaaS 플랫폼. (Professional Discovery 컨셉)
+위성영상 기반 지리공간 인텔리전스 플랫폼.
+5개 플랫폼(Citadel/Predict/Warden/Northpaper/Nexus) 체제로 재난, 자산검증, 기후컴플라이언스, 국방안보, 데이터마켓을 커버.
+메인 화면은 Bloomberg 스타일 에디토리얼 매거진으로, 큐레이션 콘텐츠와 플랫폼 리포트를 제공.
 
 ## 사내 디자인 시스템
 
@@ -38,9 +44,20 @@ Figma: https://www.figma.com/design/7cgOfL2jmPpOiYuLEEeI5o/2026-UI-Design-System
 
 ## 디자인할 화면 목록
 
-### 1. 포털 대시보드 (/dashboard) — 메인 화면 (로그인 후 홈)
+### 1. 홈페이지 (/) — 에디토리얼 매거진 메인
 
-**v4.2 Professional Discovery + Discovery Feed** — 게이미피케이션 없이, 다양한 콘텐츠와 서비스 연결 중심의 대시보드.
+> **구현 완료**: `DashboardClient.tsx` — Bloomberg 스타일 단일 스크롤 매거진.
+> 아래 원래 설계(3컬럼 Floating Panels)는 폐기되었으나 참조용으로 남겨둡니다.
+
+**실제 구현 구조**:
+- Breaking Strip: 최신 critical/high severity Citadel 이벤트 1건 (정적 배너)
+- Hero: Editor's Pick (인터랙티브 콘텐츠 링크)
+- Live Feed: 10개 큐레이션 카드 자동스크롤 (rAF, mouseenter pause)
+- YouTube Shorts: 8개 실제 Nara Space 영상 (thumbnail-first lazy load)
+- 플랫폼 리포트: Citadel/Predict/Warden/Northpaper 각 2건 (2/3 + 1/3 sidebar)
+- 사이드바: EP Original 뉴스 3건 + 인기 콘텐츠
+
+**폐기된 원래 설계** (v4.2 Professional Discovery + Discovery Feed):
 전체 화면 Mapbox 위성 지도를 배경으로 glass-morphism 패널들이 floating되는 구조.
 
 #### 배경
@@ -237,16 +254,22 @@ Figma: https://www.figma.com/design/7cgOfL2jmPpOiYuLEEeI5o/2026-UI-Design-System
 - 6가지 콘텐츠 타입(AI 분석, 숏츠, 트렌딩, 뉴스, 커뮤니티, 리포트)으로 클릭 유도
 - 지도 페이지에서는 지도가 주인공 — UI는 지도를 방해하지 않게
 
-## 페이지 라우팅 변경
+## 페이지 라우팅 (현재 구현)
 
-| 경로 | 비로그인 | 로그인 |
-|------|---------|--------|
-| `/` | 랜딩 페이지 표시 | `/dashboard`로 리다이렉트 |
-| `/dashboard` | `/login`으로 리다이렉트 | 포털 대시보드 (메인) |
-| `/map` | `/login`으로 리다이렉트 | 지도 서비스 |
-| `/portal` | `/login`으로 리다이렉트 | 내 주문 |
-| `/chat` | `/login`으로 리다이렉트 | AI 채팅 |
-| `/tasking` | `/login`으로 리다이렉트 | 촬영 요청 |
+> 인증 제거됨. 모든 페이지 공개 접근. DEMO_USER fallback 사용.
+
+| 경로 | 설명 |
+|------|------|
+| `/` | 에디토리얼 매거진 메인 (DashboardClient) |
+| `/citadel` | 재난·도시 관제 랜딩 (실 포스트 3건 연결) |
+| `/predict` | 자산 검증·금융 랜딩 (predicthings.com CTA) |
+| `/warden` | 기후·컴플라이언스 랜딩 (규제 타임라인 + 포스트) |
+| `/northpaper` | 국방·안보 랜딩 (공개 분석 3건) |
+| `/core` | 위성 지도 + 공공데이터 레이어 |
+| `/chat` | AI 채팅 (mock 응답) |
+| `/tasking` | 촬영 요청 |
+| `/portal` | 내 주문 (mock 3건) |
+| `/interactive/north-korean-shipyards` | 인터랙티브 롱폼 콘텐츠 |
 
 ## 상태별 변형 (디자인 필요)
 

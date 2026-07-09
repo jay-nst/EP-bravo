@@ -7,9 +7,9 @@ import AoiPanel from '@/components/map/AoiPanel';
 import LayerPanel from '@/components/core/LayerPanel';
 import type { OverlayLayer } from '@/components/core/LayerPanel';
 import { SEVERITY_COLORS } from '@/components/core/LayerPanel';
-import { TEMPEST_GEOJSON } from '@/lib/mock-tempest';
+import { CITADEL_GEOJSON } from '@/lib/mock-citadel';
 import type { SatelliteType } from '@/types/database';
-import type { TempestSeverity } from '@/types/tempest';
+import type { CitadelSeverity } from '@/types/citadel';
 import { createClient } from '@/lib/supabase/client';
 import { requestTossPayment } from '@/lib/toss/widget';
 import { trackEvent } from '@/lib/analytics';
@@ -87,7 +87,7 @@ const INITIAL_LAYERS: OverlayLayer[] = [
     label: 'Citadel',
     color: '#C45C4A',
     enabled: true,
-    featureCount: TEMPEST_GEOJSON.features.length,
+    featureCount: CITADEL_GEOJSON.features.length,
   },
   {
     id: 'air-quality',
@@ -164,11 +164,11 @@ const INITIAL_LAYERS: OverlayLayer[] = [
   },
 ];
 
-const TEMPEST_SOURCE_ID = 'tempest-overlay';
-const TEMPEST_FILL_LAYER = 'tempest-overlay-fill';
-const TEMPEST_OUTLINE_LAYER = 'tempest-overlay-outline';
-const TEMPEST_POINT_LAYER = 'tempest-overlay-point';
-const TEMPEST_LABEL_LAYER = 'tempest-overlay-label';
+const CITADEL_SOURCE_ID = 'citadel-overlay';
+const CITADEL_FILL_LAYER = 'citadel-overlay-fill';
+const CITADEL_OUTLINE_LAYER = 'citadel-overlay-outline';
+const CITADEL_POINT_LAYER = 'citadel-overlay-point';
+const CITADEL_LABEL_LAYER = 'citadel-overlay-label';
 
 const PUBLIC_LAYER_IDS: Record<PublicLayerId, { source: string; layers: string[] }> = {
   'air-quality': {
@@ -800,17 +800,17 @@ export default function CorePage() {
     }
   }, []);
 
-  const addTempestOverlay = useCallback((map: mapboxgl.Map) => {
+  const addCitadelOverlay = useCallback((map: mapboxgl.Map) => {
     const polygons: GeoJSON.FeatureCollection = {
       type: 'FeatureCollection',
-      features: TEMPEST_GEOJSON.features.filter(
+      features: CITADEL_GEOJSON.features.filter(
         (f) => f.geometry.type === 'Polygon',
       ),
     };
 
     const points: GeoJSON.FeatureCollection = {
       type: 'FeatureCollection',
-      features: TEMPEST_GEOJSON.features.map((f) => {
+      features: CITADEL_GEOJSON.features.map((f) => {
         if (f.geometry.type === 'Point') return f as GeoJSON.Feature;
         const coords = (f.geometry as GeoJSON.Polygon).coordinates[0];
         const center = coords.reduce(
@@ -825,13 +825,13 @@ export default function CorePage() {
       }),
     };
 
-    map.addSource(TEMPEST_SOURCE_ID, { type: 'geojson', data: polygons });
-    map.addSource(`${TEMPEST_SOURCE_ID}-points`, { type: 'geojson', data: points });
+    map.addSource(CITADEL_SOURCE_ID, { type: 'geojson', data: polygons });
+    map.addSource(`${CITADEL_SOURCE_ID}-points`, { type: 'geojson', data: points });
 
     map.addLayer({
-      id: TEMPEST_FILL_LAYER,
+      id: CITADEL_FILL_LAYER,
       type: 'fill',
-      source: TEMPEST_SOURCE_ID,
+      source: CITADEL_SOURCE_ID,
       paint: {
         'fill-color': [
           'match',
@@ -847,9 +847,9 @@ export default function CorePage() {
     });
 
     map.addLayer({
-      id: TEMPEST_OUTLINE_LAYER,
+      id: CITADEL_OUTLINE_LAYER,
       type: 'line',
-      source: TEMPEST_SOURCE_ID,
+      source: CITADEL_SOURCE_ID,
       paint: {
         'line-color': [
           'match',
@@ -866,9 +866,9 @@ export default function CorePage() {
     });
 
     map.addLayer({
-      id: TEMPEST_POINT_LAYER,
+      id: CITADEL_POINT_LAYER,
       type: 'circle',
-      source: `${TEMPEST_SOURCE_ID}-points`,
+      source: `${CITADEL_SOURCE_ID}-points`,
       paint: {
         'circle-radius': 6,
         'circle-color': [
@@ -886,9 +886,9 @@ export default function CorePage() {
     });
 
     map.addLayer({
-      id: TEMPEST_LABEL_LAYER,
+      id: CITADEL_LABEL_LAYER,
       type: 'symbol',
-      source: `${TEMPEST_SOURCE_ID}-points`,
+      source: `${CITADEL_SOURCE_ID}-points`,
       layout: {
         'text-field': ['get', 'title'],
         'text-size': 11,
@@ -903,7 +903,7 @@ export default function CorePage() {
       },
     });
 
-    map.on('click', TEMPEST_POINT_LAYER, async (e) => {
+    map.on('click', CITADEL_POINT_LAYER, async (e) => {
       const feature = e.features?.[0];
       if (!feature?.properties) return;
       const props = feature.properties;
@@ -911,7 +911,7 @@ export default function CorePage() {
 
       const popupEl = document.createElement('div');
       popupEl.style.cssText = 'max-width:260px;font-family:var(--font-pretendard),sans-serif;';
-      const sevColor = SEVERITY_COLORS[props.severity as TempestSeverity] ?? SEVERITY_COLORS.moderate;
+      const sevColor = SEVERITY_COLORS[props.severity as CitadelSeverity] ?? SEVERITY_COLORS.moderate;
       popupEl.innerHTML = `
         <div style="padding:8px;">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
@@ -937,10 +937,10 @@ export default function CorePage() {
         .addTo(map);
     });
 
-    map.on('mouseenter', TEMPEST_POINT_LAYER, () => {
+    map.on('mouseenter', CITADEL_POINT_LAYER, () => {
       map.getCanvas().style.cursor = 'pointer';
     });
-    map.on('mouseleave', TEMPEST_POINT_LAYER, () => {
+    map.on('mouseleave', CITADEL_POINT_LAYER, () => {
       map.getCanvas().style.cursor = '';
     });
   }, []);
@@ -948,7 +948,7 @@ export default function CorePage() {
   const handleMapReady = useCallback(
     (map: mapboxgl.Map) => {
       mapRef.current = map;
-      addTempestOverlay(map);
+      addCitadelOverlay(map);
       addPublicDataLayers(map);
 
       if (!animRef.current) {
@@ -959,7 +959,7 @@ export default function CorePage() {
       setLayers((prev) => {
         prev.forEach((l) => {
           if (l.id === 'citadel' && !l.enabled) {
-            [TEMPEST_FILL_LAYER, TEMPEST_OUTLINE_LAYER, TEMPEST_POINT_LAYER, TEMPEST_LABEL_LAYER].forEach((id) => {
+            [CITADEL_FILL_LAYER, CITADEL_OUTLINE_LAYER, CITADEL_POINT_LAYER, CITADEL_LABEL_LAYER].forEach((id) => {
               if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
             });
           }
@@ -980,7 +980,7 @@ export default function CorePage() {
         return prev;
       });
     },
-    [addTempestOverlay, addPublicDataLayers, fetchPublicLayerData],
+    [addCitadelOverlay, addPublicDataLayers, fetchPublicLayerData],
   );
 
   const handleLayerToggle = useCallback(
@@ -999,7 +999,7 @@ export default function CorePage() {
         const map = mapRef.current;
         const newVisibility = turning_on ? 'visible' : 'none';
 
-        [TEMPEST_FILL_LAYER, TEMPEST_OUTLINE_LAYER, TEMPEST_POINT_LAYER, TEMPEST_LABEL_LAYER].forEach(
+        [CITADEL_FILL_LAYER, CITADEL_OUTLINE_LAYER, CITADEL_POINT_LAYER, CITADEL_LABEL_LAYER].forEach(
           (id) => {
             if (map.getLayer(id)) {
               map.setLayoutProperty(id, 'visibility', newVisibility);
@@ -1367,8 +1367,8 @@ export default function CorePage() {
                     Active Events
                   </h3>
                   <div className="space-y-2">
-                    {TEMPEST_GEOJSON.features.map((f) => {
-                      const sev = f.properties.severity as TempestSeverity;
+                    {CITADEL_GEOJSON.features.map((f) => {
+                      const sev = f.properties.severity as CitadelSeverity;
                       return (
                         <button
                           key={f.properties.id}

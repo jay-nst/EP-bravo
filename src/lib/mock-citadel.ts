@@ -1,9 +1,9 @@
 import type {
-  TempestFeatureCollection,
-  TempestLaneCard,
-} from '@/types/tempest';
+  CitadelFeatureCollection,
+  CitadelLaneCard,
+} from '@/types/citadel';
 
-export const TEMPEST_GEOJSON: TempestFeatureCollection = {
+export const CITADEL_GEOJSON: CitadelFeatureCollection = {
   type: 'FeatureCollection',
   features: [
     {
@@ -21,7 +21,7 @@ export const TEMPEST_GEOJSON: TempestFeatureCollection = {
         ],
       },
       properties: {
-        id: 'tempest-001',
+        id: 'citadel-001',
         event_type: 'earthquake',
         severity: 'high',
         title: '경주 규모 4.3 지진 영향 분석',
@@ -51,7 +51,7 @@ export const TEMPEST_GEOJSON: TempestFeatureCollection = {
         ],
       },
       properties: {
-        id: 'tempest-002',
+        id: 'citadel-002',
         event_type: 'flood',
         severity: 'critical',
         title: '전남 집중호우 침수 피해 모니터링',
@@ -73,7 +73,7 @@ export const TEMPEST_GEOJSON: TempestFeatureCollection = {
         coordinates: [139.75, 35.68],
       },
       properties: {
-        id: 'tempest-003',
+        id: 'citadel-003',
         event_type: 'typhoon',
         severity: 'moderate',
         title: '태풍 GAEMI 진로 및 영향 예측',
@@ -91,9 +91,9 @@ export const TEMPEST_GEOJSON: TempestFeatureCollection = {
   ],
 };
 
-export const TEMPEST_LANE_CARDS: TempestLaneCard[] = [
+export const CITADEL_LANE_CARDS: CitadelLaneCard[] = [
   {
-    id: 'tempest-card-001',
+    id: 'citadel-card-001',
     title: '전남 집중호우 침수 피해 모니터링',
     summary:
       '72시간 340mm 집중호우. 농경지 860ha 침수, 위성 변화탐지로 실시간 추적.',
@@ -105,7 +105,7 @@ export const TEMPEST_LANE_CARDS: TempestLaneCard[] = [
     has_satellite_imagery: true,
   },
   {
-    id: 'tempest-card-002',
+    id: 'citadel-card-002',
     title: '경주 규모 4.3 지진 영향 분석',
     summary:
       'SpaceEye-T 25cm 영상 기반 건물 피해 14건, 도로 균열 3건 탐지.',

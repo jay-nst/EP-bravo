@@ -31,14 +31,15 @@ Aesthetic: dark-first observatory — data-dense but calm, professional but not 
 
 | Token | Hex | Platform | Usage |
 |-------|-----|----------|-------|
-| `--color-tempest` | `#C45C4A` | Tempest (disaster) | Lane header text + 8px dot |
-| `--color-predict` | `#4A9EC4` | Predict (market) | Lane header text + 8px dot |
-| `--color-warden` | `#6B8A5E` | Warden (defense) | Lane header text + 8px dot |
-| `--color-nexus` | `#C8923A` | Nexus (urban) | Lane header text + 8px dot |
+| `--color-citadel` | `#C45C4A` | Citadel (disaster + urban) | Section accent, severity badge |
+| `--color-predict` | `#4A9EC4` | Predict (asset/finance) | Section accent |
+| `--color-warden` | `#6B8A5E` | Warden (climate/compliance) | Section accent |
+| `--color-northpaper` | `#3D5A80` | Northpaper (defense/security) | Section accent |
+| `--color-nexus` | `#C8923A` | Nexus (data market) | Section accent |
 | `--color-core` | `#8A8680` | Core (map+tools) | Core module accents |
 
-Platform colors apply to lane header text and a small 8px dot indicator.
-Cards remain `--surface` with `--border` — no colored left-borders.
+Platform colors apply to section headers, severity badges, and hover borders on linked cards.
+Cards remain `--surface` with `--border` — hover shows platform-colored border.
 
 ### Light Mode
 
@@ -99,55 +100,42 @@ Respect `prefers-reduced-motion`: skip animations, keep opacity transitions.
 | `--header-height` | 52px |
 | `--panel-width` | 280px |
 
-### Homepage Magazine Grid
+### Homepage — Bloomberg Editorial Magazine Layout
+
+실제 구현: `DashboardClient.tsx` (단일 파일, 서버 데이터 없이 클라이언트 렌더링)
 
 ```
 Desktop (>= 1024px):
 ┌──────────────────────────────────────────────┐
 │ Header (sticky, 52px)                        │
 ├──────────────────────────────────────────────┤
-│ Platform Bar (sticky, anchor scroll chips)   │
+│ Breaking Strip (최신 critical/high 1건 정적) │
 ├──────────────────────────────────────────────┤
-│ Hero (Editor's Pick + satellite background)  │
+│ Hero (Editor's Pick, inline CSS bg image)    │
+├──────────────────────────────────────────────┤
+│ Live Feed (auto-scroll, rAF, mouseenter pause│
+│  10개 큐레이션 카드, 외부/내부 링크 분기)     │
+├──────────────────────────────────────────────┤
+│ YouTube Shorts (8개, thumbnail-first lazy)   │
 ├────────────────────────┬─────────────────────┤
-│ Main (2/3)             │ Sidebar (1/3 sticky) │
+│ Main Content (2/3)     │ Sidebar (1/3)        │
 │ ┌────────────────────┐ │ ┌─────────────────┐ │
-│ │ Tempest Lane (2)   │ │ │ Core CTA        │ │
-│ │ Predict Lane (CS)  │ │ │                 │ │
-│ │ Warden Lane (CS)   │ │ │ EP Original     │ │
-│ │ Nexus Lane (CS)    │ │ │ (Daily + Quiz)  │ │
+│ │ Citadel 리포트     │ │ │ EP Original     │ │
+│ │ Predict 리포트     │ │ │ (뉴스 3건)      │ │
+│ │ Warden 리포트      │ │ │                 │ │
+│ │ Northpaper 리포트  │ │ │ 인기 콘텐츠     │ │
 │ └────────────────────┘ │ └─────────────────┘ │
 ├────────────────────────┴─────────────────────┤
-│ Newsletter Strip                             │
 │ Footer                                       │
 └──────────────────────────────────────────────┘
-
-Mobile (< 768px):
-┌──────────────────────┐
-│ Header               │
-│ Platform Bar (scroll) │
-│ Hero                 │
-│ Core CTA             │  ← sidebar에서 분해, Hero 바로 아래
-│ Tempest Lane         │
-│ EP Original          │  ← sidebar에서 분해, Tempest 뒤 삽입
-│ Predict Lane (CS)    │
-│ Warden Lane (CS)     │
-│ Nexus Lane (CS)      │
-│ Newsletter           │
-│ Footer               │
-└──────────────────────┘
 ```
 
-Breakpoints:
-- `< 768px`: single column, sidebar 분해
-- `768px–1023px`: single column with wider cards
-- `>= 1024px`: 2/3 + 1/3 Magazine Grid
-
-### Platform Bar
-
-Sticky below header. Chips: All / Tempest / Predict / Warden / Nexus / Core.
-Click = smooth scroll to lane anchor. No page navigation (MVP에서 3/4 lanes가 Coming Soon).
-Mobile: horizontal scroll, 48px minimum touch target.
+Key decisions:
+- Breaking Strip: 정적 1건 (Live Feed 자동스크롤과 애니메이션 겹침 방지)
+- Live Feed: `requestAnimationFrame` 기반 auto-scroll, `mouseenter`로 정지
+- ep.naraspace.com 링크: `/ko/` 프리픽스 (한국어 사이트)
+- Predict CTA: predicthings.com 외부 링크
+- 플랫폼 리포트 카드: hover 시 platform-colored border 효과
 
 ## Components
 

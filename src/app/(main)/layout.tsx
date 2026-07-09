@@ -1,4 +1,5 @@
 import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,6 +12,7 @@ export default function MainLayout({
     <>
       <Header />
       <main className="flex-1 flex flex-col">{children}</main>
+      <Footer />
     </>
   );
 }

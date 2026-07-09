@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { MOCK_FEED_ITEMS } from '@/lib/mock-dashboard';
 import type { FeedType } from '@/types/dashboard';
 
-const VALID_TYPES = new Set<string>(['all', 'analysis', 'shorts', 'trending', 'news', 'community', 'report', 'citadel']);
+const VALID_TYPES = new Set<string>(['all', 'analysis', 'shorts', 'trending', 'news', 'community', 'report', 'citadel', 'predict', 'warden', 'northpaper']);
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const type = searchParams.get('type') ?? 'all';
   const cursor = searchParams.get('cursor');
-  const limit = Math.min(Math.max(Number(searchParams.get('limit') ?? 10), 1), 20);
+  const limit = Math.min(Math.max(Number(searchParams.get('limit') ?? 10), 1), 50);
 
   if (!VALID_TYPES.has(type)) {
     return NextResponse.json({ error: '유효하지 않은 피드 타입입니다' }, { status: 400 });

@@ -1,6 +1,6 @@
 'use client';
 
-import type { TempestSeverity } from '@/types/tempest';
+import type { CitadelSeverity } from '@/types/citadel';
 
 export interface OverlayLayer {
   id: string;
@@ -11,7 +11,7 @@ export interface OverlayLayer {
   comingSoon?: boolean;
 }
 
-const SEVERITY_COLORS: Record<TempestSeverity, string> = {
+const SEVERITY_COLORS: Record<CitadelSeverity, string> = {
   critical: '#C45C4A',
   high: '#E07B5F',
   moderate: '#C8923A',

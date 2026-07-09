@@ -1,4 +1,4 @@
-export type TempestEventType =
+export type CitadelEventType =
   | 'earthquake'
   | 'flood'
   | 'wildfire'
@@ -6,12 +6,12 @@ export type TempestEventType =
   | 'landslide'
   | 'volcanic';
 
-export type TempestSeverity = 'critical' | 'high' | 'moderate' | 'low';
+export type CitadelSeverity = 'critical' | 'high' | 'moderate' | 'low';
 
-export interface TempestFeatureProperties {
+export interface CitadelFeatureProperties {
   id: string;
-  event_type: TempestEventType;
-  severity: TempestSeverity;
+  event_type: CitadelEventType;
+  severity: CitadelSeverity;
   title: string;
   description: string;
   affected_area_km2: number;
@@ -23,23 +23,23 @@ export interface TempestFeatureProperties {
   satellite_image_id: string | null;
 }
 
-export interface TempestFeature {
+export interface CitadelFeature {
   type: 'Feature';
   geometry: GeoJSON.Geometry;
-  properties: TempestFeatureProperties;
+  properties: CitadelFeatureProperties;
 }
 
-export interface TempestFeatureCollection {
+export interface CitadelFeatureCollection {
   type: 'FeatureCollection';
-  features: TempestFeature[];
+  features: CitadelFeature[];
 }
 
-export interface TempestLaneCard {
+export interface CitadelLaneCard {
   id: string;
   title: string;
   summary: string;
-  event_type: TempestEventType;
-  severity: TempestSeverity;
+  event_type: CitadelEventType;
+  severity: CitadelSeverity;
   location_name: string;
   timestamp: string;
   thumbnail_url: string | null;
