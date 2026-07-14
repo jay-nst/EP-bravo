@@ -291,19 +291,19 @@ export default function DashboardClient() {
             {/* Platform Navigation */}
             <div>
               <SectionHeader title="플랫폼" icon="●" />
-              <div className="grid grid-cols-5 gap-3">
+              <div className="flex gap-2 flex-wrap">
                 {PLATFORMS.map((p) => (
                   <Link
                     key={p.key}
                     href={p.href}
-                    className="flex flex-col items-center gap-2 p-4 rounded-lg transition-all hover:scale-[1.02]"
-                    style={{ border: `1px solid ${p.color}30`, background: `${p.color}08` }}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-colors"
+                    style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = p.color; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; }}
                   >
-                    <span className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: `${p.color}25`, color: p.color }}>
-                      {p.label[0]}
-                    </span>
-                    <span className="text-xs font-semibold" style={{ color: p.color }}>{p.label}</span>
-                    <span className="text-[10px] text-center" style={{ color: 'var(--text-muted)' }}>{p.desc}</span>
+                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: p.color }} />
+                    <span className="text-sm font-medium" style={{ color: 'var(--text)' }}>{p.label}</span>
+                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{p.desc}</span>
                   </Link>
                 ))}
               </div>
