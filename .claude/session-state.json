@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-07-09",
+  "timestamp": "2026-07-14",
   "branch": "master",
-  "last_commit": "pending",
+  "last_commit": "3ccbb25",
   "completed_tasks": [
     "T1-T7: Homepage + Core 지도 + 이벤트 트래킹 + 테스트",
     "지도 스타일 스위처 (satellite/dark/night-nav 3종)",
@@ -35,21 +35,22 @@
     "T4: Vitest 테스트 인프라 세팅 (71개 테스트 통과, npm test 스크립트 추가)",
     "T3: Breaking Strip 구현 (최신 critical/high 1건 정적 배너, 피드 데이터 기반)",
     "Citadel 리네이밍 정리: 소스코드 완료 확인 + TODOS.md/CLAUDE.md 문서 내 Tempest→Citadel 치환",
-    "T2: 사이드바 오늘의 지구 MiniMap — placeholder blob → Mapbox dark-v11 실 지도 (MiniMap.tsx 신규, dynamic import)"
+    "T2: 사이드바 오늘의 지구 MiniMap — placeholder blob → Mapbox dark-v11 실 지도 (MiniMap.tsx 신규, dynamic import)",
+    "기상청 단기예보/지진/산불(GK-2A+FIRMS) 실 API 연동 확인 완료 — 코드+키 모두 설정됨",
+    "Design Review Round 3 (2026-07-14): FINDING-018~022 수정 — 섹션 제목 크기, AI Slop 패턴 제거(colored left-border, circle icons), 터치 타겟 개선",
+    "전략 PPT 기반 4개 플랫폼 Use Case 빌드업: Warden(EUDR 팜유), Citadel(광양산불), Predict(태양광검증), Northpaper(개성공단)",
+    "인터랙티브 시뮬레이터 4개 플랫폼 추가: EarthMap AOI 드로잉 → 시뮬레이션 결과 패널 (Warden/Predict/Citadel/Northpaper)",
+    "EarthMap center/zoom props 추가 — 시뮬레이터별 초기 위치 지정 가능",
+    "NetBird VPN 네트워크 접속 설정: next.config.ts allowedDevOrigins + Windows 방화벽 인바운드 룰",
+    "Design Review Round 4 (2026-07-14): 시뮬레이터 디자인 정합성 — glass panel var(--panel-bg), Northpaper 크기 통일, --color-northpaper CSS 추가, 버튼 hover 피드백"
   ],
   "in_progress": [],
   "remaining_tasks": [
     "T1: Feed API → Supabase 실 데이터 연동 (스키마 설계 선행 필요)",
-    "기상청 단기예보 실제 API 연동 (키 발급 필요)",
-    "지진/산불 실제 API 연동 (키 발급 필요)",
     "실제 위성 영상 이미지 교체 (현재 placeholder)",
-    "인증 후 페이지 디자인 리뷰",
     "모바일 반응형 (별도 스프린트)"
   ],
-  "blockers": [
-    "기상청 단기예보 API: DATA_GO_KR_WEATHER_KEY 환경변수 미설정",
-    "지진/산불 API: DATA_GO_KR_EARTHQUAKE_KEY 환경변수 미설정"
-  ],
+  "blockers": [],
   "test_status": "vitest 71개 테스트 통과 (7 파일). mock-dashboard 무결성 + feed API 로직 + analytics 등. npm test로 실행.",
   "decisions_made": [
     "인증 제거: DEMO_USER fallback 사용",
@@ -62,7 +63,10 @@
     "Predict는 predicthings.com 외부 서비스로 연결",
     "ep.naraspace.com 링크는 /ko/ 프리픽스로 한국어 사이트 연결",
     "Breaking Strip: 자동스크롤 아닌 최신 1건 정적 표시 (Live Feed 자동스크롤과 겹침 방지)",
-    "Live Feed: 자동스크롤 유지, Breaking Strip만 정적"
+    "Live Feed: 자동스크롤 유지, Breaking Strip만 정적",
+    "플랫폼 identity: colored left-border 바 대신 heading text color + small dot (AI Slop 제거)",
+    "시뮬레이터 패턴: 3-phase 상태 머신 (draw → analyzing → result), floating glass panel, 플랫폼 accent 색상",
+    "시뮬레이터 glass panel: var(--panel-bg) CSS 변수 사용 (하드코딩 금지)"
   ],
   "platform_structure": {
     "citadel": { "color": "#C45C4A", "desc": "재난 · 도시 관제", "href": "/citadel", "prev_name": "Tempest" },
@@ -73,10 +77,10 @@
   },
   "page_structure": {
     "/": "에디토리얼 매거진 메인 (DashboardClient) — Breaking Strip + Hero + Live Feed + Shorts + 플랫폼 리포트 + 뉴스 + 사이드바",
-    "/citadel": "재난·도시 관제 랜딩 — 실 포스트 3건 + 서비스 영역 3개 (CitySat/재난/턴키)",
-    "/predict": "자산 검증·금융 랜딩 — predicthings.com CTA + 서비스 영역 3개 (태양광/범용/원자재)",
-    "/warden": "기후·컴플라이언스 랜딩 — 규제 타임라인 + Raja Ampat 포스트 + 서비스 영역 3개 (EUDR/메탄/팜)",
-    "/northpaper": "국방·안보 랜딩 — 역량 개요 + 공개 분석 3건 (조선소/이란/금강산)",
+    "/citadel": "재난·도시 관제 랜딩 — 실 포스트 3건 + 서비스 영역 3개 + CitadelSimulator (광양, zoom 11)",
+    "/predict": "자산 검증·금융 랜딩 — predicthings.com CTA + 서비스 영역 3개 + PredictSimulator (Rajasthan, zoom 9)",
+    "/warden": "기후·컴플라이언스 랜딩 — 규제 타임라인 + Raja Ampat 포스트 + WardenSimulator (Kalimantan, zoom 8)",
+    "/northpaper": "국방·안보 랜딩 — 역량 개요 + 공개 분석 3건 + NorthpaperSimulator (개성, zoom 12)",
     "/interactive/north-korean-shipyards": "인터랙티브 롱폼 (ShipyardsInteractive)",
     "/core": "위성 지도 + 공공데이터 레이어",
     "/chat": "AI 채팅 (mock 응답)",
@@ -93,9 +97,13 @@
     "predict_page": "src/app/(main)/predict/page.tsx",
     "warden_page": "src/app/(main)/warden/page.tsx",
     "northpaper_page": "src/app/(main)/northpaper/page.tsx",
+    "warden_simulator": "src/components/warden/WardenSimulator.tsx",
+    "predict_simulator": "src/components/predict/PredictSimulator.tsx",
+    "citadel_simulator": "src/components/citadel/CitadelSimulator.tsx",
+    "northpaper_simulator": "src/components/northpaper/NorthpaperSimulator.tsx",
+    "earth_map": "src/components/map/EarthMap.tsx",
     "header": "src/components/layout/Header.tsx",
     "core_page": "src/app/(main)/core/page.tsx",
-    "earth_map": "src/components/map/EarthMap.tsx",
     "vitest_config": "vitest.config.ts"
   }
 }

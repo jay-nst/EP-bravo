@@ -1,6 +1,12 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import OtherSolutions from '@/components/landing/OtherSolutions';
+
+const CitadelSimulator = dynamic(
+  () => import('@/components/citadel/CitadelSimulator'),
+  { ssr: false },
+);
 
 const VERTICALS = [
   {
@@ -181,6 +187,154 @@ export default function CitadelPage() {
           </a>
         </div>
       </section>
+
+      {/* Use Case */}
+      <section
+        style={{
+          padding: '0 24px 64px',
+          maxWidth: 960,
+          margin: '0 auto',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            marginBottom: 8,
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: 11,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase' as const,
+              color: 'var(--text-muted)',
+            }}
+          >
+            Use Case
+          </span>
+        </div>
+
+        <h2
+          style={{
+            fontSize: 'clamp(20px, 3vw, 26px)',
+            fontWeight: 600,
+            color: 'var(--text)',
+            marginBottom: 8,
+          }}
+        >
+          2026 광양 산불 — 48시간 재난 리포트
+        </h2>
+        <p
+          style={{
+            fontSize: 14,
+            lineHeight: 1.7,
+            color: 'var(--text-muted)',
+            maxWidth: '60ch',
+            marginBottom: 28,
+          }}
+        >
+          발생 탐지부터 피해 판정 리포트 전달까지, Citadel이 실제 재난 상황에서
+          어떻게 작동하는지 단계별로 살펴봅니다.
+        </p>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: 12,
+            marginBottom: 24,
+          }}
+        >
+          {[
+            {
+              n: '01',
+              title: '발생 탐지',
+              desc: 'GK-2A 천리안 + FIRMS 실시간 화점 데이터로 산불 발생을 인지합니다.',
+            },
+            {
+              n: '02',
+              title: '긴급 촬영',
+              desc: '옵저버 위성 긴급 태스킹으로 피해 지역 고해상도 영상을 확보합니다.',
+            },
+            {
+              n: '03',
+              title: '피해 분석',
+              desc: 'NDMI · dNBR 분석으로 피해 강도와 면적을 자동 산출합니다.',
+            },
+            {
+              n: '04',
+              title: 'SLA 리포트',
+              desc: '48시간 내 피해 판정 리포트를 생성해 산림청·지자체에 전달합니다.',
+            },
+          ].map((step) => (
+            <div
+              key={step.n}
+              style={{
+                padding: 20,
+                borderRadius: 8,
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  letterSpacing: '0.06em',
+                  color: '#C45C4A',
+                  display: 'block',
+                  marginBottom: 12,
+                }}
+              >
+                {step.n}
+              </span>
+              <h3
+                style={{
+                  fontSize: 15,
+                  fontWeight: 600,
+                  color: 'var(--text)',
+                  marginBottom: 6,
+                }}
+              >
+                {step.title}
+              </h3>
+              <p
+                style={{
+                  fontSize: 13,
+                  lineHeight: 1.6,
+                  color: 'var(--text-muted)',
+                }}
+              >
+                {step.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <a
+          href="https://ep.naraspace.com/ko/post/contents/2026-gwangyang-wildfire-ndmi-dnbr-analysis"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            fontSize: 14,
+            fontWeight: 500,
+            color: '#C45C4A',
+            textDecoration: 'none',
+          }}
+        >
+          이 시나리오의 실제 분석 결과를 확인하세요 →
+        </a>
+      </section>
+
+      {/* Interactive Simulator */}
+      <CitadelSimulator />
 
       {/* Live Events */}
       <section

@@ -1,6 +1,35 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import OtherSolutions from '@/components/landing/OtherSolutions';
+
+const PredictSimulator = dynamic(
+  () => import('@/components/predict/PredictSimulator'),
+  { ssr: false },
+);
+
+const USE_CASE_STEPS = [
+  {
+    n: '01',
+    title: '자산 등록',
+    desc: '태양광 발전소 좌표·경계를 AOI로 등록, 투자 포트폴리오에 연결',
+  },
+  {
+    n: '02',
+    title: '건설 진행률',
+    desc: '착공~완공까지 위성 시계열 분석으로 진행률 원격 확인, 대출 인출 조건 검증',
+  },
+  {
+    n: '03',
+    title: '분기 검증',
+    desc: '완공 후 자산 존재·패널 상태·식생 침범을 분기마다 자동 검증',
+  },
+  {
+    n: '04',
+    title: '재해 스크리닝',
+    desc: '우박·태풍 후 피해 범위 신속 파악, 드론 투입 우선순위 결정',
+  },
+];
 
 const VERTICALS = [
   {
@@ -138,6 +167,43 @@ export default function PredictPage() {
         </div>
       </section>
 
+      {/* Use case */}
+      <section style={{ padding: '0 24px 56px', maxWidth: 960, margin: '0 auto' }}>
+        <h2 style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: 'var(--text-muted)', marginBottom: 8 }}>
+          Use Case
+        </h2>
+        <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>
+          인도 라자스탄 태양광 발전소 — 원격 자산 검증
+        </h3>
+        <p style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--text-muted)', maxWidth: '64ch', marginBottom: 28 }}>
+          수출입은행이 인도 라자스탄의 150MW 태양광 발전소에 투자했습니다.
+          현지 실사단을 파견하는 대신, 위성 기반 검증으로 자산을 원격 관리합니다.
+        </p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 1, background: 'var(--border)', border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }}>
+          {USE_CASE_STEPS.map((step) => (
+            <div key={step.n} style={{ background: 'var(--surface)', padding: 20 }}>
+              <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 13, fontWeight: 600, color: '#4A9EC4', display: 'block', marginBottom: 12 }}>
+                {step.n}
+              </span>
+              <h4 style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>
+                {step.title}
+              </h4>
+              <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--text-muted)' }}>
+                {step.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, letterSpacing: '0.04em', color: 'var(--text-muted)', marginTop: 16 }}>
+          현지 실사 비용의 1/10로, 분기마다 반복 검증 가능
+        </p>
+      </section>
+
+      {/* Interactive Simulator */}
+      <PredictSimulator />
+
       {/* Report mockup */}
       <section style={{ padding: '0 24px 64px', maxWidth: 960, margin: '0 auto' }}>
         <div
@@ -168,7 +234,7 @@ export default function PredictPage() {
               { label: '용량', value: '150 MW' },
               { label: '검증 상태', value: '가동 확인', color: '#4A9E6B' },
               { label: '패널 면적', value: '2.4 km²' },
-              { label: '마지막 관측', value: '2026. 07. 05.' },
+              { label: '마지막 관측', value: '2026. 07. 12.' },
               { label: '식생 침범', value: '2개 구역 탐지', color: '#C8923A' },
               { label: '건설 진행률', value: '100%' },
             ].map((item) => (

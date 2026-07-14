@@ -33,6 +33,8 @@ interface EarthMapProps {
   mapStyleId?: MapStyleId;
   hideControls?: boolean;
   initialStyle?: MapStyleId;
+  center?: [number, number];
+  zoom?: number;
 }
 
 // Design tokens for map layers
@@ -48,6 +50,8 @@ export default function EarthMap({
   mapStyleId = 'satellite',
   hideControls = false,
   initialStyle,
+  center: initialCenter,
+  zoom: initialZoom,
 }: EarthMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -218,8 +222,8 @@ export default function EarthMap({
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: MAP_STYLES[styleId].url,
-      center: [127.0, 37.5],
-      zoom: 6,
+      center: initialCenter ?? [127.0, 37.5],
+      zoom: initialZoom ?? 6,
       ...(hideControls ? { attributionControl: false, interactive: true } : {}),
     });
 

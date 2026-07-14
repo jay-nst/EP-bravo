@@ -1,6 +1,12 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import OtherSolutions from '@/components/landing/OtherSolutions';
+
+const WardenSimulator = dynamic(
+  () => import('@/components/warden/WardenSimulator'),
+  { ssr: false },
+);
 
 const TIMELINE = [
   { date: '2026. 12. 30.', label: 'EUDR 시행 (대·중견기업)', active: true },
@@ -46,7 +52,45 @@ const BADGE_STYLES = {
   sat: { bg: 'rgba(200, 146, 58, 0.15)', color: '#C8923A' },
 };
 
+const USE_CASE_STEPS = [
+  {
+    num: '01',
+    title: 'AOI 등록',
+    desc: '공급 플롯 2,400개를 지도에 등록',
+    mark: '◫',
+  },
+  {
+    num: '02',
+    title: '기준선 분석',
+    desc: '2020년 기준선 대비 Sentinel-2 산림전용 자동 판정',
+    mark: '⊹',
+  },
+  {
+    num: '03',
+    title: 'DDS 자동 생성',
+    desc: 'EU TRACES 포맷 실사보고서(DDS) 자동 생성',
+    mark: '≡',
+  },
+  {
+    num: '04',
+    title: '상시 모니터링',
+    desc: '분기마다 변화 탐지 알림, 위험 플롯 즉시 통보',
+    mark: '△',
+  },
+];
+
+const EUDR_DEADLINE = new Date('2026-12-30T00:00:00');
+
+function daysUntilDeadline() {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const diff = EUDR_DEADLINE.getTime() - today.getTime();
+  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+}
+
 export default function WardenPage() {
+  const dDay = daysUntilDeadline();
+
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       {/* Hero */}
@@ -134,6 +178,121 @@ export default function WardenPage() {
         </a>
       </section>
 
+      {/* Use Case */}
+      <section style={{ padding: '0 24px 64px', maxWidth: 960, margin: '0 auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+          <span
+            style={{
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: 11,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase' as const,
+              color: 'var(--text-muted)',
+            }}
+          >
+            Use Case
+          </span>
+        </div>
+
+        <div
+          style={{
+            borderRadius: 8,
+            border: '1px solid var(--border)',
+            overflow: 'hidden',
+          }}
+        >
+          <div style={{ padding: '20px 24px', background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>
+              인도네시아 팜유 수출사의 EUDR 대응
+            </h2>
+            <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--text-muted)', maxWidth: '64ch' }}>
+              EU로 팜유를 수출하는 정제사. 2026년 12월 30일 EUDR 시행 전까지
+              공급망 전체가 2020년 이후 산림전용과 무관함을 증명해야 합니다.
+            </p>
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap' as const,
+              alignItems: 'stretch',
+              padding: '28px 24px',
+            }}
+          >
+            {USE_CASE_STEPS.map((step, i) => (
+              <div
+                key={step.num}
+                style={{
+                  flex: '1 1 180px',
+                  display: 'flex',
+                  alignItems: 'stretch',
+                  minWidth: 0,
+                }}
+              >
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <span
+                    style={{
+                      fontFamily: "'IBM Plex Mono', monospace",
+                      fontSize: 11,
+                      letterSpacing: '0.08em',
+                      color: '#6B8A5E',
+                      fontWeight: 600,
+                      display: 'block',
+                      marginBottom: 12,
+                    }}
+                  >
+                    {step.num}
+                  </span>
+                  <div
+                    style={{
+                      fontSize: 20,
+                      lineHeight: 1,
+                      color: 'var(--text-muted)',
+                      marginBottom: 12,
+                    }}
+                    aria-hidden="true"
+                  >
+                    {step.mark}
+                  </div>
+                  <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>
+                    {step.title}
+                  </h3>
+                  <p style={{ fontSize: 12, lineHeight: 1.6, color: 'var(--text-muted)', maxWidth: '22ch' }}>
+                    {step.desc}
+                  </p>
+                </div>
+                {i < USE_CASE_STEPS.length - 1 && (
+                  <div
+                    aria-hidden="true"
+                    style={{
+                      width: 1,
+                      alignSelf: 'stretch',
+                      background: 'var(--border)',
+                      margin: '0 20px',
+                    }}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div
+            style={{
+              padding: '14px 24px',
+              borderTop: '1px solid var(--border)',
+              background: 'var(--surface)',
+            }}
+          >
+            <span style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+              자체 위성 없이 Sentinel-2 무료 데이터로 즉시 시작 가능
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Simulator */}
+      <WardenSimulator />
+
       {/* Regulatory Timeline */}
       <section style={{ padding: '0 24px 64px', maxWidth: 960, margin: '0 auto' }}>
         <div
@@ -203,7 +362,7 @@ export default function WardenPage() {
                     fontWeight: 600,
                   }}
                 >
-                  D-174
+                  D-{dDay}
                 </span>
               )}
             </div>

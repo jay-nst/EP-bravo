@@ -1,6 +1,12 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import OtherSolutions from '@/components/landing/OtherSolutions';
+
+const NorthpaperSimulator = dynamic(
+  () => import('@/components/northpaper/NorthpaperSimulator'),
+  { ssr: false },
+);
 
 const CAPABILITIES = [
   {
@@ -94,8 +100,151 @@ export default function NorthpaperPage() {
           상세 사항은 별도 채널을 통해 문의해 주시기 바랍니다.
         </p>
 
+        {/* Use Case */}
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: 32 }}>
+          <span
+            style={{
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: 11,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase' as const,
+              color: 'var(--text-muted)',
+              display: 'block',
+              marginBottom: 16,
+            }}
+          >
+            Use Case
+          </span>
+
+          <h2
+            style={{
+              fontSize: 20,
+              fontWeight: 600,
+              color: 'var(--text)',
+              marginBottom: 8,
+            }}
+          >
+            개성공단 무단 가동 탐지
+          </h2>
+          <p
+            style={{
+              fontSize: 14,
+              lineHeight: 1.7,
+              color: 'var(--text-muted)',
+              marginBottom: 28,
+            }}
+          >
+            2016년 공식 폐쇄된 개성공단. 북한의 무단 사용 정황을 다중 위성 분석으로 포착한
+            실제 분석 시나리오입니다.
+          </p>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: 12,
+            }}
+          >
+            {[
+              {
+                no: '01',
+                title: '광역 스크리닝',
+                desc: '열적외선 위성으로 공단 내 비정상 열원(핫스팟) 포착',
+              },
+              {
+                no: '02',
+                title: '고해상도 확인',
+                desc: '의심 구역을 옵저버 고해상도 영상으로 정밀 분석',
+              },
+              {
+                no: '03',
+                title: '변화 탐지',
+                desc: '버스 290대 차고지 시계열 분석 — 122대 위치 변화 포착',
+              },
+              {
+                no: '04',
+                title: '인텔리전스 리포트',
+                desc: '무단 가동 정황 종합 판정, 정책 의사결정 근거 제공',
+              },
+            ].map((step) => (
+              <div
+                key={step.no}
+                style={{
+                  padding: '20px',
+                  borderRadius: 8,
+                  border: '1px solid var(--border)',
+                  background: 'var(--surface)',
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    letterSpacing: '0.08em',
+                    color: '#3D5A80',
+                    display: 'block',
+                    marginBottom: 12,
+                  }}
+                >
+                  {step.no}
+                </span>
+                <h3
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 600,
+                    color: 'var(--text)',
+                    marginBottom: 6,
+                  }}
+                >
+                  {step.title}
+                </h3>
+                <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                  {step.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <a
+            href="https://ep.naraspace.com/ko/post/contents/unauthorized-operation-caught-at-kaesong-industrial-complex_-along-with-disappeared-buses"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-block',
+              marginTop: 20,
+              fontSize: 14,
+              fontWeight: 500,
+              color: '#3D5A80',
+              textDecoration: 'none',
+            }}
+          >
+            이 분석의 상세 내용을 확인하세요 →
+          </a>
+
+          <p
+            style={{
+              marginTop: 16,
+              padding: '14px 16px',
+              borderRadius: 8,
+              background: 'rgba(61, 90, 128, 0.08)',
+              fontSize: 12,
+              lineHeight: 1.6,
+              color: 'var(--text-muted)',
+            }}
+          >
+            북한 지역 상시 모니터링 데이터셋 — 글로벌 경쟁사가 복제할 수 없는 차별점
+          </p>
+        </div>
+
+        {/* Interactive Simulator */}
+        <div style={{ marginTop: 48, borderTop: '1px solid var(--border)', paddingTop: 32 }}>
+          <NorthpaperSimulator />
+        </div>
+
         <div
           style={{
+            marginTop: 48,
             borderTop: '1px solid var(--border)',
             paddingTop: 32,
           }}

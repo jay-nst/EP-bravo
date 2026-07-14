@@ -174,12 +174,26 @@ All error states show a static satellite image fallback.
 
 ```css
 .glass-panel {
-  background: rgba(14, 14, 16, 0.88);
+  background: var(--panel-bg); /* rgba(14, 14, 16, 0.88) */
   backdrop-filter: blur(12px);
 }
 ```
 
-Used for header, floating panels, sidebar on scroll.
+Used for header, floating panels, sidebar on scroll, simulator overlays.
+
+### Simulator Panel (Platform Pages)
+
+Interactive map + floating glass overlay. 3-phase state machine (draw → analyzing → result).
+
+- Map container: `height: 480px`, `border-radius: var(--radius-md)`, `border: 1px solid var(--border)`
+- Overlay panel: `position: absolute`, `top: 12px`, `right: 12px`, `width: 280px`
+- Panel background: `var(--panel-bg)` + `backdrop-filter: blur(12px)`
+- Section title: IBM Plex Mono, 13px, uppercase, `--text-muted`
+- Panel title: Pretendard, 16px/600, `--text`
+- Result rows: label (IBM Plex Mono 12px, `--text-muted`) + value (14px/500, `--text` or semantic color)
+- Action button: 100% width, platform color background, white text, 14px/500, opacity hover (0.85)
+- Spinner: 32px circle, `border-top-color` = platform color, 1s linear infinite
+- Disclaimer: IBM Plex Mono, 12px, `--text-muted`, below map
 
 ## Accessibility
 
