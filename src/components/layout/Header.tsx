@@ -62,7 +62,7 @@ export default function Header() {
             {/* 오늘의 지구 */}
             <Link
               href="/daily"
-              className="px-3 py-1.5 text-sm rounded-md transition-colors"
+              className="px-3 py-2.5 text-sm rounded-md transition-colors"
               style={{
                 color: pathname.startsWith('/daily') ? 'var(--accent)' : 'var(--text-muted)',
                 background: pathname.startsWith('/daily') ? 'var(--surface-elevated)' : 'transparent',
@@ -79,7 +79,7 @@ export default function Header() {
               onMouseLeave={handleLeave}
             >
               <button
-                className="px-3 py-1.5 text-sm rounded-md transition-colors flex items-center gap-1"
+                className="px-3 py-2.5 text-sm rounded-md transition-colors flex items-center gap-1"
                 style={{ color: 'var(--text-muted)' }}
               >
                 서비스
@@ -106,11 +106,9 @@ export default function Header() {
                       onClick={() => setMenuOpen(false)}
                     >
                       <span
-                        className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold"
-                        style={{ background: `${s.color}25`, color: s.color }}
-                      >
-                        {s.label[0]}
-                      </span>
+                        className="w-2 h-2 rounded-full flex-shrink-0"
+                        style={{ background: s.color }}
+                      />
                       <div>
                         <p className="text-sm font-medium" style={{ color: s.color }}>{s.label}</p>
                         <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{s.desc}</p>
@@ -127,7 +125,7 @@ export default function Header() {
         <div className="flex items-center gap-3">
           <Link
             href="/login"
-            className="text-xs px-3 py-1.5 rounded-md transition-colors"
+            className="text-sm px-3 py-2.5 rounded-md transition-colors"
             style={{ color: 'var(--text-muted)' }}
           >
             로그인
