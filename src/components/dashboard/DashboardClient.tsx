@@ -382,7 +382,7 @@ export default function DashboardClient() {
                         trackEvent('chat_from_home', 'suggestion_click', { query: q });
                         router.push('/chat');
                       }}
-                      className="px-2 py-1 text-[10px] rounded transition-colors"
+                      className="px-2.5 py-1.5 text-xs rounded transition-colors"
                       style={{ background: 'var(--surface)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}
                     >
                       {q}
@@ -397,14 +397,14 @@ export default function DashboardClient() {
                     <Link href="/portal" className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
                       <span className="text-sm">📦</span>
                       <div>
-                        <p className="text-[10px] font-medium" style={{ color: 'var(--text)' }}>내 주문</p>
+                        <p className="text-[11px] font-medium" style={{ color: 'var(--text)' }}>내 주문</p>
                         <p className="text-[10px]" style={{ color: 'var(--accent)' }}>{summary.recentOrders.length}건</p>
                       </div>
                     </Link>
                     <Link href="/tasking" className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
                       <span className="text-sm">📡</span>
                       <div>
-                        <p className="text-[10px] font-medium" style={{ color: 'var(--text)' }}>촬영 요청</p>
+                        <p className="text-[11px] font-medium" style={{ color: 'var(--text)' }}>촬영 요청</p>
                         <p className="text-[10px]" style={{ color: summary.pendingTaskings > 0 ? '#C8923A' : 'var(--text-muted)' }}>
                           {summary.pendingTaskings > 0 ? `${summary.pendingTaskings}건 대기` : '없음'}
                         </p>
@@ -413,14 +413,14 @@ export default function DashboardClient() {
                     <Link href="/core" className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
                       <span className="text-sm">🗺️</span>
                       <div>
-                        <p className="text-[10px] font-medium" style={{ color: 'var(--text)' }}>위성 영상</p>
+                        <p className="text-[11px] font-medium" style={{ color: 'var(--text)' }}>위성 영상</p>
                         <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{summary.stats.totalImages}장</p>
                       </div>
                     </Link>
                     <Link href="/quiz" className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
                       <span className="text-sm">🧠</span>
                       <div>
-                        <p className="text-[10px] font-medium" style={{ color: 'var(--text)' }}>퀴즈</p>
+                        <p className="text-[11px] font-medium" style={{ color: 'var(--text)' }}>퀴즈</p>
                         <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>도전하기</p>
                       </div>
                     </Link>
@@ -461,7 +461,7 @@ export default function DashboardClient() {
               <div className="flex items-center gap-1 mb-3">
                 <button
                   onClick={() => setTrendingTab('subjects')}
-                  className="px-2.5 py-1 text-xs rounded transition-colors"
+                  className="px-3 py-1.5 text-xs rounded transition-colors"
                   style={{
                     background: trendingTab === 'subjects' ? 'var(--surface-elevated)' : 'transparent',
                     color: trendingTab === 'subjects' ? 'var(--text)' : 'var(--text-muted)',
@@ -472,7 +472,7 @@ export default function DashboardClient() {
                 </button>
                 <button
                   onClick={() => setTrendingTab('posts')}
-                  className="px-2.5 py-1 text-xs rounded transition-colors"
+                  className="px-3 py-1.5 text-xs rounded transition-colors"
                   style={{
                     background: trendingTab === 'posts' ? 'var(--surface-elevated)' : 'transparent',
                     color: trendingTab === 'posts' ? 'var(--text)' : 'var(--text-muted)',
