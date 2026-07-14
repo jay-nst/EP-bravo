@@ -150,9 +150,8 @@ export default function NexusPage() {
                   borderBottom: '1px solid var(--border)',
                 }}
               >
-                <span style={{ width: 4, height: 24, borderRadius: 2, background: NEXUS_COLOR, flexShrink: 0 }} />
                 <div style={{ flex: 1 }}>
-                  <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>{v.title}</h3>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: NEXUS_COLOR }}>{v.title}</h3>
                 </div>
                 <span
                   style={{

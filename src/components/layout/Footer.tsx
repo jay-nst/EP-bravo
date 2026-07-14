@@ -90,7 +90,7 @@ export default function Footer() {
                     href={p.href}
                     style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}
                   >
-                    <span style={{ width: 3, height: 14, borderRadius: 1, background: p.color, flexShrink: 0 }} />
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
                     <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{p.label}</span>
                     <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{p.desc}</span>
                   </Link>

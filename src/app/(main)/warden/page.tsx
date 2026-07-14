@@ -174,7 +174,7 @@ export default function WardenPage() {
               style={{
                 padding: 20,
                 background: t.active ? 'var(--surface)' : 'var(--bg)',
-                borderLeft: t.active ? '3px solid #6B8A5E' : '3px solid transparent',
+                borderBottom: '1px solid var(--border)',
               }}
             >
               <span
@@ -288,16 +288,7 @@ export default function WardenPage() {
                   borderBottom: '1px solid var(--border)',
                 }}
               >
-                <span
-                  style={{
-                    width: 4,
-                    height: 24,
-                    borderRadius: 2,
-                    background: '#6B8A5E',
-                    flexShrink: 0,
-                  }}
-                />
-                <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', flex: 1 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 600, color: '#6B8A5E', flex: 1 }}>
                   {v.title}
                 </h3>
                 <span

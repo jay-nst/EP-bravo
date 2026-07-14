@@ -55,15 +55,7 @@ export default function OtherSolutions({ current }: OtherSolutionsProps) {
                 transition: 'border-color 0.15s',
               }}
             >
-              <span
-                style={{
-                  width: 4,
-                  height: 28,
-                  borderRadius: 2,
-                  background: s.color,
-                  flexShrink: 0,
-                }}
-              />
+              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: s.color }} />
               <div>
                 <span style={{ fontSize: 14, fontWeight: 600, color: s.color, display: 'block' }}>
                   {s.label}

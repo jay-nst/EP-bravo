@@ -128,22 +128,12 @@ export default function NorthpaperPage() {
                   background: 'var(--surface)',
                 }}
               >
-                <span
-                  style={{
-                    width: 4,
-                    height: 20,
-                    borderRadius: 2,
-                    background: '#3D5A80',
-                    flexShrink: 0,
-                    marginTop: 2,
-                  }}
-                />
                 <div>
                   <h3
                     style={{
                       fontSize: 15,
                       fontWeight: 600,
-                      color: 'var(--text)',
+                      color: '#3D5A80',
                       marginBottom: 4,
                     }}
                   >
@@ -188,9 +178,8 @@ export default function NorthpaperPage() {
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--text-muted)'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; }}
               >
-                <span style={{ width: 4, height: 20, borderRadius: 2, background: '#3D5A80', flexShrink: 0, marginTop: 2 }} />
                 <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>{post.title}</p>
+                  <p style={{ fontSize: 15, fontWeight: 600, color: '#3D5A80', marginBottom: 4 }}>{post.title}</p>
                   <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: 'var(--text-muted)' }}>{post.location} · ep.naraspace.com</span>
                 </div>
               </a>

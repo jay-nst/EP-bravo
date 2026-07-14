@@ -350,21 +350,12 @@ export default function CitadelPage() {
                   borderBottom: '1px solid var(--border)',
                 }}
               >
-                <span
-                  style={{
-                    width: 4,
-                    height: 24,
-                    borderRadius: 2,
-                    background: '#C45C4A',
-                    flexShrink: 0,
-                  }}
-                />
                 <div style={{ flex: 1 }}>
                   <h3
                     style={{
                       fontSize: 16,
                       fontWeight: 600,
-                      color: 'var(--text)',
+                      color: '#C45C4A',
                     }}
                   >
                     {v.title}

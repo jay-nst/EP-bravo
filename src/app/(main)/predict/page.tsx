@@ -195,8 +195,7 @@ export default function PredictPage() {
           {VERTICALS.map((v) => (
             <div key={v.id} style={{ borderRadius: 8, border: '1px solid var(--border)', overflow: 'hidden' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px', background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-                <span style={{ width: 4, height: 24, borderRadius: 2, background: '#4A9EC4', flexShrink: 0 }} />
-                <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', flex: 1 }}>{v.title}</h3>
+                <h3 style={{ fontSize: 16, fontWeight: 600, color: '#4A9EC4', flex: 1 }}>{v.title}</h3>
                 {v.badge && (
                   <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, padding: '3px 8px', borderRadius: 3, background: 'rgba(138, 134, 128, 0.15)', color: 'var(--text-muted)', fontWeight: 600 }}>
                     {v.badge}
