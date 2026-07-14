@@ -224,7 +224,7 @@ export default function DashboardClient() {
       <section className="py-4" style={{ borderBottom: '1px solid var(--border)' }}>
         <div className="flex items-center gap-2 px-6 mb-3">
           <span className="w-2 h-2 rounded-full" style={{ background: 'var(--accent)', animation: 'pulse-dot 1.5s ease-in-out infinite' }} />
-          <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+          <span className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
             Live Feed
           </span>
         </div>
@@ -563,12 +563,12 @@ function SectionHeader({ title, icon, linkText, linkHref }: {
 }) {
   return (
     <div className="flex items-center justify-between mb-4">
-      <h2 className="text-sm font-semibold flex items-center gap-2" style={{ color: 'var(--text)' }}>
-        {icon && <span className="text-xs" style={{ color: 'var(--accent)' }}>{icon}</span>}
+      <h2 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--text)' }}>
+        {icon && <span className="text-sm" style={{ color: 'var(--accent)' }}>{icon}</span>}
         {title}
       </h2>
       {linkText && linkHref && (
-        <Link href={linkHref} className="text-xs" style={{ color: 'var(--text-muted)' }}>{linkText} →</Link>
+        <Link href={linkHref} className="text-sm py-1 px-2" style={{ color: 'var(--text-muted)' }}>{linkText} →</Link>
       )}
     </div>
   );
