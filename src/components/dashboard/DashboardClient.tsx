@@ -822,7 +822,7 @@ function BreakingStrip({ items }: { items: FeedItem[] }) {
             className="flex-shrink-0"
             style={{
               fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: 700,
               letterSpacing: '0.08em',
               color: sev.color,
@@ -845,7 +845,7 @@ function BreakingStrip({ items }: { items: FeedItem[] }) {
       </div>
 
       {citadelItems.length > 1 && (
-        <span className="flex-shrink-0" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: 'var(--text-muted)' }}>
+        <span className="flex-shrink-0" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: 'var(--text-muted)' }}>
           {(currentIdx % citadelItems.length) + 1}/{citadelItems.length}
         </span>
       )}
