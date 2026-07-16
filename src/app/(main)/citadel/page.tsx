@@ -70,7 +70,7 @@ const SEVERITY_COLORS = {
 
 export default function CitadelPage() {
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+    <div className="ep-page" style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       {/* Hero */}
       <section
         style={{
@@ -154,6 +154,7 @@ export default function CitadelPage() {
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' as const }}>
           <a
             href="#contact"
+            className="ep-cta"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -171,6 +172,7 @@ export default function CitadelPage() {
           </a>
           <a
             href="#verticals"
+            className="ep-cta"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -544,6 +546,7 @@ export default function CitadelPage() {
                 </p>
 
                 <div
+                  className="ep-cols-2"
                   style={{
                     display: 'grid',
                     gridTemplateColumns: '1fr 1fr',
@@ -650,6 +653,7 @@ export default function CitadelPage() {
           </p>
           <a
             href="mailto:contact@earthpaper.space"
+            className="ep-cta"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -674,6 +678,12 @@ export default function CitadelPage() {
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.4; }
+        }
+        @media (max-width: 640px) {
+          .ep-page > section { padding-left: 16px !important; padding-right: 16px !important; }
+          .ep-page > section:first-of-type { padding-top: 48px !important; padding-bottom: 32px !important; }
+          .ep-cols-2 { grid-template-columns: 1fr !important; }
+          .ep-cta { min-height: 48px !important; }
         }
       `}</style>
     </div>

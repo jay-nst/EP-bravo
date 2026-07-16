@@ -29,7 +29,7 @@ const CAPABILITIES = [
 
 export default function NorthpaperPage() {
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+    <div className="ep-page" style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       <section
         style={{
           padding: '120px 24px 80px',
@@ -139,6 +139,7 @@ export default function NorthpaperPage() {
           </p>
 
           <div
+            className="ep-cols-2"
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(2, 1fr)',
@@ -358,6 +359,7 @@ export default function NorthpaperPage() {
           </p>
           <a
             href="mailto:defense@naraspace.com"
+            className="ep-cta"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -377,6 +379,15 @@ export default function NorthpaperPage() {
       </section>
 
       <OtherSolutions current="northpaper" />
+
+      <style>{`
+        @media (max-width: 640px) {
+          .ep-page > section { padding-left: 16px !important; padding-right: 16px !important; }
+          .ep-page > section:first-of-type { padding-top: 48px !important; padding-bottom: 32px !important; }
+          .ep-cols-2 { grid-template-columns: 1fr !important; }
+          .ep-cta { min-height: 48px !important; }
+        }
+      `}</style>
     </div>
   );
 }

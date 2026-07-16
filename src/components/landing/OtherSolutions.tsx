@@ -18,7 +18,7 @@ export default function OtherSolutions({ current }: OtherSolutionsProps) {
   const others = SOLUTIONS.filter((s) => s.key !== current);
 
   return (
-    <section style={{ padding: '0 24px 80px', maxWidth: 960, margin: '0 auto' }}>
+    <section className="px-4 md:px-6 pb-12 md:pb-20" style={{ maxWidth: 960, margin: '0 auto' }}>
       <div
         style={{
           borderTop: '1px solid var(--border)',
@@ -38,7 +38,7 @@ export default function OtherSolutions({ current }: OtherSolutionsProps) {
         >
           EarthPaper의 다른 솔루션
         </span>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 10 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
           {others.map((s) => (
             <Link
               key={s.key}

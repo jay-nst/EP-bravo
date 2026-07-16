@@ -15,18 +15,23 @@ const SERVICES = [
 
 export default function Header() {
   const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const handleEnter = () => {
     clearTimeout(timerRef.current);
-    setMenuOpen(true);
+    setDropdownOpen(true);
   };
 
   const handleLeave = () => {
-    timerRef.current = setTimeout(() => setMenuOpen(false), 200);
+    timerRef.current = setTimeout(() => setDropdownOpen(false), 200);
   };
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     return () => clearTimeout(timerRef.current);
@@ -42,9 +47,8 @@ export default function Header() {
         backdropFilter: 'blur(12px)',
       }}
     >
-      <div className="h-full px-6 flex items-center justify-between">
+      <div className="h-full px-4 md:px-6 flex items-center justify-between">
         <div className="flex items-center gap-6">
-          {/* Logo */}
           <Link
             href="/"
             className="text-base font-semibold tracking-tight flex items-center gap-2"
@@ -58,8 +62,8 @@ export default function Header() {
             EARTHPAPER
           </Link>
 
-          <nav className="flex items-center gap-1">
-            {/* 오늘의 지구 */}
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-1">
             <Link
               href="/daily"
               className="px-3 py-2.5 text-sm rounded-md transition-colors"
@@ -71,7 +75,6 @@ export default function Header() {
               오늘의 지구
             </Link>
 
-            {/* 서비스 드롭다운 */}
             <div
               ref={menuRef}
               className="relative"
@@ -88,7 +91,7 @@ export default function Header() {
                 </svg>
               </button>
 
-              {menuOpen && (
+              {dropdownOpen && (
                 <div
                   className="absolute top-full left-0 mt-1 py-2 rounded-lg"
                   style={{
@@ -103,7 +106,7 @@ export default function Header() {
                       key={s.key}
                       href={s.href}
                       className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-[var(--surface-elevated)]"
-                      onClick={() => setMenuOpen(false)}
+                      onClick={() => setDropdownOpen(false)}
                     >
                       <span
                         className="w-2 h-2 rounded-full flex-shrink-0"
@@ -111,7 +114,7 @@ export default function Header() {
                       />
                       <div>
                         <p className="text-sm font-medium" style={{ color: s.color }}>{s.label}</p>
-                        <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{s.desc}</p>
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{s.desc}</p>
                       </div>
                     </Link>
                   ))}
@@ -121,17 +124,100 @@ export default function Header() {
           </nav>
         </div>
 
-        {/* Right side */}
         <div className="flex items-center gap-3">
           <Link
             href="/login"
-            className="text-sm px-3 py-2.5 rounded-md transition-colors"
+            className="hidden md:inline-flex text-sm px-3 py-2.5 rounded-md transition-colors"
             style={{ color: 'var(--text-muted)' }}
           >
             로그인
           </Link>
+
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden p-2 -mr-2 rounded-md"
+            style={{ color: 'var(--text-muted)' }}
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label={mobileOpen ? '메뉴 닫기' : '메뉴 열기'}
+          >
+            {mobileOpen ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12h18M3 6h18M3 18h18" />
+              </svg>
+            )}
+          </button>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div
+          className="md:hidden"
+          style={{
+            position: 'absolute',
+            top: 'var(--header-height)',
+            left: 0,
+            right: 0,
+            background: 'var(--surface)',
+            borderBottom: '1px solid var(--border)',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+            maxHeight: 'calc(100dvh - var(--header-height))',
+            overflowY: 'auto',
+          }}
+        >
+          <div style={{ padding: '8px 0' }}>
+            <Link
+              href="/daily"
+              className="flex items-center px-6 py-3 text-sm transition-colors"
+              style={{
+                color: pathname.startsWith('/daily') ? 'var(--accent)' : 'var(--text)',
+              }}
+            >
+              오늘의 지구
+            </Link>
+
+            <div style={{ padding: '8px 24px 4px', marginTop: 4, borderTop: '1px solid var(--border)' }}>
+              <span style={{
+                fontFamily: "'IBM Plex Mono', monospace",
+                fontSize: 12,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: 'var(--text-muted)',
+              }}>
+                서비스
+              </span>
+            </div>
+            {SERVICES.map((s) => (
+              <Link
+                key={s.key}
+                href={s.href}
+                className="flex items-center gap-3 px-6 py-3 transition-colors"
+              >
+                <span
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ background: s.color }}
+                />
+                <span className="text-sm font-medium" style={{ color: s.color }}>{s.label}</span>
+                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{s.desc}</span>
+              </Link>
+            ))}
+
+            <div style={{ borderTop: '1px solid var(--border)', marginTop: 8, paddingTop: 8 }}>
+              <Link
+                href="/login"
+                className="flex items-center px-6 py-3 text-sm"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                로그인
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

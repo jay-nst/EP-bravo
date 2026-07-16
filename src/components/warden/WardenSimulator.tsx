@@ -127,9 +127,9 @@ export default function WardenSimulator() {
       </div>
 
       <div
+        className="h-[320px] md:h-[480px]"
         style={{
           position: 'relative',
-          height: 480,
           borderRadius: 8,
           overflow: 'hidden',
           border: '1px solid var(--border)',
@@ -144,21 +144,16 @@ export default function WardenSimulator() {
         />
 
         <div
+          className="absolute bottom-0 left-0 right-0 max-h-[75%] overflow-y-auto rounded-t-lg md:bottom-auto md:left-auto md:right-3 md:top-3 md:w-[280px] md:max-h-none md:overflow-hidden md:rounded-lg"
           style={{
-            position: 'absolute',
-            top: 12,
-            right: 12,
-            width: 280,
-            borderRadius: 8,
             background: 'var(--panel-bg)',
             backdropFilter: 'blur(12px)',
             border: '1px solid var(--border)',
-            overflow: 'hidden',
             pointerEvents: 'auto',
           }}
         >
           {phase === 'draw' && (
-            <div style={{ padding: 20 }}>
+            <div className="p-4 md:p-5">
               <h3
                 style={{
                   fontSize: 16,
@@ -196,7 +191,7 @@ export default function WardenSimulator() {
           )}
 
           {phase === 'analyzing' && (
-            <div style={{ padding: 20, textAlign: 'center' }}>
+            <div className="p-4 md:p-5" style={{ textAlign: 'center' }}>
               <div
                 style={{
                   width: 32,
@@ -300,6 +295,10 @@ export default function WardenSimulator() {
                     width: '100%',
                     marginTop: 16,
                     padding: '10px',
+                    minHeight: 48,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     borderRadius: 6,
                     background: '#6B8A5E',
                     color: '#fff',

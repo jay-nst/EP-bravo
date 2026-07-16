@@ -22,12 +22,13 @@
 
 ## Design Review History
 
-총 21건 수정 완료 (4 rounds). 현재 점수: Design B+ / AI Slop A / Performance A.
+총 24건 수정 완료 (5 rounds). 현재 점수: Design A- / AI Slop A / Performance A.
 - Round 1 (2026-06-29): FINDING-001~012 — 다크테마, 타이포, 터치타겟, 브랜딩, Empty State, 위성느낌
 - Round 2 (2026-07-02): FINDING-014~017 — 히어로CTA/푸터/보조링크 터치타겟, Before/After 텍스트겹침
 - Round 3 (2026-07-14): FINDING-018~022 — 섹션 제목 크기, AI Slop 패턴 제거(colored left-border, circle icons), 터치 타겟 개선
 - Round 4 (2026-07-14): 시뮬레이터 디자인 정합성 — glass panel opacity(var(--panel-bg)), Northpaper 크기 통일, --color-northpaper CSS 변수 추가, 버튼 hover 피드백
-- Deferred: 푸터 링크 36px (허용), 실 위성영상 교체 후 재평가
+- Round 5 (2026-07-16): FINDING-023~025 — Breaking Strip 11px→12px, Footer sub-12px 5건→12px
+- Deferred: 69 hardcoded hex (opacity suffix 패턴), ~45 landing page sub-12px mono labels, 사이드바 터치타겟 28px (모바일 스프린트)
 
 ## Current State (2026-07-14)
 

@@ -61,7 +61,7 @@ const VERTICALS = [
 
 export default function PredictPage() {
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+    <div className="ep-page" style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       {/* Hero */}
       <section style={{ padding: '80px 24px 48px', maxWidth: 960, margin: '0 auto' }}>
         <div
@@ -133,6 +133,7 @@ export default function PredictPage() {
             href="https://predicthings.com"
             target="_blank"
             rel="noopener noreferrer"
+            className="ep-cta"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -150,6 +151,7 @@ export default function PredictPage() {
           </a>
           <a
             href="#contact"
+            className="ep-cta"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -270,7 +272,7 @@ export default function PredictPage() {
               </div>
               <div style={{ padding: 20 }}>
                 <p style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--text-muted)', marginBottom: 16, maxWidth: '60ch' }}>{v.desc}</p>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="ep-cols-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div>
                     <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: 'var(--text-muted)', display: 'block', marginBottom: 6 }}>고객</span>
                     <p style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.5 }}>{v.customers}</p>
@@ -302,6 +304,7 @@ export default function PredictPage() {
           </p>
           <a
             href="mailto:contact@earthpaper.space"
+            className="ep-cta"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '12px 28px', borderRadius: 8, background: '#4A9EC4', color: '#fff', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}
           >
             자산 등록 상담
@@ -310,6 +313,15 @@ export default function PredictPage() {
       </section>
 
       <OtherSolutions current="predict" />
+
+      <style>{`
+        @media (max-width: 640px) {
+          .ep-page > section { padding-left: 16px !important; padding-right: 16px !important; }
+          .ep-page > section:first-of-type { padding-top: 48px !important; padding-bottom: 32px !important; }
+          .ep-cols-2 { grid-template-columns: 1fr !important; }
+          .ep-cta { min-height: 48px !important; }
+        }
+      `}</style>
     </div>
   );
 }

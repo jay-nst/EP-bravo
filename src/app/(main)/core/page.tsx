@@ -207,6 +207,7 @@ export default function CorePage() {
   const [layers, setLayers] = useState<OverlayLayer[]>(INITIAL_LAYERS);
   const [sidebarTab, setSidebarTab] = useState<'layers' | 'purchase'>('layers');
   const [mapStyleId, setMapStyleId] = useState<MapStyleId>('dark');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const animRef = useRef<LayerAnimationController | null>(null);
   const layerDataCache = useRef<Record<string, GeoJSON.FeatureCollection>>({});
@@ -1089,7 +1090,7 @@ export default function CorePage() {
   }, [aoi, catalogItemId, supabase]);
 
   return (
-    <div className="flex" style={{ height: 'calc(100vh - var(--header-height))' }}>
+    <div className="flex relative" style={{ height: 'calc(100vh - var(--header-height))' }}>
       {/* Map */}
       <div className="flex-1 relative">
         <EarthMap
@@ -1100,9 +1101,26 @@ export default function CorePage() {
           mapStyleId={mapStyleId}
         />
 
+        {/* Mobile sidebar toggle */}
+        <button
+          className="md:hidden absolute top-3 right-3 z-20 p-2.5 rounded-lg"
+          style={{
+            background: 'rgba(14,14,16,0.85)',
+            backdropFilter: 'blur(8px)',
+            border: '1px solid var(--border)',
+            color: sidebarOpen ? 'var(--accent)' : 'var(--text-muted)',
+          }}
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          aria-label={sidebarOpen ? '패널 닫기' : '패널 열기'}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {sidebarOpen ? <path d="M18 6L6 18M6 6l12 12" /> : <path d="M3 6h18M3 12h18M3 18h18" />}
+          </svg>
+        </button>
+
         {/* Map style switcher */}
         <div
-          className="absolute bottom-4 right-4 flex gap-1 p-1 rounded-lg z-10"
+          className="absolute bottom-4 left-4 md:left-auto md:right-4 flex gap-1 p-1 rounded-lg z-10"
           style={{
             background: 'rgba(14,14,16,0.85)',
             backdropFilter: 'blur(8px)',
@@ -1116,7 +1134,7 @@ export default function CorePage() {
                 setMapStyleId(id);
                 trackEvent('map_style_change', id, {});
               }}
-              className="px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
+              className="px-2 md:px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
               style={{
                 background: mapStyleId === id ? 'var(--surface-elevated)' : 'transparent',
                 color: mapStyleId === id ? 'var(--text)' : 'var(--text-muted)',
@@ -1124,7 +1142,7 @@ export default function CorePage() {
               }}
               title={style.label}
             >
-              <span className="mr-1">{style.icon}</span>
+              <span className="mr-1 hidden sm:inline">{style.icon}</span>
               {style.label}
             </button>
           ))}
@@ -1132,7 +1150,8 @@ export default function CorePage() {
 
         {/* Active layers indicator */}
         <div
-          className="absolute top-3 left-14 flex gap-1.5 z-10"
+          className="absolute top-3 left-14 flex gap-1.5 z-10 max-w-[calc(100%-120px)] md:max-w-none overflow-x-auto"
+          style={{ scrollbarWidth: 'none' }}
         >
           {layers
             .filter((l) => l.enabled && !l.comingSoon)
@@ -1160,13 +1179,28 @@ export default function CorePage() {
         </div>
       </div>
 
+      {/* Mobile backdrop */}
+      {sidebarOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-30"
+          style={{ background: 'rgba(0,0,0,0.5)' }}
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <div
-        className="w-80 flex flex-col border-l"
+        className={`
+          fixed md:relative inset-y-0 right-0 z-40 md:z-auto
+          w-[300px] md:w-80 flex flex-col border-l
+          transition-transform duration-200 ease-out
+          ${sidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
+        `}
         style={{
           background: 'rgba(14,14,16,0.95)',
           backdropFilter: 'blur(12px)',
           borderColor: 'var(--border)',
+          top: 'var(--header-height)',
         }}
       >
         {/* Tabs */}

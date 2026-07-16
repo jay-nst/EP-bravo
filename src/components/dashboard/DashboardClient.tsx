@@ -191,9 +191,8 @@ export default function DashboardClient() {
 
       {/* ===== FEATURED HERO (Bloomberg-style) ===== */}
       <section
-        className="relative overflow-hidden cursor-pointer"
+        className="relative overflow-hidden cursor-pointer min-h-[280px] md:min-h-[400px]"
         style={{
-          minHeight: 400,
           background: 'var(--surface)',
           borderBottom: '1px solid var(--border)',
         }}
@@ -226,25 +225,25 @@ export default function DashboardClient() {
         />
         {editorPick ? (
           <Link href="/interactive/north-korean-shipyards" className="block relative z-10">
-            <div className="max-w-6xl mx-auto px-6 py-16">
-              <div className="flex items-center gap-2 mb-5">
+            <div className="max-w-6xl mx-auto px-4 md:px-6 py-10 md:py-16">
+              <div className="flex items-center gap-2 mb-4 md:mb-5">
                 <span className="inline-block w-6 h-px" style={{ background: 'var(--accent)' }} />
                 <span className="text-xs font-mono tracking-[0.15em] uppercase font-semibold" style={{ color: '#3D5A80' }}>
                   Northpaper Original · 방위 분석
                 </span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-4 max-w-2xl" style={{ color: 'var(--text)' }}>
+              <h1 className="text-2xl md:text-4xl font-bold leading-tight mb-3 md:mb-4 max-w-2xl" style={{ color: 'var(--text)' }}>
                 {editorPick.title}
               </h1>
-              <p className="text-sm md:text-base leading-relaxed max-w-xl mb-6" style={{ color: 'var(--text-muted)' }}>
+              <p className="text-sm md:text-base leading-relaxed max-w-xl mb-5 md:mb-6" style={{ color: 'var(--text-muted)' }}>
                 {editorPick.description}
               </p>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 md:gap-4 flex-wrap">
                 <span className="text-xs font-medium px-3 py-1.5 rounded" style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }}>
                   인터랙티브
                 </span>
                 <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>6분 읽기</span>
-                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{editorPick.source}</span>
+                <span className="text-xs hidden sm:inline" style={{ color: 'var(--text-muted)' }}>{editorPick.source}</span>
                 <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
                   {new Date(editorPick.published_at).toLocaleDateString('ko-KR')}
                 </span>
@@ -252,17 +251,17 @@ export default function DashboardClient() {
             </div>
           </Link>
         ) : (
-          <div className="max-w-6xl mx-auto px-6 py-16 relative z-10 animate-pulse space-y-4">
+          <div className="max-w-6xl mx-auto px-4 md:px-6 py-10 md:py-16 relative z-10 animate-pulse space-y-4">
             <div className="h-4 w-40 rounded" style={{ background: 'var(--surface-elevated)' }} />
-            <div className="h-10 w-96 rounded" style={{ background: 'var(--surface-elevated)' }} />
-            <div className="h-5 w-80 rounded" style={{ background: 'var(--surface-elevated)' }} />
+            <div className="h-10 w-full max-w-96 rounded" style={{ background: 'var(--surface-elevated)' }} />
+            <div className="h-5 w-full max-w-80 rounded" style={{ background: 'var(--surface-elevated)' }} />
           </div>
         )}
       </section>
 
       {/* ===== CURATED FEED STRIP (auto-scroll, multi-platform) ===== */}
       <section className="py-4" style={{ borderBottom: '1px solid var(--border)' }}>
-        <div className="flex items-center gap-2 px-6 mb-3">
+        <div className="flex items-center gap-2 px-4 md:px-6 mb-3">
           <span className="w-2 h-2 rounded-full" style={{ background: 'var(--accent)', animation: 'pulse-dot 1.5s ease-in-out infinite' }} />
           <span className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
             Live Feed
@@ -270,7 +269,7 @@ export default function DashboardClient() {
         </div>
         <div
           ref={curatedRef}
-          className="flex gap-4 px-6 overflow-x-auto"
+          className="flex gap-3 md:gap-4 px-4 md:px-6 overflow-x-auto"
           style={{ scrollbarWidth: 'none' }}
         >
           {curatedItems.map((item) => {
@@ -283,7 +282,7 @@ export default function DashboardClient() {
               <CardTag
                 key={item.id}
                 {...linkProps}
-                className="flex-shrink-0 w-[280px] p-4 rounded-lg cursor-pointer transition-colors hover:bg-[var(--surface-elevated)] no-underline"
+                className="flex-shrink-0 w-[240px] md:w-[280px] p-3 md:p-4 rounded-lg cursor-pointer transition-colors hover:bg-[var(--surface-elevated)] no-underline"
                 style={{ border: `1px solid ${item.color}30`, background: `${item.color}08`, textDecoration: 'none' }}
               >
                 <div className="flex items-center gap-2 mb-2">
@@ -313,8 +312,8 @@ export default function DashboardClient() {
         >
           {/* === MAIN COLUMN === */}
           <div
-            className="px-6 py-8 flex flex-col gap-12"
-            style={{ minWidth: 0, borderRight: '1px solid var(--border)' }}
+            className="px-4 md:px-6 py-8 flex flex-col gap-12 lg:border-r"
+            style={{ minWidth: 0, borderColor: 'var(--border)' }}
           >
             {/* Shorts Carousel */}
             {shortsItems.length > 0 && (
@@ -385,7 +384,8 @@ export default function DashboardClient() {
 
           {/* === SIDEBAR === */}
           <aside
-            className="px-6 py-8 flex flex-col gap-6"
+            className="px-4 md:px-6 py-8 flex flex-col gap-6 border-t lg:border-t-0"
+            style={{ borderColor: 'var(--border)' }}
           >
             {/* AI Assistant (moved from full-width) */}
             <div className="rounded-xl p-4" style={{ border: '1px solid var(--border)' }}>
@@ -579,7 +579,7 @@ export default function DashboardClient() {
       </section>
 
       {/* ===== FOOTER ===== */}
-      <footer className="py-8 px-6" style={{ borderTop: '1px solid var(--border)', color: 'var(--text-muted)' }}>
+      <footer className="py-8 px-4 md:px-6" style={{ borderTop: '1px solid var(--border)', color: 'var(--text-muted)' }}>
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm">&copy; {new Date().getFullYear()} EarthPaper by Nara Space</p>
           <div className="flex gap-6 text-sm">
@@ -624,7 +624,7 @@ function ShortsCard({ item }: { item: FeedItem }) {
   const youtubeId = String(item.metadata.youtube_id ?? '');
 
   return (
-    <div className="flex-shrink-0 w-[160px] rounded-lg overflow-hidden group" style={{ border: '1px solid var(--border)', aspectRatio: '9/16' }}>
+    <div className="flex-shrink-0 w-[130px] md:w-[160px] rounded-lg overflow-hidden group" style={{ border: '1px solid var(--border)', aspectRatio: '9/16' }}>
       <div className="relative w-full h-full" style={{ background: 'var(--surface)' }}>
         {playing && youtubeId ? (
           <iframe

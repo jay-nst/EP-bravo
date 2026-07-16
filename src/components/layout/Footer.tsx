@@ -70,7 +70,7 @@ const externalIcon = (
 export default function Footer() {
   return (
     <footer style={{ borderTop: '1px solid var(--border)', background: 'var(--surface)' }}>
-      <div style={{ maxWidth: 960, margin: '0 auto', padding: '48px 24px 32px' }}>
+      <div style={{ maxWidth: 960, margin: '0 auto' }} className="px-4 py-8 md:px-6 md:py-12">
         {/* Grid */}
         <div
           style={{

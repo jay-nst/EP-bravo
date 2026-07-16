@@ -40,7 +40,7 @@ const DATA_STATS = [
 
 export default function NexusPage() {
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+    <div className="ep-page" style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       {/* Hero */}
       <section style={{ padding: '80px 24px 64px', maxWidth: 960, margin: '0 auto' }}>
         <div
@@ -76,6 +76,7 @@ export default function NexusPage() {
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' as const }}>
           <a
             href="#contact"
+            className="ep-cta"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '10px 20px', borderRadius: 8, background: NEXUS_COLOR,
@@ -86,6 +87,7 @@ export default function NexusPage() {
           </a>
           <a
             href="#verticals"
+            className="ep-cta"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '10px 20px', borderRadius: 8, border: '1px solid var(--border)',
@@ -169,7 +171,7 @@ export default function NexusPage() {
                   {v.desc}
                 </p>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="ep-cols-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div>
                     <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: 'var(--text-muted)', display: 'block', marginBottom: 6 }}>
                       고객
@@ -219,6 +221,7 @@ export default function NexusPage() {
           </p>
           <a
             href="mailto:contact@earthpaper.space"
+            className="ep-cta"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '12px 28px', borderRadius: 8, background: NEXUS_COLOR,
@@ -231,6 +234,15 @@ export default function NexusPage() {
       </section>
 
       <OtherSolutions current="nexus" />
+
+      <style>{`
+        @media (max-width: 640px) {
+          .ep-page > section { padding-left: 16px !important; padding-right: 16px !important; }
+          .ep-page > section:first-of-type { padding-top: 48px !important; padding-bottom: 32px !important; }
+          .ep-cols-2 { grid-template-columns: 1fr !important; }
+          .ep-cta { min-height: 48px !important; }
+        }
+      `}</style>
     </div>
   );
 }
