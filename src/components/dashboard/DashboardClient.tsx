@@ -318,7 +318,7 @@ export default function DashboardClient() {
             {/* Shorts Carousel */}
             {shortsItems.length > 0 && (
               <div>
-                <SectionHeader title="Shorts" icon="▶" linkText="전체 보기" linkHref="/shorts" />
+                <SectionHeader title="Shorts" icon="▶" linkText="전체 보기" linkHref="https://www.youtube.com/@naraspace/shorts" external />
                 <div className="flex gap-4 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
                   {shortsItems.map((item) => (
                     <ShortsCard key={item.id} item={item} />
@@ -351,7 +351,7 @@ export default function DashboardClient() {
             {/* Platform Feed Grid */}
             {platformItems.length > 0 && (
               <div>
-                <SectionHeader title="플랫폼 리포트" icon="●" linkText="더 보기" linkHref="/analysis" />
+                <SectionHeader title="플랫폼 리포트" icon="●" linkText="더 보기" linkHref="https://ep.naraspace.com/ko/post" external />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {platformItems.slice(0, 6).map((item) => (
                     <AnalysisCard key={item.id} item={item} />
@@ -602,8 +602,8 @@ export default function DashboardClient() {
 
 /* ===== SUB-COMPONENTS ===== */
 
-function SectionHeader({ title, icon, linkText, linkHref }: {
-  title: string; icon?: string; linkText?: string; linkHref?: string;
+function SectionHeader({ title, icon, linkText, linkHref, external }: {
+  title: string; icon?: string; linkText?: string; linkHref?: string; external?: boolean;
 }) {
   return (
     <div className="flex items-center justify-between mb-4">
@@ -612,7 +612,11 @@ function SectionHeader({ title, icon, linkText, linkHref }: {
         {title}
       </h2>
       {linkText && linkHref && (
-        <Link href={linkHref} className="text-sm py-1 px-2" style={{ color: 'var(--text-muted)' }}>{linkText} →</Link>
+        external ? (
+          <a href={linkHref} target="_blank" rel="noopener noreferrer" className="text-sm py-1 px-2" style={{ color: 'var(--text-muted)' }}>{linkText} →</a>
+        ) : (
+          <Link href={linkHref} className="text-sm py-1 px-2" style={{ color: 'var(--text-muted)' }}>{linkText} →</Link>
+        )
       )}
     </div>
   );
