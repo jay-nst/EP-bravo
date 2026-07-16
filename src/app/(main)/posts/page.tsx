@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
 import { POSTS, CATEGORIES } from '@/lib/sample-data';
 
@@ -48,8 +47,7 @@ export default function PostsPage() {
 
       {/* Featured Post (first) */}
       {filtered.length > 0 && (
-        <Link
-          href={`/posts/${filtered[0].id}`}
+        <div
           className="block rounded-xl overflow-hidden mb-8 transition-colors"
           style={{ border: '1px solid var(--border)' }}
         >
@@ -98,15 +96,14 @@ export default function PostsPage() {
               )}
             </div>
           </div>
-        </Link>
+        </div>
       )}
 
       {/* Post Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {filtered.slice(1).map((post) => (
-          <Link
+          <div
             key={post.id}
-            href={`/posts/${post.id}`}
             className="rounded-xl overflow-hidden transition-colors"
             style={{ border: '1px solid var(--border)' }}
           >
@@ -144,7 +141,7 @@ export default function PostsPage() {
                 </div>
               </div>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
 

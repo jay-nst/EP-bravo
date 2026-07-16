@@ -583,9 +583,9 @@ export default function DashboardClient() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm">&copy; {new Date().getFullYear()} EarthPaper by Nara Space</p>
           <div className="flex gap-6 text-sm">
-            <Link href="/terms" className="hover:underline">이용약관</Link>
-            <Link href="/privacy" className="hover:underline">개인정보처리방침</Link>
-            <Link href="/support" className="hover:underline">고객센터</Link>
+            <a href="https://ep.naraspace.com/ko/policy/service" target="_blank" rel="noopener noreferrer" className="hover:underline">이용약관</a>
+            <a href="https://ep.naraspace.com/ko/policy/privacy" target="_blank" rel="noopener noreferrer" className="hover:underline">개인정보처리방침</a>
+            <a href="https://ep.naraspace.com/ko/helpcenter" target="_blank" rel="noopener noreferrer" className="hover:underline">고객센터</a>
           </div>
         </div>
       </footer>
