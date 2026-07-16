@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import AoiPanel from '@/components/map/AoiPanel';
 import type { SatelliteType } from '@/types/database';
 import { createClient } from '@/lib/supabase/client';
 import { requestTossPayment } from '@/lib/toss/widget';
-import { DEMO_USER } from '@/lib/demo-user';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
@@ -31,6 +30,13 @@ export default function MapPage() {
   const [purchasing, setPurchasing] = useState(false);
   const [catalogItemId, setCatalogItemId] = useState<string | null>(null);
   const supabase = useMemo(() => createClient(), []);
+  const [userEmail, setUserEmail] = useState('');
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.email) setUserEmail(user.email);
+    });
+  }, [supabase]);
 
   const handleAoiChange = useCallback((newAoi: AoiSelection | null) => {
     setAoi(newAoi);
@@ -68,7 +74,7 @@ export default function MapPage() {
         orderId,
         amount,
         orderName,
-        customerEmail: DEMO_USER.email,
+        customerEmail: userEmail,
       });
     } catch (err) {
       if (err instanceof Error && err.message.includes('canceled')) {

@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import type mapboxgl from 'mapbox-gl';
+import { addPredictOverlay, removeSimulatorOverlay } from '@/lib/simulator-overlays';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
@@ -57,23 +59,47 @@ type Phase = 'draw' | 'analyzing' | 'result';
 export default function PredictSimulator() {
   const [phase, setPhase] = useState<Phase>('draw');
   const [result, setResult] = useState<VerificationResult | null>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const polyRef = useRef<GeoJSON.Polygon | null>(null);
+
+  const handleMapReady = useCallback((m: mapboxgl.Map) => {
+    mapRef.current = m;
+  }, []);
+
+  const clearOverlay = useCallback(() => {
+    if (mapRef.current) removeSimulatorOverlay(mapRef.current, 'predict');
+  }, []);
 
   const handleAoiChange = useCallback(
-    (aoi: { areaKm2: number } | null) => {
+    (aoi: { areaKm2: number; polygon: GeoJSON.Polygon } | null) => {
+      clearOverlay();
       if (!aoi) {
         setPhase('draw');
         setResult(null);
+        polyRef.current = null;
         return;
       }
 
+      polyRef.current = aoi.polygon;
       setPhase('analyzing');
       setTimeout(() => {
-        setResult(generateVerification(aoi.areaKm2));
+        const r = generateVerification(aoi.areaKm2);
+        setResult(r);
         setPhase('result');
+        if (mapRef.current && polyRef.current) {
+          addPredictOverlay(mapRef.current, polyRef.current, r);
+        }
       }, 2200);
     },
-    [],
+    [clearOverlay],
   );
+
+  const handleReset = useCallback(() => {
+    clearOverlay();
+    setPhase('draw');
+    setResult(null);
+    polyRef.current = null;
+  }, [clearOverlay]);
 
   return (
     <section style={{ padding: '0 24px 64px', maxWidth: 960, margin: '0 auto' }}>
@@ -102,6 +128,7 @@ export default function PredictSimulator() {
       >
         <EarthMap
           onAoiChange={handleAoiChange}
+          onMapReady={handleMapReady}
           initialStyle="satellite"
           center={[72.0, 27.0]}
           zoom={9}
@@ -202,10 +229,7 @@ export default function PredictSimulator() {
                   검증 결과
                 </span>
                 <button
-                  onClick={() => {
-                    setPhase('draw');
-                    setResult(null);
-                  }}
+                  onClick={handleReset}
                   style={{
                     fontSize: 12,
                     color: 'var(--text-muted)',
@@ -217,6 +241,15 @@ export default function PredictSimulator() {
                 >
                   초기화
                 </button>
+              </div>
+
+              <div style={{ position: 'relative', height: 100, overflow: 'hidden' }}>
+                <img
+                  src="https://earthpaper.s3.ap-northeast-2.amazonaws.com/post/v2/editor/28/Thumbnail-corn-belt-yield-model-97pct-accuracy-satellite-forecast.png"
+                  alt="자산 검증 위성영상"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--surface) 0%, transparent 60%)' }} />
               </div>
 
               <div style={{ padding: 16 }}>

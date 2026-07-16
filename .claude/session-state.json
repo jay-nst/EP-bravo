@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-14",
+  "timestamp": "2026-07-15",
   "branch": "master",
   "last_commit": "3ccbb25",
   "completed_tasks": [
@@ -42,16 +42,19 @@
     "인터랙티브 시뮬레이터 4개 플랫폼 추가: EarthMap AOI 드로잉 → 시뮬레이션 결과 패널 (Warden/Predict/Citadel/Northpaper)",
     "EarthMap center/zoom props 추가 — 시뮬레이터별 초기 위치 지정 가능",
     "NetBird VPN 네트워크 접속 설정: next.config.ts allowedDevOrigins + Windows 방화벽 인바운드 룰",
-    "Design Review Round 4 (2026-07-14): 시뮬레이터 디자인 정합성 — glass panel var(--panel-bg), Northpaper 크기 통일, --color-northpaper CSS 추가, 버튼 hover 피드백"
+    "Design Review Round 4 (2026-07-14): 시뮬레이터 디자인 정합성 — glass panel var(--panel-bg), Northpaper 크기 통일, --color-northpaper CSS 추가, 버튼 hover 피드백",
+    "Phase 1: Auth + Security Foundation — Supabase Auth 복원, middleware 경로 보호, AWS credential provider chain, DEMO_USER 제거 (13개 파일)",
+    "Phase 2: Payment Safety — 결제 트랜잭션 RPC 3개 (claim_order, complete_order, fail_and_refund), LambdaClient/S3Client 싱글턴 캐시, 결제 흐름 테스트 21개",
+    "Phase 3: Real Data Layer — feed_items/watchlist_areas 테이블, PostGIS search_catalog_by_bbox RPC, Feed/Summary/Orders API mock→Supabase, DashboardClient 하드코딩→API 파생",
+    "Phase 4: Hardening + Tests — content-type 검사, API 에러 통일(api-error.ts), Lambda 타임아웃/재시도, 서버 측 토큰 카운팅, Rate Limiting, 테스트 13개 추가 (총 105개)",
+    "위성영상 교체 — AnalysisCard 썸네일 S3 URL 표시 + 시뮬레이터 4개 결과 패널에 실제 위성영상 추가"
   ],
   "in_progress": [],
   "remaining_tasks": [
-    "T1: Feed API → Supabase 실 데이터 연동 (스키마 설계 선행 필요)",
-    "실제 위성 영상 이미지 교체 (현재 placeholder)",
     "모바일 반응형 (별도 스프린트)"
   ],
   "blockers": [],
-  "test_status": "vitest 71개 테스트 통과 (7 파일). mock-dashboard 무결성 + feed API 로직 + analytics 등. npm test로 실행.",
+  "test_status": "vitest 105개 테스트 통과 (11 파일). payment 21개 + rate-limit 4개 + api-error 7개 + toss 2개 추가. npm test로 실행.",
   "decisions_made": [
     "인증 제거: DEMO_USER fallback 사용",
     "메인페이지: Bloomberg 스타일 에디토리얼 매거진 레이아웃",
@@ -66,7 +69,15 @@
     "Live Feed: 자동스크롤 유지, Breaking Strip만 정적",
     "플랫폼 identity: colored left-border 바 대신 heading text color + small dot (AI Slop 제거)",
     "시뮬레이터 패턴: 3-phase 상태 머신 (draw → analyzing → result), floating glass panel, 플랫폼 accent 색상",
-    "시뮬레이터 glass panel: var(--panel-bg) CSS 변수 사용 (하드코딩 금지)"
+    "시뮬레이터 glass panel: var(--panel-bg) CSS 변수 사용 (하드코딩 금지)",
+    "Auth 복원: requireAuth() 헬퍼 + middleware 경로 보호 (DEMO_USER 제거)",
+    "결제 안전성: Supabase RPC 3개로 트랜잭션 래핑 + SELECT FOR UPDATE 멱등성",
+    "AWS SDK: credential provider chain + 싱글턴 클라이언트 캐시",
+    "API 에러: api-error.ts 공유 헬퍼로 전 API 통일 (badRequest/notFound/serverError/unsupportedMediaType)",
+    "Rate Limiting: 메모리 sliding window (chat 10/min, payment 5/min)",
+    "Lambda: 60초 타임아웃 + 2회 재시도 (throttle/timeout 시)",
+    "서버 측 토큰 카운팅: TransformStream으로 스트림 바이트 추적 → increment_chat_tokens RPC",
+    "Toss content-type: 비-JSON 응답 감지 + parseErrorResponse 헬퍼"
   ],
   "platform_structure": {
     "citadel": { "color": "#C45C4A", "desc": "재난 · 도시 관제", "href": "/citadel", "prev_name": "Tempest" },

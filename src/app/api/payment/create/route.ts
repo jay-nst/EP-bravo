@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { calculatePrice, validateAoi, calculateAreaKm2 } from '@/lib/geo';
 import type { SatelliteType } from '@/types/database';
-import { DEMO_USER } from '@/lib/demo-user';
+import { requireAuth } from '@/lib/auth';
+import { badRequest, notFound, unsupportedMediaType, serverError, apiError } from '@/lib/api-error';
+import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 const createOrderSchema = z.object({
   catalogItemId: z.string().uuid(),
@@ -15,20 +16,25 @@ const createOrderSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
-  const supabase = await createClient();
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const { userId, supabase } = auth.user;
 
-  const { data: { user } } = await supabase.auth.getUser();
-  const userId = user?.id ?? DEMO_USER.id;
+  const rl = checkRateLimit(`payment:${userId}`, RATE_LIMITS.payment);
+  if (!rl.allowed) {
+    return apiError('결제 요청이 너무 많습니다. 잠시 후 다시 시도해주세요.', 429);
+  }
 
-  // Parse and validate request body
+  const contentType = request.headers.get('content-type') ?? '';
+  if (!contentType.includes('application/json')) {
+    return unsupportedMediaType();
+  }
+
   const body = await request.json();
   const parsed = createOrderSchema.safeParse(body);
 
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: '잘못된 요청', details: parsed.error.flatten() },
-      { status: 400 },
-    );
+    return badRequest('잘못된 요청', parsed.error.flatten());
   }
 
   const { catalogItemId, aoi } = parsed.data;
@@ -42,10 +48,7 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (catalogError || !catalogItem) {
-    return NextResponse.json(
-      { error: '영상을 찾을 수 없습니다' },
-      { status: 404 },
-    );
+    return notFound('영상을 찾을 수 없습니다');
   }
 
   const satellite = catalogItem.satellite as SatelliteType;
@@ -54,7 +57,7 @@ export async function POST(request: NextRequest) {
   // AOI validation gate (pre-payment, prevents F4 scenario)
   const validationError = validateAoi(areaKm2, satellite);
   if (validationError) {
-    return NextResponse.json({ error: validationError }, { status: 400 });
+    return badRequest(validationError);
   }
 
   const totalPrice = calculatePrice(areaKm2, satellite);
@@ -75,10 +78,7 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (orderError || !order) {
-    return NextResponse.json(
-      { error: '주문 생성 실패', details: orderError?.message },
-      { status: 500 },
-    );
+    return serverError('주문 생성 실패', orderError?.message);
   }
 
   return NextResponse.json({

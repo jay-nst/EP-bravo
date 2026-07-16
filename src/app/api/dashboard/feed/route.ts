@@ -1,8 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import type { FeedItem, FeedType } from '@/types/dashboard';
+import { badRequest } from '@/lib/api-error';
 import { MOCK_FEED_ITEMS } from '@/lib/mock-dashboard';
-import type { FeedType } from '@/types/dashboard';
 
 const VALID_TYPES = new Set<string>(['all', 'analysis', 'shorts', 'trending', 'news', 'community', 'report', 'citadel', 'predict', 'warden', 'northpaper']);
+
+function filterMock(type: string, limit: number, cursor: string | null): { items: FeedItem[]; nextCursor: string | null } {
+  let filtered = type === 'all' ? MOCK_FEED_ITEMS : MOCK_FEED_ITEMS.filter((i) => i.type === type);
+  filtered = filtered.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+  if (cursor) {
+    filtered = filtered.filter((i) => new Date(i.published_at).getTime() < new Date(cursor).getTime());
+  }
+  const page = filtered.slice(0, limit);
+  const nextCursor = page.length === limit ? page[page.length - 1].published_at : null;
+  return { items: page, nextCursor };
+}
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
@@ -11,23 +24,33 @@ export async function GET(req: NextRequest) {
   const limit = Math.min(Math.max(Number(searchParams.get('limit') ?? 10), 1), 50);
 
   if (!VALID_TYPES.has(type)) {
-    return NextResponse.json({ error: '유효하지 않은 피드 타입입니다' }, { status: 400 });
+    return badRequest('유효하지 않은 피드 타입입니다');
   }
 
-  let items = [...MOCK_FEED_ITEMS];
+  const supabase = await createClient();
+
+  let query = supabase
+    .from('feed_items')
+    .select('*')
+    .order('published_at', { ascending: false })
+    .limit(limit);
 
   if (type !== 'all') {
-    items = items.filter((item) => item.type === (type as FeedType));
+    query = query.eq('type', type as FeedType);
   }
-
-  items.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
 
   if (cursor) {
-    const cursorTime = new Date(cursor).getTime();
-    items = items.filter((item) => new Date(item.published_at).getTime() < cursorTime);
+    query = query.lt('published_at', cursor);
   }
 
-  const page = items.slice(0, limit);
+  const { data: items, error } = await query;
+
+  if (error) {
+    const mock = filterMock(type, limit, cursor);
+    return NextResponse.json(mock);
+  }
+
+  const page = items ?? [];
   const nextCursor = page.length === limit ? page[page.length - 1].published_at : null;
 
   return NextResponse.json({ items: page, nextCursor });

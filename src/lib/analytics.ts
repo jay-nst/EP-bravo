@@ -6,14 +6,25 @@ function getSessionId(): string {
   if (sessionId) return sessionId;
   if (typeof window === 'undefined') return '';
 
-  const stored = sessionStorage.getItem('ep_session_id');
-  if (stored) {
-    sessionId = stored;
-    return stored;
+  try {
+    const stored = sessionStorage.getItem('ep_session_id');
+    if (stored) {
+      sessionId = stored;
+      return stored;
+    }
+  } catch {
+    // sessionStorage unavailable
   }
 
-  const id = crypto.randomUUID();
-  sessionStorage.setItem('ep_session_id', id);
+  const id =
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+  try {
+    sessionStorage.setItem('ep_session_id', id);
+  } catch {
+    // sessionStorage unavailable (private mode, disabled cookies)
+  }
   sessionId = id;
   return id;
 }

@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { DEMO_USER } from '@/lib/demo-user';
+import { requireAuth } from '@/lib/auth';
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const supabase = await createClient();
-
-  const { data: { user } } = await supabase.auth.getUser();
-  const userId = user?.id ?? DEMO_USER.id;
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const { userId, supabase } = auth.user;
 
   const { data: order, error } = await supabase
     .from('orders')

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { DEMO_USER } from '@/lib/demo-user';
+import { createClient } from '@/lib/supabase/client';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), { ssr: false });
 
@@ -41,13 +41,17 @@ export default function TaskingPage() {
   const [success, setSuccess] = useState(false);
   const [aoi, setAoi] = useState<AoiSelection | null>(null);
 
-  const [contactEmail, setContactEmail] = useState<string>(DEMO_USER.email);
+  const [contactEmail, setContactEmail] = useState<string>('');
   const [contactPhone, setContactPhone] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [notes, setNotes] = useState('');
 
   useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.email) setContactEmail(user.email);
+    });
     fetch('/api/tasking')
       .then((r) => r.json())
       .then((data) => {

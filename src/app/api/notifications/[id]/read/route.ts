@@ -1,19 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { DEMO_USER } from '@/lib/demo-user';
+import { requireAuth } from '@/lib/auth';
+import { serverError } from '@/lib/api-error';
 
 // PATCH: Mark notification as read
 export async function PATCH(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const supabase = await createClient();
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const { userId } = auth.user;
+
   const { id } = await params;
-
-  const { data: { user } } = await supabase.auth.getUser();
-  const userId = user?.id ?? DEMO_USER.id;
-
   const admin = createAdminClient();
 
   const { error } = await admin
@@ -23,7 +22,7 @@ export async function PATCH(
     .eq('user_id', userId);
 
   if (error) {
-    return NextResponse.json({ error: '알림 업데이트 실패' }, { status: 500 });
+    return serverError('알림 업데이트 실패');
   }
 
   return NextResponse.json({ success: true });

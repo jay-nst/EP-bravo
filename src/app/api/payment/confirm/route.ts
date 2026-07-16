@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { confirmPayment, cancelPayment, TossError } from '@/lib/toss/client';
 import { invokeLambdaClip } from '@/lib/aws/lambda';
-import { generatePresignedUrl } from '@/lib/aws/s3';
-import { DEMO_USER } from '@/lib/demo-user';
+import { requireAuth } from '@/lib/auth';
+import { badRequest, unsupportedMediaType, notFound, serverError, apiError } from '@/lib/api-error';
+import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 const confirmSchema = z.object({
   paymentKey: z.string(),
@@ -14,206 +14,161 @@ const confirmSchema = z.object({
 });
 
 /**
- * F1: 2-step payment flow
- * 1. Toss confirm (auth) → payment_held
- * 2. Lambda clipping → processing
- * 3. Success → completed (capture already done by Toss confirm)
- *    Failure → failed → refund_queued → refunded
+ * F1: 2-step payment flow (transaction-wrapped)
+ * 1. claim_order_for_payment RPC (atomic: verify + lock + payment record)
+ * 2. Toss confirm (external)
+ * 3. Lambda clipping (external)
+ * 4. complete_order_after_clip RPC (atomic: order + payment + download)
+ *    or fail_order_and_refund RPC on failure
  */
 export async function POST(request: NextRequest) {
-  const supabase = await createClient();
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const { userId } = auth.user;
 
-  const { data: { user } } = await supabase.auth.getUser();
-  const userId = user?.id ?? DEMO_USER.id;
+  const rl = checkRateLimit(`payment:${userId}`, RATE_LIMITS.payment);
+  if (!rl.allowed) {
+    return apiError('결제 요청이 너무 많습니다. 잠시 후 다시 시도해주세요.', 429);
+  }
+
+  const contentType = request.headers.get('content-type') ?? '';
+  if (!contentType.includes('application/json')) {
+    return unsupportedMediaType();
+  }
 
   const body = await request.json();
   const parsed = confirmSchema.safeParse(body);
 
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: '잘못된 요청', details: parsed.error.flatten() },
-      { status: 400 },
-    );
+    return badRequest('잘못된 요청', parsed.error.flatten());
   }
 
   const { paymentKey, orderId, amount } = parsed.data;
   const admin = createAdminClient();
 
-  // Verify order belongs to user and is in pending status
-  const { data: order, error: orderError } = await supabase
+  // Step 1: Atomically claim order (SELECT FOR UPDATE + status transition + payment record)
+  const { data: claimResult, error: claimError } = await admin.rpc(
+    'claim_order_for_payment',
+    {
+      p_order_id: orderId,
+      p_user_id: userId,
+      p_payment_key: paymentKey,
+      p_amount: amount,
+    },
+  );
+
+  if (claimError || !claimResult?.success) {
+    if (claimResult?.error === 'amount_mismatch') {
+      return badRequest('결제 금액이 일치하지 않습니다');
+    }
+    return notFound('주문을 찾을 수 없거나 이미 처리된 주문입니다');
+  }
+
+  // Step 2: Confirm payment with Toss (external call)
+  try {
+    await confirmPayment({ paymentKey, orderId, amount });
+  } catch (error) {
+    // Toss confirmation failed — revert order
+    await admin.rpc('fail_order_and_refund', {
+      p_order_id: orderId,
+      p_error_message: error instanceof TossError ? error.message : 'Toss 결제 확인 실패',
+      p_refund_status: 'failed',
+    });
+
+    if (error instanceof TossError) {
+      return apiError(`결제 실패: ${error.message}`, 400, { code: error.code });
+    }
+    return serverError('결제 처리 실패');
+  }
+
+  // Step 3: Update status to processing and trigger Lambda clipping
+  await admin
     .from('orders')
-    .select('*')
-    .eq('id', orderId)
-    .eq('user_id', userId)
-    .eq('status', 'pending')
+    .update({ status: 'processing', updated_at: new Date().toISOString() })
+    .eq('id', orderId);
+
+  // Fetch catalog item for COG URL
+  const { data: catalogItem } = await admin
+    .from('imagery_catalog')
+    .select('cog_url')
+    .eq('id', claimResult.catalog_item_id)
     .single();
 
-  if (orderError || !order) {
+  if (!catalogItem) {
+    await handleClipFailure(admin, orderId, paymentKey, '카탈로그 항목을 찾을 수 없습니다');
     return NextResponse.json(
-      { error: '주문을 찾을 수 없거나 이미 처리된 주문입니다' },
-      { status: 404 },
+      { status: 'refunded', orderId, message: '카탈로그 오류로 자동 환불되었습니다' },
+      { status: 200 },
     );
   }
 
-  // Verify amount matches
-  if (Number(order.total_price) !== amount) {
+  const outputBucket = process.env.CLIP_OUTPUT_BUCKET || 'earthpaper-clips';
+  const outputKey = `clips/${userId}/${orderId}.tif`;
+
+  const clipResult = await invokeLambdaClip({
+    cogUrl: catalogItem.cog_url,
+    aoi: claimResult.aoi,
+    outputBucket,
+    outputKey,
+  });
+
+  if (!clipResult.success) {
+    await handleClipFailure(admin, orderId, paymentKey, clipResult.error || '클리핑 처리 실패');
     return NextResponse.json(
-      { error: '결제 금액이 일치하지 않습니다' },
-      { status: 400 },
+      { status: 'refunded', orderId, message: '클리핑 실패로 자동 환불되었습니다' },
+      { status: 200 },
     );
   }
 
-  // Step 1: Confirm payment with Toss
+  // Step 4: Atomically complete order + confirm payment + create download
+  const clipResultUrl = `s3://${outputBucket}/${outputKey}`;
+  const { data: completeResult, error: completeError } = await admin.rpc(
+    'complete_order_after_clip',
+    {
+      p_order_id: orderId,
+      p_user_id: userId,
+      p_clip_result_url: clipResultUrl,
+      p_file_size: clipResult.fileSize ?? 0,
+    },
+  );
+
+  if (completeError || !completeResult?.success) {
+    return serverError('주문 완료 처리 실패');
+  }
+
+  return NextResponse.json({
+    status: 'completed',
+    orderId,
+    message: '결제 및 클리핑 완료',
+  });
+}
+
+async function handleClipFailure(
+  admin: ReturnType<typeof createAdminClient>,
+  orderId: string,
+  paymentKey: string,
+  errorMessage: string,
+) {
+  // Atomically mark order as failed
+  await admin.rpc('fail_order_and_refund', {
+    p_order_id: orderId,
+    p_error_message: errorMessage,
+    p_refund_status: 'refund_queued',
+  });
+
+  // Attempt immediate refund via Toss (external)
   try {
-    const tossResponse = await confirmPayment({ paymentKey, orderId, amount });
-
-    // Create payment record (held state)
-    await admin.from('payments').insert({
-      order_id: orderId,
-      user_id: userId,
-      pg_payment_key: paymentKey,
-      amount,
-      status: 'held',
-      held_at: new Date().toISOString(),
-      pg_response: tossResponse,
+    await cancelPayment({
+      paymentKey,
+      cancelReason: '영상 클리핑 처리 실패로 인한 자동 환불',
     });
 
-    // Update order to payment_held
-    await admin
-      .from('orders')
-      .update({ status: 'payment_held', updated_at: new Date().toISOString() })
-      .eq('id', orderId);
-
-    // Step 2: Trigger Lambda clipping
-    await admin
-      .from('orders')
-      .update({ status: 'processing', updated_at: new Date().toISOString() })
-      .eq('id', orderId);
-
-    // Fetch catalog item for COG URL
-    const { data: catalogItem } = await admin
-      .from('imagery_catalog')
-      .select('cog_url')
-      .eq('id', order.catalog_item_id)
-      .single();
-
-    if (!catalogItem) {
-      throw new Error('카탈로그 항목을 찾을 수 없습니다');
-    }
-
-    const outputBucket =
-      process.env.CLIP_OUTPUT_BUCKET || 'earthpaper-clips';
-    const outputKey = `clips/${userId}/${orderId}.tif`;
-
-    const clipResult = await invokeLambdaClip({
-      cogUrl: catalogItem.cog_url,
-      aoi: order.aoi,
-      outputBucket,
-      outputKey,
+    await admin.rpc('fail_order_and_refund', {
+      p_order_id: orderId,
+      p_error_message: errorMessage,
+      p_refund_status: 'refunded',
     });
-
-    if (!clipResult.success) {
-      throw new Error(clipResult.error || '클리핑 처리 실패');
-    }
-
-    const clipResultUrl = `s3://${outputBucket}/${outputKey}`;
-
-    await admin
-      .from('orders')
-      .update({
-        status: 'completed',
-        clip_result_url: clipResultUrl,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', orderId);
-
-    // Confirm payment
-    await admin
-      .from('payments')
-      .update({
-        status: 'confirmed',
-        confirmed_at: new Date().toISOString(),
-      })
-      .eq('order_id', orderId);
-
-    // Create download record with 7-day window
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-
-    await admin.from('downloads').insert({
-      order_id: orderId,
-      user_id: userId,
-      file_url: clipResultUrl,
-      file_size: clipResult.fileSize,
-      expires_at: expiresAt.toISOString(),
-    });
-
-    return NextResponse.json({
-      status: 'completed',
-      orderId,
-      message: '결제 및 클리핑 완료',
-    });
-  } catch (error) {
-    if (error instanceof TossError) {
-      return NextResponse.json(
-        { error: `결제 실패: ${error.message}`, code: error.code },
-        { status: 400 },
-      );
-    }
-
-    // Clipping failed — queue refund
-    try {
-      await admin
-        .from('orders')
-        .update({
-          status: 'failed',
-          error_message: error instanceof Error ? error.message : 'Unknown error',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', orderId);
-
-      await admin
-        .from('payments')
-        .update({ status: 'refund_queued' })
-        .eq('order_id', orderId);
-
-      // Attempt immediate refund
-      await cancelPayment({
-        paymentKey,
-        cancelReason: '영상 클리핑 처리 실패로 인한 자동 환불',
-      });
-
-      await admin
-        .from('payments')
-        .update({
-          status: 'refunded',
-          refunded_at: new Date().toISOString(),
-        })
-        .eq('order_id', orderId);
-
-      await admin
-        .from('orders')
-        .update({ status: 'refunded', updated_at: new Date().toISOString() })
-        .eq('id', orderId);
-
-      return NextResponse.json(
-        {
-          status: 'refunded',
-          orderId,
-          message: '클리핑 실패로 자동 환불되었습니다',
-        },
-        { status: 200 },
-      );
-    } catch (refundError) {
-      // Refund failed — needs manual intervention
-      return NextResponse.json(
-        {
-          status: 'refund_failed',
-          orderId,
-          message: '환불 처리 중 오류가 발생했습니다. 고객센터로 문의해주세요.',
-        },
-        { status: 500 },
-      );
-    }
+  } catch {
+    // Refund failed — stays in refund_queued for manual processing
   }
 }

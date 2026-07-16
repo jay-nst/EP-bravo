@@ -1,51 +1,34 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth } from '@/lib/auth';
+import { serverError } from '@/lib/api-error';
 
-const MOCK_ORDERS = [
-  {
-    id: 'a1b2c3d4-1111-2222-3333-444455556666',
-    catalog_item_id: 'cat-001',
-    aoi_area_km2: 25.4,
-    status: 'completed',
-    total_price: 304.8,
-    clip_result_url: null,
-    error_message: null,
-    created_at: '2026-06-28T09:15:00Z',
-    payments: [{ status: 'paid', amount: 304.8 }],
-    downloads: [
-      {
-        id: 'dl-001',
-        file_url: '/mock/download',
-        expires_at: '2026-08-28T09:15:00Z',
-        downloaded: false,
-      },
-    ],
-  },
-  {
-    id: 'b2c3d4e5-2222-3333-4444-555566667777',
-    catalog_item_id: 'cat-002',
-    aoi_area_km2: 12.8,
-    status: 'processing',
-    total_price: 153.6,
-    clip_result_url: null,
-    error_message: null,
-    created_at: '2026-07-02T14:30:00Z',
-    payments: [{ status: 'paid', amount: 153.6 }],
-    downloads: [],
-  },
-  {
-    id: 'c3d4e5f6-3333-4444-5555-666677778888',
-    catalog_item_id: 'cat-003',
-    aoi_area_km2: 8.2,
-    status: 'pending',
-    total_price: 98.4,
-    clip_result_url: null,
-    error_message: null,
-    created_at: '2026-07-05T11:00:00Z',
-    payments: [],
-    downloads: [],
-  },
-];
+export async function GET(req: NextRequest) {
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const { supabase } = auth.user;
 
-export async function GET() {
-  return NextResponse.json({ orders: MOCK_ORDERS });
+  const { searchParams } = req.nextUrl;
+  const page = Math.max(Number(searchParams.get('page') ?? 1), 1);
+  const limit = Math.min(Math.max(Number(searchParams.get('limit') ?? 20), 1), 100);
+  const offset = (page - 1) * limit;
+
+  const { data: orders, error, count } = await supabase
+    .from('orders')
+    .select('id, catalog_item_id, aoi_area_km2, status, total_price, clip_result_url, error_message, created_at', { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (error) {
+    return serverError('주문 조회 실패');
+  }
+
+  return NextResponse.json({
+    orders: orders ?? [],
+    pagination: {
+      page,
+      limit,
+      total: count ?? 0,
+      totalPages: Math.ceil((count ?? 0) / limit),
+    },
+  });
 }

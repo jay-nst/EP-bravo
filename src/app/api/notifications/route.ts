@@ -1,13 +1,11 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { DEMO_USER } from '@/lib/demo-user';
+import { requireAuth } from '@/lib/auth';
 
 // GET: List user's notifications
 export async function GET() {
-  const supabase = await createClient();
-
-  const { data: { user } } = await supabase.auth.getUser();
-  const userId = user?.id ?? DEMO_USER.id;
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const { userId, supabase } = auth.user;
 
   const { data: notifications, error } = await supabase
     .from('notifications')

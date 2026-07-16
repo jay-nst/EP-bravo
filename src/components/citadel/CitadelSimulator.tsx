@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import type mapboxgl from 'mapbox-gl';
+import { addCitadelOverlay, removeSimulatorOverlay } from '@/lib/simulator-overlays';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
@@ -72,23 +74,47 @@ const SEVERITY_LABELS = {
 export default function CitadelSimulator() {
   const [phase, setPhase] = useState<Phase>('draw');
   const [result, setResult] = useState<DisasterResult | null>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const polyRef = useRef<GeoJSON.Polygon | null>(null);
+
+  const handleMapReady = useCallback((m: mapboxgl.Map) => {
+    mapRef.current = m;
+  }, []);
+
+  const clearOverlay = useCallback(() => {
+    if (mapRef.current) removeSimulatorOverlay(mapRef.current, 'citadel');
+  }, []);
 
   const handleAoiChange = useCallback(
-    (aoi: { areaKm2: number } | null) => {
+    (aoi: { areaKm2: number; polygon: GeoJSON.Polygon } | null) => {
+      clearOverlay();
       if (!aoi) {
         setPhase('draw');
         setResult(null);
+        polyRef.current = null;
         return;
       }
 
+      polyRef.current = aoi.polygon;
       setPhase('analyzing');
       setTimeout(() => {
-        setResult(generateDisaster(aoi.areaKm2));
+        const r = generateDisaster(aoi.areaKm2);
+        setResult(r);
         setPhase('result');
+        if (mapRef.current && polyRef.current) {
+          addCitadelOverlay(mapRef.current, polyRef.current, r);
+        }
       }, 1800);
     },
-    [],
+    [clearOverlay],
   );
+
+  const handleReset = useCallback(() => {
+    clearOverlay();
+    setPhase('draw');
+    setResult(null);
+    polyRef.current = null;
+  }, [clearOverlay]);
 
   return (
     <section style={{ padding: '0 24px 64px', maxWidth: 960, margin: '0 auto' }}>
@@ -117,6 +143,7 @@ export default function CitadelSimulator() {
       >
         <EarthMap
           onAoiChange={handleAoiChange}
+          onMapReady={handleMapReady}
           initialStyle="satellite"
           center={[127.7, 34.95]}
           zoom={11}
@@ -138,34 +165,18 @@ export default function CitadelSimulator() {
         >
           {phase === 'draw' && (
             <div style={{ padding: 20 }}>
-              <h3
-                style={{
-                  fontSize: 16,
-                  fontWeight: 600,
-                  color: 'var(--text)',
-                  marginBottom: 8,
-                }}
-              >
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>
                 재난 피해 분석
               </h3>
-              <p
-                style={{
-                  fontSize: 13,
-                  lineHeight: 1.6,
-                  color: 'var(--text-muted)',
-                  marginBottom: 16,
-                }}
-              >
+              <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--text-muted)', marginBottom: 16 }}>
                 피해 지역을 그려보세요. NDVI/dNBR 기반 피해 범위와 심각도가
                 시뮬레이션됩니다.
               </p>
               <div
                 style={{
-                  padding: '8px 12px',
-                  borderRadius: 6,
+                  padding: '8px 12px', borderRadius: 6,
                   background: 'rgba(196, 92, 74, 0.12)',
-                  fontSize: 12,
-                  color: '#C45C4A',
+                  fontSize: 12, color: '#C45C4A',
                   fontFamily: "'IBM Plex Mono', monospace",
                 }}
               >
@@ -178,18 +189,12 @@ export default function CitadelSimulator() {
             <div style={{ padding: 20, textAlign: 'center' }}>
               <div
                 style={{
-                  width: 32,
-                  height: 32,
-                  margin: '0 auto 12px',
-                  border: '2px solid var(--border)',
-                  borderTopColor: '#C45C4A',
-                  borderRadius: '50%',
-                  animation: 'citadel-spin 1s linear infinite',
+                  width: 32, height: 32, margin: '0 auto 12px',
+                  border: '2px solid var(--border)', borderTopColor: '#C45C4A',
+                  borderRadius: '50%', animation: 'citadel-spin 1s linear infinite',
                 }}
               />
-              <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>
-                NDVI / dNBR 분석 중...
-              </p>
+              <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>NDVI / dNBR 분석 중...</p>
             </div>
           )}
 
@@ -197,41 +202,37 @@ export default function CitadelSimulator() {
             <div>
               <div
                 style={{
-                  padding: '12px 16px',
-                  borderBottom: '1px solid var(--border)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  padding: '12px 16px', borderBottom: '1px solid var(--border)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 }}
               >
                 <span
                   style={{
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: 12,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    color: '#C45C4A',
-                    fontWeight: 600,
+                    fontFamily: "'IBM Plex Mono', monospace", fontSize: 12,
+                    letterSpacing: '0.08em', textTransform: 'uppercase',
+                    color: '#C45C4A', fontWeight: 600,
                   }}
                 >
                   피해 분석 결과
                 </span>
                 <button
-                  onClick={() => {
-                    setPhase('draw');
-                    setResult(null);
-                  }}
+                  onClick={handleReset}
                   style={{
-                    fontSize: 12,
-                    color: 'var(--text-muted)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: '4px 8px',
+                    fontSize: 12, color: 'var(--text-muted)', background: 'none',
+                    border: 'none', cursor: 'pointer', padding: '4px 8px',
                   }}
                 >
                   초기화
                 </button>
+              </div>
+
+              <div style={{ position: 'relative', height: 100, overflow: 'hidden' }}>
+                <img
+                  src="https://earthpaper.s3.ap-northeast-2.amazonaws.com/post/v2/editor/33/Thumbnail-2026-gwangyang-wildfire-ndmi-dnbr-analysis.png"
+                  alt="재난 피해 분석 위성영상"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--surface) 0%, transparent 60%)' }} />
               </div>
 
               <div style={{ padding: 16 }}>
@@ -248,30 +249,19 @@ export default function CitadelSimulator() {
                   <div
                     key={item.label}
                     style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '6px 0',
-                      borderBottom: '1px solid rgba(255,255,255,0.05)',
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.05)',
                     }}
                   >
                     <span
                       style={{
-                        fontFamily: "'IBM Plex Mono', monospace",
-                        fontSize: 12,
-                        color: 'var(--text-muted)',
-                        letterSpacing: '0.04em',
+                        fontFamily: "'IBM Plex Mono', monospace", fontSize: 12,
+                        color: 'var(--text-muted)', letterSpacing: '0.04em',
                       }}
                     >
                       {item.label}
                     </span>
-                    <span
-                      style={{
-                        fontSize: 14,
-                        fontWeight: 500,
-                        color: item.color || 'var(--text)',
-                      }}
-                    >
+                    <span style={{ fontSize: 14, fontWeight: 500, color: item.color || 'var(--text)' }}>
                       {item.value}
                     </span>
                   </div>
@@ -279,16 +269,9 @@ export default function CitadelSimulator() {
 
                 <button
                   style={{
-                    width: '100%',
-                    marginTop: 16,
-                    padding: '10px',
-                    borderRadius: 6,
-                    background: '#C45C4A',
-                    color: '#fff',
-                    fontSize: 14,
-                    fontWeight: 500,
-                    border: 'none',
-                    cursor: 'pointer',
+                    width: '100%', marginTop: 16, padding: '10px', borderRadius: 6,
+                    background: '#C45C4A', color: '#fff', fontSize: 14, fontWeight: 500,
+                    border: 'none', cursor: 'pointer',
                     transition: 'opacity var(--duration-short) var(--ease-enter)',
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85'; }}
@@ -304,11 +287,8 @@ export default function CitadelSimulator() {
 
       <p
         style={{
-          fontFamily: "'IBM Plex Mono', monospace",
-          fontSize: 12,
-          color: 'var(--text-muted)',
-          marginTop: 12,
-          letterSpacing: '0.04em',
+          fontFamily: "'IBM Plex Mono', monospace", fontSize: 12,
+          color: 'var(--text-muted)', marginTop: 12, letterSpacing: '0.04em',
         }}
       >
         시뮬레이션 데이터입니다. 실 서비스에서는 다중 위성영상 기반으로 분석됩니다.

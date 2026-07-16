@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
+import { badRequest, serverError } from '@/lib/api-error';
 
 const searchSchema = z.object({
   west: z.number().min(-180).max(180),
@@ -28,10 +29,7 @@ export async function GET(request: NextRequest) {
   });
 
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Invalid parameters', details: parsed.error.flatten() },
-      { status: 400 },
-    );
+    return badRequest('Invalid parameters', parsed.error.flatten());
   }
 
   const { west, south, east, north, satellite, maxCloudCover, limit } =
@@ -39,31 +37,18 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createClient();
 
-  // PostGIS spatial query: find catalog items whose bbox intersects the search bbox
-  let query = supabase
-    .from('imagery_catalog')
-    .select('*')
-    .limit(limit)
-    .order('acquired_at', { ascending: false });
-
-  // Spatial filter via RPC (PostGIS ST_Intersects)
-  // For now, use a bounding box filter via RPC function
-  // TODO: Replace with proper PostGIS RPC when Supabase is connected
-  if (satellite) {
-    query = query.eq('satellite', satellite);
-  }
-
-  if (maxCloudCover !== undefined) {
-    query = query.lte('cloud_cover', maxCloudCover);
-  }
-
-  const { data, error } = await query;
+  const { data, error } = await supabase.rpc('search_catalog_by_bbox', {
+    p_west: west,
+    p_south: south,
+    p_east: east,
+    p_north: north,
+    p_satellite: satellite ?? null,
+    p_max_cloud_cover: maxCloudCover ?? null,
+    p_limit: limit,
+  });
 
   if (error) {
-    return NextResponse.json(
-      { error: 'Database query failed', details: error.message },
-      { status: 500 },
-    );
+    return serverError('Database query failed', error.message);
   }
 
   return NextResponse.json({ items: data ?? [], count: data?.length ?? 0 });

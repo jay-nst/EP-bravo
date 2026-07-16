@@ -9,6 +9,20 @@ function getAuthHeader(): string {
   return `Basic ${Buffer.from(`${secretKey}:`).toString('base64')}`;
 }
 
+function isJsonResponse(res: Response): boolean {
+  const ct = res.headers.get('content-type') ?? '';
+  return ct.includes('application/json');
+}
+
+async function parseErrorResponse(res: Response): Promise<never> {
+  if (isJsonResponse(res)) {
+    const error = await res.json();
+    throw new TossError(error.code ?? 'UNKNOWN', error.message ?? `HTTP ${res.status}`);
+  }
+  const text = await res.text();
+  throw new TossError('NON_JSON_RESPONSE', `Toss API returned non-JSON response (${res.status}): ${text.slice(0, 200)}`);
+}
+
 interface TossPaymentResponse {
   paymentKey: string;
   orderId: string;
@@ -37,10 +51,8 @@ export async function confirmPayment(params: {
     body: JSON.stringify(params),
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new TossError(error.code, error.message);
-  }
+  if (!res.ok) await parseErrorResponse(res);
+  if (!isJsonResponse(res)) throw new TossError('NON_JSON_RESPONSE', 'Toss confirm returned non-JSON');
 
   return res.json();
 }
@@ -65,10 +77,8 @@ export async function cancelPayment(params: {
     },
   );
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new TossError(error.code, error.message);
-  }
+  if (!res.ok) await parseErrorResponse(res);
+  if (!isJsonResponse(res)) throw new TossError('NON_JSON_RESPONSE', 'Toss cancel returned non-JSON');
 
   return res.json();
 }
@@ -83,10 +93,8 @@ export async function getPayment(
     headers: { Authorization: getAuthHeader() },
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new TossError(error.code, error.message);
-  }
+  if (!res.ok) await parseErrorResponse(res);
+  if (!isJsonResponse(res)) throw new TossError('NON_JSON_RESPONSE', 'Toss getPayment returned non-JSON');
 
   return res.json();
 }

@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { validateUserInput, getSystemPrompt } from '@/lib/llm/security';
 import { streamChat } from '@/lib/llm/provider';
 import { CHAT_LIMITS } from '@/constants/satellite';
-import { DEMO_USER } from '@/lib/demo-user';
+import { requireAuth } from '@/lib/auth';
+import { badRequest, notFound, serverError, apiError } from '@/lib/api-error';
+import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 const chatSchema = z.object({
   sessionId: z.string().uuid(),
@@ -13,19 +14,20 @@ const chatSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
-  const supabase = await createClient();
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const { userId, supabase } = auth.user;
 
-  const { data: { user } } = await supabase.auth.getUser();
-  const userId = user?.id ?? DEMO_USER.id;
+  const rl = checkRateLimit(`chat:${userId}`, RATE_LIMITS.chat);
+  if (!rl.allowed) {
+    return apiError('요청이 너무 많습니다. 잠시 후 다시 시도해주세요.', 429);
+  }
 
   const body = await request.json();
   const parsed = chatSchema.safeParse(body);
 
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: '잘못된 요청', details: parsed.error.flatten() },
-      { status: 400 },
-    );
+    return badRequest('잘못된 요청', parsed.error.flatten());
   }
 
   const { sessionId, message } = parsed.data;
@@ -33,7 +35,7 @@ export async function POST(request: NextRequest) {
   // F8 Defense 1+2: Input validation + prompt injection check
   const security = validateUserInput(message);
   if (!security.safe) {
-    return NextResponse.json({ error: security.error }, { status: 400 });
+    return badRequest(security.error ?? '유효하지 않은 입력입니다');
   }
 
   const admin = createAdminClient();
@@ -46,15 +48,12 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (!profile) {
-    return NextResponse.json({ error: '프로필을 찾을 수 없습니다' }, { status: 404 });
+    return notFound('프로필을 찾을 수 없습니다');
   }
 
-  const limit = CHAT_LIMITS[profile.plan] || CHAT_LIMITS.free;
-  if (profile.chat_tokens_used >= limit) {
-    return NextResponse.json(
-      { error: `채팅 토큰 한도에 도달했습니다 (${limit} 토큰)` },
-      { status: 429 },
-    );
+  const tokenLimit = CHAT_LIMITS[profile.plan] || CHAT_LIMITS.free;
+  if (profile.chat_tokens_used >= tokenLimit) {
+    return apiError(`채팅 토큰 한도에 도달했습니다 (${tokenLimit} 토큰)`, 429);
   }
 
   // Verify session belongs to user
@@ -66,10 +65,7 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (sessionError || !session) {
-    return NextResponse.json(
-      { error: '채팅 세션을 찾을 수 없습니다' },
-      { status: 404 },
-    );
+    return notFound('채팅 세션을 찾을 수 없습니다');
   }
 
   // Save user message
@@ -103,7 +99,26 @@ export async function POST(request: NextRequest) {
       maxTokens: 1024,
     });
 
-    return new Response(stream, {
+    let totalBytes = 0;
+    const countingStream = new TransformStream<Uint8Array, Uint8Array>({
+      transform(chunk, controller) {
+        totalBytes += chunk.byteLength;
+        controller.enqueue(chunk);
+      },
+      flush() {
+        const estimatedTokens = Math.ceil(totalBytes / 4);
+        if (estimatedTokens > 0) {
+          admin.rpc('increment_chat_tokens', {
+            user_id: userId,
+            token_count: estimatedTokens,
+          }).then(() => {}, () => {});
+        }
+      },
+    });
+
+    const trackedStream = stream.pipeThrough(countingStream);
+
+    return new Response(trackedStream, {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
@@ -111,12 +126,9 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (err) {
-    return NextResponse.json(
-      {
-        error: '응답 생성 중 오류가 발생했습니다',
-        details: err instanceof Error ? err.message : 'Unknown',
-      },
-      { status: 500 },
+    return serverError(
+      '응답 생성 중 오류가 발생했습니다',
+      err instanceof Error ? err.message : undefined,
     );
   }
 }

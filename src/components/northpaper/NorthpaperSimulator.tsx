@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import type mapboxgl from 'mapbox-gl';
+import { addNorthpaperOverlay, removeSimulatorOverlay } from '@/lib/simulator-overlays';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
@@ -71,26 +73,50 @@ const CONFIDENCE_LABELS = {
 export default function NorthpaperSimulator() {
   const [phase, setPhase] = useState<Phase>('draw');
   const [result, setResult] = useState<ChangeDetectionResult | null>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const polyRef = useRef<GeoJSON.Polygon | null>(null);
+
+  const handleMapReady = useCallback((m: mapboxgl.Map) => {
+    mapRef.current = m;
+  }, []);
+
+  const clearOverlay = useCallback(() => {
+    if (mapRef.current) removeSimulatorOverlay(mapRef.current, 'northpaper');
+  }, []);
 
   const handleAoiChange = useCallback(
-    (aoi: { areaKm2: number } | null) => {
+    (aoi: { areaKm2: number; polygon: GeoJSON.Polygon } | null) => {
+      clearOverlay();
       if (!aoi) {
         setPhase('draw');
         setResult(null);
+        polyRef.current = null;
         return;
       }
 
+      polyRef.current = aoi.polygon;
       setPhase('analyzing');
       setTimeout(() => {
-        setResult(generateChangeDetection(aoi.areaKm2));
+        const r = generateChangeDetection(aoi.areaKm2);
+        setResult(r);
         setPhase('result');
+        if (mapRef.current && polyRef.current) {
+          addNorthpaperOverlay(mapRef.current, polyRef.current, r);
+        }
       }, 2500);
     },
-    [],
+    [clearOverlay],
   );
 
+  const handleReset = useCallback(() => {
+    clearOverlay();
+    setPhase('draw');
+    setResult(null);
+    polyRef.current = null;
+  }, [clearOverlay]);
+
   return (
-    <div>
+    <section style={{ padding: '0 24px 64px', maxWidth: 960, margin: '0 auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
         <span
           style={{
@@ -116,6 +142,7 @@ export default function NorthpaperSimulator() {
       >
         <EarthMap
           onAoiChange={handleAoiChange}
+          onMapReady={handleMapReady}
           initialStyle="satellite"
           center={[126.5, 37.95]}
           zoom={12}
@@ -216,10 +243,7 @@ export default function NorthpaperSimulator() {
                   변화 탐지 결과
                 </span>
                 <button
-                  onClick={() => {
-                    setPhase('draw');
-                    setResult(null);
-                  }}
+                  onClick={handleReset}
                   style={{
                     fontSize: 12,
                     color: 'var(--text-muted)',
@@ -231,6 +255,15 @@ export default function NorthpaperSimulator() {
                 >
                   초기화
                 </button>
+              </div>
+
+              <div style={{ position: 'relative', height: 100, overflow: 'hidden' }}>
+                <img
+                  src="https://earthpaper.s3.ap-northeast-2.amazonaws.com/post/v2/editor/48/Thumbnail-satellite-imagery-changes-five-major-north-korean-shipyards-ports_.png"
+                  alt="변화 탐지 위성영상"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--surface) 0%, transparent 60%)' }} />
               </div>
 
               <div style={{ padding: 16 }}>
@@ -319,6 +352,6 @@ export default function NorthpaperSimulator() {
           to { transform: rotate(360deg); }
         }
       `}</style>
-    </div>
+    </section>
   );
 }

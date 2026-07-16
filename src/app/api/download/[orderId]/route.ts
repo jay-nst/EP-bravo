@@ -1,18 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { generatePresignedUrl } from '@/lib/aws/s3';
-import { DEMO_USER } from '@/lib/demo-user';
+import { requireAuth } from '@/lib/auth';
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ orderId: string }> },
 ) {
   const { orderId } = await params;
-  const supabase = await createClient();
-
-  const { data: { user } } = await supabase.auth.getUser();
-  const userId = user?.id ?? DEMO_USER.id;
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const { userId, supabase } = auth.user;
 
   // Fetch download record
   const { data: download, error: dlError } = await supabase

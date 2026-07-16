@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import type { FeedItem, DashboardSummary } from '@/types/dashboard';
+import type { FeedItem, FeedType, DashboardSummary } from '@/types/dashboard';
+import { FEED_BADGE_COLORS, FEED_LABELS } from '@/types/dashboard';
 import { trackEvent } from '@/lib/analytics';
 import dynamic from 'next/dynamic';
 
@@ -17,34 +18,32 @@ const PLATFORMS = [
   { key: 'nexus', label: 'Nexus', desc: '데이터 마켓', color: '#C8923A', href: '/nexus' },
 ] as const;
 
-const CURATED_ITEMS = [
-  { platform: 'warden', color: '#6B8A5E', badge: 'METHANE · EU 규제', title: '국내 정유시설 메탄 배출 위성 검증', sub: '울산/여수 · 1일 전', href: '/warden' },
-  { platform: 'citadel', color: '#C45C4A', badge: 'CRITICAL · WILDFIRE', title: 'Santa Rosa Island 산불 확산 및 피해 범위 위성 추적', sub: 'California, USA · 3일 전', href: 'https://ep.naraspace.com/ko/post/contents/santa-rosa-island-wildfire-satellite-analysis' },
-  { platform: 'predict', color: '#4A9EC4', badge: 'ASSET · SOLAR', title: '태양광 발전소 패널 이상 탐지 — 위성 자산 검증', sub: '전남 해남 · 2일 전', href: '/predict' },
-  { platform: 'northpaper', color: '#3D5A80', badge: 'DEFENSE · SHIPYARD', title: '위성이 포착한 북한 5대 조선소 구조 변화', sub: 'North Korea · 3일 전', href: 'https://ep.naraspace.com/ko/post/contents/satellite-imagery-changes-five-major-north-korean-shipyards-ports' },
-  { platform: 'warden', color: '#6B8A5E', badge: 'EUDR · 공급망', title: 'EUDR 공급망 검증 — 코코아 원산지 산림 전용 모니터링', sub: "Côte d'Ivoire · 3일 전", href: '/warden' },
-  { platform: 'predict', color: '#4A9EC4', badge: 'COMMODITY · OIL', title: '호르무즈 해협 봉쇄 후 원유 이동 경로 위성 분석', sub: 'Fujairah/Yanbu · 4일 전', href: 'https://ep.naraspace.com/ko/post/contents/strait-of-hormuz-blockade-oil-rerouting-fujairah-yanbu' },
-  { platform: 'citadel', color: '#C45C4A', badge: 'CRITICAL · FLOOD', title: '자메이카 홍수 피해 위성영상 분석', sub: 'Jamaica · 5일 전', href: 'https://ep.naraspace.com/ko/post/contents/disaster-impact-jamaica-flood-damage-satellite-imagery' },
-  { platform: 'warden', color: '#6B8A5E', badge: 'PALM OIL · FOREST', title: '동남아 팜 플랜테이션 확장 감시 — 보르네오 위성 분석', sub: 'Borneo · 9일 전', href: '/warden' },
-  { platform: 'predict', color: '#4A9EC4', badge: 'AI FORECAST · 97%', title: '미국 옥수수 수확량 예측 — AI 모델 97% 정확도', sub: 'US Corn Belt · 8일 전', href: 'https://ep.naraspace.com/ko/post/contents/2025-us-corn-yield-prediction' },
-  { platform: 'northpaper', color: '#3D5A80', badge: 'DEFENSE · NUCLEAR', title: '이란 핵시설 공습 피해 위성영상 분석', sub: 'Iran · 10일 전', href: 'https://ep.naraspace.com/ko/post/contents/airstrike-damage-to-irans-nuclear-facilities-the-truth-seen-from-satellite-imagery' },
-];
+const PLATFORM_TYPES = new Set<FeedType>(['citadel', 'predict', 'warden', 'northpaper']);
 
-const TRENDING_SUBJECTS = [
-  { rank: 1, title: 'EU 메탄 규제 위성 검증', clicks: '14.2k', badge: 'warden' },
-  { rank: 2, title: 'Santa Rosa Island 산불', clicks: '11.5k', badge: 'citadel' },
-  { rank: 3, title: '태양광 자산 검증', clicks: '9.1k', badge: 'predict' },
-  { rank: 4, title: '북한 조선소 변화', clicks: '8.3k', badge: 'northpaper' },
-  { rank: 5, title: 'EUDR 코코아 공급망', clicks: '6.7k', badge: 'warden' },
-];
+const PLATFORM_HREF: Record<string, string> = {
+  citadel: '/citadel',
+  predict: '/predict',
+  warden: '/warden',
+  northpaper: '/northpaper',
+};
 
-const POPULAR_POSTS = [
-  { rank: 1, title: '국내 정유시설 메탄 배출 위성 검증 — EU 규제 대응', author: 'Warden팀', views: '3.1k' },
-  { rank: 2, title: '태양광 발전소 패널 이상 탐지 — 위성 자산 검증', author: 'Predict팀', views: '2.4k' },
-  { rank: 3, title: 'Santa Rosa Island 산불 확산 위성 추적', author: 'Citadel팀', views: '1.8k' },
-  { rank: 4, title: 'EUDR 코코아 원산지 산림 전용 모니터링', author: 'Warden팀', views: '1.5k' },
-  { rank: 5, title: '호르무즈 봉쇄 후 원유 이동 경로 분석', author: 'Predict팀', views: '1.2k' },
-];
+function buildBadge(item: FeedItem): string {
+  const m = item.metadata;
+  if (item.type === 'citadel') {
+    const parts = [String(m.event_type ?? ''), String(m.severity ?? '')].filter(Boolean);
+    return parts.join(' · ').toUpperCase();
+  }
+  if (item.type === 'warden' && m.compliance) return String(m.compliance);
+  if (m.analysis_type) return String(m.analysis_type).replace(/_/g, ' ').toUpperCase();
+  return FEED_LABELS[item.type]?.toUpperCase() ?? item.type.toUpperCase();
+}
+
+function relativeDate(dateStr: string): string {
+  const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000);
+  if (diff === 0) return '오늘';
+  if (diff === 1) return '1일 전';
+  return `${diff}일 전`;
+}
 
 export default function DashboardClient() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
@@ -68,7 +67,7 @@ export default function DashboardClient() {
       const params = new URLSearchParams({ type: 'all', limit: '50' });
       const res = await fetch(`/api/dashboard/feed?${params}`);
       const data = await res.json();
-      setFeedItems(data.items);
+      setFeedItems(data.items ?? []);
     } catch {
       /* ignore */
     } finally {
@@ -137,6 +136,47 @@ export default function DashboardClient() {
   const shortsItems = feedItems.filter((i) => i.type === 'shorts');
   const platformItems = feedItems.filter((i) => ['predict', 'warden', 'northpaper', 'analysis'].includes(i.type));
   const newsItems = feedItems.filter((i) => i.type === 'news');
+
+  const curatedItems = useMemo(() =>
+    feedItems
+      .filter((i) => PLATFORM_TYPES.has(i.type))
+      .slice(0, 10)
+      .map((item) => ({
+        id: item.id,
+        color: FEED_BADGE_COLORS[item.type],
+        badge: buildBadge(item),
+        title: item.title,
+        sub: `${String(item.metadata.location ?? '')}${item.metadata.location ? ' · ' : ''}${relativeDate(item.published_at)}`,
+        href: item.link_url ?? PLATFORM_HREF[item.type] ?? '/',
+        linkAction: item.link_action,
+      })),
+    [feedItems],
+  );
+
+  const trendingSubjects = useMemo(() =>
+    feedItems
+      .filter((i) => i.type === 'trending')
+      .sort((a, b) => Number(a.metadata.rank ?? 99) - Number(b.metadata.rank ?? 99))
+      .slice(0, 5)
+      .map((item, idx) => ({
+        rank: Number(item.metadata.rank ?? idx + 1),
+        title: item.title,
+        badge: String(item.metadata.resolution ?? '').toLowerCase() as FeedType,
+      })),
+    [feedItems],
+  );
+
+  const popularPosts = useMemo(() =>
+    feedItems
+      .filter((i) => PLATFORM_TYPES.has(i.type))
+      .slice(0, 5)
+      .map((item, idx) => ({
+        rank: idx + 1,
+        title: item.title,
+        author: `${FEED_LABELS[item.type]}팀`,
+      })),
+    [feedItems],
+  );
 
   const CHAT_SUGGESTIONS = [
     '서울 강남 최신 영상 보여줘',
@@ -233,21 +273,21 @@ export default function DashboardClient() {
           className="flex gap-4 px-6 overflow-x-auto"
           style={{ scrollbarWidth: 'none' }}
         >
-          {CURATED_ITEMS.map((item, i) => {
-            const isExternal = item.href.startsWith('http');
+          {curatedItems.map((item) => {
+            const isExternal = item.linkAction === 'external' && item.href.startsWith('http');
             const CardTag = isExternal ? 'a' : Link;
             const linkProps = isExternal
               ? { href: item.href, target: '_blank' as const, rel: 'noopener noreferrer' }
               : { href: item.href };
             return (
               <CardTag
-                key={i}
+                key={item.id}
                 {...linkProps}
                 className="flex-shrink-0 w-[280px] p-4 rounded-lg cursor-pointer transition-colors hover:bg-[var(--surface-elevated)] no-underline"
                 style={{ border: `1px solid ${item.color}30`, background: `${item.color}08`, textDecoration: 'none' }}
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded uppercase"
+                  <span className="text-xs font-mono font-semibold px-1.5 py-0.5 rounded uppercase"
                     style={{ background: `${item.color}20`, color: item.color }}
                   >
                     {item.badge}
@@ -256,7 +296,7 @@ export default function DashboardClient() {
                 <p className="text-sm font-medium leading-snug mb-2" style={{ color: 'var(--text)' }}>
                   {item.title}
                 </p>
-                <p className="text-[11px] font-mono" style={{ color: 'var(--text-muted)' }}>
+                <p className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
                   {item.sub}
                 </p>
               </CardTag>
@@ -349,7 +389,7 @@ export default function DashboardClient() {
           >
             {/* AI Assistant (moved from full-width) */}
             <div className="rounded-xl p-4" style={{ border: '1px solid var(--border)' }}>
-              <p className="text-xs font-medium tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>
+              <p className="text-sm font-medium tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>
                 AI ASSISTANT
               </p>
               <form onSubmit={handleChatSubmit}>
@@ -366,7 +406,7 @@ export default function DashboardClient() {
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
                     placeholder="위성 영상에 대해 물어보세요..."
-                    className="w-full pl-9 pr-3 py-2.5 text-xs rounded-lg focus:outline-none transition-colors"
+                    className="w-full pl-9 pr-3 py-2.5 text-sm rounded-lg focus:outline-none transition-colors"
                     style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}
                     onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; }}
                     onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; }}
@@ -382,7 +422,7 @@ export default function DashboardClient() {
                         trackEvent('chat_from_home', 'suggestion_click', { query: q });
                         router.push('/chat');
                       }}
-                      className="px-2.5 py-1.5 text-xs rounded transition-colors"
+                      className="px-2.5 py-1.5 text-sm rounded transition-colors"
                       style={{ background: 'var(--surface)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}
                     >
                       {q}
@@ -397,15 +437,15 @@ export default function DashboardClient() {
                     <Link href="/portal" className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
                       <span className="text-sm">📦</span>
                       <div>
-                        <p className="text-[11px] font-medium" style={{ color: 'var(--text)' }}>내 주문</p>
-                        <p className="text-[10px]" style={{ color: 'var(--accent)' }}>{summary.recentOrders.length}건</p>
+                        <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>내 주문</p>
+                        <p className="text-xs" style={{ color: 'var(--accent)' }}>{summary.recentOrders.length}건</p>
                       </div>
                     </Link>
                     <Link href="/tasking" className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
                       <span className="text-sm">📡</span>
                       <div>
-                        <p className="text-[11px] font-medium" style={{ color: 'var(--text)' }}>촬영 요청</p>
-                        <p className="text-[10px]" style={{ color: summary.pendingTaskings > 0 ? '#C8923A' : 'var(--text-muted)' }}>
+                        <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>촬영 요청</p>
+                        <p className="text-xs" style={{ color: summary.pendingTaskings > 0 ? '#C8923A' : 'var(--text-muted)' }}>
                           {summary.pendingTaskings > 0 ? `${summary.pendingTaskings}건 대기` : '없음'}
                         </p>
                       </div>
@@ -413,15 +453,15 @@ export default function DashboardClient() {
                     <Link href="/core" className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
                       <span className="text-sm">🗺️</span>
                       <div>
-                        <p className="text-[11px] font-medium" style={{ color: 'var(--text)' }}>위성 영상</p>
-                        <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{summary.stats.totalImages}장</p>
+                        <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>위성 영상</p>
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{summary.stats.totalImages}장</p>
                       </div>
                     </Link>
                     <Link href="/quiz" className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
                       <span className="text-sm">🧠</span>
                       <div>
-                        <p className="text-[11px] font-medium" style={{ color: 'var(--text)' }}>퀴즈</p>
-                        <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>도전하기</p>
+                        <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>퀴즈</p>
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>도전하기</p>
                       </div>
                     </Link>
                   </div>
@@ -432,8 +472,8 @@ export default function DashboardClient() {
             {/* 오늘의 지구 (Compact) */}
             <div className="rounded-xl p-4" style={{ border: '1px solid var(--border)' }}>
               <div className="flex items-center justify-between mb-3">
-                <p className="text-xs font-medium tracking-wider" style={{ color: 'var(--text-muted)' }}>오늘의 지구</p>
-                <Link href="/core" className="text-xs font-mono" style={{ color: 'var(--accent)' }}>Core →</Link>
+                <p className="text-sm font-medium tracking-wider" style={{ color: 'var(--text-muted)' }}>오늘의 지구</p>
+                <Link href="/core" className="text-sm font-mono" style={{ color: 'var(--accent)' }}>Core →</Link>
               </div>
               <div className="mb-3">
                 <MiniMap />
@@ -448,7 +488,7 @@ export default function DashboardClient() {
 
             {/* Quick Actions (1x3, no AI chat) */}
             <div className="rounded-xl p-4" style={{ border: '1px solid var(--border)' }}>
-              <p className="text-xs font-medium tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>QUICK ACTIONS</p>
+              <p className="text-sm font-medium tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>QUICK ACTIONS</p>
               <div className="grid grid-cols-3 gap-2">
                 <QuickActionBtn href="/core" icon="🗺️" label="위성지도" />
                 <QuickActionBtn icon="🎲" label="랜덤 탐험" onClick={randomExplore} />
@@ -461,7 +501,7 @@ export default function DashboardClient() {
               <div className="flex items-center gap-1 mb-3">
                 <button
                   onClick={() => setTrendingTab('subjects')}
-                  className="px-3 py-1.5 text-xs rounded transition-colors"
+                  className="px-3 py-1.5 text-sm rounded transition-colors"
                   style={{
                     background: trendingTab === 'subjects' ? 'var(--surface-elevated)' : 'transparent',
                     color: trendingTab === 'subjects' ? 'var(--text)' : 'var(--text-muted)',
@@ -472,7 +512,7 @@ export default function DashboardClient() {
                 </button>
                 <button
                   onClick={() => setTrendingTab('posts')}
-                  className="px-3 py-1.5 text-xs rounded transition-colors"
+                  className="px-3 py-1.5 text-sm rounded transition-colors"
                   style={{
                     background: trendingTab === 'posts' ? 'var(--surface-elevated)' : 'transparent',
                     color: trendingTab === 'posts' ? 'var(--text)' : 'var(--text-muted)',
@@ -485,42 +525,46 @@ export default function DashboardClient() {
 
               {trendingTab === 'subjects' ? (
                 <div className="space-y-1.5">
-                  {TRENDING_SUBJECTS.map((t) => {
-                    const platform = PLATFORMS.find((p) => p.key === t.badge);
+                  {trendingSubjects.map((t) => {
+                    const badgeColor = FEED_BADGE_COLORS[t.badge] ?? 'var(--text-muted)';
                     return (
                       <div key={t.rank} className="flex items-center gap-3 p-2 rounded-lg transition-colors hover:bg-[var(--surface)] cursor-pointer">
-                        <span className="text-sm font-bold font-mono w-5 text-center" style={{ color: 'var(--text-muted)' }}>{t.rank}</span>
+                        <span className="text-base font-bold font-mono w-5 text-center" style={{ color: 'var(--text-muted)' }}>{t.rank}</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium truncate" style={{ color: 'var(--text)' }}>{t.title}</p>
-                          <span className="text-[10px] font-mono uppercase" style={{ color: platform?.color ?? 'var(--text-muted)' }}>
+                          <p className="text-sm font-medium truncate" style={{ color: 'var(--text)' }}>{t.title}</p>
+                          <span className="text-xs font-mono uppercase" style={{ color: badgeColor }}>
                             {t.badge}
                           </span>
                         </div>
-                        <span className="text-[10px] font-mono flex-shrink-0" style={{ color: 'var(--text-muted)' }}>{t.clicks}</span>
                       </div>
                     );
                   })}
+                  {trendingSubjects.length === 0 && (
+                    <p className="text-xs py-4 text-center" style={{ color: 'var(--text-muted)' }}>트렌딩 데이터 로딩 중...</p>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-1.5">
-                  {POPULAR_POSTS.map((p) => (
+                  {popularPosts.map((p) => (
                     <div key={p.rank} className="flex items-center gap-3 p-2 rounded-lg transition-colors hover:bg-[var(--surface)] cursor-pointer">
-                      <span className="text-sm font-bold font-mono w-5 text-center" style={{ color: 'var(--text-muted)' }}>{p.rank}</span>
+                      <span className="text-base font-bold font-mono w-5 text-center" style={{ color: 'var(--text-muted)' }}>{p.rank}</span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium truncate" style={{ color: 'var(--text)' }}>{p.title}</p>
-                        <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{p.author}</span>
+                        <p className="text-sm font-medium truncate" style={{ color: 'var(--text)' }}>{p.title}</p>
+                        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{p.author}</span>
                       </div>
-                      <span className="text-[10px] font-mono flex-shrink-0" style={{ color: 'var(--text-muted)' }}>{p.views}</span>
                     </div>
                   ))}
+                  {popularPosts.length === 0 && (
+                    <p className="text-xs py-4 text-center" style={{ color: 'var(--text-muted)' }}>데이터 로딩 중...</p>
+                  )}
                 </div>
               )}
             </div>
 
             {/* Newsletter */}
             <div className="rounded-xl p-4" style={{ border: '1px solid var(--border)' }}>
-              <p className="text-xs font-medium tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>NEWSLETTER</p>
-              <p className="text-xs mb-3" style={{ color: 'var(--text-muted)' }}>매주 위성이 포착한 지구의 변화를 받아보세요.</p>
+              <p className="text-sm font-medium tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>NEWSLETTER</p>
+              <p className="text-sm mb-3" style={{ color: 'var(--text-muted)' }}>매주 위성이 포착한 지구의 변화를 받아보세요.</p>
               <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); trackEvent('form_submit', 'newsletter_subscribe', {}); }}>
                 <input type="email" placeholder="이메일 주소" className="flex-1 px-3 py-2 rounded-md text-sm"
                   style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}
@@ -537,8 +581,8 @@ export default function DashboardClient() {
       {/* ===== FOOTER ===== */}
       <footer className="py-8 px-6" style={{ borderTop: '1px solid var(--border)', color: 'var(--text-muted)' }}>
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs">&copy; {new Date().getFullYear()} EarthPaper by Nara Space</p>
-          <div className="flex gap-6 text-xs">
+          <p className="text-sm">&copy; {new Date().getFullYear()} EarthPaper by Nara Space</p>
+          <div className="flex gap-6 text-sm">
             <Link href="/terms" className="hover:underline">이용약관</Link>
             <Link href="/privacy" className="hover:underline">개인정보처리방침</Link>
             <Link href="/support" className="hover:underline">고객센터</Link>
@@ -609,8 +653,8 @@ function ShortsCard({ item }: { item: FeedItem }) {
               </div>
             </button>
             <div className="absolute bottom-0 left-0 right-0 p-3 pointer-events-none" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.85))' }}>
-              <p className="text-xs font-medium leading-snug mb-1 line-clamp-2" style={{ color: '#fff' }}>{item.title}</p>
-              <p className="text-[10px] font-mono" style={{ color: 'rgba(255,255,255,0.7)' }}>
+              <p className="text-sm font-medium leading-snug mb-1 line-clamp-2" style={{ color: '#fff' }}>{item.title}</p>
+              <p className="text-xs font-mono" style={{ color: 'rgba(255,255,255,0.7)' }}>
                 {views >= 1000 ? `${(views / 1000).toFixed(1)}k` : views} views
               </p>
             </div>
@@ -635,20 +679,34 @@ function AnalysisCard({ item }: { item: FeedItem }) {
   const inner = (
     <div className="rounded-lg overflow-hidden group" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
       <div className="relative" style={{ height: 160 }}>
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, var(--surface-elevated), var(--surface))' }} />
-        <div className="absolute inset-0 flex items-center justify-center opacity-20">
-          <div style={{ width: 80, height: 80, background: 'var(--accent)', borderRadius: '40%', filter: 'blur(20px)' }} />
-        </div>
+        {item.thumbnail_url ? (
+          <>
+            <img
+              src={item.thumbnail_url}
+              alt={item.title}
+              className="absolute inset-0 w-full h-full object-cover"
+              loading="lazy"
+            />
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, var(--surface) 0%, transparent 60%)' }} />
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, var(--surface-elevated), var(--surface))' }} />
+            <div className="absolute inset-0 flex items-center justify-center opacity-20">
+              <div style={{ width: 80, height: 80, background: 'var(--accent)', borderRadius: '40%', filter: 'blur(20px)' }} />
+            </div>
+          </>
+        )}
       </div>
       <div className="p-4">
-        <p className="text-[10px] font-mono tracking-wider mb-1" style={{ color: pl.color }}>{pl.label}</p>
-        <p className="text-sm font-semibold leading-snug mb-1 group-hover:text-[var(--accent)] transition-colors" style={{ color: 'var(--text)' }}>
+        <p className="text-xs font-mono tracking-wider mb-1.5" style={{ color: pl.color }}>{pl.label}</p>
+        <p className="text-base font-semibold leading-snug mb-1.5 group-hover:text-[var(--accent)] transition-colors" style={{ color: 'var(--text)' }}>
           {item.title}
         </p>
         {item.description && (
-          <p className="text-xs leading-relaxed line-clamp-2 mb-2" style={{ color: 'var(--text-muted)' }}>{item.description}</p>
+          <p className="text-sm leading-relaxed line-clamp-2 mb-2" style={{ color: 'var(--text-muted)' }}>{item.description}</p>
         )}
-        <div className="flex items-center justify-between text-[11px] font-mono" style={{ color: 'var(--text-muted)' }}>
+        <div className="flex items-center justify-between text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
           <span>{location}</span>
           <span>{new Date(item.published_at).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>
         </div>
@@ -665,11 +723,11 @@ function NewsRow({ item }: { item: FeedItem }) {
   const inner = (
     <div className="flex items-start gap-4 p-4 transition-colors hover:bg-[var(--surface)]" style={{ borderBottom: '1px solid var(--border)' }}>
       <div className="flex-1 min-w-0">
-        <p className="text-[10px] font-mono tracking-wider uppercase mb-1" style={{ color: 'var(--text-muted)' }}>NEWS</p>
-        <p className="text-sm font-medium leading-snug" style={{ color: 'var(--text)' }}>{item.title}</p>
-        {item.description && <p className="text-xs mt-1 line-clamp-1" style={{ color: 'var(--text-muted)' }}>{item.description}</p>}
+        <p className="text-xs font-mono tracking-wider uppercase mb-1" style={{ color: 'var(--text-muted)' }}>NEWS</p>
+        <p className="text-base font-medium leading-snug" style={{ color: 'var(--text)' }}>{item.title}</p>
+        {item.description && <p className="text-sm mt-1 line-clamp-1" style={{ color: 'var(--text-muted)' }}>{item.description}</p>}
       </div>
-      <span className="text-xs font-mono flex-shrink-0" style={{ color: 'var(--text-muted)' }}>
+      <span className="text-sm font-mono flex-shrink-0" style={{ color: 'var(--text-muted)' }}>
         {new Date(item.published_at).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })}
       </span>
     </div>
@@ -683,9 +741,9 @@ function NewsRow({ item }: { item: FeedItem }) {
 function MetricItem({ label, value, suffix, color }: { label: string; value: string; suffix: string; color: string }) {
   return (
     <div className="p-2 rounded-md" style={{ background: 'var(--surface)' }}>
-      <p className="text-[10px] mb-0.5" style={{ color: 'var(--text-muted)' }}>{label}</p>
+      <p className="text-xs mb-0.5" style={{ color: 'var(--text-muted)' }}>{label}</p>
       <p className="text-sm font-bold" style={{ color }}>
-        {value} <span className="text-[10px] font-normal" style={{ color: 'var(--text-muted)' }}>{suffix}</span>
+        {value} <span className="text-xs font-normal" style={{ color: 'var(--text-muted)' }}>{suffix}</span>
       </p>
     </div>
   );
@@ -695,9 +753,9 @@ function QuickActionBtn({ href, icon, label, onClick }: { href?: string; icon: s
   const cls = "flex flex-col items-center justify-center gap-1.5 p-3 rounded-lg transition-colors hover:bg-[var(--surface-elevated)]";
   const style = { background: 'var(--surface)' };
   if (href) {
-    return <Link href={href} className={cls} style={style}><span className="text-lg">{icon}</span><span className="text-xs" style={{ color: 'var(--text-muted)' }}>{label}</span></Link>;
+    return <Link href={href} className={cls} style={style}><span className="text-lg">{icon}</span><span className="text-sm" style={{ color: 'var(--text-muted)' }}>{label}</span></Link>;
   }
-  return <button onClick={onClick} className={cls} style={style}><span className="text-lg">{icon}</span><span className="text-xs" style={{ color: 'var(--text-muted)' }}>{label}</span></button>;
+  return <button onClick={onClick} className={cls} style={style}><span className="text-lg">{icon}</span><span className="text-sm" style={{ color: 'var(--text-muted)' }}>{label}</span></button>;
 }
 
 const SEVERITY_LABEL: Record<string, { text: string; color: string }> = {
@@ -743,7 +801,7 @@ function BreakingStrip({ items }: { items: FeedItem[] }) {
 
   const inner = (
     <div className="max-w-6xl mx-auto px-6 py-2 flex items-center gap-3" style={{ perspective: 600 }}>
-      <span className="inline-flex items-center gap-1.5 flex-shrink-0" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: '#C45C4A' }}>
+      <span className="inline-flex items-center gap-1.5 flex-shrink-0" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', color: '#C45C4A' }}>
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C45C4A', animation: 'pulse-dot 1.5s ease-in-out infinite' }} />
         CITADEL
       </span>
@@ -764,22 +822,22 @@ function BreakingStrip({ items }: { items: FeedItem[] }) {
             className="flex-shrink-0"
             style={{
               fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 9,
+              fontSize: 11,
               fontWeight: 700,
               letterSpacing: '0.08em',
               color: sev.color,
-              padding: '1px 5px',
+              padding: '2px 6px',
               borderRadius: 2,
               background: `${sev.color}18`,
             }}
           >
             {sev.text}
           </span>
-          <span className="truncate" style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)' }}>
+          <span className="truncate" style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)' }}>
             {current.title}
           </span>
           {location && (
-            <span className="flex-shrink-0 hidden sm:inline" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: 'var(--text-muted)' }}>
+            <span className="flex-shrink-0 hidden sm:inline" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: 'var(--text-muted)' }}>
               {location}
             </span>
           )}
@@ -787,7 +845,7 @@ function BreakingStrip({ items }: { items: FeedItem[] }) {
       </div>
 
       {citadelItems.length > 1 && (
-        <span className="flex-shrink-0" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 9, color: 'var(--text-muted)' }}>
+        <span className="flex-shrink-0" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: 'var(--text-muted)' }}>
           {(currentIdx % citadelItems.length) + 1}/{citadelItems.length}
         </span>
       )}

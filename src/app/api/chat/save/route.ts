@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { DEMO_USER } from '@/lib/demo-user';
+import { requireAuth } from '@/lib/auth';
 
 const saveSchema = z.object({
   sessionId: z.string().uuid(),
@@ -12,10 +11,9 @@ const saveSchema = z.object({
 
 // POST: Save assistant response after streaming completes
 export async function POST(request: NextRequest) {
-  const supabase = await createClient();
-
-  const { data: { user } } = await supabase.auth.getUser();
-  const userId = user?.id ?? DEMO_USER.id;
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const { userId } = auth.user;
 
   const body = await request.json();
   const parsed = saveSchema.safeParse(body);

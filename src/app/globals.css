@@ -167,6 +167,12 @@ body {
 
 .mapboxgl-ctrl-group button {
   border-color: var(--border) !important;
+  filter: invert(1) hue-rotate(180deg);
+}
+
+.mapboxgl-ctrl-group button:hover {
+  background: var(--surface-elevated) !important;
+  filter: invert(1) hue-rotate(180deg) brightness(1.2);
 }
 
 .mapboxgl-ctrl-group button + button {

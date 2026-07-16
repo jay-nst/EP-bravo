@@ -13,7 +13,6 @@ import type { CitadelSeverity } from '@/types/citadel';
 import { createClient } from '@/lib/supabase/client';
 import { requestTossPayment } from '@/lib/toss/widget';
 import { trackEvent } from '@/lib/analytics';
-import { DEMO_USER } from '@/lib/demo-user';
 import type { PublicLayerId } from '@/types/public-data';
 import { MAP_STYLES } from '@/components/map/EarthMap';
 import type { MapStyleId } from '@/components/map/EarthMap';
@@ -213,10 +212,14 @@ export default function CorePage() {
   const layerDataCache = useRef<Record<string, GeoJSON.FeatureCollection>>({});
   const layerEnabledRef = useRef<Record<string, boolean>>({ citadel: true });
   const supabase = useMemo(() => createClient(), []);
+  const [userEmail, setUserEmail] = useState('');
 
   useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.email) setUserEmail(user.email);
+    });
     return () => { animRef.current?.dispose(); };
-  }, []);
+  }, [supabase]);
 
   const handleAoiChange = useCallback((newAoi: AoiSelection | null) => {
     setAoi(newAoi);
@@ -1073,7 +1076,7 @@ export default function CorePage() {
         orderId,
         amount,
         orderName,
-        customerEmail: DEMO_USER.email,
+        customerEmail: userEmail,
       });
     } catch (err) {
       if (err instanceof Error && err.message.includes('canceled')) {

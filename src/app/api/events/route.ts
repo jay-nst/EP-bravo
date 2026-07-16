@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { badRequest, serverError } from '@/lib/api-error';
 
 const VALID_EVENT_TYPES = new Set([
   'cta_click',
@@ -14,17 +15,11 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     if (!body.event_type || !body.event_name) {
-      return NextResponse.json(
-        { error: 'event_type과 event_name은 필수입니다' },
-        { status: 400 },
-      );
+      return badRequest('event_type과 event_name은 필수입니다');
     }
 
     if (!VALID_EVENT_TYPES.has(body.event_type)) {
-      return NextResponse.json(
-        { error: '유효하지 않은 event_type입니다' },
-        { status: 400 },
-      );
+      return badRequest('유효하지 않은 event_type입니다');
     }
 
     const supabase = await createClient();
@@ -42,11 +37,11 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error('Event insert error:', error.message);
-      return NextResponse.json({ error: '이벤트 저장 실패' }, { status: 500 });
+      return serverError('이벤트 저장 실패');
     }
 
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch {
-    return NextResponse.json({ error: '잘못된 요청입니다' }, { status: 400 });
+    return badRequest('잘못된 요청입니다');
   }
 }

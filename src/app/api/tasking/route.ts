@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { DEMO_USER } from '@/lib/demo-user';
+import { requireAuth } from '@/lib/auth';
 
 const taskingSchema = z.object({
   aoi: z.object({
@@ -18,10 +17,9 @@ const taskingSchema = z.object({
 
 // GET: List user's tasking requests
 export async function GET() {
-  const supabase = await createClient();
-
-  const { data: { user } } = await supabase.auth.getUser();
-  const userId = user?.id ?? DEMO_USER.id;
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const { userId, supabase } = auth.user;
 
   const { data: requests, error } = await supabase
     .from('tasking_requests')
@@ -41,10 +39,9 @@ export async function GET() {
 
 // POST: Create a new tasking request
 export async function POST(request: NextRequest) {
-  const supabase = await createClient();
-
-  const { data: { user } } = await supabase.auth.getUser();
-  const userId = user?.id ?? DEMO_USER.id;
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const { userId } = auth.user;
 
   const body = await request.json();
   const parsed = taskingSchema.safeParse(body);
