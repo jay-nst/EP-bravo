@@ -38,7 +38,7 @@ const LEGAL = [
 
 const sectionHeader: React.CSSProperties = {
   fontFamily: "'IBM Plex Mono', monospace",
-  fontSize: 10,
+  fontSize: 12,
   letterSpacing: '0.12em',
   textTransform: 'uppercase',
   color: 'var(--text-muted)',
@@ -92,7 +92,7 @@ export default function Footer() {
                   >
                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
                     <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{p.label}</span>
-                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{p.desc}</span>
+                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{p.desc}</span>
                   </Link>
                 </li>
               ))}
@@ -177,7 +177,7 @@ export default function Footer() {
               <circle cx="12" cy="12" r="6" stroke="var(--text-muted)" strokeWidth="1.5" />
               <ellipse cx="12" cy="12" rx="10" ry="4" stroke="var(--accent)" strokeWidth="1" transform="rotate(-30 12 12)" opacity="0.4" />
             </svg>
-            <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: 'var(--text-muted)' }}>
+            <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: 'var(--text-muted)' }}>
               EARTHPAPER
             </span>
           </div>
@@ -191,7 +191,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 style={{
                   fontFamily: "'IBM Plex Mono', monospace",
-                  fontSize: 11,
+                  fontSize: 12,
                   color: 'var(--text-muted)',
                   textDecoration: 'none',
                   opacity: 0.7,
@@ -200,7 +200,7 @@ export default function Footer() {
                 {l.label}
               </a>
             ))}
-            <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: 'var(--text-muted)', opacity: 0.5 }}>
+            <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: 'var(--text-muted)', opacity: 0.5 }}>
               © Nara Space Technology Inc.
             </span>
           </div>
