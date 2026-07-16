@@ -1079,6 +1079,7 @@ export default function CorePage() {
         orderName,
         customerEmail: userEmail,
       });
+      setPurchasing(false);
     } catch (err) {
       if (err instanceof Error && err.message.includes('canceled')) {
         // User cancelled payment
@@ -1087,7 +1088,7 @@ export default function CorePage() {
       }
       setPurchasing(false);
     }
-  }, [aoi, catalogItemId, supabase]);
+  }, [aoi, catalogItemId, userEmail]);
 
   return (
     <div className="flex relative" style={{ height: 'calc(100vh - var(--header-height))' }}>

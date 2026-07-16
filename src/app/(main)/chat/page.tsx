@@ -62,20 +62,21 @@ export default function ChatPage() {
     setMessages([]);
   };
 
-  const sendMessage = async () => {
-    if (!input.trim() || streaming) return;
+  const sendMessage = async (directMessage?: string) => {
+    const msg = directMessage || input.trim();
+    if (!msg || streaming) return;
 
     if (!sessionId) {
       const newSession: ChatSession = {
         id: `sess-${Date.now()}`,
-        title: input.trim().slice(0, 20),
+        title: msg.slice(0, 20),
         updated_at: new Date().toISOString(),
       };
       setSessions((prev) => [newSession, ...prev]);
       setSessionId(newSession.id);
     }
 
-    const userMessage = input.trim();
+    const userMessage = msg;
     setInput('');
     setMessages((prev) => [...prev, { role: 'user', content: userMessage }]);
     setStreaming(true);
@@ -155,9 +156,7 @@ export default function ChatPage() {
                   {['해상도 비교', '가격 안내', '촬영 요청 방법'].map((q) => (
                     <button
                       key={q}
-                      onClick={() => {
-                        setInput(q);
-                      }}
+                      onClick={() => sendMessage(q)}
                       className="px-3 py-1.5 text-xs rounded-lg transition-colors"
                       style={{
                         background: 'var(--surface)',
@@ -214,7 +213,7 @@ export default function ChatPage() {
               disabled={streaming}
             />
             <button
-              onClick={sendMessage}
+              onClick={() => sendMessage()}
               disabled={streaming || !input.trim()}
               className="px-4 py-3 rounded-xl text-sm font-medium transition-colors disabled:opacity-40"
               style={{

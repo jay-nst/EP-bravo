@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { createClient } from '@/lib/supabase/client';
+import { fmtNum } from '@/lib/format';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), { ssr: false });
 
@@ -178,7 +179,7 @@ export default function TaskingPage() {
                 <div>
                   <span className="text-xs" style={{ color: 'var(--text-muted)' }}>면적</span>
                   <p className="text-sm font-mono font-medium" style={{ color: 'var(--text)' }}>
-                    {aoi.areaKm2.toLocaleString()} km²
+                    {fmtNum(aoi.areaKm2, 1)} km²
                   </p>
                 </div>
                 <div
@@ -188,7 +189,7 @@ export default function TaskingPage() {
                 <div>
                   <span className="text-xs" style={{ color: 'var(--text-muted)' }}>예상 가격</span>
                   <p className="text-sm font-mono font-medium" style={{ color: 'var(--accent)' }}>
-                    ${aoi.price.toLocaleString()}
+                    ${fmtNum(aoi.price, 2)}
                   </p>
                 </div>
               </div>

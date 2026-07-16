@@ -1,9 +1,12 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import type mapboxgl from 'mapbox-gl';
 import { addCitadelOverlay, removeSimulatorOverlay } from '@/lib/simulator-overlays';
+import { trackEvent } from '@/lib/analytics';
+import { fmtNum } from '@/lib/format';
+import LeadCaptureModal from '@/components/shared/LeadCaptureModal';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
@@ -74,8 +77,17 @@ const SEVERITY_LABELS = {
 export default function CitadelSimulator() {
   const [phase, setPhase] = useState<Phase>('draw');
   const [result, setResult] = useState<DisasterResult | null>(null);
+  const [showLeadForm, setShowLeadForm] = useState(false);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const polyRef = useRef<GeoJSON.Polygon | null>(null);
+  const trackedRef = useRef(false);
+
+  useEffect(() => {
+    if (!trackedRef.current) {
+      trackEvent('simulator_event', 'simulator_viewed', { vertical: 'citadel' });
+      trackedRef.current = true;
+    }
+  }, []);
 
   const handleMapReady = useCallback((m: mapboxgl.Map) => {
     mapRef.current = m;
@@ -97,10 +109,12 @@ export default function CitadelSimulator() {
 
       polyRef.current = aoi.polygon;
       setPhase('analyzing');
+      trackEvent('simulator_event', 'aoi_drawn', { vertical: 'citadel', areaKm2: aoi.areaKm2 });
       setTimeout(() => {
         const r = generateDisaster(aoi.areaKm2);
         setResult(r);
         setPhase('result');
+        trackEvent('simulator_event', 'result_viewed', { vertical: 'citadel' });
         if (mapRef.current && polyRef.current) {
           addCitadelOverlay(mapRef.current, polyRef.current, r);
         }
@@ -150,7 +164,7 @@ export default function CitadelSimulator() {
         />
 
         <div
-          className="absolute bottom-0 left-0 right-0 max-h-[75%] overflow-y-auto rounded-t-lg md:bottom-auto md:left-auto md:right-3 md:top-3 md:w-[280px] md:max-h-none md:overflow-hidden md:rounded-lg"
+          className="absolute bottom-0 left-0 right-0 max-h-[75%] overflow-y-auto rounded-t-lg md:bottom-auto md:left-auto md:right-3 md:top-3 md:w-[280px] md:max-h-[calc(100%-24px)] md:overflow-y-auto md:rounded-lg"
           style={{
             background: 'var(--panel-bg)',
             backdropFilter: 'blur(12px)',
@@ -232,10 +246,10 @@ export default function CitadelSimulator() {
 
               <div style={{ padding: 16 }}>
                 {[
-                  { label: '분석 면적', value: `${result.areaKm2.toFixed(1)} km²` },
-                  { label: '피해 면적', value: `${result.affectedAreaKm2.toFixed(1)} km² (${result.affectedPct.toFixed(0)}%)`, color: '#C8923A' },
-                  { label: '소실 면적', value: `${result.burnedAreaKm2.toFixed(2)} km²`, color: '#C45C4A' },
-                  { label: '피해 건물', value: `${result.damagedBuildings}동`, color: '#C45C4A' },
+                  { label: '분석 면적', value: `${fmtNum(result.areaKm2, 1)} km²` },
+                  { label: '피해 면적', value: `${fmtNum(result.affectedAreaKm2, 1)} km² (${fmtNum(result.affectedPct, 0)}%)`, color: '#C8923A' },
+                  { label: '소실 면적', value: `${fmtNum(result.burnedAreaKm2, 2)} km²`, color: '#C45C4A' },
+                  { label: '피해 건물', value: `${fmtNum(result.damagedBuildings)}동`, color: '#C45C4A' },
                   { label: 'NDVI 감소', value: `${result.ndviDrop}%` },
                   { label: '심각도', value: SEVERITY_LABELS[result.severityLevel], color: SEVERITY_COLORS[result.severityLevel] },
                   { label: '회복 예상', value: `${result.estimatedRecoveryMonths}개월` },
@@ -263,6 +277,7 @@ export default function CitadelSimulator() {
                 ))}
 
                 <button
+                  onClick={() => { trackEvent('simulator_event', 'lead_form_opened', { vertical: 'citadel' }); setShowLeadForm(true); }}
                   style={{
                     width: '100%', marginTop: 16, padding: '10px', minHeight: 48,
                     display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6,
@@ -273,7 +288,7 @@ export default function CitadelSimulator() {
                   onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
                 >
-                  SLA 리포트 생성
+                  SLA 리포트 요청
                 </button>
               </div>
             </div>
@@ -295,6 +310,13 @@ export default function CitadelSimulator() {
           to { transform: rotate(360deg); }
         }
       `}</style>
+
+      <LeadCaptureModal
+        open={showLeadForm}
+        onClose={() => setShowLeadForm(false)}
+        vertical="citadel"
+        accentColor="#C45C4A"
+      />
     </section>
   );
 }

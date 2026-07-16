@@ -2,6 +2,7 @@
 
 import type { SatelliteType } from '@/types/database';
 import { SATELLITE_CONFIG } from '@/constants/satellite';
+import { fmtNum } from '@/lib/format';
 
 interface AoiSelection {
   polygon: GeoJSON.Polygon;
@@ -115,7 +116,7 @@ export default function AoiPanel({
             <div className="flex justify-between" style={{ color: 'var(--text-muted)' }}>
               <span>선택 면적</span>
               <span className="font-medium font-mono" style={{ color: 'var(--text)' }}>
-                {aoi.areaKm2} km²
+                {fmtNum(aoi.areaKm2, 1)} km²
               </span>
             </div>
             <div
@@ -124,7 +125,7 @@ export default function AoiPanel({
             >
               <span>예상 가격</span>
               <span className="font-mono" style={{ color: 'var(--accent)' }}>
-                ${aoi.price.toLocaleString()}
+                ${fmtNum(aoi.price, 2)}
               </span>
             </div>
           </div>

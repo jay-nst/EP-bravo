@@ -1,9 +1,12 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import type mapboxgl from 'mapbox-gl';
 import { addNorthpaperOverlay, removeSimulatorOverlay } from '@/lib/simulator-overlays';
+import { trackEvent } from '@/lib/analytics';
+import { fmtNum } from '@/lib/format';
+import LeadCaptureModal from '@/components/shared/LeadCaptureModal';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
@@ -73,8 +76,17 @@ const CONFIDENCE_LABELS = {
 export default function NorthpaperSimulator() {
   const [phase, setPhase] = useState<Phase>('draw');
   const [result, setResult] = useState<ChangeDetectionResult | null>(null);
+  const [showLeadForm, setShowLeadForm] = useState(false);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const polyRef = useRef<GeoJSON.Polygon | null>(null);
+  const trackedRef = useRef(false);
+
+  useEffect(() => {
+    if (!trackedRef.current) {
+      trackEvent('simulator_event', 'simulator_viewed', { vertical: 'northpaper' });
+      trackedRef.current = true;
+    }
+  }, []);
 
   const handleMapReady = useCallback((m: mapboxgl.Map) => {
     mapRef.current = m;
@@ -96,10 +108,12 @@ export default function NorthpaperSimulator() {
 
       polyRef.current = aoi.polygon;
       setPhase('analyzing');
+      trackEvent('simulator_event', 'aoi_drawn', { vertical: 'northpaper', areaKm2: aoi.areaKm2 });
       setTimeout(() => {
         const r = generateChangeDetection(aoi.areaKm2);
         setResult(r);
         setPhase('result');
+        trackEvent('simulator_event', 'result_viewed', { vertical: 'northpaper' });
         if (mapRef.current && polyRef.current) {
           addNorthpaperOverlay(mapRef.current, polyRef.current, r);
         }
@@ -149,7 +163,7 @@ export default function NorthpaperSimulator() {
         />
 
         <div
-          className="absolute bottom-0 left-0 right-0 max-h-[75%] overflow-y-auto rounded-t-lg md:bottom-auto md:left-auto md:right-3 md:top-3 md:w-[280px] md:max-h-none md:overflow-hidden md:rounded-lg"
+          className="absolute bottom-0 left-0 right-0 max-h-[75%] overflow-y-auto rounded-t-lg md:bottom-auto md:left-auto md:right-3 md:top-3 md:w-[280px] md:max-h-[calc(100%-24px)] md:overflow-y-auto md:rounded-lg"
           style={{
             background: 'var(--panel-bg)',
             backdropFilter: 'blur(12px)',
@@ -263,7 +277,7 @@ export default function NorthpaperSimulator() {
 
               <div style={{ padding: 16 }}>
                 {[
-                  { label: '분석 면적', value: `${result.areaKm2.toFixed(1)} km²` },
+                  { label: '분석 면적', value: `${fmtNum(result.areaKm2, 1)} km²` },
                   { label: '분석 기간', value: result.assessmentPeriod },
                   { label: '관측 횟수', value: `${result.observationCount}회` },
                   { label: '변화 구역', value: `${result.changedZones}개`, color: '#C8923A' },
@@ -306,6 +320,7 @@ export default function NorthpaperSimulator() {
                 ))}
 
                 <button
+                  onClick={() => { trackEvent('simulator_event', 'lead_form_opened', { vertical: 'northpaper' }); setShowLeadForm(true); }}
                   style={{
                     width: '100%',
                     marginTop: 16,
@@ -326,7 +341,7 @@ export default function NorthpaperSimulator() {
                   onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
                 >
-                  인텔리전스 리포트 생성
+                  인텔리전스 리포트 요청
                 </button>
               </div>
             </div>
@@ -351,6 +366,13 @@ export default function NorthpaperSimulator() {
           to { transform: rotate(360deg); }
         }
       `}</style>
+
+      <LeadCaptureModal
+        open={showLeadForm}
+        onClose={() => setShowLeadForm(false)}
+        vertical="northpaper"
+        accentColor="#3D5A80"
+      />
     </section>
   );
 }

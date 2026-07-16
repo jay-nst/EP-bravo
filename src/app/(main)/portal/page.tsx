@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { fmtNum } from '@/lib/format';
 
 interface OrderWithRelations {
   id: string;
@@ -133,8 +134,8 @@ export default function PortalPage() {
                       </span>
                     </p>
                     <p className="text-sm font-mono" style={{ color: 'var(--text)' }}>
-                      면적: {order.aoi_area_km2.toFixed(2)} km² / 금액: $
-                      {Number(order.total_price).toFixed(2)}
+                      면적: {fmtNum(order.aoi_area_km2, 2)} km² / 금액: $
+                      {fmtNum(Number(order.total_price), 2)}
                     </p>
                     <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
                       {new Date(order.created_at).toLocaleString('ko-KR')}

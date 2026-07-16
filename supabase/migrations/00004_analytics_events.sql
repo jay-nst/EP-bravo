@@ -5,7 +5,7 @@ create table public.analytics_events (
   id          uuid primary key default gen_random_uuid(),
   user_id     uuid references auth.users(id) on delete set null,
   event_type  text not null
-              check (event_type in ('cta_click', 'page_view', 'layer_toggle', 'form_submit')),
+              check (event_type in ('cta_click', 'page_view', 'layer_toggle', 'form_submit', 'simulator_event')),
   event_name  text not null,
   properties  jsonb not null default '{}',
   page_path   text,

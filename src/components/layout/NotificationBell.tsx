@@ -18,17 +18,27 @@ export default function NotificationBell() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    if (!open) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [open]);
+
+  useEffect(() => {
     fetch('/api/notifications')
       .then((r) => r.json())
       .then((data) => {
         if (data.notifications) setNotifications(data.notifications);
-      });
+      })
+      .catch(() => {});
   }, []);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const markAsRead = async (id: string) => {
-    await fetch(`/api/notifications/${id}/read`, { method: 'PATCH' });
+    try {
+      await fetch(`/api/notifications/${id}/read`, { method: 'PATCH' });
+    } catch {}
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
     );
@@ -67,7 +77,7 @@ export default function NotificationBell() {
 
       {open && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false); }} />
           <div
             className="absolute right-0 top-full mt-2 w-80 glass-panel rounded-xl shadow-xl z-50 overflow-hidden"
             style={{ border: '1px solid var(--border)' }}

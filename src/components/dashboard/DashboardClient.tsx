@@ -6,7 +6,9 @@ import { useRouter } from 'next/navigation';
 import type { FeedItem, FeedType, DashboardSummary } from '@/types/dashboard';
 import { FEED_BADGE_COLORS, FEED_LABELS } from '@/types/dashboard';
 import { trackEvent } from '@/lib/analytics';
+import { fmtNum } from '@/lib/format';
 import dynamic from 'next/dynamic';
+import NewsletterForm from '@/components/home/NewsletterForm';
 
 const MiniMap = dynamic(() => import('./MiniMap'), { ssr: false });
 
@@ -390,7 +392,7 @@ export default function DashboardClient() {
             {/* AI Assistant (moved from full-width) */}
             <div className="rounded-xl p-4" style={{ border: '1px solid var(--border)' }}>
               <p className="text-sm font-medium tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>
-                AI ASSISTANT
+                EP AGENT
               </p>
               <form onSubmit={handleChatSubmit}>
                 <div className="relative mb-2">
@@ -438,7 +440,7 @@ export default function DashboardClient() {
                       <span className="text-sm">📦</span>
                       <div>
                         <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>내 주문</p>
-                        <p className="text-xs" style={{ color: 'var(--accent)' }}>{summary.recentOrders.length}건</p>
+                        <p className="text-xs" style={{ color: 'var(--accent)' }}>{fmtNum(summary.recentOrders.length)}건</p>
                       </div>
                     </Link>
                     <Link href="/tasking" className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
@@ -446,7 +448,7 @@ export default function DashboardClient() {
                       <div>
                         <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>촬영 요청</p>
                         <p className="text-xs" style={{ color: summary.pendingTaskings > 0 ? '#C8923A' : 'var(--text-muted)' }}>
-                          {summary.pendingTaskings > 0 ? `${summary.pendingTaskings}건 대기` : '없음'}
+                          {summary.pendingTaskings > 0 ? `${fmtNum(summary.pendingTaskings)}건 대기` : '없음'}
                         </p>
                       </div>
                     </Link>
@@ -454,7 +456,7 @@ export default function DashboardClient() {
                       <span className="text-sm">🗺️</span>
                       <div>
                         <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>위성 영상</p>
-                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{summary.stats.totalImages}장</p>
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{fmtNum(summary.stats.totalImages)}장</p>
                       </div>
                     </Link>
                     <Link href="/quiz" className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
@@ -540,7 +542,7 @@ export default function DashboardClient() {
                     );
                   })}
                   {trendingSubjects.length === 0 && (
-                    <p className="text-xs py-4 text-center" style={{ color: 'var(--text-muted)' }}>트렌딩 데이터 로딩 중...</p>
+                    <p className="text-xs py-4 text-center" style={{ color: 'var(--text-muted)' }}>{feedLoading ? '트렌딩 데이터 로딩 중...' : '트렌딩 데이터 없음'}</p>
                   )}
                 </div>
               ) : (
@@ -555,7 +557,7 @@ export default function DashboardClient() {
                     </div>
                   ))}
                   {popularPosts.length === 0 && (
-                    <p className="text-xs py-4 text-center" style={{ color: 'var(--text-muted)' }}>데이터 로딩 중...</p>
+                    <p className="text-xs py-4 text-center" style={{ color: 'var(--text-muted)' }}>{feedLoading ? '데이터 로딩 중...' : '데이터 없음'}</p>
                   )}
                 </div>
               )}
@@ -563,16 +565,9 @@ export default function DashboardClient() {
 
             {/* Newsletter */}
             <div className="rounded-xl p-4" style={{ border: '1px solid var(--border)' }}>
-              <p className="text-sm font-medium tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>NEWSLETTER</p>
+              <p className="text-sm font-medium tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>뉴스레터</p>
               <p className="text-sm mb-3" style={{ color: 'var(--text-muted)' }}>매주 위성이 포착한 지구의 변화를 받아보세요.</p>
-              <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); trackEvent('form_submit', 'newsletter_subscribe', {}); }}>
-                <input type="email" placeholder="이메일 주소" className="flex-1 px-3 py-2 rounded-md text-sm"
-                  style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}
-                />
-                <button type="submit" className="px-4 py-2 rounded-md text-sm font-medium" style={{ background: 'var(--accent)', color: '#0E0E10' }}>
-                  구독
-                </button>
-              </form>
+              <NewsletterForm />
             </div>
           </aside>
         </div>
@@ -649,6 +644,7 @@ function ShortsCard({ item }: { item: FeedItem }) {
             <button
               onClick={() => setPlaying(true)}
               className="absolute inset-0 flex items-center justify-center cursor-pointer"
+              aria-label="재생"
             >
               <div className="w-12 h-12 rounded-full flex items-center justify-center transition-transform group-hover:scale-110"
                 style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)' }}
@@ -659,7 +655,7 @@ function ShortsCard({ item }: { item: FeedItem }) {
             <div className="absolute bottom-0 left-0 right-0 p-3 pointer-events-none" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.85))' }}>
               <p className="text-sm font-medium leading-snug mb-1 line-clamp-2" style={{ color: '#fff' }}>{item.title}</p>
               <p className="text-xs font-mono" style={{ color: 'rgba(255,255,255,0.7)' }}>
-                {views >= 1000 ? `${(views / 1000).toFixed(1)}k` : views} views
+                {views >= 1000 ? `${fmtNum(views / 1000, 1)}k` : fmtNum(views)} 조회
               </p>
             </div>
           </>

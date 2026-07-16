@@ -8,6 +8,7 @@ const VALID_EVENT_TYPES = new Set([
   'layer_toggle',
   'map_style_change',
   'form_submit',
+  'simulator_event',
 ]);
 
 export async function POST(request: Request) {

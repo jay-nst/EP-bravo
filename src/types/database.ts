@@ -156,7 +156,8 @@ export type AnalyticsEventType =
   | 'layer_toggle'
   | 'map_style_change'
   | 'form_submit'
-  | 'chat_from_home';
+  | 'chat_from_home'
+  | 'simulator_event';
 
 export interface AnalyticsEvent {
   id: string;

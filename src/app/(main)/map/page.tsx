@@ -10,8 +10,8 @@ import { requestTossPayment } from '@/lib/toss/widget';
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-gray-900">
-      <p className="text-white text-sm">지도 로딩 중...</p>
+    <div className="w-full h-full flex items-center justify-center" style={{ background: 'var(--bg)' }}>
+      <p className="text-sm" style={{ color: 'var(--text-muted)' }}>지도 로딩 중...</p>
     </div>
   ),
 });
@@ -76,6 +76,7 @@ export default function MapPage() {
         orderName,
         customerEmail: userEmail,
       });
+      setPurchasing(false);
     } catch (err) {
       if (err instanceof Error && err.message.includes('canceled')) {
         // User cancelled payment - not an error
@@ -84,7 +85,7 @@ export default function MapPage() {
       }
       setPurchasing(false);
     }
-  }, [aoi, catalogItemId, supabase]);
+  }, [aoi, catalogItemId, userEmail]);
 
   return (
     <div className="flex" style={{ height: 'calc(100vh - var(--header-height))' }}>

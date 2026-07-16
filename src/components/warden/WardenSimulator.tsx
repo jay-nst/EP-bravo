@@ -1,9 +1,12 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import type mapboxgl from 'mapbox-gl';
 import { addWardenOverlay, removeSimulatorOverlay } from '@/lib/simulator-overlays';
+import { trackEvent } from '@/lib/analytics';
+import { fmtNum } from '@/lib/format';
+import LeadCaptureModal from '@/components/shared/LeadCaptureModal';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
@@ -56,20 +59,29 @@ function generateScreening(areaKm2: number): ScreeningResult {
 type Phase = 'draw' | 'analyzing' | 'result';
 
 const RESULT_ROWS = [
-  { key: 'area', label: '스크리닝 면적', fmt: (r: ScreeningResult) => `${r.areaKm2.toFixed(1)} km²` },
-  { key: 'baseline', label: '기준선 산림 (2020)', fmt: (r: ScreeningResult) => `${r.baselineForestKm2.toFixed(1)} km²` },
-  { key: 'current', label: '현재 산림면적', fmt: (r: ScreeningResult) => `${r.currentForestKm2.toFixed(1)} km²` },
-  { key: 'deforestation', label: '산림전용 탐지', fmt: (r: ScreeningResult) => `${r.deforestationKm2.toFixed(2)} km² (${r.deforestationPct.toFixed(1)}%)`, color: '#C45C4A' },
-  { key: 'plots', label: '분석 플롯', fmt: (r: ScreeningResult) => `${r.plotsAnalyzed}개` },
-  { key: 'risk', label: '위험 플롯', fmt: (r: ScreeningResult) => `${r.riskPlots}개`, color: '#C8923A' },
+  { key: 'area', label: '스크리닝 면적', fmt: (r: ScreeningResult) => `${fmtNum(r.areaKm2, 1)} km²` },
+  { key: 'baseline', label: '기준선 산림 (2020)', fmt: (r: ScreeningResult) => `${fmtNum(r.baselineForestKm2, 1)} km²` },
+  { key: 'current', label: '현재 산림면적', fmt: (r: ScreeningResult) => `${fmtNum(r.currentForestKm2, 1)} km²` },
+  { key: 'deforestation', label: '산림전용 탐지', fmt: (r: ScreeningResult) => `${fmtNum(r.deforestationKm2, 2)} km² (${fmtNum(r.deforestationPct, 1)}%)`, color: '#C45C4A' },
+  { key: 'plots', label: '분석 플롯', fmt: (r: ScreeningResult) => `${fmtNum(r.plotsAnalyzed)}개` },
+  { key: 'risk', label: '위험 플롯', fmt: (r: ScreeningResult) => `${fmtNum(r.riskPlots)}개`, color: '#C8923A' },
   { key: 'obs', label: '마지막 관측', fmt: (r: ScreeningResult) => r.lastObservation },
 ] as const;
 
 export default function WardenSimulator() {
   const [phase, setPhase] = useState<Phase>('draw');
   const [result, setResult] = useState<ScreeningResult | null>(null);
+  const [showLeadForm, setShowLeadForm] = useState(false);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const polyRef = useRef<GeoJSON.Polygon | null>(null);
+  const trackedRef = useRef(false);
+
+  useEffect(() => {
+    if (!trackedRef.current) {
+      trackEvent('simulator_event', 'simulator_viewed', { vertical: 'warden' });
+      trackedRef.current = true;
+    }
+  }, []);
 
   const handleMapReady = useCallback((m: mapboxgl.Map) => {
     mapRef.current = m;
@@ -91,10 +103,12 @@ export default function WardenSimulator() {
 
       polyRef.current = aoi.polygon;
       setPhase('analyzing');
+      trackEvent('simulator_event', 'aoi_drawn', { vertical: 'warden', areaKm2: aoi.areaKm2 });
       setTimeout(() => {
         const r = generateScreening(aoi.areaKm2);
         setResult(r);
         setPhase('result');
+        trackEvent('simulator_event', 'result_viewed', { vertical: 'warden' });
         if (mapRef.current && polyRef.current) {
           addWardenOverlay(mapRef.current, polyRef.current, r);
         }
@@ -144,7 +158,7 @@ export default function WardenSimulator() {
         />
 
         <div
-          className="absolute bottom-0 left-0 right-0 max-h-[75%] overflow-y-auto rounded-t-lg md:bottom-auto md:left-auto md:right-3 md:top-3 md:w-[280px] md:max-h-none md:overflow-hidden md:rounded-lg"
+          className="absolute bottom-0 left-0 right-0 max-h-[75%] overflow-y-auto rounded-t-lg md:bottom-auto md:left-auto md:right-3 md:top-3 md:w-[280px] md:max-h-[calc(100%-24px)] md:overflow-y-auto md:rounded-lg"
           style={{
             background: 'var(--panel-bg)',
             backdropFilter: 'blur(12px)',
@@ -291,6 +305,7 @@ export default function WardenSimulator() {
                 ))}
 
                 <button
+                  onClick={() => { trackEvent('simulator_event', 'lead_form_opened', { vertical: 'warden' }); setShowLeadForm(true); }}
                   style={{
                     width: '100%',
                     marginTop: 16,
@@ -311,7 +326,7 @@ export default function WardenSimulator() {
                   onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
                 >
-                  DDS 보고서 생성
+                  DDS 보고서 요청
                 </button>
               </div>
             </div>
@@ -337,6 +352,13 @@ export default function WardenSimulator() {
           to { transform: rotate(360deg); }
         }
       `}</style>
+
+      <LeadCaptureModal
+        open={showLeadForm}
+        onClose={() => setShowLeadForm(false)}
+        vertical="warden"
+        accentColor="#6B8A5E"
+      />
     </section>
   );
 }
