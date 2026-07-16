@@ -1,7 +1,7 @@
 {
   "timestamp": "2026-07-16",
   "branch": "master",
-  "last_commit": "89aad80",
+  "last_commit": "fd48130",
   "completed_tasks": [
     "T1-T7: Homepage + Core 지도 + 이벤트 트래킹 + 테스트",
     "지도 스타일 스위처 (satellite/dark/night-nav 3종)",
@@ -49,12 +49,11 @@
     "Phase 4: Hardening + Tests — content-type 검사, API 에러 통일(api-error.ts), Lambda 타임아웃/재시도, 서버 측 토큰 카운팅, Rate Limiting, 테스트 13개 추가 (총 105개)",
     "위성영상 교체 — AnalysisCard 썸네일 S3 URL 표시 + 시뮬레이터 4개 결과 패널에 실제 위성영상 추가",
     "QA Health Score 98/100 (A+) — 10 pages, 0 JS errors, mock fallback 정상, 105 tests",
-    "Design Review Round 5 (2026-07-16): FINDING-023 Breaking Strip 11px→12px, FINDING-025 Footer 5건 sub-12px→12px. Design A- / AI Slop A / Performance A"
+    "Design Review Round 5 (2026-07-16): FINDING-023 Breaking Strip 11px→12px, FINDING-025 Footer 5건 sub-12px→12px. Design A- / AI Slop A / Performance A",
+    "모바일 반응형 (2026-07-16): Header 햄버거메뉴, Dashboard 반응형 그리드, Core 슬라이드아웃 사이드바, 4 시뮬레이터 바텀시트, 5 랜딩 CSS 미디어쿼리, Footer/OtherSolutions 패딩 (16파일, +263/-91)"
   ],
   "in_progress": [],
-  "remaining_tasks": [
-    "모바일 반응형 (별도 스프린트)"
-  ],
+  "remaining_tasks": [],
   "blockers": [],
   "test_status": "vitest 105개 테스트 통과 (11 파일). payment 21개 + rate-limit 4개 + api-error 7개 + toss 2개 추가. npm test로 실행.",
   "decisions_made": [
