@@ -58,18 +58,29 @@ export class SeoulAnimationController {
   };
 
   // 관측지점에서 퍼져나가는 레이더 핑. 수신이 살아 있다는 신호.
+  // 전체 주기의 70%에서 퍼짐이 끝나고 나머지 30%는 쉰다.
+  // 리셋 시점에는 투명도가 이미 0이라 크기 점프가 보이지 않는다.
   private ping(t: number, layerId: string, from: number, to: number) {
     const map = this.map!;
     if (!map.getLayer(layerId)) return;
 
-    const CYCLE = 3;
-    const phase = (t % CYCLE) / CYCLE;
-    // 초반에 빠르게 퍼지고 끝에서 잦아든다
-    const eased = 1 - Math.pow(1 - phase, 2);
+    const CYCLE = 3.5;
+    const ACTIVE = 0.7;
+    const raw = (t % CYCLE) / CYCLE;
+
+    if (raw >= ACTIVE) {
+      map.setPaintProperty(layerId, 'circle-radius', from);
+      map.setPaintProperty(layerId, 'circle-opacity', 0);
+      map.setPaintProperty(layerId, 'circle-stroke-opacity', 0);
+      return;
+    }
+
+    const phase = raw / ACTIVE;
+    const eased = 1 - Math.pow(1 - phase, 3);
 
     map.setPaintProperty(layerId, 'circle-radius', from + (to - from) * eased);
     map.setPaintProperty(layerId, 'circle-opacity', 0);
-    map.setPaintProperty(layerId, 'circle-stroke-opacity', 0.55 * (1 - phase));
+    map.setPaintProperty(layerId, 'circle-stroke-opacity', 0.45 * (1 - phase * phase));
   }
 
   // 열섬 레이어가 아주 천천히 밝아졌다 어두워진다.
