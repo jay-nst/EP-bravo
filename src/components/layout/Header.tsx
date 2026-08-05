@@ -11,6 +11,7 @@ const SERVICES = [
   { key: 'northpaper', label: 'Northpaper', desc: '국방 · 안보', color: '#3D5A80', href: '/northpaper' },
   { key: 'nexus', label: 'Nexus', desc: '데이터 마켓', color: '#C8923A', href: '/nexus' },
   { key: 'core', label: 'Core', desc: '위성 지도', color: '#8A8680', href: '/core' },
+  { key: 'seoul', label: '서울 기후', desc: '도시 기후 대시보드', color: '#1bbfa8', href: '/seoul' },
 ] as const;
 
 export default function Header() {

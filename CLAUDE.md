@@ -66,6 +66,45 @@ NetBird VPN 네트워크 접속 설정 완료 (allowedDevOrigins + Windows 방�
 
 공통: EarthMap dynamic import, floating glass panel (var(--panel-bg)), 플랫폼 색상 accent, hover 피드백 버튼, 리드 캡처 CTA, 퍼널 트래킹.
 
+### 서울 기후 대시보드 `/seoul` (2026-08-05)
+
+서울시 기후환경정책과 방문 데모용. Core와 달리 결제/AOI구매 없이 기후 레이어에 집중한 슬림 페이지.
+서울시청 중심 `[126.978, 37.5665]`, zoom 10.6.
+
+| 레이어 | 소스 | 배지 |
+|---|---|---|
+| 초미세먼지 PM2.5 | `/api/layers/seoul-air` — 에어코리아 실시간 39개소 | LIVE |
+| 자치구 대기환경지수 | `/api/layers/seoul-cai` — 서울 열린데이터광장 `RealtimeCityAir` 25자치구 | LIVE |
+| S-DoT 도시센서 기온 | `/api/layers/sdot` — 서울 열린데이터광장 `IotVdata017`, 센서 ~890지점을 자치구로 집계 | LIVE |
+| 폭염·열섬 지표온도 | `SEOUL_HEAT_GRID` 격자 폴리곤 558셀 | DEMO |
+| 자치구 온실가스 | `SEOUL_DISTRICTS` 비례원 25개 | DEMO |
+| 태양광 보급 용량 | 동일 | DEMO |
+
+서울 열린데이터광장 (`SEOUL_OPEN_DATA_KEY`) 사용 시 주의:
+- `IotVdata017`은 **최신순 정렬**이다. 인덱스 1부터가 최근 데이터고 꼬리는 한 달 전이다.
+- 같은 서비스 안에서 **행마다 필드 구성이 다르다.** 조도·자외선만 있는 행과 `AVG_TP`/`AVG_HUM`이 있는 행이 섞여 있다. 필드 존재를 가정하지 말 것.
+- 고장 센서가 `AVG_TP: -40.0`, `AVG_HUM: 100`, 잘린 `"77."` 같은 값을 그대로 올린다. 반드시 범위 검증할 것.
+- `CGG`(자치구)가 로마자다 (`Gangnam-gu`). 좌표는 없고 자치구·행정동만 있어서, 자치구 중심에 집계값을 얹는다. **없는 좌표를 지어내지 않는다.**
+- S-DoT 자치구 평균은 시각에 따라 2~3°C 안에 몰린다. 고정 색 구간을 쓰면 전 자치구가 같은 색이 되므로, `loadLayer`에서 실제 수신 범위로 램프를 다시 설정한다.
+
+서울 경계 강조 (토글 없이 항상 표시):
+- `src/lib/seoul-boundary.ts` — 자치구 25개 경계 + 외곽 마스크. 출처 [southkorea/seoul-maps](https://github.com/southkorea/seoul-maps) 통계청 2013 단순화본, 원본은 `scripts/seoul-municipalities-src.json`
+- `SEOUL_MASK` 은 **세계 전체 외곽 링에 자치구 25개를 구멍으로 뚫은 폴리곤**이다. union 계산 없이 서울만 뚫린다 (자치구가 서울을 빈틈없이 덮으므로). 이걸 어둡게 칠해 주변을 가린다
+- 마스크 fill 은 데이터 레이어보다 **아래**, 경계선(`seoul-boundary-glow` / `seoul-district-line`)은 **위**에 둔다. 안 그러면 열섬 fill 이 경계선을 덮는다
+- 재생성: `node scripts/gen-seoul-boundary.js scripts/seoul-municipalities-src.json src/lib/seoul-boundary.ts`
+
+- `src/lib/seoul-climate-data.ts` — 재생성: `node scripts/gen-seoul-climate-data.js src/lib/seoul-climate-data.ts`
+  - 열섬 격자는 실제 자치구 폴리곤 ray casting 으로 클리핑한다. 근사 원을 쓰면 경계 밖으로 삐져나온다
+  - 페이지의 `CELL_LNG`/`CELL_LAT` 는 스크립트의 `STEP_LNG`/`STEP_LAT` 와 반드시 같아야 셀이 맞물린다
+- `src/lib/seoul-air-stations.ts` — 갱신: `node --env-file=.env.local scripts/fetch-seoul-air-stations.js src/lib/seoul-air-stations.ts`
+- 파일 상단 주석에 측정값/파생값 구분 명시. 데모 데이터를 실측인 것처럼 쓰지 않는다.
+
+주의사항:
+- **열섬은 Mapbox `heatmap`을 쓰지 않는다.** heatmap은 값이 아니라 *점 밀도*에 색을 매핑해서 균일 격자에서는 온도차가 전부 사라진다. 격자 폴리곤 `fill` + `fill-antialias: false`로 그린다.
+- 측정소 좌표는 번들에 내장한다. 에어코리아 측정소 목록 API가 간헐적으로 빈 응답을 주는데, 좌표가 없으면 측정값이 멀쩡해도 레이어가 통째로 빈 화면이 된다.
+- 배경지도 전환 시 `setStyle`이 소스/레이어를 날리고 `onMapReady`가 재호출된다. 소스·레이어는 매번 다시 만들되 클릭 핸들러는 `handlersBoundRef`로 1회만 바인딩한다.
+- 단기예보/AWS기상은 서울 내 지점이 3개/6개뿐이라 이 페이지에서 제외했다.
+
 ### Remaining Work
 
 - T1: Feed API → Supabase 실 데이터 연동 (스키마 설계 선행 필요)

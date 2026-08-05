@@ -38,8 +38,12 @@ async function getStationCoords(serviceKey: string): Promise<Map<string, Station
     }
   }
 
-  stationCache = map;
-  stationCacheTime = Date.now();
+  // 빈 결과는 캐싱하지 않는다. 일시적 실패를 24시간 동안 붙들고 있으면
+  // 이후 모든 요청이 측정소 0개로 응답한다.
+  if (map.size > 0) {
+    stationCache = map;
+    stationCacheTime = Date.now();
+  }
   return map;
 }
 
