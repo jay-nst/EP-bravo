@@ -14,7 +14,7 @@ import { createClient } from '@/lib/supabase/client';
 import { requestTossPayment } from '@/lib/toss/widget';
 import { trackEvent } from '@/lib/analytics';
 import type { PublicLayerId } from '@/types/public-data';
-import { MAP_STYLES } from '@/components/map/EarthMap';
+import { MAP_STYLES, CORE_STYLE_IDS } from '@/components/map/EarthMap';
 import type { MapStyleId } from '@/components/map/EarthMap';
 import { LayerAnimationController, LAYER_ANIMATION_MAP } from '@/lib/layer-animations';
 
@@ -1128,7 +1128,9 @@ export default function CorePage() {
             border: '1px solid var(--border)',
           }}
         >
-          {(Object.entries(MAP_STYLES) as [MapStyleId, typeof MAP_STYLES[MapStyleId]][]).map(([id, style]) => (
+          {CORE_STYLE_IDS.map((id) => {
+            const style = MAP_STYLES[id];
+            return (
             <button
               key={id}
               onClick={() => {
@@ -1146,7 +1148,8 @@ export default function CorePage() {
               <span className="mr-1 hidden sm:inline">{style.icon}</span>
               {style.label}
             </button>
-          ))}
+            );
+          })}
         </div>
 
         {/* Active layers indicator */}

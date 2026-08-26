@@ -10,7 +10,7 @@ import { SEOUL_DISTRICTS, SEOUL_HEAT_GRID } from '@/lib/seoul-climate-data';
 import { SEOUL_DISTRICT_BOUNDARIES, SEOUL_MASK } from '@/lib/seoul-boundary';
 import { SeoulAnimationController } from '@/lib/seoul-animations';
 import type { SeoulAnimationId } from '@/lib/seoul-animations';
-import { MAP_STYLES } from '@/components/map/EarthMap';
+import { MAP_STYLES, DEFAULT_STYLE_IDS } from '@/components/map/EarthMap';
 import type { MapStyleId } from '@/components/map/EarthMap';
 import { fmtNum } from '@/lib/format';
 import { trackEvent } from '@/lib/analytics';
@@ -1076,7 +1076,7 @@ export default function SeoulPage() {
               배경 지도
             </h3>
             <div className="flex gap-1.5">
-              {(Object.keys(MAP_STYLES) as MapStyleId[]).map((id) => (
+              {DEFAULT_STYLE_IDS.map((id) => (
                 <button
                   key={id}
                   onClick={() => setMapStyleId(id)}

@@ -5,7 +5,7 @@ import mapboxgl from 'mapbox-gl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { calculateAreaKm2, calculatePrice, validateAoi } from '@/lib/geo';
 import type { SatelliteType, CatalogItem } from '@/types/database';
-import { applyDarkStyleOverrides } from '@/lib/map-style-overrides';
+import { applyDarkStyleOverrides, applyLightStyleOverrides, applyLocalizedLabels } from '@/lib/map-style-overrides';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
@@ -17,13 +17,18 @@ interface AoiSelection {
   validationError: string | null;
 }
 
-export type MapStyleId = 'satellite' | 'dark' | 'night-nav';
+export type MapStyleId = 'satellite' | 'dark' | 'night-nav' | 'light';
 
 export const MAP_STYLES: Record<MapStyleId, { url: string; label: string; icon: string }> = {
   satellite: { url: 'mapbox://styles/mapbox/satellite-streets-v12', label: '위성', icon: '🛰️' },
   dark: { url: 'mapbox://styles/mapbox/dark-v11', label: '다크', icon: '🌑' },
   'night-nav': { url: 'mapbox://styles/mapbox/navigation-night-v1', label: '야간', icon: '🗺️' },
+  light: { url: 'mapbox://styles/mapbox/light-v11', label: '라이트', icon: '☀️' },
 };
+
+/** Style switcher options. Light is Core-only — other pages stay dark-first. */
+export const CORE_STYLE_IDS: MapStyleId[] = ['satellite', 'dark', 'night-nav', 'light'];
+export const DEFAULT_STYLE_IDS: MapStyleId[] = ['satellite', 'dark', 'night-nav'];
 
 interface EarthMapProps {
   onAoiChange?: (aoi: AoiSelection | null) => void;
@@ -35,6 +40,12 @@ interface EarthMapProps {
   initialStyle?: MapStyleId;
   center?: [number, number];
   zoom?: number;
+}
+
+function applyStyleOverridesFor(styleId: MapStyleId, map: mapboxgl.Map) {
+  applyLocalizedLabels(map);
+  if (styleId === 'dark') applyDarkStyleOverrides(map);
+  else if (styleId === 'light') applyLightStyleOverrides(map);
 }
 
 // Design tokens for map layers
@@ -243,7 +254,7 @@ export default function EarthMap({
 
     map.current.on('load', () => {
       setIsLoaded(true);
-      if (styleId === 'dark') applyDarkStyleOverrides(map.current!);
+      applyStyleOverridesFor(styleId, map.current!);
       onMapReady?.(map.current!);
     });
     if (!hideControls) {
@@ -271,7 +282,7 @@ export default function EarthMap({
     const m = map.current;
     m.setStyle(MAP_STYLES[mapStyleId].url);
     m.once('style.load', () => {
-      if (mapStyleId === 'dark') applyDarkStyleOverrides(m);
+      applyStyleOverridesFor(mapStyleId, m);
       onMapReady?.(m);
     });
   }, [mapStyleId, isLoaded, onMapReady]);

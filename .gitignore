@@ -43,3 +43,6 @@ next-env.d.ts
 .gstack-audit/
 .design-audit/
 .omc/
+
+# generated Mapbox style (rebuild with scripts/gen-mapbox-style.js)
+*.style.json
