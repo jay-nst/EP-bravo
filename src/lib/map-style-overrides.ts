@@ -46,6 +46,26 @@ interface StylePalette {
  */
 const HILLSHADE_MIN_ZOOM = 9;
 
+/**
+ * DEM resolution ceiling. Terrain tiles are the heaviest thing the basemap pulls
+ * — ~80-110 KB each at 512px, plus a PNG decode and an offscreen prerender pass
+ * before they can be drawn. Measured over Seoul they are 31-35% of a fresh
+ * screen's bytes, and the prerender is what stutters while panning.
+ *
+ * Capping at 12 makes z13+ overzoom the z12 tiles instead of fetching new ones
+ * (~12 DEM tiles per screen down to 1-3). Relief is low frequency and drawn at
+ * 0.36 alpha, so the softening does not read at this exaggeration.
+ *
+ * Mirrored in scripts/gen-mapbox-style.js (DEM_MAX_ZOOM) — keep them equal.
+ */
+const DEM_MAX_ZOOM = 12;
+
+/**
+ * Zoom floor for the admin-2 boundary. Its line-opacity ramp is 0 until z5, so
+ * below that it tessellates dashed geometry nobody can see.
+ */
+const ADMIN2_MIN_ZOOM = 5;
+
 const DARK_PALETTE: StylePalette = {
   accent: '#1bbfa8',
   accentDim: '#0f7a6d',
@@ -325,7 +345,7 @@ function addHillshade(map: mapboxgl.Map, palette: StylePalette) {
       type: 'raster-dem',
       url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
       tileSize: 512,
-      maxzoom: 14,
+      maxzoom: DEM_MAX_ZOOM,
     });
   }
 
@@ -363,6 +383,7 @@ function addAdmin2Boundary(map: mapboxgl.Map, palette: StylePalette) {
     type: 'line',
     source: 'composite',
     'source-layer': 'admin',
+    minzoom: ADMIN2_MIN_ZOOM,
     filter: [
       'all',
       ['==', ['get', 'admin_level'], 2],

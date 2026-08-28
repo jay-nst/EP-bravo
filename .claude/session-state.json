@@ -1,8 +1,14 @@
 {
-  "timestamp": "2026-08-05T14:00:00+09:00",
-  "branch": "master",
-  "last_commit": "e74642c feat: content funnel + platform polish",
+  "timestamp": "2026-08-28T16:20:00+09:00",
+  "branch": "feat/core-light-basemap",
+  "last_commit": "cb86f63 feat(core): add light basemap, localized labels, terrain shading",
   "completed_tasks": [
+    "업로드 스타일 로딩 최적화 (2026-08-28) — 디자인 무변경 4건",
+    "  - composite 소스에서 미참조 타일셋 2개 제거 (terrain-v2 / bathymetry-v2): 타일당 z6 -34%, z9 -25%, z12 -12%",
+    "  - projection globe -> mercator + fog 제거 (협력사는 z10+ 사용, 시각 동일)",
+    "  - admin-2-boundary-custom minzoom 5 (line-opacity 램프가 z5까지 0이라 시각 동일)",
+    "  - DEM maxzoom 14 -> 12 (앱 런타임에만 적용됨, 아래 blockers 참조)",
+    "  - naraspace-map/cmt9qf93k005001ss4sdngwwx 에 PATCH 업로드 + 게시본 GET 검증 완료",
     "서울 기후 대시보드 /seoul (서울시 기후환경정책과 방문 데모용, 2026-08-05)",
     "  - 서울 열린데이터광장 실연동: RealtimeCityAir(자치구 CAI 25) + IotVdata017(S-DoT 센서 ~890지점 자치구 집계)",
     "  - 레이어 6종: 대기질·자치구CAI·S-DoT(LIVE 3종) / 열섬 LST·온실가스·태양광(DEMO 3종)",
@@ -48,11 +54,13 @@
     "Analytics 대시보드 (P2, 이벤트 수집 완료, 시각화 필요)"
   ],
   "blockers": [
+    "Mapbox Styles API가 mapbox:// 소스의 maxzoom을 저장하지 않음 (tileSize만 보존). 명시적 tiles 배열은 422 거부 (\"Expected a valid Mapbox tileset url\"). 따라서 호스팅 스타일 소비자는 DEM이 native maxzoom 14 그대로 -> 고줌 절감분(z14에서 DEM 8장->2장)을 못 받음. 협력사가 원하면 sourcedata/metadata 이벤트에서 map.getSource(\"mapbox-dem\").maxzoom=12 재적용 필요 (TileJSON 도착 시 Object.assign이 14로 되돌림 — 브라우저에서 재현 확인)",
     "Supabase 인스턴스 연결 불가 (fetch failed) — /api/events, /api/catalog/search 500. /seoul 은 Supabase 비의존이라 영향 없음",
     "DATA_GO_KR_AWS_KEY 미작동 — AWS 기상 레이어가 목업으로 폴백"
   ],
   "test_status": "vitest 105개 테스트 통과 (11 파일), typecheck 통과",
   "decisions_made": [
+    "DEM maxzoom 12 채택 — 실제 팔레트(shadow alpha 0.36, highlight 투명)에서 서울/설악산 z14 육안 비교 결과 차이 미미. 단 기본 hillshade 페인트에서는 오버줌 음영이 뚜렷하게 뭉툭해지므로 팔레트를 바꾸면 재검토할 것",
     "서울 데모는 Core 복제가 아닌 기후 전용 슬림 페이지로 구성 (결제/AOI구매 제외)",
     "단기예보·AWS기상 레이어는 서울 내 지점이 3개/6개뿐이라 서울 페이지에서 제외",
     "열섬은 Mapbox heatmap 대신 격자 폴리곤 fill — heatmap은 값이 아닌 점 밀도에 색을 매핑해 균일격자에서 온도차가 사라짐",

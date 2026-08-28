@@ -22,6 +22,45 @@ const BASE_STYLE = 'mapbox/light-v11';
 const DEM_SOURCE_ID = 'mapbox-dem';
 const HILLSHADE_MIN_ZOOM = 9;
 
+/**
+ * DEM resolution ceiling. Terrain tiles are the single heaviest thing this style
+ * pulls — ~80-110 KB each at 512px, and every one costs a PNG decode plus an
+ * offscreen prerender pass before it can be drawn. Measured over Seoul they are
+ * 31-35% of a fresh screen's bytes.
+ *
+ * Capping at 12 means z13+ reuses (overzooms) z12 tiles instead of requesting new
+ * ones. Measured at z14 over Seoul: 8 DEM tiles per screen down to 2. Against the
+ * light palette (shadow at 0.36 alpha, transparent highlight) the coarser relief
+ * is barely distinguishable — verified side by side over Seoul and Seoraksan.
+ *
+ * !! THE MAPBOX STYLES API DOES NOT PERSIST THIS. !!
+ * Uploading strips `maxzoom` from any source declared with a `mapbox://` url —
+ * only `tileSize` survives — so a consumer of the hosted style gets the tileset's
+ * native maxzoom (14). Declaring the source with an explicit `tiles` array would
+ * keep it, but the API rejects that: "sources[N].url: Expected a valid Mapbox
+ * tileset url". So this constant only takes effect where the source is built at
+ * runtime, i.e. src/lib/map-style-overrides.ts. It is kept here so both files
+ * describe the same design.
+ *
+ * A consumer of the hosted style that wants the cap has to set it themselves,
+ * and it must be re-applied after the source metadata lands — loading the
+ * TileJSON runs `Object.assign(source, tileJSON)`, which puts maxzoom back to 14:
+ *
+ *   map.on('sourcedata', e => {
+ *     if (e.sourceId === 'mapbox-dem' && e.sourceDataType === 'metadata') {
+ *       const s = map.getSource('mapbox-dem');
+ *       if (s && s.maxzoom !== 12) s.maxzoom = 12;
+ *     }
+ *   });
+ */
+const DEM_MAX_ZOOM = 12;
+
+/**
+ * Zoom floor for the admin-2 boundary. Its line-opacity ramp is 0 until z5, so
+ * anything below that tessellates dashed geometry nobody can see.
+ */
+const ADMIN2_MIN_ZOOM = 5;
+
 const PALETTE = {
   accent: '#57a49f',
   accentDim: '#68a5a2',
@@ -197,6 +236,7 @@ function admin2Layer(compositeSourceId) {
     type: 'line',
     source: compositeSourceId,
     'source-layer': 'admin',
+    minzoom: ADMIN2_MIN_ZOOM,
     filter: [
       'all',
       ['==', ['get', 'admin_level'], 2],
@@ -210,6 +250,58 @@ function admin2Layer(compositeSourceId) {
       'line-dasharray': [4, 2],
     },
   };
+}
+
+/**
+ * Drop tilesets from a bundled `mapbox://a,b,c` source that no layer reads from.
+ *
+ * light-v11 bundles mapbox-streets-v8 with mapbox-terrain-v2 and
+ * mapbox-bathymetry-v2, but none of its layers reference the terrain
+ * (contour/hillshade/landcover) or bathymetry (depth) source-layers — the base
+ * style never draws them, and neither do the layers added here. Every tile still
+ * ships that data: measured over Seoul it is +34% bytes at z6, +25% at z9, +12%
+ * at z12, all of it downloaded, parsed by the worker, and thrown away.
+ *
+ * Membership is read from each tileset's TileJSON rather than hardcoded, so this
+ * stays correct if Mapbox re-bundles the base style or a future layer here starts
+ * using contour data.
+ */
+async function pruneComposite(style, sourceId, token) {
+  const source = style.sources?.[sourceId];
+  const url = source?.url || '';
+  if (!url.startsWith('mapbox://') || !url.includes(',')) return null;
+
+  const used = new Set(
+    style.layers
+      .filter(l => l.source === sourceId && l['source-layer'])
+      .map(l => l['source-layer'])
+  );
+
+  const ids = url.slice('mapbox://'.length).split(',');
+  const kept = [];
+  const dropped = [];
+
+  for (const id of ids) {
+    const res = await fetch(
+      `https://api.mapbox.com/v4/${encodeURIComponent(id)}.json?access_token=${token}`
+    );
+    if (!res.ok) {
+      // Unknown membership — keeping it is the safe failure, a missing
+      // source-layer renders as blank geometry with no error.
+      console.warn(`  note: could not read TileJSON for ${id} (${res.status}), keeping it`);
+      kept.push(id);
+      continue;
+    }
+    const tj = await res.json();
+    const provides = (tj.vector_layers || []).map(v => v.id);
+    (provides.some(l => used.has(l)) ? kept : dropped).push(id);
+  }
+
+  // Never prune down to nothing, whatever the TileJSON said.
+  if (!kept.length || !dropped.length) return null;
+
+  source.url = `mapbox://${kept.join(',')}`;
+  return { kept, dropped };
 }
 
 /** Index of the first road/tunnel layer — hillshade goes above land, below roads. */
@@ -263,7 +355,7 @@ async function main() {
     type: 'raster-dem',
     url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
     tileSize: 512,
-    maxzoom: 14,
+    maxzoom: DEM_MAX_ZOOM,
   };
 
   style.layers.splice(insertIndexForHillshade(style.layers), 0, hillshadeLayer());
@@ -274,6 +366,16 @@ async function main() {
     0,
     admin2Layer(compositeSourceId)
   );
+
+  // Prune AFTER the custom layers are in place, so their source-layers count as used.
+  const pruned = await pruneComposite(style, compositeSourceId, token);
+
+  // light-v11 ships projection: globe. gl-js already falls back to mercator above
+  // roughly z6, so for the city/regional zooms this style is consumed at, globe
+  // only costs the wider tile coverage and the atmosphere pass on first load
+  // without ever being seen. Pin mercator and drop the fog, which is globe-only.
+  style.projection = { name: 'mercator' };
+  delete style.fog;
 
   // Strip read-only/account-scoped fields — the upload endpoint assigns its own.
   for (const k of ['id', 'owner', 'created', 'modified', 'visibility', 'protected', 'draft']) {
@@ -287,7 +389,10 @@ async function main() {
   console.log(`  base:        ${BASE_STYLE}`);
   console.log(`  layers:      ${style.layers.length}`);
   console.log(`  label layers: ${labelCount} (text-field: name_en, fallback name)`);
-  console.log(`  vector source: ${compositeSourceId}`);
+  console.log(`  vector source: ${compositeSourceId} -> ${style.sources[compositeSourceId].url}`);
+  if (pruned) console.log(`  pruned tilesets: ${pruned.dropped.join(', ')} (unreferenced)`);
+  console.log(`  dem maxzoom: ${DEM_MAX_ZOOM}`);
+  console.log(`  projection:  ${style.projection.name}`);
 }
 
 main().catch(err => {
