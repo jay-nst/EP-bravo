@@ -12,6 +12,10 @@
  *   MAPBOX_USER=<account> MAPBOX_SECRET=sk.... node scripts/upload-mapbox-style.js <styleId>
  *
  * The secret token is read from the environment and never written to disk or logged.
+ *
+ * After publishing, this also syncs the Studio draft (see syncDraft). Without that,
+ * opening the style in Mapbox Studio shows the previous design and saving there
+ * reverts this upload.
  */
 
 const fs = require('fs');
@@ -86,6 +90,8 @@ async function main() {
     return;
   }
 
+  await syncDraft(base, json.id, secret, body);
+
   console.log('\nDone.');
   console.log(`  style id:  ${json.id}`);
   console.log(`  style URL: mapbox://styles/${user}/${json.id}`);
@@ -93,6 +99,49 @@ async function main() {
   console.log(`  new mapboxgl.Map({ style: 'mapbox://styles/${user}/${json.id}' })`);
   console.log('\nTo update later, pass the id back:');
   console.log(`  node scripts/upload-mapbox-style.js ${json.id}`);
+}
+
+/**
+ * Point the Studio draft at what we just published.
+ *
+ * A style has two versions: the published one the Styles API writes, and a draft
+ * that Mapbox Studio edits. They are independent. Publishing alone leaves the
+ * draft at whatever it held before — so opening the style in Studio shows the OLD
+ * design, and saving there republishes it, silently reverting this upload.
+ * (Observed: a v1 draft overwrote a v3 publish 12 minutes after Studio was opened.)
+ *
+ * PATCH the draft to match. If that is rejected, fall back to DELETE, which resets
+ * the draft to the published version. Never fail the run over this — the publish
+ * already succeeded; a stale draft is a warning, not a broken upload.
+ */
+async function syncDraft(base, styleId, secret, body) {
+  const url = `${base}/${encodeURIComponent(styleId)}/draft?access_token=${secret}`;
+  const redact = s => String(s).replace(/sk\.[A-Za-z0-9._-]+/g, 'sk.<redacted>');
+
+  try {
+    const res = await fetch(url, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+    });
+    if (res.ok) {
+      console.log('  draft:     synced to this version');
+      return;
+    }
+
+    const del = await fetch(url, { method: 'DELETE' });
+    if (del.ok) {
+      console.log('  draft:     reset to the published version');
+      return;
+    }
+
+    console.warn(`  draft:     NOT synced (PATCH ${res.status}, DELETE ${del.status})`);
+    console.warn('             Opening this style in Mapbox Studio and saving will revert it.');
+    console.warn('             Verify with: GET /styles/v1/{user}/{id}/draft');
+  } catch (err) {
+    console.warn('  draft:     NOT synced -', redact(err.message));
+    console.warn('             Opening this style in Mapbox Studio and saving will revert it.');
+  }
 }
 
 main().catch(err => {
