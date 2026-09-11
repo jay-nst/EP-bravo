@@ -6,8 +6,11 @@ import type mapboxgl from 'mapbox-gl';
 import type { ExpressionSpecification } from 'mapbox-gl';
 import SeoulLayerPanel from '@/components/seoul/SeoulLayerPanel';
 import type { SeoulLayer, SeoulLayerId, DataSourceKind } from '@/components/seoul/SeoulLayerPanel';
+import SeoulSourcePanel from '@/components/seoul/SeoulSourcePanel';
+import { SEOUL_SOURCE_PROVIDERS } from '@/lib/seoul-data-sources';
 import { SEOUL_DISTRICTS, SEOUL_HEAT_GRID } from '@/lib/seoul-climate-data';
 import { SEOUL_DISTRICT_BOUNDARIES, SEOUL_MASK } from '@/lib/seoul-boundary';
+import { buildHeatCrowdFC } from '@/lib/seoul-heat-crowd';
 import { SeoulAnimationController } from '@/lib/seoul-animations';
 import type { SeoulAnimationId } from '@/lib/seoul-animations';
 import { MAP_STYLES, DEFAULT_STYLE_IDS } from '@/components/map/EarthMap';
@@ -64,7 +67,7 @@ const INITIAL_LAYERS: SeoulLayer[] = [
   {
     id: 'cai',
     label: '자치구 대기환경지수',
-    sublabel: '서울시 통합대기환경지수 CAI',
+    sublabel: '서울 열린데이터광장 · CAI',
     color: '#4CAF50',
     enabled: false,
     featureCount: 0,
@@ -84,12 +87,23 @@ const INITIAL_LAYERS: SeoulLayer[] = [
   {
     id: 'heat',
     label: '폭염·열섬 지표온도',
-    sublabel: '위성 열적외선 LST',
+    // 실측 위성 LST 가 아니라 자체 산출 모델이다. 사블라벨에도 그대로 쓴다.
+    sublabel: '지표온도 모델 · 추정 격자',
     color: '#FF6D00',
     enabled: false,
     featureCount: 0,
     source: 'demo',
     group: '기후위기',
+  },
+  {
+    id: 'congestion',
+    label: '장소 실시간 혼잡도',
+    sublabel: '서울 열린데이터광장 · 주요 장소 119곳',
+    color: '#C8923A',
+    enabled: false,
+    featureCount: 0,
+    source: 'loading',
+    group: '도시활동',
   },
   {
     id: 'satellite',
@@ -102,9 +116,20 @@ const INITIAL_LAYERS: SeoulLayer[] = [
     group: '위성·분석',
   },
   {
+    id: 'heat-crowd',
+    label: '폭염 × 인구밀집 교차',
+    // 폭염 쪽은 실측이 아니라 추정 격자다. 사블라벨에 그대로 드러낸다.
+    sublabel: '추정 지표온도 +2.5°C ∩ 실시간 혼잡',
+    color: '#C45C4A',
+    enabled: false,
+    featureCount: 0,
+    source: 'analysis',
+    group: '위성·분석',
+  },
+  {
     id: 'vulnerable',
     label: '폭염 취약지 추출',
-    sublabel: '열적외선 LST 기반 자동 판정',
+    sublabel: '지표온도 격자 +2.5°C 이상',
     color: '#C45C4A',
     enabled: false,
     featureCount: 0,
@@ -114,7 +139,7 @@ const INITIAL_LAYERS: SeoulLayer[] = [
   {
     id: 'ghg',
     label: '자치구 온실가스 배출',
-    sublabel: '천tCO₂eq / 년',
+    sublabel: '공개 통계 기반 추정 · 천tCO₂eq/년',
     color: '#C45C4A',
     enabled: false,
     featureCount: 0,
@@ -124,7 +149,7 @@ const INITIAL_LAYERS: SeoulLayer[] = [
   {
     id: 'solar',
     label: '태양광 보급 용량',
-    sublabel: 'kW / 자치구',
+    sublabel: '공개 통계 기반 추정 · kW/자치구',
     color: '#C8923A',
     enabled: false,
     featureCount: 0,
@@ -145,6 +170,18 @@ const LAYER_IDS: Record<SeoulLayerId, { source: string; layers: string[] }> = {
   sdot: {
     source: 'seoul-sdot',
     layers: ['seoul-sdot-circle', 'seoul-sdot-label'],
+  },
+  congestion: {
+    source: 'seoul-congestion',
+    layers: ['seoul-congestion-circle', 'seoul-congestion-name'],
+  },
+  'heat-crowd': {
+    source: 'seoul-heat-crowd',
+    layers: [
+      'seoul-heat-crowd-halo',
+      'seoul-heat-crowd-circle',
+      'seoul-heat-crowd-name',
+    ],
   },
   heat: {
     source: 'seoul-heat',
@@ -169,13 +206,19 @@ const LAYER_IDS: Record<SeoulLayerId, { source: string; layers: string[] }> = {
   },
 };
 
-const API_LAYERS: SeoulLayerId[] = ['air-quality', 'cai', 'sdot'];
+const API_LAYERS: SeoulLayerId[] = ['air-quality', 'cai', 'sdot', 'congestion'];
 
 const ENDPOINTS: Partial<Record<SeoulLayerId, string>> = {
   // 서울 전용 라우트. 좌표를 번들에서 읽어 측정소 목록 API 실패에 영향받지 않는다.
   'air-quality': '/api/layers/seoul-air',
   cai: '/api/layers/seoul-cai',
   sdot: '/api/layers/sdot',
+  congestion: '/api/layers/citydata-ppltn',
+};
+
+// 실데이터에서 파생되는 분석 레이어. 원본이 갱신되면 같이 무효화해야 한다.
+const DERIVED_LAYERS: Partial<Record<SeoulLayerId, SeoulLayerId>> = {
+  'heat-crowd': 'congestion',
 };
 
 // 실데이터 자동 갱신 주기 (초). 상황판이라 화면을 켜둔 채로 값이 갱신돼야 한다.
@@ -193,6 +236,16 @@ const CAI_COLORS: Record<string, string> = {
   나쁨: '#FF9800',
   매우나쁨: '#F44336',
 };
+
+// 혼잡도 4단계. DESIGN.md 시맨틱 토큰(--color-predict/--success/--warning/--error)을 쓴다.
+// CAI 가 쓰는 Material 원색과 색계열을 갈라놔야 두 레이어를 같이 켰을 때 구분된다.
+const CONGEST_COLORS = ['#4A9EC4', '#4A9E6B', '#C8923A', '#C45C4A'] as const;
+
+// 원본 AREA_CONGEST_LVL 순서. rank 는 API 라우트가 이미 0~3 으로 매겨서 보낸다.
+const CONGEST_LABELS = ['여유', '보통', '약간 붐빔', '붐빔'] as const;
+
+// 교차 분석 기준: 지표온도 이상 +2.5°C 격자 안에 있으면서 '약간 붐빔' 이상인 장소.
+const CROWD_RANK_MIN = 2;
 
 function inSeoul(lng: number, lat: number): boolean {
   return (
@@ -268,6 +321,16 @@ function buildVulnerableFC(): GeoJSON.FeatureCollection {
   };
 }
 
+// 폭염 × 인구밀집 교차. 판정 기준은 lib 에 넘겨서 로직을 테스트 가능하게 뺐다.
+function buildHeatCrowd(congestion: GeoJSON.FeatureCollection): GeoJSON.FeatureCollection {
+  return buildHeatCrowdFC(congestion, {
+    cellLng: CELL_LNG,
+    cellLat: CELL_LAT,
+    anomalyMin: VULNERABLE_ANOMALY,
+    rankMin: CROWD_RANK_MIN,
+  });
+}
+
 function buildDistrictFC(metric: 'ghg' | 'solar'): GeoJSON.FeatureCollection {
   return {
     type: 'FeatureCollection',
@@ -294,6 +357,9 @@ export default function SeoulPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [liveAvgPm25, setLiveAvgPm25] = useState<number | null>(null);
   const [liveAvgTemp, setLiveAvgTemp] = useState<number | null>(null);
+  // '약간 붐빔' 이상인 장소 수 / 폭염 격자와 겹친 장소 수
+  const [crowdedCount, setCrowdedCount] = useState<number | null>(null);
+  const [heatCrowdCount, setHeatCrowdCount] = useState<number | null>(null);
 
   const [lastUpdated, setLastUpdated] = useState('');
   const [countdown, setCountdown] = useState(REFRESH_SEC);
@@ -305,6 +371,11 @@ export default function SeoulPage() {
   // 배경지도를 바꾸면 setStyle이 소스/레이어를 날리고 onMapReady가 다시 불린다.
   // 소스·레이어는 매번 다시 만들어야 하지만 클릭 핸들러는 맵 인스턴스에 남으므로 1회만 바인딩한다.
   const handlersBoundRef = useRef(false);
+  // 분석 레이어(heat-crowd)가 원본 레이어를 먼저 받아와야 할 때 쓴다.
+  // loadLayer 안에서 loadLayer 를 부르므로 순환 의존을 피해 ref 로 우회한다.
+  const loadLayerRef = useRef<((map: mapboxgl.Map, id: SeoulLayerId) => Promise<void>) | null>(
+    null,
+  );
 
   const seoulGhgTotal = SEOUL_DISTRICTS.reduce((sum, d) => sum + d.ghgTotal, 0);
   const seoulSolarTotal = SEOUL_DISTRICTS.reduce((sum, d) => sum + d.solarCapacity, 0);
@@ -628,6 +699,115 @@ export default function SeoulPage() {
       },
     });
 
+    // ---- 장소 실시간 혼잡도 ------------------------------------------------
+    // 자치구 집계와 달리 장소 단위라 지점이 119개다. 반지름은 생활인구 규모,
+    // 색은 혼잡 단계. 두 정보를 한 심볼에 담는다.
+    map.addLayer({
+      id: 'seoul-congestion-circle',
+      type: 'circle',
+      source: LAYER_IDS.congestion.source,
+      layout: { visibility: 'none' },
+      paint: {
+        // 생활인구는 장소별로 자릿수가 달라(수천~수십만) 선형 보간이면
+        // 작은 장소가 점으로 사라진다. 제곱근 스케일로 눌러 편차를 줄인다.
+        'circle-radius': [
+          'interpolate', ['linear'], ['sqrt', ['get', 'ppl']],
+          50, 5,
+          200, 11,
+          450, 20,
+          700, 30,
+        ],
+        'circle-color': [
+          'match', ['get', 'rank'],
+          0, CONGEST_COLORS[0],
+          1, CONGEST_COLORS[1],
+          2, CONGEST_COLORS[2],
+          3, CONGEST_COLORS[3],
+          CONGEST_COLORS[1],
+        ],
+        'circle-opacity': 0.42,
+        'circle-stroke-width': 1.4,
+        'circle-stroke-color': [
+          'match', ['get', 'rank'],
+          0, CONGEST_COLORS[0],
+          1, CONGEST_COLORS[1],
+          2, CONGEST_COLORS[2],
+          3, CONGEST_COLORS[3],
+          CONGEST_COLORS[1],
+        ],
+      },
+    });
+
+    map.addLayer({
+      id: 'seoul-congestion-name',
+      type: 'symbol',
+      source: LAYER_IDS.congestion.source,
+      layout: {
+        visibility: 'none',
+        'text-field': ['get', 'name'],
+        'text-size': 10,
+        'text-offset': [0, 1.4],
+        'text-anchor': 'top',
+        // 119개 라벨이 전부 뜨면 지도가 글자로 덮인다. 겹치면 숨긴다.
+        'text-allow-overlap': false,
+      },
+      minzoom: 11,
+      paint: {
+        'text-color': '#E8E4DF',
+        'text-halo-color': 'rgba(14,14,16,0.85)',
+        'text-halo-width': 1,
+      },
+    });
+
+    // ---- 폭염 × 인구밀집 교차 (분석 결과) ----------------------------------
+    // 결과 지점이 몇 개뿐이라 눈에 걸리게 이중 링으로 강조한다.
+    map.addLayer({
+      id: 'seoul-heat-crowd-halo',
+      type: 'circle',
+      source: LAYER_IDS['heat-crowd'].source,
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 20, 14, 38],
+        'circle-color': '#C45C4A',
+        'circle-opacity': 0.12,
+        'circle-stroke-width': 1,
+        'circle-stroke-color': '#FF7043',
+        'circle-stroke-opacity': 0.45,
+      },
+    });
+
+    map.addLayer({
+      id: 'seoul-heat-crowd-circle',
+      type: 'circle',
+      source: LAYER_IDS['heat-crowd'].source,
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 7, 14, 13],
+        'circle-color': '#C45C4A',
+        'circle-opacity': 0.85,
+        'circle-stroke-width': 1.5,
+        'circle-stroke-color': '#FF7043',
+      },
+    });
+
+    map.addLayer({
+      id: 'seoul-heat-crowd-name',
+      type: 'symbol',
+      source: LAYER_IDS['heat-crowd'].source,
+      layout: {
+        visibility: 'none',
+        'text-field': ['get', 'name'],
+        'text-size': 11,
+        'text-offset': [0, 1.8],
+        'text-anchor': 'top',
+      },
+      paint: {
+        'text-color': '#E8E4DF',
+        'text-halo-color': 'rgba(14,14,16,0.9)',
+        'text-halo-width': 1.2,
+      },
+    });
+
     // ---- 자치구 온실가스 --------------------------------------------------
     map.addLayer({
       id: 'seoul-ghg-circle',
@@ -760,6 +940,31 @@ export default function SeoulPage() {
           </div>`,
       },
       {
+        layer: 'seoul-congestion-circle',
+        render: (p) => `
+          <div style="font-weight:600;margin-bottom:6px">${String(p.name ?? '')}</div>
+          <div>혼잡도 <b>${String(p.level ?? '-')}</b></div>
+          <div>실시간 인구 <b>${fmtNum(Number(p.pplMin ?? 0))}~${fmtNum(Number(p.pplMax ?? 0))}</b> 명</div>
+          ${p.nonResidentRate !== null && p.nonResidentRate !== undefined
+            ? `<div>비거주자 <b>${String(p.nonResidentRate)}</b> %</div>`
+            : ''}
+          <div style="opacity:.8;margin-top:6px;font-size:12px;line-height:1.5">${String(p.message ?? '')}</div>
+          <div style="opacity:.6;margin-top:6px;font-size:11px">
+            ${String(p.dataTime ?? '')}${p.replaced ? ' · 원본이 대체값으로 제공한 구간' : ''}
+          </div>`,
+      },
+      {
+        layer: 'seoul-heat-crowd-circle',
+        render: (p) => `
+          <div style="font-weight:600;margin-bottom:6px">${String(p.name ?? '')}</div>
+          <div>혼잡도 <b>${String(p.level ?? '-')}</b> · 인구 <b>${fmtNum(Number(p.ppl ?? 0))}</b> 명</div>
+          <div>지표온도 <b>${String(p.lst ?? '-')}</b> °C (서울 평균 +${String(p.anomaly ?? '-')})</div>
+          <div style="opacity:.6;margin-top:6px;font-size:11px">
+            혼잡도는 실시간 실측, 지표온도는 추정 격자다. 두 조건을 함께 만족한 지점.<br/>
+            ${String(p.dataTime ?? '')}
+          </div>`,
+      },
+      {
         layer: 'seoul-ghg-circle',
         render: (p) => `
           <div style="font-weight:600;margin-bottom:6px">${String(p.name ?? '')}</div>
@@ -846,6 +1051,15 @@ export default function SeoulPage() {
       } else if (id === 'vulnerable') {
         fc = buildVulnerableFC();
         kind = 'analysis';
+      } else if (id === 'heat-crowd') {
+        // 실시간 혼잡도에서 파생된다. 원본이 아직 없으면 먼저 받아온다.
+        const base = DERIVED_LAYERS['heat-crowd'];
+        if (base && !cacheRef.current[base]) {
+          await loadLayerRef.current?.(map, base);
+        }
+        const congestion = base ? cacheRef.current[base] : undefined;
+        fc = buildHeatCrowd(congestion ?? EMPTY_FC);
+        kind = 'analysis';
       } else if (id === 'ghg') {
         fc = buildDistrictFC('ghg');
       } else if (id === 'solar') {
@@ -869,6 +1083,22 @@ export default function SeoulPage() {
         if (vals.length > 0) {
           setLiveAvgPm25(Math.round(vals.reduce((a, b) => a + b, 0) / vals.length));
         }
+      }
+      if (id === 'congestion') {
+        setCrowdedCount(
+          fc.features.filter((f) => Number(f.properties?.rank) >= CROWD_RANK_MIN).length,
+        );
+        // 원본이 갱신됐으므로 여기서 파생된 분석 레이어는 다시 계산해야 한다.
+        delete cacheRef.current['heat-crowd'];
+        if (enabledRef.current['heat-crowd']) {
+          void loadLayerRef.current?.(map, 'heat-crowd');
+        } else {
+          // 꺼져 있어도 헤더 통계는 최신으로 유지한다.
+          setHeatCrowdCount(buildHeatCrowd(fc).features.length);
+        }
+      }
+      if (id === 'heat-crowd') {
+        setHeatCrowdCount(fc.features.length);
       }
       if (id === 'sdot' && fc.features.length > 0) {
         const vals = fc.features
@@ -901,6 +1131,11 @@ export default function SeoulPage() {
     },
     [setLayerSource],
   );
+
+  // 분석 레이어가 원본 레이어를 먼저 받아올 때 쓴다 (loadLayer 순환 의존 우회).
+  useEffect(() => {
+    loadLayerRef.current = loadLayer;
+  }, [loadLayer]);
 
   const handleMapReady = useCallback(
     (map: mapboxgl.Map) => {
@@ -1000,6 +1235,9 @@ export default function SeoulPage() {
   }, [refreshLive]);
 
   const activeCount = layers.filter((l) => l.enabled).length;
+  const showCongestLegend = layers.some(
+    (l) => l.enabled && (l.id === 'congestion' || l.id === 'heat-crowd'),
+  );
 
   return (
     <div className="relative w-full" style={{ height: 'calc(100vh - var(--header-height))' }}>
@@ -1039,6 +1277,17 @@ export default function SeoulPage() {
           <Stat label="평균 PM2.5" value={liveAvgPm25 !== null ? `${liveAvgPm25}` : '—'} unit="㎍/㎥" />
           <Stat label="S-DoT 기온" value={liveAvgTemp !== null ? `${liveAvgTemp}` : '—'} unit="°C" />
           <Stat label="폭염취약" value={fmtNum(Math.round(VULNERABLE_AREA_KM2))} unit="km²" />
+          {/* 신규 실시간 지표. 좁은 화면에서 기존 5개를 밀어내지 않도록 lg 이상에서만 노출한다. */}
+          <div className="hidden lg:block">
+            <Stat label="혼잡 장소" value={crowdedCount !== null ? `${crowdedCount}` : '—'} unit="곳" />
+          </div>
+          <div className="hidden lg:block">
+            <Stat
+              label="폭염×혼잡"
+              value={heatCrowdCount !== null ? `${heatCrowdCount}` : '—'}
+              unit="곳"
+            />
+          </div>
           <Stat label="온실가스" value={fmtNum(Math.round(seoulGhgTotal))} unit="천tCO₂eq" />
           <Stat label="태양광" value={fmtNum(Math.round(seoulSolarTotal))} unit="kW" />
         </div>
@@ -1093,6 +1342,34 @@ export default function SeoulPage() {
             </div>
           </div>
 
+          {/* 혼잡도는 4색 램프라 범례 없이는 읽히지 않는다. 해당 레이어를 켤 때만 띄운다. */}
+          {showCongestLegend && (
+            <div className="pt-4" style={{ borderTop: '1px solid var(--border)' }}>
+              <h3
+                className="text-xs font-mono tracking-wider uppercase mb-2"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                혼잡도
+              </h3>
+              <div className="flex items-center gap-2">
+                {CONGEST_LABELS.map((label, i) => (
+                  <div key={label} className="flex items-center gap-1.5">
+                    <span
+                      className="w-2.5 h-2.5 rounded-sm flex-shrink-0"
+                      style={{ background: CONGEST_COLORS[i] }}
+                    />
+                    <span className="text-xs whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs mt-2 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                원의 크기는 실시간 생활인구 규모입니다.
+              </p>
+            </div>
+          )}
+
           <div className="text-xs leading-relaxed space-y-1" style={{ color: 'var(--text-muted)' }}>
             <p>
               <span style={{ color: '#1bbfa8' }}>LIVE</span> 공공 API 실시간 수신 ·{' '}
@@ -1104,8 +1381,23 @@ export default function SeoulPage() {
             </p>
             <p>실시간 레이어는 {REFRESH_SEC}초마다 자동 갱신됩니다.</p>
           </div>
+
+          {/* 레이어별 기관·데이터셋·산출 방식 전체 목록 */}
+          <SeoulSourcePanel />
         </div>
       </aside>
+
+      {/* 지도 하단 크레딧. EarthMap 이 hideControls 로 Mapbox 기본 attribution 을
+          끄기 때문에, Mapbox·OpenStreetMap 표기도 이 줄이 대신 진다. */}
+      <div
+        className="absolute bottom-0 right-0 z-10 max-w-full md:max-w-[60%] px-3 py-1.5 text-xs font-mono leading-relaxed text-right pointer-events-none"
+        style={{
+          color: 'var(--text-muted)',
+          background: 'linear-gradient(to top, rgba(14,14,16,0.85), rgba(14,14,16,0))',
+        }}
+      >
+        출처: {SEOUL_SOURCE_PROVIDERS.join(' · ')} · 상세는 좌측 패널
+      </div>
 
       {sidebarOpen && (
         <button

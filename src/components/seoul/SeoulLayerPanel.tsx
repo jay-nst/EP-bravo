@@ -5,6 +5,8 @@ export type SeoulLayerId =
   | 'cai'
   | 'sdot'
   | 'heat'
+  | 'congestion'
+  | 'heat-crowd'
   | 'satellite'
   | 'vulnerable'
   | 'ghg'
@@ -20,10 +22,16 @@ export interface SeoulLayer {
   enabled: boolean;
   featureCount: number;
   source: DataSourceKind;
-  group: '대기·기상' | '기후위기' | '위성·분석' | '탄소·에너지';
+  group: '대기·기상' | '기후위기' | '도시활동' | '위성·분석' | '탄소·에너지';
 }
 
-const GROUP_ORDER: SeoulLayer['group'][] = ['대기·기상', '기후위기', '위성·분석', '탄소·에너지'];
+const GROUP_ORDER: SeoulLayer['group'][] = [
+  '대기·기상',
+  '기후위기',
+  '도시활동',
+  '위성·분석',
+  '탄소·에너지',
+];
 
 const SOURCE_BADGE: Record<DataSourceKind, { label: string; color: string }> = {
   live: { label: 'LIVE', color: '#1bbfa8' },
