@@ -46,3 +46,6 @@ next-env.d.ts
 
 # generated Mapbox style (rebuild with scripts/gen-mapbox-style.js)
 *.style.json
+
+# 공공데이터 수집 원본 캐시 (재생성: scripts/fetch-*.js)
+scripts/.cache/

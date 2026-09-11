@@ -12,6 +12,7 @@ const SERVICES = [
   { key: 'nexus', label: 'Nexus', desc: '데이터 마켓', color: '#C8923A', href: '/nexus' },
   { key: 'core', label: 'Core', desc: '위성 지도', color: '#8A8680', href: '/core' },
   { key: 'seoul', label: '서울 기후', desc: '도시 기후 대시보드', color: '#1bbfa8', href: '/seoul' },
+  { key: 'gyeonggi', label: '경기 공원', desc: '공원 접근성 지도', color: '#4A9E6B', href: '/gyeonggi' },
 ] as const;
 
 export default function Header() {

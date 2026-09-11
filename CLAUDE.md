@@ -105,6 +105,40 @@ NetBird VPN 네트워크 접속 설정 완료 (allowedDevOrigins + Windows 방�
 - 배경지도 전환 시 `setStyle`이 소스/레이어를 날리고 `onMapReady`가 재호출된다. 소스·레이어는 매번 다시 만들되 클릭 핸들러는 `handlersBoundRef`로 1회만 바인딩한다.
 - 단기예보/AWS기상은 서울 내 지점이 3개/6개뿐이라 이 페이지에서 제외했다.
 
+### 경기 공원 접근성 지도 `/gyeonggi` (2026-09-11)
+
+경기기후플랫폼(climate.gg.go.kr) 도시공원 평가 데이터 기반. 공원별 서비스 영향을
+등고선으로 중첩해 도 전역의 공원 접근성을 보여준다. `/seoul` 과 같은 구조의 슬림 페이지.
+경기도 중심 `[127.18, 37.42]`, zoom 8.4. 평가 기준일 2024-06-30 고정 — 자동 갱신 없음.
+
+| 레이어 | 소스 | 배지 |
+|---|---|---|
+| 공원 접근성 등고선 | `public/data/gyeonggi/access-contours.json` — 자체 모델 등고선 5밴드 | 분석 |
+| 공원 현황 (폴리곤) | `/api/layers/gyeonggi-park-tiles` — WMS 래스터 프록시, 클릭 시 `/api/layers/gyeonggi-park-info` WFS 식별 | LIVE |
+| 읍면동 공원 서비스 평가 | `public/data/gyeonggi/emd-park-score.json` — choropleth 600개 | 통계 |
+| 위성영상 | Mapbox Satellite | 영상 |
+
+접근성 모델 (정본: `src/lib/park-accessibility.ts`, 테스트 있음):
+- 공원 유형·면적 → 기본 서비스 반경 (도시공원법 유치거리 준용: 어린이공원 250m, 근린 500m~2.5km)
+- 소속 읍면동 종합평가 점수(park_snths_scr 0~100)로 반경 가중 ×0.6~1.4 (좋으면 넓게)
+- 면적 제곱근 강도 × Epanechnikov 거리감쇠를 약 500m 격자에 합산 → d3-contour 등고선
+- **개별 공원에는 평가 등급이 없다.** 평가는 읍면동(600)/시군(32) 단위만 제공된다
+- 수식을 바꾸면 `scripts/gen-gyeonggi-parks.js` 의 복제본도 같이 바꾸고 재생성할 것
+
+데이터 재생성 (키: `GYEONGGI_CLIMATE_API_KEY`, 원본 캐시 `scripts/.cache/gyeonggi/` — gitignore):
+- 수집: `node --env-file=.env.local scripts/fetch-gyeonggi-parks.js` (WFS 2.0.0 count/startIndex 페이징, 공원 35,288개는 centroid·유형·면적만 축약 저장)
+- 생성: `node scripts/gen-gyeonggi-parks.js` → `src/lib/gyeonggi-{boundary,park-data}.ts` + `public/data/gyeonggi/*.json`
+
+경기기후플랫폼 API 주의 (문서와 실측이 다른 부분 — 2026-09-11 확인):
+- WFS bbox 는 문서의 y,x 표기와 달리 **`xmin,ymin,xmax,ymax,EPSG:4326` (x,y 순서 + CRS 접미사 필수)** 만 동작한다. 접미사 없으면 조용히 0건.
+- WMS 1.3.0 EPSG:3857 bbox 도 문서의 예외 표기와 달리 공식 예제대로 x,y 순서다.
+- `spggcee:park` 의 `biotop_area` 단위는 m² (지오메트리 면적과 대조 확인). 0.02m² 수준 퇴화 슬리버 ~3,000개가 섞여 있어 모델에서 100m² 미만은 제외한다.
+- 오류 시 GeoServer 가 200 + text/xml 을 줄 수 있다. Content-Type 을 반드시 확인.
+- 읍면동 경계 원본은 63만 정점 — 표시용은 Douglas-Peucker 단순화본만 쓴다.
+
+배지 종류에 `stat`(통계)를 추가했다: 실측 공식 통계지만 기준일 고정이라 LIVE 도 DEMO 도 아닌 것.
+`GYEONGGI_MASK` 는 SEOUL_MASK 와 같은 방식 (세계 외곽 링 + 시군 구멍).
+
 ### Remaining Work
 
 - T1: Feed API → Supabase 실 데이터 연동 (스키마 설계 선행 필요)

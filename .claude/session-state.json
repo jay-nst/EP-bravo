@@ -1,8 +1,14 @@
 {
-  "timestamp": "2026-08-28T16:20:00+09:00",
+  "timestamp": "2026-09-11T18:00:00+09:00",
   "branch": "feat/core-light-basemap",
   "last_commit": "cb86f63 feat(core): add light basemap, localized labels, terrain shading",
   "completed_tasks": [
+    "경기 공원 접근성 지도 /gyeonggi (2026-09-11) — 경기기후플랫폼 도시공원 평가 연동",
+    "  - 접근성 모델: 유형·면적 반경(도시공원법 유치거리) × 읍면동 평가점수 가중(×0.6~1.4) × Epanechnikov 감쇠 → 500m 격자 합산 → d3-contour 등고선 5밴드",
+    "  - 데이터: 공원 폴리곤 35,288개(WFS 페이징 수집, 100m² 슬리버 2,993 제외), 읍면동 평가 600, 시군 32",
+    "  - 라우트: gyeonggi-park-tiles (WMS 래스터 프록시, 키 서버 은닉) + gyeonggi-park-info (클릭 WFS 식별)",
+    "  - src/lib/park-accessibility.ts 모델 정본 + vitest 12개, gyeonggi-{boundary,park-data,data-sources}.ts",
+    "  - scripts/fetch-gyeonggi-parks.js + gen-gyeonggi-parks.js (재생성 파이프라인), 배지 종류 stat(통계) 추가",
     "업로드 스타일 로딩 최적화 (2026-08-28) — 디자인 무변경 4건",
     "  - composite 소스에서 미참조 타일셋 2개 제거 (terrain-v2 / bathymetry-v2): 타일당 z6 -34%, z9 -25%, z12 -12%",
     "  - projection globe -> mercator + fog 제거 (협력사는 z10+ 사용, 시각 동일)",
@@ -58,7 +64,7 @@
     "Supabase 인스턴스 연결 불가 (fetch failed) — /api/events, /api/catalog/search 500. /seoul 은 Supabase 비의존이라 영향 없음",
     "DATA_GO_KR_AWS_KEY 미작동 — AWS 기상 레이어가 목업으로 폴백"
   ],
-  "test_status": "vitest 105개 테스트 통과 (11 파일), typecheck 통과",
+  "test_status": "vitest 150개 테스트 통과 (15 파일), typecheck·eslint 통과",
   "decisions_made": [
     "DEM maxzoom 12 채택 — 실제 팔레트(shadow alpha 0.36, highlight 투명)에서 서울/설악산 z14 육안 비교 결과 차이 미미. 단 기본 hillshade 페인트에서는 오버줌 음영이 뚜렷하게 뭉툭해지므로 팔레트를 바꾸면 재검토할 것",
     "서울 데모는 Core 복제가 아닌 기후 전용 슬림 페이지로 구성 (결제/AOI구매 제외)",
@@ -72,6 +78,10 @@
     "채팅 제안 버튼 → 바로 전송",
     "14개 페이지 탭 제목 추가",
     "S-DoT는 원본에 좌표가 없어 자치구 중심 집계로 표시 — 없는 좌표를 지어내지 않는다",
-    "S-DoT 색 램프는 실제 수신 범위로 동적 설정 — 자치구 평균이 2~3°C에 몰려 고정 구간이면 단색이 된다"
+    "S-DoT 색 램프는 실제 수신 범위로 동적 설정 — 자치구 평균이 2~3°C에 몰려 고정 구간이면 단색이 된다",
+    "경기 공원: 개별 공원에 평가등급이 없어(읍면동/시군 단위만 제공) 유형·면적 반경 × 읍면동 점수 가중 모델 채택 (사용자 결정 2026-09-11)",
+    "경기 공원 폴리곤 35k개는 GeoJSON 대신 WMS 래스터 프록시 + 클릭 시 WFS 식별 — 번들·소스 크기 문제 회피",
+    "경기기후플랫폼 WFS bbox 는 실측상 xmin,ymin,xmax,ymax,EPSG:4326 (CRS 접미사 필수, 문서의 y,x 표기와 다름)",
+    "접근성 등고선은 오프라인 사전계산(d3-contour) — 평가 기준일 고정 데이터라 실시간 계산 불필요, heatmap 금지 규칙과도 부합"
   ]
 }
