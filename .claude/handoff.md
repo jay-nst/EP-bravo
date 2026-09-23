@@ -1,30 +1,36 @@
 # Session Handoff
 
-> 생성: 2026-09-22 19:38
+> 생성: 2026-09-23 11:10
 > 프로젝트: C:\Users\jayoh\Documents\Claude Code\260619_Code\earthpaper
 
 ## 작업 요약
 
-이 핸드오프는 **다른 컴퓨터에서 작업을 이어받기 위한 체크포인트**다. 이번 세션에서 코드 변경은 없었고, 마지막 실작업은 2026-09-11 — `/gyeonggi` 경기 공원 접근성 지도와 `/seoul` 혼잡·열집중 레이어 추가 (모두 커밋·푸시 완료).
+**다음 주 작업은 Agent 튜토리얼 제안 페이지 구현이다.** 기획은 완료·승인됨 — 정본: `docs/AGENT_TUTORIAL_PROPOSAL_DESIGN.md` (2026-09-22 /office-hours, 적대적 검토 2라운드 반영, Status: APPROVED). 구현은 미착수.
 
-- 브랜치: `feat/gyeonggi-parks` (HEAD `f08b8d7`, origin과 일치)
-- 작업 트리 깨끗함, 미커밋 변경 없음
-- 테스트: vitest 150개 통과 (15 파일), typecheck·eslint 통과 (9/11 기준)
+이번 세션(9/22~23)의 코드 작업: `searchCatalog` 차단기 + in-flight 가드 구현 (`1e48cb2`, 테스트 157개 통과).
 
-프로젝트 전체 맥락(경기 공원 모델, 서울 대시보드, API 실측 특이사항)은 `CLAUDE.md`에 상세 기록되어 있다 — 새 환경에서 먼저 읽을 것.
+- 브랜치: `feat/gyeonggi-parks`, origin과 일치, 작업 트리 깨끗함
+- 프로젝트 전체 맥락(경기 공원 모델, 서울 대시보드, API 실측 특이사항)은 `CLAUDE.md` 참조
 
 ## 진행 중·미완료
 
-코드 진행 중 항목 없음. 코드 외부 미처리 2건 (8/27부터 이월):
+**Agent 튜토리얼 제안 페이지 (기획 완료, 구현 미착수)** — 설계문서가 단일 진실. 요약:
+- earthpaper에 `/proposals/agent-tutorial` 라우트 추가. 실화면 캡쳐 위 driver.js(MIT) 오버레이 + `steps.ts` 구조화 스펙 (Approach B)
+- 5스텝: 입력창+예시 프롬프트 → 응답 화면 → 핵심 기능 2개 → 회원가입 모달(전환 클라이맥스). 건너뛰기 시에도 모달 통과
+- 페이지 구성: 도입부(Clarity 수치 1-2개) → 데모 → 아웃트로(기대효과)
+- 유일한 비자명 구현 지점: driver.js 스텝 훅에서 배경 캡쳐 교체 + 하이라이트 재계산
+- **착수 전 사용자 준비물**: ① Clarity 최근 30일 수치 3개 (첫 화면 이탈률·평균 체류·방문→가입 전환율) ② Agent 실화면 캡쳐 4장 (비로그인 우선, 불가 시 계정 UI 크롭/블러) ③ 승인자 확정. 캡쳐 없이 placeholder로 골격 먼저 만드는 것도 가능 (사용자가 "나중에" 선택함)
+
+코드 외부 미처리 2건 (8/27부터 이월):
 
 1. **노출된 Mapbox `sk.` 토큰 삭제** — 업로드용 secret 토큰이 이전 대화 중 노출됐다. account.mapbox.com/access-tokens 에서 삭제. 업로드는 끝났으므로 더 필요 없다. (가장 급함)
 2. **협력사용 `pk.` 토큰 미발급** — 기존 `naraspace-map` 토큰들은 URL restrictions로 상대 도메인에서 403. 상대 도메인 허용 토큰을 새로 만들어 **스타일 URL과 함께** 전달해야 한다.
 
 ## 다음 단계
 
-1. `sk.` 토큰 삭제 (보안)
-2. 협력사 도메인 허용 `pk.` 토큰 발급 → 스타일 URL과 함께 전달
-3. `EarthMap.tsx` `searchCatalog`에 차단기(circuit breaker) — 연속 실패 3회 시 조회 중단 + 동시 in-flight 가드 (사용자 승인 완료, 미착수. 죽은 Supabase로 실패에 최대 12초 걸려 요청이 겹쳐 쌓이는 게 실제 폭주 경로)
+1. **Agent 튜토리얼 제안 페이지 구현** — `docs/AGENT_TUTORIAL_PROPOSAL_DESIGN.md` 기준. 캡쳐·Clarity 수치 확보 후 착수 (또는 placeholder로 골격 먼저)
+2. `sk.` 토큰 삭제 (보안)
+3. 협력사 도메인 허용 `pk.` 토큰 발급 → 스타일 URL과 함께 전달
 4. Supabase 프로젝트 복구 → `NEXT_PUBLIC_SUPABASE_URL` 갱신 → 카탈로그·이벤트 기능 정상화 (마이그레이션 `00007~00009` 레포에 있어 재적용 가능)
 5. T1: Feed API → Supabase 실 데이터 연동 (스키마 설계 선행)
 6. 라이트 모드 모바일 확인 (데스크톱만 확인됨)
