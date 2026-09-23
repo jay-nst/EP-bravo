@@ -4,6 +4,7 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { calculateAreaKm2, calculatePrice, validateAoi } from '@/lib/geo';
+import { createCircuitBreaker } from '@/lib/circuit-breaker';
 import type { SatelliteType, CatalogItem } from '@/types/database';
 import { applyDarkStyleOverrides, applyLightStyleOverrides, applyLocalizedLabels } from '@/lib/map-style-overrides';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -71,6 +72,13 @@ export default function EarthMap({
   const [catalogItems, setCatalogItems] = useState<CatalogItem[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // A dead backend takes up to ~12s to fail, so moveend-triggered searches
+  // pile up in flight; the breaker + in-flight guard stop the pileup.
+  const searchBreaker = useRef(
+    createCircuitBreaker({ threshold: 3, cooldownMs: 60_000 })
+  );
+  const searchInFlight = useRef(false);
+  const searchQueued = useRef(false);
 
   const handleDrawUpdate = useCallback(() => {
     if (!draw.current) return;
@@ -99,30 +107,53 @@ export default function EarthMap({
   }, [onAoiChange, satellite]);
 
   const searchCatalog = useCallback(async () => {
-    if (!map.current) return;
+    if (searchInFlight.current) {
+      // Don't stack requests; re-run once after the current one settles.
+      searchQueued.current = true;
+      return;
+    }
 
-    const bounds = map.current.getBounds();
-    if (!bounds) return;
-    const params = new URLSearchParams({
-      west: bounds.getWest().toString(),
-      south: bounds.getSouth().toString(),
-      east: bounds.getEast().toString(),
-      north: bounds.getNorth().toString(),
-      satellite,
-    });
-
+    searchInFlight.current = true;
     try {
-      const res = await fetch(`/api/catalog/search?${params}`);
-      if (!res.ok) return;
-      const data = await res.json();
-      setCatalogItems(data.items || []);
+      do {
+        searchQueued.current = false;
+        if (!map.current) return;
+        if (!searchBreaker.current.canRequest(Date.now())) return;
 
-      if (data.items?.length > 0 && !selectedItemId) {
-        setSelectedItemId(data.items[0].id);
-        onCatalogSelect?.(data.items[0].id);
-      }
-    } catch {
-      // Silent fail on catalog search
+        const bounds = map.current.getBounds();
+        if (!bounds) return;
+        const params = new URLSearchParams({
+          west: bounds.getWest().toString(),
+          south: bounds.getSouth().toString(),
+          east: bounds.getEast().toString(),
+          north: bounds.getNorth().toString(),
+          satellite,
+        });
+
+        try {
+          const res = await fetch(`/api/catalog/search?${params}`);
+          if (!res.ok) {
+            searchBreaker.current.recordFailure(Date.now());
+            return;
+          }
+          const data = await res.json();
+          searchBreaker.current.recordSuccess();
+          setCatalogItems(data.items || []);
+
+          if (data.items?.length > 0 && !selectedItemId) {
+            setSelectedItemId(data.items[0].id);
+            onCatalogSelect?.(data.items[0].id);
+          }
+        } catch {
+          // Silent fail on catalog search; drop any queued re-run too —
+          // moveend will retry, and the breaker caps consecutive failures.
+          searchBreaker.current.recordFailure(Date.now());
+          return;
+        }
+      } while (searchQueued.current);
+    } finally {
+      searchInFlight.current = false;
+      searchQueued.current = false;
     }
   }, [satellite, selectedItemId, onCatalogSelect]);
 
