@@ -178,7 +178,8 @@ export default function AgentTutorialDemo() {
       s.loadingAfter?.frames.forEach((f) => urls.add(f.capture));
     });
     urls.add(COMPARE_ASSETS.before);
-    urls.add(COMPARE_ASSETS.after);
+    urls.add(COMPARE_ASSETS.afterBase);
+    urls.add(COMPARE_ASSETS.severity);
     ARTICLE_ASSETS.segments.forEach((seg) => urls.add(seg));
     HIGHLIGHT_STEPS.forEach((s) => {
       if (s.loadingChat) urls.add(s.loadingChat.background);
@@ -322,7 +323,8 @@ export default function AgentTutorialDemo() {
             {s.widget === 'compare' && phase === 'running' && i === stepIndex && (
               <BeforeAfterSlider
                 beforeSrc={COMPARE_ASSETS.before}
-                afterSrc={COMPARE_ASSETS.after}
+                afterBaseSrc={COMPARE_ASSETS.afterBase}
+                severitySrc={COMPARE_ASSETS.severity}
                 beforeLabel={COMPARE_ASSETS.beforeLabel}
                 afterLabel={COMPARE_ASSETS.afterLabel}
               />

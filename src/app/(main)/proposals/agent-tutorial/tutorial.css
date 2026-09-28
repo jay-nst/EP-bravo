@@ -84,6 +84,33 @@
   color: var(--accent);
 }
 
+/* 불투명도 슬라이더 — 실서비스 패널 스타일 재현 (트랙 어둡게 + 민트 썸) */
+.ep-opacity-range {
+  appearance: none;
+  height: 0.35em;
+  border-radius: 999px;
+  background: rgba(231, 235, 239, 0.18);
+  outline: none;
+  cursor: pointer;
+}
+
+.ep-opacity-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 50%;
+  background: #35d9c0;
+  border: none;
+}
+
+.ep-opacity-range::-moz-range-thumb {
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 50%;
+  background: #35d9c0;
+  border: none;
+}
+
 /* 마스코트 좌우 흔들림 — 실서비스 응답 생성 연출 재현 */
 .ep-mascot-wiggle {
   animation: ep-mascot-wiggle 0.9s ease-in-out infinite;

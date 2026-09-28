@@ -1,24 +1,32 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { DAMAGE_PANEL } from '@/lib/agent-tutorial-steps';
 
 interface BeforeAfterSliderProps {
   beforeSrc: string;
-  afterSrc: string;
+  /** 화재 후 — 심각도 오버레이 0% */
+  afterBaseSrc: string;
+  /** 화재 후 — 심각도 오버레이 100% (base 위에 CSS opacity 로 겹침) */
+  severitySrc: string;
   beforeLabel: string;
   afterLabel: string;
 }
 
-// 실서비스(mapbox-gl-compare)의 전·후 비교를 정적 캡쳐 2장으로 재현한 위젯.
-// 왼쪽 = 화재 전, 오른쪽 = 화재 후. clip-path 로 후 이미지를 핸들 위치까지만 가린다.
+// 실서비스(mapbox-gl-compare)의 전·후 비교를 정적 캡쳐로 재현한 위젯.
+// 왼쪽 = 화재 전, 오른쪽 = 화재 후(심각도 오버레이). clip-path 로 후 레이어를
+// 핸들 위치까지만 가리고, '산불 피해 보기' 패널의 불투명도 슬라이더는 DOM 으로
+// 재현해 심각도 오버레이 투명도를 실제로 조절한다.
 // 마운트 시 한 번 자동 스윕으로 "움직인다"는 것을 보여주고, 이후 드래그에 반응한다.
 export default function BeforeAfterSlider({
   beforeSrc,
-  afterSrc,
+  afterBaseSrc,
+  severitySrc,
   beforeLabel,
   afterLabel,
 }: BeforeAfterSliderProps) {
   const [pct, setPct] = useState(15);
+  const [opacity, setOpacity] = useState<number>(DAMAGE_PANEL.defaultOpacity);
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
   const sweepRef = useRef<number | null>(null);
@@ -82,6 +90,8 @@ export default function BeforeAfterSlider({
     draggingRef.current = false;
   }, []);
 
+  const { rect, colors } = DAMAGE_PANEL;
+
   return (
     <div
       ref={containerRef}
@@ -95,6 +105,7 @@ export default function BeforeAfterSlider({
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={Math.round(pct)}
+      style={{ fontFamily: 'var(--font-body)', fontSize: '0.875cqw', letterSpacing: '-0.2px' }}
     >
       {/* 화재 전 (base) */}
       {/* eslint-disable-next-line @next/next/no-img-element -- 정적 캡쳐, 최적화 불필요 */}
@@ -104,15 +115,24 @@ export default function BeforeAfterSlider({
         className="absolute inset-0 w-full h-full"
         draggable={false}
       />
-      {/* 화재 후 — 핸들 오른쪽만 노출 */}
-      {/* eslint-disable-next-line @next/next/no-img-element -- 정적 캡쳐, 최적화 불필요 */}
-      <img
-        src={afterSrc}
-        alt={afterLabel}
-        className="absolute inset-0 w-full h-full"
-        draggable={false}
-        style={{ clipPath: `inset(0 0 0 ${pct}%)` }}
-      />
+      {/* 화재 후 — 핸들 오른쪽만 노출. base + 심각도(불투명도 조절) 스택 */}
+      <div className="absolute inset-0" style={{ clipPath: `inset(0 0 0 ${pct}%)` }}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- 정적 캡쳐, 최적화 불필요 */}
+        <img
+          src={afterBaseSrc}
+          alt={afterLabel}
+          className="absolute inset-0 w-full h-full"
+          draggable={false}
+        />
+        {/* eslint-disable-next-line @next/next/no-img-element -- 정적 캡쳐, 최적화 불필요 */}
+        <img
+          src={severitySrc}
+          alt=""
+          className="absolute inset-0 w-full h-full"
+          style={{ opacity: opacity / 100 }}
+          draggable={false}
+        />
+      </div>
 
       {/* 핸들 라인 + 그립 (실서비스 compare-swiper 재현) */}
       <div
@@ -130,8 +150,8 @@ export default function BeforeAfterSlider({
 
       {/* 라벨 칩 */}
       <span
-        className="absolute bottom-3 left-3 px-2 py-1 rounded text-xs font-mono pointer-events-none"
-        style={{ background: 'rgba(14,14,16,0.8)', color: '#E8E4DF' }}
+        className="absolute px-2 py-1 rounded text-xs font-mono pointer-events-none"
+        style={{ bottom: '2%', left: '32%', background: 'rgba(14,14,16,0.8)', color: '#E8E4DF' }}
       >
         {beforeLabel}
       </span>
@@ -141,6 +161,67 @@ export default function BeforeAfterSlider({
       >
         {afterLabel}
       </span>
+
+      {/* '산불 피해 보기' 패널 — 실캡쳐 위치·색 실측값으로 DOM 재현 (불투명도 실동작) */}
+      <div
+        className="absolute cursor-default"
+        style={{
+          left: `${rect.x}%`,
+          top: `${rect.y}%`,
+          width: `${rect.w}%`,
+          height: `${rect.h}%`,
+          background: colors.bg,
+          borderRadius: '0.7em',
+          padding: '0.9em 1.2em',
+          color: '#E7EBEF',
+        }}
+        onPointerDown={(e) => {
+          // 패널 조작이 비교 슬라이더 드래그로 번지지 않게
+          e.stopPropagation();
+        }}
+      >
+        <div className="flex items-center justify-between" style={{ marginBottom: '0.9em' }}>
+          <span style={{ fontSize: '1.07em', fontWeight: 600 }}>산불 피해 보기</span>
+          <span aria-hidden style={{ color: '#8fa0b3', fontSize: '1.1em', lineHeight: 1 }}>
+            ✕
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between" style={{ marginBottom: '0.45em' }}>
+          <span style={{ fontWeight: 600 }}>불투명도</span>
+          <span style={{ color: '#9db0c4' }}>{opacity}%</span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={100}
+          value={opacity}
+          onChange={(e) => setOpacity(Number(e.target.value))}
+          className="ep-opacity-range w-full"
+          aria-label="심각도 오버레이 불투명도"
+        />
+
+        <div style={{ marginTop: '0.9em' }}>
+          <p style={{ color: '#8fa0b3', fontSize: '0.86em', marginBottom: '0.4em' }}>심각도</p>
+          <div className="flex items-center" style={{ gap: '1.1em' }}>
+            {(
+              [
+                ['상', colors.high],
+                ['중', colors.mid],
+                ['하', colors.low],
+              ] as const
+            ).map(([label, color]) => (
+              <span key={label} className="flex items-center" style={{ gap: '0.4em' }}>
+                <span
+                  className="inline-block"
+                  style={{ width: '1em', height: '1em', background: color, borderRadius: '0.15em' }}
+                />
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

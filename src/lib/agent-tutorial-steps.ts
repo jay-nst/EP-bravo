@@ -113,9 +113,10 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     id: 'cold-start-input',
     type: 'highlight',
     capture: `${CAPTURE_BASE}/step1-home.png`,
-    hotspot: { x: 17.5, y: 67.5, w: 22.5, h: 17 },
+    // 산타로사섬 예시 칩만 하이라이트 — 라이브 DOM 실측 (284,768,351,32) + 패딩
+    hotspot: { x: 17.5, y: 76.4, w: 22.4, h: 4 },
     title: '무엇을 물어볼지 막막하다면',
-    body: '분석할 산불 지역과 시기만 입력하면 됩니다. 예시 프롬프트 중 하나를 클릭해 보세요.',
+    body: "분석할 산불 지역과 시기만 입력하면 됩니다. '산타로사섬 산불 피해 보고서' 예시를 클릭해 보세요.",
     action: 'click',
     // 실서비스 응답 생성 연출 재현: 유저 버블 → 마스코트 흔들림 + 타이핑 스트리밍
     // → "분석 중" 대기 → (스텝 2) 분석 완료. 문구는 실제 대화 그대로.
@@ -149,7 +150,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     // 지도 영역 실측 (660,56,940,944 / 1600×1000) — 비교 위젯이 이 영역을 정확히 덮는다
     hotspot: { x: 41.25, y: 5.6, w: 58.75, h: 94.4 },
     title: '지도에서 화재 전·후 비교',
-    body: '슬라이더를 직접 움직여 보세요. 화재 전·후 위성영상이 비교되고, 심각도(상·중·하) 오버레이와 불투명도를 조절할 수 있습니다.',
+    body: '슬라이더를 직접 움직여 화재 전·후를 비교해 보세요. 좌측 하단 패널에서 심각도(상·중·하) 오버레이의 불투명도도 직접 조절할 수 있습니다.',
     action: 'click',
     widget: 'compare',
     // 실측 (332,791,134,32) + 클릭 패딩
@@ -182,12 +183,31 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
   },
 ];
 
-// 전·후 비교 위젯 자산 — 지도 영역(940×944)만 슬라이더 양 극단에서 클립 캡쳐한 것
+// 전·후 비교 위젯 자산 — 지도 영역(940×944)만 슬라이더 양 극단에서 클립 캡쳐한 것.
+// 화재 후는 심각도 오버레이 0%/100% 두 장을 겹쳐 불투명도 조절을 실동작으로 재현한다:
+// base + (sev100 × CSS opacity o) = 실서비스 raster-opacity o 와 동일한 합성.
 export const COMPARE_ASSETS = {
   before: `${CAPTURE_BASE}/map-before.png`,
-  after: `${CAPTURE_BASE}/map-after.png`,
+  afterBase: `${CAPTURE_BASE}/map-after-clean.png`,
+  severity: `${CAPTURE_BASE}/map-after-sev100.png`,
   beforeLabel: '화재 전 2026-04-20',
   afterLabel: '화재 후 2026-06-09',
+} as const;
+
+// '산불 피해 보기' 패널 — 실캡쳐 픽셀 실측 (map-after.png, 지도 크롭 940×944 기준 %).
+// 불투명도 슬라이더를 직접 조작할 수 있도록 DOM 으로 재현한다.
+export const DAMAGE_PANEL = {
+  /** 지도 영역(스텝3 핫스팟) 기준 % 위치 */
+  rect: { x: 4.26, y: 78.6, w: 25.85, h: 18.75 },
+  colors: {
+    bg: '#101f2f',
+    thumb: '#35d9c0',
+    high: '#550000',
+    mid: '#ff6000',
+    low: '#fdc160',
+  },
+  /** 실서비스 기본 불투명도 (%) */
+  defaultOpacity: 80,
 } as const;
 
 // 분석 아티클 위젯 자산 — 아티클 문서(1100×3598)를 원본 해상도 세그먼트로 나눈 것.
