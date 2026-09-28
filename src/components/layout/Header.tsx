@@ -123,6 +123,21 @@ export default function Header() {
                 </div>
               )}
             </div>
+
+            <Link
+              href="/proposals/agent-tutorial"
+              className="px-3 py-2.5 text-sm rounded-md transition-colors"
+              style={{
+                color: pathname.startsWith('/proposals/agent-tutorial')
+                  ? 'var(--accent)'
+                  : 'var(--text-muted)',
+                background: pathname.startsWith('/proposals/agent-tutorial')
+                  ? 'var(--surface-elevated)'
+                  : 'transparent',
+              }}
+            >
+              EP Agent
+            </Link>
           </nav>
         </div>
 
@@ -180,6 +195,18 @@ export default function Header() {
               }}
             >
               오늘의 지구
+            </Link>
+
+            <Link
+              href="/proposals/agent-tutorial"
+              className="flex items-center px-6 py-3 text-sm transition-colors"
+              style={{
+                color: pathname.startsWith('/proposals/agent-tutorial')
+                  ? 'var(--accent)'
+                  : 'var(--text)',
+              }}
+            >
+              EP Agent
             </Link>
 
             <div style={{ padding: '8px 24px 4px', marginTop: 4, borderTop: '1px solid var(--border)' }}>
