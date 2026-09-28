@@ -66,9 +66,8 @@
   ],
   "in_progress": [],
   "remaining_tasks": [
-    "Agent 튜토리얼: 실캡쳐 4장 + Clarity 최근 30일 수치 3개 확보 → placeholder 교체 (steps.ts hotspot 재측정)",
-    "Agent 튜토리얼: 브라우저 인터랙션 QA 미실시 (browse 스킬 권한 차단) — driver 팝오버/클릭 진행/모달 실확인 필요",
-    "Agent 튜토리얼: 변경분 커밋 (사용자 확인 후)",
+    "Agent 튜토리얼: Clarity 최근 30일 수치 3개 확보 → steps.ts CLARITY_METRICS value 채우기 (도입부 '수치 입력 대기' 해제)",
+    "Agent 튜토리얼: 배포 완료 (2026-09-28, master 4f14b11 → 192.168.127.13:3000, 헤더 EP Agent 탭). 승인자 회람만 남음",
     "T1: Feed API → Supabase 실 데이터 연동 (스키마 설계 선행 필요)",
     "실제 위성 영상 이미지 교체 (현재 placeholder)",
     "AI Chat 산불 탐지 데모 (P2, design doc 완료)",

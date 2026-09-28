@@ -35,6 +35,8 @@ export default function AgentTutorialDemo() {
   const loadingTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   // 진행 버튼(portal)의 위치 계산 기준이 되는 캡쳐 스테이지
   const stageRef = useRef<HTMLDivElement>(null);
+  // 팝오버 '다음' 버튼이 최신 advanceStep 을 부르도록 (startTour 가 advanceStep 보다 먼저 정의됨)
+  const advanceRef = useRef<(i: number) => void>(() => {});
 
   const openModal = useCallback((reason: 'completed' | 'skipped') => {
     driverRef.current?.destroy();
@@ -65,13 +67,13 @@ export default function AgentTutorialDemo() {
             s.action === 'click'
               ? `${s.body}<div class="ep-tutorial-click-hint">▸ ${
                   s.advanceLabel
-                    ? `'${s.advanceLabel}' 버튼을 클릭해 진행합니다`
-                    : '하이라이트된 영역을 클릭하면 다음으로 진행됩니다'
+                    ? `화면의 '${s.advanceLabel}' 버튼을 직접 클릭해 보세요 — '다음'으로도 진행됩니다`
+                    : "하이라이트된 예시를 직접 클릭해 보세요 — '다음'으로도 진행됩니다"
                 }</div>`
               : s.body,
-          // 'click' 스텝은 다음 버튼을 숨겨 핫스팟 클릭을 유도한다.
-          showButtons:
-            s.action === 'click' ? ['previous', 'close'] : ['next', 'previous', 'close'],
+          showButtons: ['next', 'previous', 'close'],
+          // '다음' 버튼도 실제 클릭과 동일 경로로 진행 (로딩 연출 포함)
+          onNextClick: () => advanceRef.current(i),
         },
         onHighlightStarted: () => {
           setStepIndex(i);
@@ -159,6 +161,10 @@ export default function AgentTutorialDemo() {
     },
     [runChatSim, runLoadingThen],
   );
+
+  useEffect(() => {
+    advanceRef.current = advanceStep;
+  }, [advanceStep]);
 
   const handleHotspotClick = useCallback(
     (index: number) => {
@@ -319,6 +325,11 @@ export default function AgentTutorialDemo() {
             }}
             aria-label={s.title}
           >
+            {/* 클릭 유도 핑 — 직접 클릭해야 하는 영역임을 시각적으로 강조 */}
+            {phase === 'running' &&
+              i === stepIndex &&
+              s.action === 'click' &&
+              !s.advanceHotspot && <span className="ep-click-ping" aria-hidden />}
             {/* 전·후 비교 위젯 — 활성 스텝일 때만 하이라이트 컷아웃 안에 렌더 */}
             {s.widget === 'compare' && phase === 'running' && i === stepIndex && (
               <BeforeAfterSlider
@@ -439,9 +450,7 @@ function AdvanceButton({
   if (!box) return null;
 
   return createPortal(
-    <button
-      onClick={onClick}
-      className="overflow-hidden ep-advance-pulse ep-advance-btn"
+    <div
       style={{
         position: 'fixed',
         left: box.left,
@@ -450,31 +459,41 @@ function AdvanceButton({
         height: box.height,
         // driver 오버레이(z-index 1e9)보다 위 — 버튼만 어두워지지 않고 떠 보인다
         zIndex: 1000000001,
-        // driver.css 의 `.driver-active * { pointer-events: none }` 를 이긴다
-        pointerEvents: 'auto',
-        cursor: 'pointer',
-        border: 'none',
-        padding: 0,
-        background: 'transparent',
-        borderRadius: '6px',
+        pointerEvents: 'none',
       }}
-      aria-label={label}
-      title={label}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element -- 캡쳐 크롭 표시용 */}
-      <img
-        src={capture}
-        alt=""
-        draggable={false}
-        className="absolute max-w-none"
+      {/* 클릭 유도 핑 — 버튼 밖으로 퍼지는 링 (overflow 제약 없는 래퍼에 배치) */}
+      <span className="ep-click-ping" aria-hidden />
+      <button
+        onClick={onClick}
+        className="absolute inset-0 overflow-hidden ep-advance-pulse ep-advance-btn"
         style={{
-          width: `${10000 / w}%`,
-          height: `${10000 / h}%`,
-          left: `${-(x / w) * 100}%`,
-          top: `${-(y / h) * 100}%`,
+          // driver.css 의 `.driver-active * { pointer-events: none }` 를 이긴다
+          pointerEvents: 'auto',
+          cursor: 'pointer',
+          border: 'none',
+          padding: 0,
+          background: 'transparent',
+          borderRadius: '6px',
         }}
-      />
-    </button>,
+        aria-label={label}
+        title={label}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element -- 캡쳐 크롭 표시용 */}
+        <img
+          src={capture}
+          alt=""
+          draggable={false}
+          className="absolute max-w-none"
+          style={{
+            width: `${10000 / w}%`,
+            height: `${10000 / h}%`,
+            left: `${-(x / w) * 100}%`,
+            top: `${-(y / h) * 100}%`,
+          }}
+        />
+      </button>
+    </div>,
     document.body,
   );
 }

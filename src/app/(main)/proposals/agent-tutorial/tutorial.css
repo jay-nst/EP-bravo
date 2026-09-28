@@ -196,8 +196,38 @@
   }
 }
 
+/* 클릭 유도 핑 — 클릭 대상 밖으로 은은하게 퍼지는 링 (과하지 않게 1회/1.8s) */
+.ep-click-ping {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.ep-click-ping::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid var(--accent);
+  border-radius: inherit;
+  animation: ep-click-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes ep-click-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  65%,
+  100% {
+    transform: scale(1.22);
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .ep-advance-pulse {
+  .ep-advance-pulse,
+  .ep-click-ping::after {
     animation: none;
   }
 }
