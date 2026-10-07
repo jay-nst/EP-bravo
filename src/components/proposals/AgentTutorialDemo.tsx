@@ -444,10 +444,17 @@ function StageCapture({ src, alt }: { src: string; alt: string }) {
 
   return (
     <>
-      {prev && (
-        // eslint-disable-next-line @next/next/no-img-element -- 정적 캡쳐, 최적화 불필요
-        <img src={prev} alt="" className="absolute inset-0 w-full h-full" draggable={false} />
-      )}
+      {/* 아래층은 항상 마운트 유지 — 전환 때 요소를 새로 만들면 페인트 공백
+          1-2 프레임 동안 어두운 배경이 비쳐 화면이 깜빡인다. 전환 중에는 이전
+          캡쳐(prev)를 그대로 들고 있다가, 페이드가 끝난 뒤 현재 캡쳐로 따라온다
+          (그 시점엔 위층이 완전 불투명이라 교체가 보이지 않는다) */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- 정적 캡쳐, 최적화 불필요 */}
+      <img
+        src={prev ?? src}
+        alt=""
+        className="absolute inset-0 w-full h-full"
+        draggable={false}
+      />
       {/* eslint-disable-next-line @next/next/no-img-element -- 정적 캡쳐, 최적화 불필요 */}
       <img
         key={src}

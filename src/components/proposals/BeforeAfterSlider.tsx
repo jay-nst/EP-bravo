@@ -198,13 +198,10 @@ export default function BeforeAfterSlider({
         </div>
 
         <div className="flex items-center justify-between" style={{ marginBottom: '0.45em' }}>
-          <span className="flex items-center" style={{ fontWeight: 600, gap: '0.45em' }}>
-            불투명도
-            {/* 조작 가능 어포던스 — 라벨 옆 민트 점 깜빡임 (첫 조작 시 해제) */}
-            {panelHinted && hintsEnabled && <span className="ep-hint-dot" aria-hidden />}
-          </span>
+          <span style={{ fontWeight: 600 }}>불투명도</span>
           <span style={{ color: '#9db0c4' }}>{opacity}%</span>
         </div>
+        {/* 조작 가능 어포던스 — 슬라이더의 민트 썸(점)이 반짝인다 (첫 조작 시 해제) */}
         <input
           type="range"
           min={0}
@@ -214,7 +211,9 @@ export default function BeforeAfterSlider({
             setOpacity(Number(e.target.value));
             setPanelHinted(false); // 키보드 조작도 어포던스 해제
           }}
-          className="ep-opacity-range w-full"
+          className={`ep-opacity-range w-full${
+            panelHinted && hintsEnabled ? ' ep-opacity-hint' : ''
+          }`}
           aria-label="심각도 오버레이 불투명도"
         />
 

@@ -228,25 +228,27 @@
   }
 }
 
-/* 불투명도 어포던스 — '불투명도' 라벨 옆 민트 점 깜빡임 (첫 조작 시 해제) */
-.ep-hint-dot {
-  display: inline-block;
-  width: 0.7em;
-  height: 0.7em;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 6px 1px rgba(27, 191, 168, 0.6);
-  animation: ep-hint-dot 1.3s ease-in-out infinite;
-  pointer-events: none;
+/* 불투명도 어포던스 — 슬라이더의 민트 썸(점) 자체가 글로우로 반짝인다
+   (첫 조작 시 해제). 별도 점을 추가하지 않고 조작 대상이 직접 빛난다 */
+.ep-opacity-range.ep-opacity-hint::-webkit-slider-thumb {
+  animation: ep-thumb-blink 1.3s ease-in-out infinite;
 }
 
-@keyframes ep-hint-dot {
+.ep-opacity-range.ep-opacity-hint::-moz-range-thumb {
+  animation: ep-thumb-blink 1.3s ease-in-out infinite;
+}
+
+@keyframes ep-thumb-blink {
   0%,
   100% {
-    opacity: 1;
+    box-shadow:
+      0 0 0 3px rgba(27, 191, 168, 0.4),
+      0 0 10px 3px rgba(53, 217, 192, 0.75);
   }
   50% {
-    opacity: 0.15;
+    box-shadow:
+      0 0 0 0 rgba(27, 191, 168, 0),
+      0 0 0 0 rgba(53, 217, 192, 0);
   }
 }
 
@@ -291,8 +293,17 @@
       0 0 0 2.5px var(--accent),
       0 0 12px 3px rgba(27, 191, 168, 0.45);
   }
-  .ep-hint-dot {
+  .ep-opacity-range.ep-opacity-hint::-webkit-slider-thumb {
     animation: none;
+    box-shadow:
+      0 0 0 3px rgba(27, 191, 168, 0.4),
+      0 0 10px 3px rgba(53, 217, 192, 0.75);
+  }
+  .ep-opacity-range.ep-opacity-hint::-moz-range-thumb {
+    animation: none;
+    box-shadow:
+      0 0 0 3px rgba(27, 191, 168, 0.4),
+      0 0 10px 3px rgba(53, 217, 192, 0.75);
   }
   .ep-chat-scroll {
     transition: none;
