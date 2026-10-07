@@ -64,6 +64,13 @@ export interface TutorialChatSim {
    * 결과 화면이 서프라이즈로 뜨지 않도록 채팅 흐름 안에서 전환을 예고한다.
    */
   doneMessage?: string;
+  /**
+   * 완료 메시지 뒤 채팅 흐름 안에 새 메시지처럼 등장하는 결과 카드 — 다음 스텝
+   * 캡쳐에서 카드 영역만 크롭해 채팅 아래에 붙이고, 실제 채팅처럼 스크롤업한 뒤
+   * 전체 캡쳐로 전환한다 (기존 채팅을 덮어쓰는 하드 전환 방지).
+   * rect 는 캡쳐(스테이지) % 좌표 — 전환 후 캡쳐 속 카드 위치와 일치해야 한다.
+   */
+  resultCards?: { capture: string; rect: TutorialHotspot };
 }
 
 /** 마스코트 이미지 — step1 캡쳐에서 크롭 (배경색 CHAT_BG 포함) */
@@ -147,6 +154,12 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
       ],
       pendingLabel: '분석 중',
       doneMessage: '분석이 완료됐습니다. 피해 면적과 심각도 분포를 정리했어요.',
+      // 스텝 2 캡쳐의 결과 카드 영역 (analysis-result 핫스팟과 동일 실측) —
+      // 채팅 아래 등장 → 스크롤업 → 전체 캡쳐 전환이 제자리에서 이어진다
+      resultCards: {
+        capture: `${CAPTURE_BASE}/step2-premap.png`,
+        rect: { x: 20.5, y: 10.5, w: 19.5, h: 36 },
+      },
     },
   },
   {

@@ -69,22 +69,24 @@
 }
 
 /* 리뷰 반영(2026-09-28): X(닫기) 버튼이 너무 작음 — 히트 영역과 글리프 확대.
-   피드백(2026-10-07): 기본 상태가 --text-muted 로는 안 보임 — 본문과 같은
-   중간 톤으로 올리고, hover 는 흰색 + 배경 채움으로 구분을 유지한다 */
+   피드백(2026-10-07 2차): 글자색만으로는 여전히 안 보임 — 기본 상태를 배경 채움
+   + 보더가 있는 칩으로 만들어 항상 버튼으로 보이게 한다 */
 .ep-tutorial-popover .driver-popover-close-btn {
-  color: color-mix(in srgb, var(--text) 70%, var(--text-muted));
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
   width: 34px;
   height: 34px;
   font-size: 20px;
   line-height: 1;
   border-radius: var(--radius-sm);
-  transition: color var(--duration-short) var(--ease-enter),
+  transition: border-color var(--duration-short) var(--ease-enter),
     background var(--duration-short) var(--ease-enter);
 }
 
 .ep-tutorial-popover .driver-popover-close-btn:hover {
-  color: var(--text);
-  background: var(--surface);
+  background: var(--bg);
+  border-color: var(--text-muted);
 }
 
 .ep-tutorial-popover .driver-popover-arrow-side-left.driver-popover-arrow {
@@ -195,6 +197,58 @@
   .ep-typing-caret::after,
   .ep-typing-dots::after {
     animation: none;
+  }
+}
+
+/* 비교 핸들 넛지 — 좌우로 움직일 수 있다는 어포던스 (첫 드래그 시 해제).
+   그립의 센터링 translate(-50%,-50%) 를 키프레임에 포함해야 위치가 안 깨진다 */
+.ep-handle-nudge {
+  animation:
+    ep-handle-nudge 1.6s ease-in-out infinite,
+    ep-advance-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes ep-handle-nudge {
+  0%,
+  100% {
+    transform: translate(calc(-50% - 0.45em), -50%);
+  }
+  50% {
+    transform: translate(calc(-50% + 0.45em), -50%);
+  }
+}
+
+/* 결과 카드 등장 — 채팅의 새 메시지처럼 아래에서 떠오른다 */
+.ep-chat-cards-enter {
+  animation: ep-chat-cards-enter var(--duration-medium) var(--ease-enter) both;
+}
+
+@keyframes ep-chat-cards-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.8em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 채팅 스크롤업 — 결과 카드를 캡쳐 속 위치로 밀어 올리는 autoscroll 재현 */
+.ep-chat-scroll {
+  transition: transform 0.6s var(--ease-move);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ep-handle-nudge {
+    animation: none;
+  }
+  .ep-chat-scroll {
+    transition: none;
+  }
+  /* 카드 등장은 opacity 페이드만 유지 (DESIGN.md: skip animations, keep opacity) */
+  .ep-chat-cards-enter {
+    animation: ep-capture-fade var(--duration-medium) var(--ease-enter) both;
   }
 }
 

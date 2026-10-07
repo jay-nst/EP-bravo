@@ -30,6 +30,7 @@ export default function BeforeAfterSlider({
   // 조작 가능 어포던스 — 핸들·패널에 민트 펄스(진행 버튼과 동일 언어), 첫 조작 시 해제
   const [handleHinted, setHandleHinted] = useState(true);
   const [panelHinted, setPanelHinted] = useState(true);
+  const panelTouchedRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
   const sweepRef = useRef<number | null>(null);
@@ -61,6 +62,35 @@ export default function BeforeAfterSlider({
     sweepRef.current = requestAnimationFrame(tick);
     return () => {
       if (sweepRef.current !== null) cancelAnimationFrame(sweepRef.current);
+    };
+  }, []);
+
+  // 불투명도 자동 데모: 비교 스윕이 끝난 뒤 80→20→80 으로 한 번 오르내려
+  // "이 슬라이더가 심각도 오버레이를 조절한다"를 눈으로 보여준다. 사용자가
+  // 패널을 만지면 즉시 중단.
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let raf: number | null = null;
+    const timer = setTimeout(() => {
+      const t0 = performance.now();
+      const DUR = 1600;
+      const base = DAMAGE_PANEL.defaultOpacity;
+      const low = 20;
+      const tick = (now: number) => {
+        if (panelTouchedRef.current) return;
+        const t = Math.min((now - t0) / DUR, 1);
+        const v =
+          t < 0.5
+            ? base + (low - base) * easeInOut(t / 0.5)
+            : low + (base - low) * easeInOut((t - 0.5) / 0.5);
+        setOpacity(Math.round(v));
+        if (t < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    }, 2100); // 비교 자동 스윕(1.8s) 종료 후 시작 — 두 데모가 겹치지 않게
+    return () => {
+      clearTimeout(timer);
+      if (raf !== null) cancelAnimationFrame(raf);
     };
   }, []);
 
@@ -146,7 +176,7 @@ export default function BeforeAfterSlider({
       >
         <div
           className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 left-1/2 w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shadow-lg${
-            handleHinted ? ' ep-advance-pulse' : ''
+            handleHinted ? ' ep-handle-nudge' : ''
           }`}
           style={{ background: '#1bbfa8', color: '#0E0E10' }}
         >
@@ -184,6 +214,7 @@ export default function BeforeAfterSlider({
         onPointerDown={(e) => {
           // 패널 조작이 비교 슬라이더 드래그로 번지지 않게
           e.stopPropagation();
+          panelTouchedRef.current = true;
           setPanelHinted(false);
         }}
       >
@@ -204,6 +235,7 @@ export default function BeforeAfterSlider({
           max={100}
           value={opacity}
           onChange={(e) => {
+            panelTouchedRef.current = true; // 자동 데모 중단
             setOpacity(Number(e.target.value));
             setPanelHinted(false); // 키보드 조작도 어포던스 해제
           }}

@@ -1,7 +1,13 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { CHAT_COLORS, MASCOT_SRC, type TutorialChatSim } from '@/lib/agent-tutorial-steps';
+import {
+  CAPTURE_WIDTH,
+  CAPTURE_HEIGHT,
+  CHAT_COLORS,
+  MASCOT_SRC,
+  type TutorialChatSim,
+} from '@/lib/agent-tutorial-steps';
 
 interface AnalysisChatSimProps {
   sim: TutorialChatSim;
@@ -12,7 +18,13 @@ const TYPE_MS = 26; // 글자당 타이핑 간격
 const USER_DELAY = 350; // 유저 버블 등장
 const MSG_GAP = 550; // 메시지 사이 숨 고르기
 const PENDING_MS = 1800; // "분석 중" 대기 표시 시간
-const DONE_HOLD_MS = 900; // 완료 메시지를 읽을 시간 — 그 뒤 결과 화면으로 전환
+const DONE_HOLD_MS = 900; // 완료 메시지를 읽을 시간 (결과 카드 없을 때의 전환 대기)
+const CARDS_ENTER_MS = 450; // 결과 카드 등장 애니메이션을 기다리는 시간
+const SCROLL_MS = 600; // 채팅 스크롤업 (실채팅 autoscroll 재현)
+const CARDS_HOLD_MS = 800; // 스크롤 후 카드가 제자리에 안착한 걸 보여주는 시간
+
+/** 채팅 컬럼의 스테이지 % 좌표 — 캡쳐(loading-1.png) 실측값 */
+const COLUMN = { x: 16.25, y: 5.6, w: 25, h: 80.8 } as const;
 
 type SimState = {
   /** 완료된 에이전트 메시지 수 */
@@ -35,6 +47,12 @@ export default function AnalysisChatSim({ sim, onDone }: AnalysisChatSimProps) {
     pending: false,
     doneTyped: -1,
   });
+  // 결과 카드 — 채팅 아래 새 메시지처럼 등장한 뒤, 실채팅 autoscroll 처럼
+  // 위로 스크롤해 다음 스텝 캡쳐 속 카드 위치에 정확히 안착시킨다
+  const [showCards, setShowCards] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
   const onDoneRef = useRef(onDone);
 
   useEffect(() => {
@@ -78,6 +96,26 @@ export default function AnalysisChatSim({ sim, onDone }: AnalysisChatSimProps) {
           setState({ done: allDone, typed: -1, showUser: true, pending: false, doneTyped: c });
           await wait(TYPE_MS);
         }
+      }
+
+      // 결과 카드 — 완료 메시지 아래 새 메시지처럼 등장 → 스크롤업 → 전체 캡쳐 전환.
+      // 스크롤 목표: 카드 상단이 다음 스텝 캡쳐 속 카드 위치(rect.y)와 일치하는 지점.
+      if (sim.resultCards) {
+        if (cancelled) return;
+        setShowCards(true);
+        await wait(CARDS_ENTER_MS);
+        if (cancelled) return;
+        const container = containerRef.current;
+        const cards = cardsRef.current;
+        if (container && cards) {
+          const cRect = container.getBoundingClientRect();
+          const kRect = cards.getBoundingClientRect();
+          const targetTop =
+            cRect.top + ((sim.resultCards.rect.y - COLUMN.y) / COLUMN.h) * cRect.height;
+          setScrollY(Math.max(0, kRect.top - targetTop));
+        }
+        await wait(SCROLL_MS + CARDS_HOLD_MS);
+      } else if (sim.doneMessage) {
         await wait(DONE_HOLD_MS);
       }
       if (!cancelled) onDoneRef.current();
@@ -93,12 +131,13 @@ export default function AnalysisChatSim({ sim, onDone }: AnalysisChatSimProps) {
 
   return (
     <div
-      className="absolute overflow-hidden flex flex-col"
+      ref={containerRef}
+      className="absolute overflow-hidden"
       style={{
-        left: '16.25%',
-        top: '5.6%',
-        width: '25%',
-        height: '80.8%',
+        left: `${COLUMN.x}%`,
+        top: `${COLUMN.y}%`,
+        width: `${COLUMN.w}%`,
+        height: `${COLUMN.h}%`,
         background: CHAT_COLORS.bg,
         // 실서비스 타이포 실측값: pretendard, body 14px / line-height 1.7 / -0.2px
         // (agent.ep.naraspace.com CSS 확인, 2026-09-28). 14px 은 1600px 스테이지 기준
@@ -107,12 +146,19 @@ export default function AnalysisChatSim({ sim, onDone }: AnalysisChatSimProps) {
         fontSize: '0.875cqw',
         lineHeight: 1.7,
         letterSpacing: '-0.2px',
-        gap: '1.4em',
-        padding: '2.4em 1.8em 0 2.1em',
       }}
       role="log"
       aria-live="polite"
       aria-label="분석 진행 중"
+    >
+    {/* 스크롤 래퍼 — 결과 카드 안착 시 실채팅 autoscroll 처럼 위로 밀어 올린다 */}
+    <div
+      className="flex flex-col ep-chat-scroll"
+      style={{
+        gap: '1.4em',
+        padding: '2.4em 1.8em 0 2.1em',
+        transform: `translateY(${-scrollY}px)`,
+      }}
     >
       {/* 유저 버블 (우측 정렬, 크림색 — 실측) */}
       {state.showUser && (
@@ -174,6 +220,37 @@ export default function AnalysisChatSim({ sim, onDone }: AnalysisChatSimProps) {
           </div>
         </div>
       )}
+
+      {/* 결과 카드 — 다음 스텝 캡쳐의 카드 영역 크롭을 새 메시지처럼 아래에 붙인다.
+          폭·좌표는 cqw(스테이지 % 단위)로 캡쳐와 동일 배율 — 전환 시 제자리 안착 */}
+      {showCards && sim.resultCards && (
+        <div
+          ref={cardsRef}
+          className="ep-chat-cards-enter relative overflow-hidden flex-shrink-0"
+          style={{
+            width: `${sim.resultCards.rect.w}cqw`,
+            marginLeft: `calc(${sim.resultCards.rect.x - COLUMN.x}cqw - 2.1em)`,
+            aspectRatio: `${sim.resultCards.rect.w * CAPTURE_WIDTH} / ${sim.resultCards.rect.h * CAPTURE_HEIGHT}`,
+            borderRadius: '0.6em',
+          }}
+          aria-label="분석 결과 카드"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element -- 캡쳐 크롭 표시용 */}
+          <img
+            src={sim.resultCards.capture}
+            alt=""
+            draggable={false}
+            className="absolute max-w-none"
+            style={{
+              width: `${10000 / sim.resultCards.rect.w}%`,
+              height: `${10000 / sim.resultCards.rect.h}%`,
+              left: `${-(sim.resultCards.rect.x / sim.resultCards.rect.w) * 100}%`,
+              top: `${-(sim.resultCards.rect.y / sim.resultCards.rect.h) * 100}%`,
+            }}
+          />
+        </div>
+      )}
+    </div>
     </div>
   );
 }
