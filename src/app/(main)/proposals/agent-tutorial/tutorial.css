@@ -87,7 +87,13 @@
   transition: background var(--duration-short) var(--ease-enter);
 }
 
-.ep-tutorial-popover .driver-popover-close-btn:hover {
+/* driver.css 는 :hover 뿐 아니라 :focus 에도 라이트 테마용 #2d2d2d 를 입힌다.
+   투어 시작 시 driver 가 팝오버에 초기 포커스를 주면서 X 가 어두워져 다크
+   팝오버에서 안 보였음 (2026-10-07 재현: 시작 스텝에서만 나중에 흰색됨) */
+.ep-tutorial-popover .driver-popover-close-btn:hover,
+.ep-tutorial-popover .driver-popover-close-btn:focus,
+.ep-tutorial-popover .driver-popover-close-btn:focus-visible {
+  color: var(--text);
   background: var(--surface);
 }
 
