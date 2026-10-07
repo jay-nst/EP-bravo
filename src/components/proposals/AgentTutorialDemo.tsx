@@ -63,14 +63,16 @@ export default function AgentTutorialDemo() {
         element: `#tut-hotspot-${s.id}`,
         popover: {
           title: s.title,
-          description:
+          description: `${s.body}<div class="ep-tutorial-click-hint"><span class="ep-tutorial-click-arrow" aria-hidden="true">▸</span> ${
             s.action === 'click'
-              ? `${s.body}<div class="ep-tutorial-click-hint">▸ ${
-                  s.advanceLabel
-                    ? `화면의 '${s.advanceLabel}' 버튼을 직접 클릭해 보세요 — '다음'으로도 진행됩니다`
-                    : "하이라이트된 예시를 직접 클릭해 보세요 — '다음'으로도 진행됩니다"
-                }</div>`
-              : s.body,
+              ? s.advanceLabel
+                ? `화면의 '${s.advanceLabel}' 버튼을 직접 클릭해 보세요 — '다음'으로도 진행됩니다`
+                : "하이라이트된 영역을 직접 클릭해 보세요 — '다음'으로도 진행됩니다"
+              : "체험해 본 뒤 아래 '다음' 버튼으로 진행하세요"
+          }</div>`,
+          // 리뷰 반영: 툴팁을 다음 액션 대상 근처에 붙인다 (미지정 시 driver 자동 배치)
+          side: s.popoverSide,
+          align: s.popoverAlign,
           showButtons: ['next', 'previous', 'close'],
           // '다음' 버튼도 실제 클릭과 동일 경로로 진행 (로딩 연출 포함)
           onNextClick: () => advanceRef.current(i),
@@ -311,7 +313,13 @@ export default function AgentTutorialDemo() {
             key={s.id}
             id={`tut-hotspot-${s.id}`}
             onClick={() => handleHotspotClick(i)}
-            className="absolute"
+            // 리뷰 반영: 직접 클릭 대상은 진행 버튼(AdvanceButton)과 동일한 민트
+            // 펄스로 통일 — 액션 유도 효과가 스텝마다 다르지 않게
+            className={
+              phase === 'running' && i === stepIndex && s.action === 'click' && !s.advanceHotspot
+                ? 'absolute ep-advance-pulse rounded-lg'
+                : 'absolute'
+            }
             style={{
               left: `${s.hotspot.x}%`,
               top: `${s.hotspot.y}%`,
@@ -380,7 +388,7 @@ export default function AgentTutorialDemo() {
             style={{ background: 'rgba(14,14,16,0.65)', backdropFilter: 'blur(2px)' }}
           >
             <p className="text-base" style={{ color: 'var(--text-muted)' }}>
-              승인자가 직접 클릭하며 체험하는 5스텝 데모입니다
+              승인자가 직접 클릭하며 체험하는 6스텝 데모입니다
             </p>
             <button
               onClick={startTour}

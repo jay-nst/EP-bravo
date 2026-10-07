@@ -9,8 +9,11 @@ import {
 
 // 설계문서(docs/AGENT_TUTORIAL_PROPOSAL_DESIGN.md) 구현 스펙의 계약을 검증한다.
 describe('agent-tutorial-steps', () => {
-  it('스텝은 5개 이하 목표를 지킨다 (완주율 근거의 소프트 상한)', () => {
-    expect(TUTORIAL_STEPS.length).toBeLessThanOrEqual(5);
+  // 소프트 상한 5스텝(설계문서 §플로우 — 초과 가능)에서 2026-09-28 피그마 디자인
+  // 리뷰로 지도 비교/아티클 열기 스텝을 분리해 6스텝이 됐다. 더 늘면 완주율
+  // 벤치마크(6-8스텝 25%)를 근거로 다시 합쳐야 한다.
+  it('스텝은 6개 이하를 지킨다 (완주율 근거의 소프트 상한)', () => {
+    expect(TUTORIAL_STEPS.length).toBeLessThanOrEqual(6);
     expect(TUTORIAL_STEPS.length).toBeGreaterThanOrEqual(1);
   });
 

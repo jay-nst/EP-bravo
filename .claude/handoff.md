@@ -1,63 +1,75 @@
 # Session Handoff
 
-> 생성: 2026-09-28
+> 생성: 2026-09-29 21:47
 > 프로젝트: C:\Users\jayoh\Documents\Claude Code\260619_Code\earthpaper
 
 ## 작업 요약
 
-**Agent 튜토리얼 제안 데모 페이지 완성 + 내부 서버 배포 완료.** `/proposals/agent-tutorial`,
-헤더에 "EP Agent" 탭(서비스 옆). 배포: http://192.168.127.13:3000 (master a5c630f).
-정본 설계: `docs/AGENT_TUTORIAL_PROPOSAL_DESIGN.md` (APPROVED).
+Agent 튜토리얼 제안 페이지(`/proposals/agent-tutorial`)에 피그마 디자인 리뷰 피드백을 반영했다.
+피그마 파일 `039_EarthPaper_2026` (fileKey `1UjpfpibiqDUf2J1AB2082`)의 노드 23910:11393~11402에
+EUNJI CHOI가 2026-09-28에 남긴 미해결 댓글 9건 중 8건을 코드로 반영, 1건은 재캡쳐 필요로 보류.
+반영 상세는 `docs/AGENT_TUTORIAL_PROPOSAL_DESIGN.md`의 "디자인 리뷰 반영 (2026-09-28)" 섹션이 정본.
 
-- 브랜치: `feat/gyeonggi-parks` == `master` == origin (a5c630f), 작업 트리 깨끗함
-- 페이지는 데모 단독 구성 (도입부/아웃트로 삭제됨 — 사용자 지시)
+댓글 수집 방법: browse 쿠키 가져오기(DPAPI 실패)와 핸드오프 창(반복 사망) 모두 이 PC에서 실패 →
+사용자가 발급한 Figma PAT로 REST API(`GET /v1/files/:key/comments`) 호출. 메모리
+`feedback_figma-comments-via-rest.md`에 방법 기록됨.
 
-## 구현 내용 (이번 세션)
+## 진행 중·미완료
 
-5스텝 driver.js 투어, 전부 실화면 캡쳐(agent.ep.naraspace.com, 산타로사섬 산불 분석 대화) 기반:
+**모든 변경이 미커밋 상태다** (브랜치 `feat/gyeonggi-parks`, HEAD 5daa574 위 dirty).
+변경 파일 6개 — 아래 "변경된 파일" 표 참조. vitest 164개 통과, tsc/eslint 클린 확인 완료.
 
-1. **스텝1** 비로그인 첫 화면 — 산타로사 예시 칩만 하이라이트(실측 좌표), 클릭 시
-   **채팅 시뮬레이션**(`AnalysisChatSim`): 유저 버블 → 마스코트 좌우 흔들림 + 글자 타이핑
-   스트리밍 → "분석 중". 타이포는 실서비스 실측(pretendard 14px/1.7/-0.2px, cqw 비례 스케일)
-2. **스텝2** 결과 카드 하이라이트 → 화면의 '지도에서 보기' 클릭으로 진행
-3. **스텝3** 전·후 비교 슬라이더 실동작(`BeforeAfterSlider`) + **불투명도 패널 DOM 재현**
-   (오버레이 0%/100% 캡쳐 스택 + CSS opacity = 실서비스 raster-opacity와 동일 합성) →
-   '분석 아티클 보기' 클릭 → 실제 아티클 로딩 캡쳐 1초
-4. **스텝4** 아티클 실스크롤(원본해상도 4세그먼트, iframe 문서 직접 캡쳐) → 'PDF 저장' 클릭
-5. **스텝5** 가입 전환 모달 (건너뛰기/ESC 포함 모든 이탈 경로가 모달 경유)
-
-공통: 전체화면 시어터 모드, 팝오버 '다음' 버튼(advanceStep 경유라 로딩 연출 안 건너뜀),
-클릭 대상 핑 애니메이션, `prefers-reduced-motion` 대응.
-
-## 핵심 구현 지식 (다음 세션 필독)
-
-- **스펙 정본**: `src/lib/agent-tutorial-steps.ts` — 스텝/핫스팟(%)/로딩/패널 색상 전부 여기.
-  캡쳐 재작업 시 hotspot 은 라이브 DOM `getBoundingClientRect` 실측 (1600×1000 viewport)
-- **driver.js 함정 3개**: ① `.driver-active * {pointer-events:none}` — 오버레이 위 커스텀
-  버튼은 inline `pointerEvents:'auto'` + css `!important` 필요 ② 전체화면 컨테이너(fixed)가
-  스태킹 컨텍스트를 만들어 z-index 갇힘 → AdvanceButton 은 **portal to body** + 스테이지
-  rect 실측 배치 ③ public `destroy()` 는 onDestroyStarted 훅을 안 타고, 내부 destroy(닫기/
-  ESC/마지막 스텝 완료)는 훅을 탐 → 모달 전환 로직이 이 차이에 의존
-- **캡쳐 재작업 절차**: browse 데몬 `BROWSE_IDLE_TIMEOUT=600000` 로 재기동 후 **한 Bash
-  호출 안에서** 전부 실행 (호출 사이 유휴로 데몬 죽음). 로그인은 connect 모드(사용자 직접
-  로그인) — 세션 토큰이 수 시간 내 만료됨. PII 블러(사이드바·헤더 우측) 필수
-- **browse 정리 3종 세트**: stop + terminal-agent bun kill + gstack chromium-profile
-  chrome kill (메모리 feedback-bun-zombie 참조)
-- 배포: `ssh root@192.168.127.13` → `/root/earthpaper` → pull master → npm install(신규
-  의존성 driver.js 있음) → build → pm2 restart earthpaper. NetBird VPN 필수
+- **브라우저 육안 확인 미실시** — 사용자가 bun/browse 사용 중단을 요청해 시각 검증을 못 했다.
+  특히 확인할 것: (1) 마지막 스텝(analysis-article) 팝오버가 `side: 'right'`인데 오른쪽 여백이
+  ~15.6%뿐이라 driver.js가 자동으로 위치를 뒤집을 수 있음, (2) 새 open-article 스텝의 민트 펄스가
+  driver 오버레이 컷아웃 안에서 제대로 보이는지, (3) X 버튼 34px 확대가 타이틀과 겹치지 않는지.
+- **피드백 1건 미반영**: "검색과 화재 전후 UI가 겹쳐 보임" (댓글 1943233805) — 스텝 3 캡쳐 PNG
+  (step2-result.png 및 COMPARE_ASSETS)에 구워진 실서비스 UI라 코드 수정 불가. agent.ep.naraspace.com
+  재캡쳐 필요. 캡쳐 절차·로그인 상태 파일 위치는 session-state.json의 2026-09-28 항목 참조.
 
 ## 다음 단계
 
-1. **Clarity 최근 30일 수치 3개** → `CLARITY_METRICS` value 채우기 (현재 페이지에서 도입부
-   삭제됐으므로 노출처는 추후 결정 — 수치는 실구현 베이스라인용으로 여전히 필요)
-2. 승인자 15분 데모 일정 (설계문서 The Assignment)
-3. 이월: 노출된 Mapbox `sk.` 토큰 삭제(보안, 가장 급함), 협력사용 `pk.` 토큰 발급,
-   Supabase 인스턴스 복구, T1 Feed API
-4. Header.tsx 기존 lint 에러 1건 (setMobileOpen in effect — 이번 작업과 무관, 미수정)
+1. `npm run dev` → `/proposals/agent-tutorial` 열어 새 6스텝 흐름 육안 QA (위 확인 포인트 3개)
+2. QA 통과 시 커밋 (예: `feat(proposals): apply Figma design review feedback to agent tutorial`)
+3. 피그마 댓글에 반영 완료 회신 / 해결 처리 (EUNJI CHOI에게 재리뷰 요청)
+4. (보류) step2-result.png 재캡쳐로 검색창/비교 바 겹침 해소
+5. (별개) gstack 업그레이드 대기 중 (1.60.1 → 1.91.6) — 원하면 `/gstack-upgrade`
 
-## 참고
+## 참고 사항
 
-- 데모 실측 자산: `public/proposals/agent-tutorial/` (캡쳐 14장 + mascot)
-- `.gstack/browse-states/epagent.json` 은 평문 쿠키 — 이번 세션 종료 시 삭제함
-- gstack 업그레이드 가능 (1.60.1 → 1.91.2) — 미적용
-- 사용자 선호: 결론부터 짧게. 실물 재현 충실도 최우선 ("별도로 만들지 말고 실제 화면 모사")
+- **Figma PAT가 대화에 노출됐다** — 사용자에게 폐기(revoke) 권고했음. 토큰 값은 어디에도 저장 안 함.
+- 사용자 지시: **bun 데몬 그만 켜기** ("일단 bun 좀 그만켜"). 이 PC에서 browse 핸드오프 창이 반복적으로
+  죽는다 — 피그마 등 인증 필요한 사이트는 REST API 토큰 방식 우선.
+- 6스텝은 설계문서의 소프트 상한(5스텝, 초과 가능) 안의 의도적 결정 — 리뷰어 제안 반영.
+  테스트 상한도 6으로 갱신됨. 더 늘리면 완주율 벤치마크(6-8스텝 25%) 근거로 재검토.
+- 스텝 스펙에 `popoverSide`/`popoverAlign` 필드가 새로 생겼다 — driver.js `side`/`align`으로 전달됨.
+- 직접 클릭 핫스팟의 민트 펄스는 `ep-advance-pulse` 클래스 재사용 (AdvanceButton과 동일 효과).
+
+## 완료된 작업
+
+- 피그마 댓글 9건 수집·분류 (REST API, node_id 필터) + 노드 4개 스크린샷 대조
+- 스텝 분리: map-compare(action 'next'로 변경) + open-article(신규, 버튼 하이라이트 클릭,
+  loadingAfter 이관) → 총 6스텝
+- 팝오버 위치 지정: open-article 버튼 위(top/start), analysis-article PDF 저장 근처 오른쪽(right/start)
+- 팝오버 가독성: 이전 버튼 명도/hover 강화, 본문 `color-mix(in srgb, var(--text) 75%, var(--text-muted))`,
+  X 버튼 34px/20px, ▸ 아이콘 1.4em (span 분리)
+- 액션 유도 통일: 직접 클릭 핫스팟에 ep-advance-pulse 적용
+- 'next' 액션 스텝에도 힌트 문구 추가 ("체험해 본 뒤 아래 '다음' 버튼으로 진행하세요")
+- 인트로 카피 5스텝→6스텝, 테스트 소프트 상한 5→6, 설계문서에 리뷰 반영 섹션 추가
+- vitest 164/164 통과, tsc·eslint 클린, session-state.json 갱신
+
+## 변경된 파일
+
+| 파일 | 변경 내용 |
+|------|-----------|
+| src/lib/agent-tutorial-steps.ts | PopoverSide/Align 타입 + popoverSide/Align 필드, map-compare→next 액션, open-article 스텝 신규, analysis-article 팝오버 위치 |
+| src/components/proposals/AgentTutorialDemo.tsx | 팝오버 side/align 전달, 힌트 문구 재구성(▸ span 분리, next 힌트 추가), 클릭 핫스팟 민트 펄스, 6스텝 카피 |
+| src/app/(main)/proposals/agent-tutorial/tutorial.css | 이전 버튼 가시성+hover, 본문 명도(color-mix), X 버튼 확대, ▸ 아이콘 확대 |
+| src/lib/agent-tutorial-steps.test.ts | 스텝 상한 5→6 (리뷰 근거 주석) |
+| docs/AGENT_TUTORIAL_PROPOSAL_DESIGN.md | 디자인 리뷰 반영 섹션 추가 (미반영 1건 포함) |
+| .claude/session-state.json | 2026-09-29 작업 항목 prepend |
+
+## 미해결 이슈
+
+- 스텝 3 캡쳐의 검색창/화재 전·후 비교 바 겹침 — PNG 재캡쳐 전까지 미해소 (댓글 1943233805)
+- 마지막 스텝 팝오버 오른쪽 배치가 좁은 여백에서 어떻게 동작하는지 미검증 (육안 QA 필요)

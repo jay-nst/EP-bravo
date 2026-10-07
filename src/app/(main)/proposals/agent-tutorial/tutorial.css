@@ -22,7 +22,9 @@
   font-family: inherit;
   font-size: 14.5px;
   line-height: 1.65;
-  color: var(--text-muted);
+  /* 리뷰 반영(2026-09-28): 액션 안내 본문이 --text-muted 로는 어두워 잘 안 읽힘 —
+     타이틀보다는 낮되 명도를 올린 중간 톤 */
+  color: color-mix(in srgb, var(--text) 75%, var(--text-muted));
 }
 
 .ep-tutorial-popover .driver-popover-progress-text {
@@ -51,14 +53,28 @@
   opacity: 0.85;
 }
 
+/* 리뷰 반영(2026-09-28): 이전 버튼이 배경에 묻혀 안 보임 — 텍스트·보더 명도를
+   올리고 hover 시 배경 채움으로 변화를 분명하게 */
 .ep-tutorial-popover .driver-popover-navigation-btns button.driver-popover-prev-btn {
   background: transparent;
-  color: var(--text-muted);
-  border: 1px solid var(--border);
+  color: var(--text);
+  border: 1px solid var(--text-muted);
 }
 
+.ep-tutorial-popover .driver-popover-navigation-btns button.driver-popover-prev-btn:hover {
+  background: var(--surface);
+  border-color: var(--text);
+  color: var(--text);
+  opacity: 1;
+}
+
+/* 리뷰 반영(2026-09-28): X(닫기) 버튼이 너무 작음 — 히트 영역과 글리프 확대 */
 .ep-tutorial-popover .driver-popover-close-btn {
   color: var(--text-muted);
+  width: 34px;
+  height: 34px;
+  font-size: 20px;
+  line-height: 1;
 }
 
 .ep-tutorial-popover .driver-popover-close-btn:hover {
@@ -80,8 +96,16 @@
 
 .ep-tutorial-click-hint {
   margin-top: 8px;
-  font-size: 13px;
+  font-size: 13.5px;
   color: var(--accent);
+}
+
+/* 리뷰 반영(2026-09-28): 안내문 앞 ▸ 아이콘이 너무 작음 — 글자보다 크게 */
+.ep-tutorial-click-arrow {
+  font-size: 1.4em;
+  line-height: 1;
+  vertical-align: -0.12em;
+  margin-right: 2px;
 }
 
 /* 불투명도 슬라이더 — 실서비스 패널 스타일 재현 (트랙 어둡게 + 민트 썸) */

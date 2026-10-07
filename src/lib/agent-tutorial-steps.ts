@@ -14,6 +14,10 @@
 
 export type TutorialAction = 'click' | 'next';
 
+/** driver.js 팝오버 위치 지정 (미지정 시 driver 자동 배치) */
+export type PopoverSide = 'top' | 'right' | 'bottom' | 'left';
+export type PopoverAlign = 'start' | 'center' | 'end';
+
 export interface TutorialHotspot {
   /** 좌상단 x (%) */
   x: number;
@@ -90,6 +94,12 @@ export interface HighlightStep {
   advanceLabel?: string;
   /** 핫스팟 안에 렌더링할 인터랙티브 위젯 */
   widget?: 'compare' | 'article';
+  /**
+   * 팝오버(말풍선)를 다음 액션 대상 가까이에 붙이기 위한 위치 지정
+   * (2026-09-28 피그마 디자인 리뷰: 툴팁이 다음 액션과 떨어져 있으면 놓친다)
+   */
+  popoverSide?: PopoverSide;
+  popoverAlign?: PopoverAlign;
 }
 
 export interface ModalStep {
@@ -105,9 +115,12 @@ export const CAPTURE_WIDTH = 1600;
 export const CAPTURE_HEIGHT = 1000;
 export const CAPTURE_BASE = '/proposals/agent-tutorial';
 
-// 스텝 3-4 기능 선정: 화재 전·후 비교, 심각도 분류, 불투명도(→ 스텝 3 지도 묶음),
-// 분석 아티클(→ 스텝 4). 사용자 결정 2026-09-28 — 4개 기능을 화면 위치 기준으로
-// 묶어 5스텝 상한을 지킨다.
+// 스텝 3-5 기능 선정: 화재 전·후 비교, 심각도 분류, 불투명도(→ 스텝 3 지도 묶음),
+// 분석 아티클(→ 스텝 4-5). 사용자 결정 2026-09-28 — 4개 기능을 화면 위치 기준으로 묶는다.
+// 2026-09-28 피그마 디자인 리뷰 반영: 스텝 3(지도 비교)에서 '분석 아티클 보기'가
+// 강조되면 비교 기능을 쓰지 않고 지나친다 → 지도 체험(next 진행)과 아티클 열기
+// (버튼 하이라이트 클릭)를 별도 스텝으로 분리. 소프트 상한(설계문서 §플로우, 초과
+// 가능)에 따라 총 6스텝.
 export const TUTORIAL_STEPS: TutorialStep[] = [
   {
     id: 'cold-start-input',
@@ -151,11 +164,23 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     hotspot: { x: 41.25, y: 5.6, w: 58.75, h: 94.4 },
     title: '지도에서 화재 전·후 비교',
     body: '슬라이더를 직접 움직여 화재 전·후를 비교해 보세요. 좌측 하단 패널에서 심각도(상·중·하) 오버레이의 불투명도도 직접 조절할 수 있습니다.',
+    // 리뷰 반영: 아티클 버튼을 같이 강조하면 비교 기능을 안 쓰고 지나친다 —
+    // 이 스텝은 지도 체험에 집중하고 '다음' 버튼으로만 진행한다
+    action: 'next',
+  },
+  {
+    id: 'open-article',
+    type: 'highlight',
+    capture: `${CAPTURE_BASE}/step2-result.png`,
+    // '분석 아티클 보기' 버튼 실측 (332,791,134,32) + 클릭 패딩 — 버튼 자체를 하이라이트
+    hotspot: { x: 20.4, y: 78.5, w: 9.2, h: 4.4 },
+    title: '분석 결과를 보고서로',
+    body: '방금 본 분석은 완성된 보고서로도 정리됩니다. 채팅 하단의 버튼을 눌러 열어 보세요.',
     action: 'click',
-    widget: 'compare',
-    // 실측 (332,791,134,32) + 클릭 패딩
-    advanceHotspot: { x: 20.4, y: 78.5, w: 9.2, h: 4.4 },
     advanceLabel: '분석 아티클 보기',
+    // 리뷰 반영: 툴팁은 버튼 바로 위에 붙인다 (다음 액션 근처 배치 원칙)
+    popoverSide: 'top',
+    popoverAlign: 'start',
     // 실제 아티클 로딩 화면 ("분석 아티클을 불러오는 중...") — 짧게 재생
     loadingAfter: {
       frames: [{ capture: `${CAPTURE_BASE}/article-loading.png`, ms: 1000 }],
@@ -174,6 +199,9 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     // 실측 (1174,44,96,32) + 클릭 패딩
     advanceHotspot: { x: 72.9, y: 3.8, w: 6.8, h: 4.4 },
     advanceLabel: 'PDF 저장',
+    // 리뷰 반영: 툴팁을 하이라이트된 'PDF 저장' 버튼 근처 오른쪽에 배치
+    popoverSide: 'right',
+    popoverAlign: 'start',
   },
   {
     id: 'signup',

@@ -1,8 +1,15 @@
 {
-  "timestamp": "2026-09-28T11:00:00+09:00",
+  "timestamp": "2026-09-29T18:50:00+09:00",
   "branch": "feat/gyeonggi-parks",
-  "last_commit": "a13e302 docs: add approved Agent tutorial proposal design + refresh handoff",
+  "last_commit": "5daa574",
   "completed_tasks": [
+    "Agent 튜토리얼 피그마 디자인 리뷰 반영 (2026-09-29, 미커밋) — 피그마 댓글 9건(EUNJI CHOI, 2026-09-28) 중 8건 코드 반영",
+    "  - 스텝 분리: map-compare(다음 버튼 진행) + open-article(버튼 하이라이트 클릭) → 총 6스텝, 테스트 소프트 상한 6으로 갱신",
+    "  - 팝오버 위치: popoverSide/popoverAlign 스펙 추가 — open-article 은 버튼 위, analysis-article 은 PDF 저장 근처 오른쪽",
+    "  - 통일: 직접 클릭 핫스팟에 ep-advance-pulse 민트 펄스 적용 (진행 버튼과 동일 효과)",
+    "  - 팝오버 가독성: 이전 버튼 명도/hover 강화, 본문 color-mix 명도 상향, X 버튼 34px/20px, ▸ 아이콘 1.4em",
+    "  - 미반영 1건: 스텝3 캡쳐의 검색창/화재전후 바 겹침 — PNG 재캡쳐 필요 (설계문서에 기록)",
+    "  - vitest 164개 통과, tsc/eslint 클린. 브라우저 육안 확인은 미실시 (bun/browse 사용 금지 요청)",
     "Agent 튜토리얼 제안 페이지 골격 구현 (2026-09-28, 미커밋) — /proposals/agent-tutorial",
     "  - driver.js 1.8.0(MIT) 설치, 스텝 훅 onHighlightStarted 에서 캡쳐 교체 (설계문서의 유일한 비자명 지점)",
     "  - src/lib/agent-tutorial-steps.ts: 스텝 스펙 5개(핸드오프 원형) + Clarity placeholder(null) + 성공지표/벤치마크",
