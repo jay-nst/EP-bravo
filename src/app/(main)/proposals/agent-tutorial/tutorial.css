@@ -72,27 +72,23 @@
 }
 
 /* 리뷰 반영(2026-09-28): X(닫기) 버튼이 너무 작음 — 히트 영역과 글리프 확대.
-   피드백(2026-10-07 2차): 글자색만으로는 여전히 안 보임 — 기본 상태를 배경 채움
-   + 보더가 있는 칩으로 만들어 항상 버튼으로 보이게 한다 */
+   피드백(2026-10-07 3차): 흰 글리프는 유지하되 배경 칩은 빼고 담백하게.
+   긴 타이틀과의 겹침은 타이틀 padding-right 예약으로 해결 (아래 title 규칙) */
 .ep-tutorial-popover .driver-popover-close-btn {
   color: var(--text);
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: transparent;
   width: 34px;
   height: 34px;
   font-size: 20px;
   line-height: 1;
   border-radius: var(--radius-sm);
-  /* 팝오버 라운드 모서리(--radius-lg)에 chip 이 끼지 않게 살짝 안쪽으로 */
   top: 8px;
   right: 8px;
-  transition: border-color var(--duration-short) var(--ease-enter),
-    background var(--duration-short) var(--ease-enter);
+  transition: background var(--duration-short) var(--ease-enter);
 }
 
 .ep-tutorial-popover .driver-popover-close-btn:hover {
-  background: var(--bg);
-  border-color: var(--text-muted);
+  background: var(--surface);
 }
 
 .ep-tutorial-popover .driver-popover-arrow-side-left.driver-popover-arrow {
@@ -206,21 +202,47 @@
   }
 }
 
-/* 비교 핸들 넛지 — 좌우로 움직일 수 있다는 어포던스 (첫 드래그 시 해제).
-   그립의 센터링 translate(-50%,-50%) 를 키프레임에 포함해야 위치가 안 깨진다 */
-.ep-handle-nudge {
-  animation:
-    ep-handle-nudge 1.6s ease-in-out infinite,
-    ep-advance-pulse 1.6s ease-in-out infinite;
+/* 비교 핸들 테두리 깜빡임 — 움직임 없이 민트 링이 깜빡여 조작 가능함을 알린다
+   (첫 드래그 시 해제). 피드백(2026-10-07): 넛지 같은 이동 애니메이션 대신 깜빡임 */
+.ep-hint-blink {
+  animation: ep-hint-blink 1.3s ease-in-out infinite;
 }
 
-@keyframes ep-handle-nudge {
+@keyframes ep-hint-blink {
   0%,
   100% {
-    transform: translate(calc(-50% - 0.45em), -50%);
+    box-shadow:
+      0 0 0 2.5px var(--accent),
+      0 0 12px 3px rgba(27, 191, 168, 0.45);
   }
   50% {
-    transform: translate(calc(-50% + 0.45em), -50%);
+    box-shadow:
+      0 0 0 2.5px rgba(27, 191, 168, 0),
+      0 0 12px 3px rgba(27, 191, 168, 0);
+  }
+}
+
+/* 불투명도 패널 어포던스 — 네모 펄스 대신 우상단 민트 점 깜빡임 (첫 조작 시 해제) */
+.ep-hint-dot {
+  position: absolute;
+  top: -0.3em;
+  right: -0.3em;
+  width: 0.8em;
+  height: 0.8em;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px 1px rgba(27, 191, 168, 0.6);
+  animation: ep-hint-dot 1.3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes ep-hint-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.15;
   }
 }
 
@@ -246,7 +268,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ep-handle-nudge {
+  /* 깜빡임은 끄되 링·점 자체는 정적으로 남겨 어포던스를 유지한다 */
+  .ep-hint-blink {
+    animation: none;
+    box-shadow:
+      0 0 0 2.5px var(--accent),
+      0 0 12px 3px rgba(27, 191, 168, 0.45);
+  }
+  .ep-hint-dot {
     animation: none;
   }
   .ep-chat-scroll {
