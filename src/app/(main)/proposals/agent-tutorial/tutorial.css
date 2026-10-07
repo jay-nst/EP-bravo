@@ -16,6 +16,9 @@
   font-weight: 600;
   line-height: 1.4;
   color: var(--text);
+  /* X(닫기) 칩 자리 예약 — driver 의 X 는 절대배치라 긴 타이틀이 밑으로 흘러
+     들어가 글리프가 텍스트에 묻힌다 (시작 스텝에서 재현, 2026-10-07) */
+  padding-right: 44px;
 }
 
 .ep-tutorial-popover .driver-popover-description {
@@ -80,6 +83,9 @@
   font-size: 20px;
   line-height: 1;
   border-radius: var(--radius-sm);
+  /* 팝오버 라운드 모서리(--radius-lg)에 chip 이 끼지 않게 살짝 안쪽으로 */
+  top: 8px;
+  right: 8px;
   transition: border-color var(--duration-short) var(--ease-enter),
     background var(--duration-short) var(--ease-enter);
 }
