@@ -37,10 +37,11 @@ export default function SignupConversionModal({
           borderRadius: 'var(--radius-lg)',
         }}
       >
+        {/* 투어 팝오버의 X 와 동일한 룩 — 흰 글리프, 배경 없음, hover 시만 배경 */}
         <button
           onClick={onClose}
           className="absolute top-3 right-3 w-8 h-8 rounded-md flex items-center justify-center transition-colors hover:bg-[var(--surface-elevated)]"
-          style={{ color: 'var(--text-muted)' }}
+          style={{ color: 'var(--text)', fontSize: 18 }}
           aria-label="닫기"
         >
           ✕

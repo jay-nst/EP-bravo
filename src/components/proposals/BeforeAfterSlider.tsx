@@ -11,6 +11,8 @@ interface BeforeAfterSliderProps {
   severitySrc: string;
   beforeLabel: string;
   afterLabel: string;
+  /** false 면 깜빡임 힌트를 숨긴다 (비활성 스텝에서 위젯이 유지될 때) */
+  hintsEnabled?: boolean;
 }
 
 // 실서비스(mapbox-gl-compare)의 전·후 비교를 정적 캡쳐로 재현한 위젯.
@@ -24,6 +26,7 @@ export default function BeforeAfterSlider({
   severitySrc,
   beforeLabel,
   afterLabel,
+  hintsEnabled = true,
 }: BeforeAfterSliderProps) {
   const [pct, setPct] = useState(15);
   const [opacity, setOpacity] = useState<number>(DAMAGE_PANEL.defaultOpacity);
@@ -146,7 +149,7 @@ export default function BeforeAfterSlider({
       >
         <div
           className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 left-1/2 w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shadow-lg${
-            handleHinted ? ' ep-hint-blink' : ''
+            handleHinted && hintsEnabled ? ' ep-hint-blink' : ''
           }`}
           style={{ background: '#1bbfa8', color: '#0E0E10' }}
         >
@@ -187,8 +190,6 @@ export default function BeforeAfterSlider({
           setPanelHinted(false);
         }}
       >
-        {/* 조작 가능 어포던스 — 패널 우상단 민트 점 깜빡임 (첫 조작 시 해제) */}
-        {panelHinted && <span className="ep-hint-dot" aria-hidden />}
         <div className="flex items-center justify-between" style={{ marginBottom: '0.9em' }}>
           <span style={{ fontSize: '1.07em', fontWeight: 600 }}>산불 피해 보기</span>
           <span aria-hidden style={{ color: '#8fa0b3', fontSize: '1.1em', lineHeight: 1 }}>
@@ -197,7 +198,11 @@ export default function BeforeAfterSlider({
         </div>
 
         <div className="flex items-center justify-between" style={{ marginBottom: '0.45em' }}>
-          <span style={{ fontWeight: 600 }}>불투명도</span>
+          <span className="flex items-center" style={{ fontWeight: 600, gap: '0.45em' }}>
+            불투명도
+            {/* 조작 가능 어포던스 — 라벨 옆 민트 점 깜빡임 (첫 조작 시 해제) */}
+            {panelHinted && hintsEnabled && <span className="ep-hint-dot" aria-hidden />}
+          </span>
           <span style={{ color: '#9db0c4' }}>{opacity}%</span>
         </div>
         <input

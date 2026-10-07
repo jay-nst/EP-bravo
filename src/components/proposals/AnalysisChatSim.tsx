@@ -12,6 +12,8 @@ import {
 interface AnalysisChatSimProps {
   sim: TutorialChatSim;
   onDone: () => void;
+  /** 결과 화면 전환 중 — 배경이 먼저 바뀐 뒤 채팅 컬럼이 페이드 아웃된다 */
+  exiting?: boolean;
 }
 
 const TYPE_MS = 26; // 글자당 타이핑 간격
@@ -39,7 +41,7 @@ type SimState = {
 
 // 실서비스의 응답 생성 연출 재현 — 유저 버블, 마스코트 좌우 흔들림, 타이핑 스트리밍,
 // "분석 중" 말풍선. 채팅 컬럼 영역 위에 겹쳐 렌더되며 색·문구는 실캡쳐 실측값이다.
-export default function AnalysisChatSim({ sim, onDone }: AnalysisChatSimProps) {
+export default function AnalysisChatSim({ sim, onDone, exiting }: AnalysisChatSimProps) {
   const [state, setState] = useState<SimState>({
     done: 0,
     typed: -1,
@@ -132,7 +134,7 @@ export default function AnalysisChatSim({ sim, onDone }: AnalysisChatSimProps) {
   return (
     <div
       ref={containerRef}
-      className="absolute overflow-hidden"
+      className={`absolute overflow-hidden${exiting ? ' ep-chat-exit' : ''}`}
       style={{
         left: `${COLUMN.x}%`,
         top: `${COLUMN.y}%`,

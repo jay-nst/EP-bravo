@@ -140,11 +140,24 @@ export default function AgentTutorialDemo() {
     setPhase('analyzing');
   }, []);
 
+  // 채팅 → 결과 전환은 2단계: ① 배경을 먼저 다음 캡쳐로 크로스페이드 — 채팅
+  // 컬럼은 오버레이가 덮고 있어 지도 영역만 바뀐다 (loading 캡쳐에 구워진 옛
+  // 채팅이 비쳐 보이는 문제 방지). ② 채팅 컬럼을 페이드 아웃 — 결과 카드는
+  // 캡쳐 속 같은 위치에 안착해 있어 끊김 없이 이어진다.
+  const [chatExiting, setChatExiting] = useState(false);
   const handleChatSimDone = useCallback(() => {
     const d = driverRef.current;
     if (!d) return;
-    setPhase('running');
-    d.drive(stepIndex + 1); // 시뮬레이션 동안 stepIndex 는 시작 스텝에 머물러 있다
+    const next = stepIndex + 1; // 시뮬레이션 동안 stepIndex 는 시작 스텝에 머물러 있다
+    setCapture(HIGHLIGHT_STEPS[next].capture);
+    setChatExiting(true);
+    loadingTimersRef.current.push(
+      setTimeout(() => {
+        setChatExiting(false);
+        setPhase('running');
+        d.drive(next);
+      }, 700), // 배경 크로스페이드(350ms) + 컬럼 페이드(300ms, 350ms 지연)
+    );
   }, [stepIndex]);
 
   // 스텝 진행 — 로딩 연출이 있으면 재생 후, 없으면 즉시 다음 스텝으로.
@@ -332,14 +345,19 @@ export default function AgentTutorialDemo() {
               i === stepIndex &&
               s.action === 'click' &&
               !s.advanceHotspot && <span className="ep-click-ping" aria-hidden />}
-            {/* 전·후 비교 위젯 — 활성 스텝일 때만 하이라이트 컷아웃 안에 렌더 */}
-            {s.widget === 'compare' && phase === 'running' && i === stepIndex && (
+            {/* 전·후 비교 위젯 — 활성 스텝, 그리고 같은 캡쳐를 쓰는 다음 스텝
+                (open-article)까지 유지. 스텝 전환에서 언마운트되면 사용자가
+                움직여 둔 슬라이더·불투명도가 캡쳐의 구운 상태로 점프한다 */}
+            {s.widget === 'compare' &&
+              phase === 'running' &&
+              (i === stepIndex || HIGHLIGHT_STEPS[stepIndex]?.capture === s.capture) && (
               <BeforeAfterSlider
                 beforeSrc={COMPARE_ASSETS.before}
                 afterBaseSrc={COMPARE_ASSETS.afterBase}
                 severitySrc={COMPARE_ASSETS.severity}
                 beforeLabel={COMPARE_ASSETS.beforeLabel}
                 afterLabel={COMPARE_ASSETS.afterLabel}
+                hintsEnabled={i === stepIndex}
               />
             )}
             {/* 분석 아티클 — 실제 iframe 영역처럼 원본 해상도 세그먼트를 세로로 스크롤 */}
@@ -359,7 +377,9 @@ export default function AgentTutorialDemo() {
         ))}
 
         {/* 분석 채팅 시뮬레이션 — 유저 버블 → 마스코트 흔들림 + 타이핑 스트리밍 → 분석 중 */}
-        {chatSim && <AnalysisChatSim sim={chatSim} onDone={handleChatSimDone} />}
+        {chatSim && (
+          <AnalysisChatSim sim={chatSim} onDone={handleChatSimDone} exiting={chatExiting} />
+        )}
 
         {/* 진행 클릭 버튼 — 실제 UX 의 버튼 위치를 오버레이 위에 밝게 띄운다.
             전체화면 컨테이너(fixed)가 스태킹 컨텍스트를 만들어 z-index 가 갇히므로

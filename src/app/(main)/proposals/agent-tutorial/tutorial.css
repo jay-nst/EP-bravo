@@ -222,13 +222,11 @@
   }
 }
 
-/* 불투명도 패널 어포던스 — 네모 펄스 대신 우상단 민트 점 깜빡임 (첫 조작 시 해제) */
+/* 불투명도 어포던스 — '불투명도' 라벨 옆 민트 점 깜빡임 (첫 조작 시 해제) */
 .ep-hint-dot {
-  position: absolute;
-  top: -0.3em;
-  right: -0.3em;
-  width: 0.8em;
-  height: 0.8em;
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
   border-radius: 50%;
   background: var(--accent);
   box-shadow: 0 0 6px 1px rgba(27, 191, 168, 0.6);
@@ -265,6 +263,18 @@
 /* 채팅 스크롤업 — 결과 카드를 캡쳐 속 위치로 밀어 올리는 autoscroll 재현 */
 .ep-chat-scroll {
   transition: transform 0.6s var(--ease-move);
+}
+
+/* 채팅 컬럼 페이드 아웃 — 배경이 다음 캡쳐로 바뀐 뒤(350ms 지연) 컬럼만 사라진다.
+   결과 카드는 캡쳐 속 동일 위치라 페이드 중에도 제자리에 고정돼 보인다 */
+.ep-chat-exit {
+  animation: ep-chat-exit 0.3s var(--ease-exit) 0.35s both;
+}
+
+@keyframes ep-chat-exit {
+  to {
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
