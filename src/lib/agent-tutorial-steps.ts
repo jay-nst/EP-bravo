@@ -167,6 +167,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     // 리뷰 반영: 아티클 버튼을 같이 강조하면 비교 기능을 안 쓰고 지나친다 —
     // 이 스텝은 지도 체험에 집중하고 '다음' 버튼으로만 진행한다
     action: 'next',
+    widget: 'compare',
   },
   {
     id: 'open-article',

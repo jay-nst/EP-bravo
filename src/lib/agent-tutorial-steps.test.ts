@@ -57,6 +57,16 @@ describe('agent-tutorial-steps', () => {
     }
   });
 
+  // 회귀 방지 (2026-10-07): 스텝 분리 커밋에서 widget: 'compare' 가 유실돼
+  // 슬라이더·심각도 패널이 정적 캡쳐로만 보였다. 위젯은 스펙 필드로만 연결되므로
+  // (AgentTutorialDemo 는 s.widget === 'compare'/'article' 일 때만 렌더) 여기서 계약을 고정한다.
+  it('인터랙티브 위젯 스텝이 스펙에 존재한다 (compare = 지도 비교, article = 아티클 스크롤)', () => {
+    const compare = HIGHLIGHT_STEPS.find((s) => s.widget === 'compare');
+    expect(compare?.id).toBe('map-compare');
+    const article = HIGHLIGHT_STEPS.find((s) => s.widget === 'article');
+    expect(article?.id).toBe('analysis-article');
+  });
+
   it('도입부 노출 Clarity 수치는 1-2개다 (수집 3개 중)', () => {
     expect(CLARITY_METRICS).toHaveLength(3);
     const exposed = CLARITY_METRICS.filter((m) => m.exposed);
