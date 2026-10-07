@@ -299,13 +299,7 @@ export default function AgentTutorialDemo() {
             : {}),
         }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element -- 정적 placeholder SVG, 최적화 불필요 */}
-        <img
-          src={capture}
-          alt={`Agent 화면 캡쳐 — 스텝 ${stepIndex + 1}`}
-          className="absolute inset-0 w-full h-full"
-          draggable={false}
-        />
+        <StageCapture src={capture} alt={`Agent 화면 캡쳐 — 스텝 ${stepIndex + 1}`} />
 
         {/* 투명 핫스팟 — driver.js 타겟. 스텝별로 미리 깔아두고 활성 스텝만 클릭 허용 */}
         {HIGHLIGHT_STEPS.map((s, i) => (
@@ -410,6 +404,39 @@ export default function AgentTutorialDemo() {
         목록·계정 정보는 블러 처리
       </p>
     </div>
+  );
+}
+
+// 캡쳐 전환 크로스페이드: 하드 스왑은 결과 화면이 서프라이즈로 뜨는 느낌을 줘서,
+// 이전 프레임을 깔아두고 새 프레임을 350ms(--duration-medium, DESIGN.md Motion)로
+// 페이드 인한다. reduced-motion 에서도 opacity 전환은 유지한다 (DESIGN.md 규칙).
+function StageCapture({ src, alt }: { src: string; alt: string }) {
+  const lastRef = useRef(src);
+  const [prev, setPrev] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (lastRef.current === src) return;
+    setPrev(lastRef.current);
+    lastRef.current = src;
+    const t = setTimeout(() => setPrev(null), 400);
+    return () => clearTimeout(t);
+  }, [src]);
+
+  return (
+    <>
+      {prev && (
+        // eslint-disable-next-line @next/next/no-img-element -- 정적 캡쳐, 최적화 불필요
+        <img src={prev} alt="" className="absolute inset-0 w-full h-full" draggable={false} />
+      )}
+      {/* eslint-disable-next-line @next/next/no-img-element -- 정적 캡쳐, 최적화 불필요 */}
+      <img
+        key={src}
+        src={src}
+        alt={alt}
+        className="absolute inset-0 w-full h-full ep-capture-fade"
+        draggable={false}
+      />
+    </>
   );
 }
 

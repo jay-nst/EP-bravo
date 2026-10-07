@@ -12,6 +12,7 @@ const TYPE_MS = 26; // 글자당 타이핑 간격
 const USER_DELAY = 350; // 유저 버블 등장
 const MSG_GAP = 550; // 메시지 사이 숨 고르기
 const PENDING_MS = 1800; // "분석 중" 대기 표시 시간
+const DONE_HOLD_MS = 900; // 완료 메시지를 읽을 시간 — 그 뒤 결과 화면으로 전환
 
 type SimState = {
   /** 완료된 에이전트 메시지 수 */
@@ -20,6 +21,8 @@ type SimState = {
   typed: number;
   showUser: boolean;
   pending: boolean;
+  /** 완료 메시지(doneMessage)의 표시 글자 수 (-1 = 아직 시작 전) */
+  doneTyped: number;
 };
 
 // 실서비스의 응답 생성 연출 재현 — 유저 버블, 마스코트 좌우 흔들림, 타이핑 스트리밍,
@@ -30,6 +33,7 @@ export default function AnalysisChatSim({ sim, onDone }: AnalysisChatSimProps) {
     typed: -1,
     showUser: false,
     pending: false,
+    doneTyped: -1,
   });
   const onDoneRef = useRef(onDone);
 
@@ -55,16 +59,27 @@ export default function AnalysisChatSim({ sim, onDone }: AnalysisChatSimProps) {
         const msg = sim.agentMessages[m];
         for (let c = 1; c <= msg.length; c++) {
           if (cancelled) return;
-          setState({ done: m, typed: c, showUser: true, pending: false });
+          setState({ done: m, typed: c, showUser: true, pending: false, doneTyped: -1 });
           await wait(TYPE_MS);
         }
-        setState({ done: m + 1, typed: -1, showUser: true, pending: false });
+        setState({ done: m + 1, typed: -1, showUser: true, pending: false, doneTyped: -1 });
         await wait(MSG_GAP);
       }
 
       if (cancelled) return;
-      setState({ done: sim.agentMessages.length, typed: -1, showUser: true, pending: true });
+      const allDone = sim.agentMessages.length;
+      setState({ done: allDone, typed: -1, showUser: true, pending: true, doneTyped: -1 });
       await wait(PENDING_MS);
+
+      // 완료 메시지 — 결과 화면이 갑자기 뜨지 않도록 채팅 흐름 안에서 전환을 예고
+      if (sim.doneMessage) {
+        for (let c = 1; c <= sim.doneMessage.length; c++) {
+          if (cancelled) return;
+          setState({ done: allDone, typed: -1, showUser: true, pending: false, doneTyped: c });
+          await wait(TYPE_MS);
+        }
+        await wait(DONE_HOLD_MS);
+      }
       if (!cancelled) onDoneRef.current();
     })();
 
@@ -124,6 +139,15 @@ export default function AnalysisChatSim({ sim, onDone }: AnalysisChatSimProps) {
       {/* 타이핑 중인 메시지 — 마스코트 좌우 흔들림 + 커서 */}
       {typingMsg !== null && (
         <AgentRow text={typingMsg.slice(0, state.typed)} wiggle caret />
+      )}
+
+      {/* 완료 메시지 — "분석 중" 뒤에 타이핑되어 결과 화면 전환을 예고 */}
+      {state.doneTyped >= 0 && sim.doneMessage && (
+        <AgentRow
+          text={sim.doneMessage.slice(0, state.doneTyped)}
+          wiggle={state.doneTyped < sim.doneMessage.length}
+          caret={state.doneTyped < sim.doneMessage.length}
+        />
       )}
 
       {/* 대기 상태 — 마스코트 흔들림 + "분석 중" 말풍선 */}

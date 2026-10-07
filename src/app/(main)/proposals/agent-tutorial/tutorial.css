@@ -68,17 +68,23 @@
   opacity: 1;
 }
 
-/* 리뷰 반영(2026-09-28): X(닫기) 버튼이 너무 작음 — 히트 영역과 글리프 확대 */
+/* 리뷰 반영(2026-09-28): X(닫기) 버튼이 너무 작음 — 히트 영역과 글리프 확대.
+   피드백(2026-10-07): 기본 상태가 --text-muted 로는 안 보임 — 본문과 같은
+   중간 톤으로 올리고, hover 는 흰색 + 배경 채움으로 구분을 유지한다 */
 .ep-tutorial-popover .driver-popover-close-btn {
-  color: var(--text-muted);
+  color: color-mix(in srgb, var(--text) 70%, var(--text-muted));
   width: 34px;
   height: 34px;
   font-size: 20px;
   line-height: 1;
+  border-radius: var(--radius-sm);
+  transition: color var(--duration-short) var(--ease-enter),
+    background var(--duration-short) var(--ease-enter);
 }
 
 .ep-tutorial-popover .driver-popover-close-btn:hover {
   color: var(--text);
+  background: var(--surface);
 }
 
 .ep-tutorial-popover .driver-popover-arrow-side-left.driver-popover-arrow {
@@ -189,6 +195,21 @@
   .ep-typing-caret::after,
   .ep-typing-dots::after {
     animation: none;
+  }
+}
+
+/* 캡쳐 전환 크로스페이드 — 하드 스왑 대신 새 프레임이 페이드 인 (DESIGN.md Motion:
+   페이지 전환 = --duration-medium). reduced-motion 에서도 opacity 전환은 유지한다 */
+.ep-capture-fade {
+  animation: ep-capture-fade var(--duration-medium) var(--ease-enter) both;
+}
+
+@keyframes ep-capture-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

@@ -59,6 +59,11 @@ export interface TutorialChatSim {
   agentMessages: string[];
   /** 마지막 대기 상태 말풍선 문구 */
   pendingLabel: string;
+  /**
+   * 대기 후 타이핑되는 완료 메시지 (연출용 — 실대화에서는 결과 카드가 바로 붙는다).
+   * 결과 화면이 서프라이즈로 뜨지 않도록 채팅 흐름 안에서 전환을 예고한다.
+   */
+  doneMessage?: string;
 }
 
 /** 마스코트 이미지 — step1 캡쳐에서 크롭 (배경색 CHAT_BG 포함) */
@@ -141,6 +146,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
         '분석용 화재 전·후 영상을 찾았습니다. 분석을 시작합니다. 영역이 넓어 보통 몇 분에서 최대 10분 가까이 걸릴 수 있습니다. 잠시만 기다려 주세요.',
       ],
       pendingLabel: '분석 중',
+      doneMessage: '분석이 완료됐습니다. 피해 면적과 심각도 분포를 정리했어요.',
     },
   },
   {

@@ -27,6 +27,9 @@ export default function BeforeAfterSlider({
 }: BeforeAfterSliderProps) {
   const [pct, setPct] = useState(15);
   const [opacity, setOpacity] = useState<number>(DAMAGE_PANEL.defaultOpacity);
+  // 조작 가능 어포던스 — 핸들·패널에 민트 펄스(진행 버튼과 동일 언어), 첫 조작 시 해제
+  const [handleHinted, setHandleHinted] = useState(true);
+  const [panelHinted, setPanelHinted] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
   const sweepRef = useRef<number | null>(null);
@@ -72,6 +75,7 @@ export default function BeforeAfterSlider({
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
       interactedRef.current = true;
+      setHandleHinted(false);
       draggingRef.current = true;
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
       moveTo(e.clientX);
@@ -141,7 +145,9 @@ export default function BeforeAfterSlider({
         aria-hidden
       >
         <div
-          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 left-1/2 w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shadow-lg"
+          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 left-1/2 w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shadow-lg${
+            handleHinted ? ' ep-advance-pulse' : ''
+          }`}
           style={{ background: '#1bbfa8', color: '#0E0E10' }}
         >
           ↔
@@ -164,7 +170,7 @@ export default function BeforeAfterSlider({
 
       {/* '산불 피해 보기' 패널 — 실캡쳐 위치·색 실측값으로 DOM 재현 (불투명도 실동작) */}
       <div
-        className="absolute cursor-default"
+        className={`absolute cursor-default${panelHinted ? ' ep-advance-pulse' : ''}`}
         style={{
           left: `${rect.x}%`,
           top: `${rect.y}%`,
@@ -178,6 +184,7 @@ export default function BeforeAfterSlider({
         onPointerDown={(e) => {
           // 패널 조작이 비교 슬라이더 드래그로 번지지 않게
           e.stopPropagation();
+          setPanelHinted(false);
         }}
       >
         <div className="flex items-center justify-between" style={{ marginBottom: '0.9em' }}>
@@ -196,7 +203,10 @@ export default function BeforeAfterSlider({
           min={0}
           max={100}
           value={opacity}
-          onChange={(e) => setOpacity(Number(e.target.value))}
+          onChange={(e) => {
+            setOpacity(Number(e.target.value));
+            setPanelHinted(false); // 키보드 조작도 어포던스 해제
+          }}
           className="ep-opacity-range w-full"
           aria-label="심각도 오버레이 불투명도"
         />
