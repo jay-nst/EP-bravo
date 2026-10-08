@@ -2,6 +2,8 @@
 
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { Button } from '@naraspace-technology/nds/components';
+import { IconX } from '@naraspace-technology/nds/icons';
 
 export default function PaymentFailPage() {
   const searchParams = useSearchParams();
@@ -10,30 +12,23 @@ export default function PaymentFailPage() {
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center gap-16">
-      <div
-        className="w-48 h-48 rounded-full flex items-center justify-center text-2xl"
-        style={{ background: 'rgba(196, 92, 74, 0.1)', color: 'var(--error)' }}
-      >
-        ✕
+      <div className="flex size-48 items-center justify-center rounded-full bg-status-danger/10 text-status-danger">
+        <IconX className="size-24" />
       </div>
-      <h2 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>
+      <h2 className="text-heading-xl text-text-primary">
         결제 실패
       </h2>
-      <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+      <p className="text-body-sm-regular text-text-tertiary">
         {message || '결제가 취소되었거나 오류가 발생했습니다'}
       </p>
       {code && (
-        <p className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
+        <p className="text-body-xs-regular tabular-nums text-text-tertiary">
           오류 코드: {code}
         </p>
       )}
-      <Link
-        href="/map"
-        className="mt-16 px-20 py-8 rounded-sm text-sm font-medium transition-colors"
-        style={{ background: 'var(--accent)', color: '#0E0E10' }}
-      >
+      <Button className="mt-16" render={<Link href="/map" />} nativeButton={false}>
         다시 시도하기
-      </Link>
+      </Button>
     </div>
   );
 }

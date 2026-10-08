@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import type mapboxgl from 'mapbox-gl';
+import { Button, Separator, Spinner } from '@naraspace-technology/nds/components';
 import { addPredictOverlay, removeSimulatorOverlay } from '@/lib/simulator-overlays';
 import { trackEvent } from '@/lib/analytics';
 import { fmtNum } from '@/lib/format';
@@ -11,17 +12,8 @@ import LeadCaptureModal from '@/components/shared/LeadCaptureModal';
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
   loading: () => (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--bg)',
-      }}
-    >
-      <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>지도 로딩 중...</p>
+    <div className="flex size-full items-center justify-center bg-bg-tertiary">
+      <p className="text-body-sm-regular text-text-tertiary">지도 로딩 중...</p>
     </div>
   ),
 });
@@ -116,30 +108,13 @@ export default function PredictSimulator() {
   }, [clearOverlay]);
 
   return (
-    <section style={{ padding: '0 24px 64px', maxWidth: 960, margin: '0 auto' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-        <span
-          style={{
-            fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: 13,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: 'var(--text-muted)',
-          }}
-        >
-          자산 검증 체험
-        </span>
+    <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
+      <div className="mb-20 flex items-center gap-8">
+        <span className="text-body-xs-regular text-text-tertiary">자산 검증 체험</span>
       </div>
 
-      <div
-        className="h-[320px] md:h-[480px]"
-        style={{
-          position: 'relative',
-          borderRadius: 8,
-          overflow: 'hidden',
-          border: '1px solid var(--border)',
-        }}
-      >
+      {/* 지도 캔버스가 컨테이너를 꽉 채워 inset-ring 을 가리므로 지도 프레임만 border 로 그린다 */}
+      <div className="relative h-320 overflow-hidden rounded-sm border border-border-tertiary md:h-480">
         <EarthMap
           onAoiChange={handleAoiChange}
           onMapReady={handleMapReady}
@@ -148,47 +123,17 @@ export default function PredictSimulator() {
           zoom={9}
         />
 
-        <div
-          className="absolute bottom-0 left-0 right-0 max-h-[75%] overflow-y-auto rounded-t-sm md:bottom-auto md:left-auto md:right-12 md:top-12 md:w-[280px] md:max-h-[calc(100%-24px)] md:overflow-y-auto md:rounded-sm"
-          style={{
-            background: 'var(--panel-bg)',
-            backdropFilter: 'blur(12px)',
-            border: '1px solid var(--border)',
-            pointerEvents: 'auto',
-          }}
-        >
+        <div className="pointer-events-auto absolute bottom-0 left-0 right-0 max-h-[75%] overflow-y-auto rounded-t-lg bg-panel-bg backdrop-blur-[12px] inset-ring-1 inset-ring-border-tertiary md:bottom-auto md:left-auto md:right-12 md:top-12 md:max-h-[calc(100%-24px)] md:w-280 md:rounded-lg">
           {phase === 'draw' && (
             <div className="p-16 md:p-20">
-              <h3
-                style={{
-                  fontSize: 16,
-                  fontWeight: 600,
-                  color: 'var(--text)',
-                  marginBottom: 8,
-                }}
-              >
-                자산 검증
-              </h3>
-              <p
-                style={{
-                  fontSize: 13,
-                  lineHeight: 1.6,
-                  color: 'var(--text-muted)',
-                  marginBottom: 16,
-                }}
-              >
+              <h3 className="mb-8 text-body-md-medium text-text-primary">자산 검증</h3>
+              <p className="mb-16 text-body-sm-regular text-text-tertiary">
                 태양광 발전소 경계를 그려보세요. 위성영상 기반 자산 존재·상태
                 검증이 시뮬레이션됩니다.
               </p>
               <div
-                style={{
-                  padding: '8px 12px',
-                  borderRadius: 6,
-                  background: 'rgba(74, 158, 196, 0.12)',
-                  fontSize: 12,
-                  color: '#4A9EC4',
-                  fontFamily: "'IBM Plex Mono', monospace",
-                }}
+                className="rounded-md px-12 py-8 text-body-xs-regular"
+                style={{ background: 'rgba(74, 158, 196, 0.12)', color: '#4A9EC4' }}
               >
                 왼쪽 상단 도구로 발전소 경계를 그리세요
               </div>
@@ -196,72 +141,34 @@ export default function PredictSimulator() {
           )}
 
           {phase === 'analyzing' && (
-            <div className="p-16 md:p-20" style={{ textAlign: 'center' }}>
-              <div
-                style={{
-                  width: 32,
-                  height: 32,
-                  margin: '0 auto 12px',
-                  border: '2px solid var(--border)',
-                  borderTopColor: '#4A9EC4',
-                  borderRadius: '50%',
-                  animation: 'predict-spin 1s linear infinite',
-                }}
-              />
-              <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>
-                위성영상 분석 중...
-              </p>
+            <div className="flex flex-col items-center gap-12 p-16 text-center md:p-20">
+              <Spinner />
+              <p className="text-body-sm-regular text-text-tertiary">위성영상 분석 중...</p>
             </div>
           )}
 
           {phase === 'result' && result && (
             <div>
-              <div
-                style={{
-                  padding: '12px 16px',
-                  borderBottom: '1px solid var(--border)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: 12,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    color: '#4A9EC4',
-                    fontWeight: 600,
-                  }}
-                >
+              <div className="flex items-center justify-between py-8 pl-16 pr-8">
+                <span className="text-body-xs-regular" style={{ color: '#4A9EC4' }}>
                   검증 결과
                 </span>
-                <button
-                  onClick={handleReset}
-                  style={{
-                    fontSize: 12,
-                    color: 'var(--text-muted)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: '4px 8px',
-                  }}
-                >
+                <Button variant="text" size="sm" onClick={handleReset}>
                   초기화
-                </button>
+                </Button>
               </div>
+              <Separator />
 
-              <div style={{ position: 'relative', height: 100, overflow: 'hidden' }}>
+              <div className="relative h-100 overflow-hidden">
                 <img
                   src="https://earthpaper.s3.ap-northeast-2.amazonaws.com/post/v2/editor/28/Thumbnail-corn-belt-yield-model-97pct-accuracy-satellite-forecast.png"
                   alt="자산 검증 위성영상"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  className="size-full object-cover"
                 />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--surface) 0%, transparent 60%)' }} />
+                <div className="absolute inset-0 bg-linear-to-t from-bg-secondary to-transparent to-60%" />
               </div>
 
-              <div style={{ padding: 16 }}>
+              <div className="p-16">
                 {[
                   { label: '검증 면적', value: `${fmtNum(result.areaKm2, 1)} km²` },
                   { label: '자산 유형', value: result.assetType },
@@ -284,84 +191,35 @@ export default function PredictSimulator() {
                 ].map((item) => (
                   <div
                     key={item.label}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '6px 0',
-                      borderBottom: '1px solid rgba(255,255,255,0.05)',
-                    }}
+                    className="flex items-center justify-between border-b border-border-tertiary py-6"
                   >
+                    <span className="text-body-xs-regular text-text-tertiary">{item.label}</span>
                     <span
-                      style={{
-                        fontFamily: "'IBM Plex Mono', monospace",
-                        fontSize: 12,
-                        color: 'var(--text-muted)',
-                        letterSpacing: '0.04em',
-                      }}
-                    >
-                      {item.label}
-                    </span>
-                    <span
-                      style={{
-                        fontSize: 14,
-                        fontWeight: 500,
-                        color: item.color || 'var(--text)',
-                      }}
+                      className="text-body-sm-medium tabular-nums text-text-primary"
+                      style={item.color ? { color: item.color } : undefined}
                     >
                       {item.value}
                     </span>
                   </div>
                 ))}
 
-                <button
+                <Button
+                  display="block"
+                  className="mt-16"
                   onClick={() => { trackEvent('simulator_event', 'lead_form_opened', { vertical: 'predict' }); setShowLeadForm(true); }}
-                  style={{
-                    width: '100%',
-                    marginTop: 16,
-                    padding: '10px',
-                    minHeight: 48,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 6,
-                    background: '#4A9EC4',
-                    color: '#fff',
-                    fontSize: 14,
-                    fontWeight: 500,
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'opacity var(--duration-short) var(--ease-enter)',
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
                 >
                   검증 리포트 요청
-                </button>
+                </Button>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      <p
-        style={{
-          fontFamily: "'IBM Plex Mono', monospace",
-          fontSize: 12,
-          color: 'var(--text-muted)',
-          marginTop: 12,
-          letterSpacing: '0.04em',
-        }}
-      >
+      <p className="mt-12 text-body-xs-regular text-text-tertiary">
         시뮬레이션 데이터입니다. 실 서비스에서는 고해상도 위성영상 기반으로
         검증됩니다.
       </p>
-
-      <style>{`
-        @keyframes predict-spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
 
       <LeadCaptureModal
         open={showLeadForm}

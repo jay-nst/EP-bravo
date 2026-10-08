@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Badge, Button } from '@naraspace-technology/nds/components';
+import { IconAlertOn } from '@naraspace-technology/nds/icons';
 
 interface Notification {
   id: string;
@@ -44,61 +46,51 @@ export default function NotificationBell() {
     );
   };
 
+  const renderBody = (n: Notification) => (
+    <>
+      <p className="text-body-sm-medium text-text-primary">{n.title}</p>
+      <p className="text-body-xs-regular text-text-tertiary mt-2">{n.message}</p>
+      <p className="text-body-xs-regular text-border-tertiary tabular-nums mt-4">
+        {new Date(n.created_at).toLocaleString('ko-KR')}
+      </p>
+    </>
+  );
+
   return (
     <div className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className="relative p-8 transition-colors"
-        style={{ color: 'var(--text-muted)' }}
-        aria-label="알림"
-      >
-        <svg
-          className="w-20 h-20"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
+      <Button variant="text" iconOnly onClick={() => setOpen(!open)} aria-label="알림">
+        <IconAlertOn />
+      </Button>
+      {unreadCount > 0 && (
+        <Badge
+          type="letter"
+          status="important"
+          className="absolute -top-2 -right-2 pointer-events-none"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-          />
-        </svg>
-        {unreadCount > 0 && (
-          <span
-            className="absolute -top-2 -right-2 w-16 h-16 rounded-full text-[10px] flex items-center justify-center font-medium"
-            style={{ background: 'var(--error)', color: '#fff' }}
-          >
-            {unreadCount > 9 ? '9+' : unreadCount}
-          </span>
-        )}
-      </button>
+          {unreadCount > 9 ? '9+' : unreadCount}
+        </Badge>
+      )}
 
+      {/* NDS 에 Popover/Menu 가 없어 드롭다운 동작은 그대로 두고 표면·타이포만 NDS 로 */}
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false); }} />
-          <div
-            className="absolute right-0 top-full mt-8 w-320 glass-panel rounded-[12px] shadow-xl z-50 overflow-hidden"
-            style={{ border: '1px solid var(--border)' }}
-          >
-            <div className="px-16 py-12" style={{ borderBottom: '1px solid var(--border)' }}>
-              <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>알림</p>
+          <div className="absolute right-0 top-full mt-8 w-320 z-50 overflow-hidden glass-panel rounded-md inset-ring-1 inset-ring-border-tertiary shadow-6">
+            <div className="px-16 py-12 border-b border-border-tertiary">
+              <p className="text-body-sm-medium text-text-primary">알림</p>
             </div>
             <div className="max-h-320 overflow-y-auto">
               {notifications.length === 0 ? (
-                <p className="text-sm text-center py-32" style={{ color: 'var(--text-muted)' }}>
+                <p className="text-body-sm-regular text-text-tertiary text-center py-32">
                   알림이 없습니다
                 </p>
               ) : (
                 notifications.slice(0, 20).map((n) => (
                   <div
                     key={n.id}
-                    className="px-16 py-12 transition-colors cursor-pointer"
-                    style={{
-                      borderBottom: '1px solid rgba(42, 42, 47, 0.5)',
-                      background: !n.read ? 'rgba(27, 191, 168, 0.05)' : 'transparent',
-                    }}
+                    className={`px-16 py-12 transition-colors cursor-pointer border-b border-border-tertiary/50 ${
+                      !n.read ? 'bg-bg-interactive-primary/5' : 'bg-transparent'
+                    }`}
                     onClick={() => {
                       if (!n.read) markAsRead(n.id);
                       setOpen(false);
@@ -106,20 +98,10 @@ export default function NotificationBell() {
                   >
                     {n.link ? (
                       <Link href={n.link} className="block">
-                        <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>{n.title}</p>
-                        <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>{n.message}</p>
-                        <p className="text-xs mt-4" style={{ color: 'var(--border)' }}>
-                          {new Date(n.created_at).toLocaleString('ko-KR')}
-                        </p>
+                        {renderBody(n)}
                       </Link>
                     ) : (
-                      <>
-                        <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>{n.title}</p>
-                        <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>{n.message}</p>
-                        <p className="text-xs mt-4" style={{ color: 'var(--border)' }}>
-                          {new Date(n.created_at).toLocaleString('ko-KR')}
-                        </p>
-                      </>
+                      renderBody(n)
                     )}
                   </div>
                 ))

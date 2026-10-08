@@ -326,21 +326,13 @@ export default function EarthMap({
     <div className="relative w-full h-full">
       <div ref={mapContainer} className="w-full h-full" />
       {!isLoaded && (
-        <div
-          className="absolute inset-0 flex items-center justify-center"
-          style={{ background: 'rgba(14, 14, 16, 0.5)' }}
-        >
-          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-            지도 로딩 중...
-          </p>
+        <div className="absolute inset-0 flex items-center justify-center bg-[rgba(14,14,16,0.5)]">
+          <p className="text-body-sm-regular text-text-tertiary">지도 로딩 중...</p>
         </div>
       )}
       {isLoaded && catalogItems.length > 0 && (
-        <div
-          className="absolute bottom-16 left-16 glass-panel text-xs px-12 py-6 rounded-full"
-          style={{ color: 'var(--text)' }}
-        >
-          <span style={{ color: 'var(--accent)' }}>{catalogItems.length}</span>
+        <div className="glass-panel absolute bottom-16 left-16 rounded-full px-12 py-6 text-body-xs-regular text-text-primary">
+          <span className="text-text-interactive-primary tabular-nums">{catalogItems.length}</span>
           개 영상 검색됨
         </div>
       )}

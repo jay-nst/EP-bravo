@@ -1,16 +1,22 @@
+import { Card } from '@naraspace-technology/nds/components';
+import { IconArrowRight } from '@naraspace-technology/nds/icons';
 import TrackedLink from '@/components/ui/TrackedLink';
 
 export default function CoreCTA() {
   return (
-    <TrackedLink
-      href="/core"
-      eventName="core_cta"
-      eventProperties={{ source: 'homepage_sidebar' }}
-      className="block rounded-sm overflow-hidden transition-colors group"
-      style={{ border: '1px solid var(--border)' }}
+    <Card.Root
+      interactive
+      render={
+        <TrackedLink
+          href="/core"
+          eventName="core_cta"
+          eventProperties={{ source: 'homepage_sidebar' }}
+        />
+      }
     >
+      {/* 위성 지도 느낌의 그라데이션·격자는 일러스트 — 인라인 유지 */}
       <div
-        className="relative h-144 flex items-end p-16"
+        className="relative h-144 flex items-end p-16 rounded-md overflow-hidden"
         style={{
           background:
             'linear-gradient(135deg, #0a1a15 0%, #0d2216 30%, #0a1612 60%, #0E0E10 100%)',
@@ -25,42 +31,28 @@ export default function CoreCTA() {
           }}
         />
         <div className="relative z-10">
-          <p
-            className="text-xs font-mono tracking-wider uppercase mb-4"
-            style={{ color: 'var(--accent)', opacity: 0.7 }}
-          >
+          <p className="text-body-xs-regular text-text-interactive-primary opacity-70 mb-4">
             Core Map
           </p>
-          <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
-            위성 지도에서 탐색 &rarr;
+          <p className="text-body-sm-medium text-text-primary flex items-center gap-4">
+            위성 지도에서 탐색
+            <IconArrowRight className="size-16" />
           </p>
         </div>
       </div>
-      <div className="p-12 space-y-8" style={{ background: 'var(--surface)' }}>
-        <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+      <Card.Body className="gap-8">
+        <p className="text-body-xs-regular text-text-tertiary">
           데이터 오버레이 시각화, 분석 도구, 영상 구매를 하나의 지도에서.
         </p>
         <div className="flex gap-8">
-          <span
-            className="text-xs px-6 py-2 rounded-xs"
-            style={{
-              background: 'rgba(27,191,168,0.08)',
-              color: 'var(--accent)',
-            }}
-          >
+          <span className="text-body-xs-regular px-6 py-2 rounded-full bg-bg-interactive-primary/8 text-text-interactive-primary">
             데이터 오버레이
           </span>
-          <span
-            className="text-xs px-6 py-2 rounded-xs"
-            style={{
-              background: 'var(--surface-elevated)',
-              color: 'var(--text-muted)',
-            }}
-          >
+          <span className="text-body-xs-regular px-6 py-2 rounded-full bg-bg-primary text-text-tertiary">
             영상 구매
           </span>
         </div>
-      </div>
-    </TrackedLink>
+      </Card.Body>
+    </Card.Root>
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { StatusChip, Switch } from '@naraspace-technology/nds/components';
 import type { CitadelSeverity } from '@/types/citadel';
 
 export interface OverlayLayer {
@@ -26,52 +27,47 @@ interface LayerPanelProps {
 export default function LayerPanel({ layers, onToggle }: LayerPanelProps) {
   return (
     <div className="space-y-4">
-      <h3
-        className="text-xs font-mono tracking-wider uppercase mb-8"
-        style={{ color: 'var(--text-muted)' }}
-      >
-        Data Overlay
-      </h3>
+      <h3 className="mb-8 text-body-xs-regular text-text-tertiary">Data Overlay</h3>
       {layers.map((layer) => (
-        <button
+        <label
           key={layer.id}
-          onClick={() => !layer.comingSoon && onToggle(layer.id)}
-          className="w-full flex items-center gap-10 px-10 py-8 rounded-[6px] text-left transition-colors"
-          style={{
-            background: layer.enabled ? 'var(--surface)' : 'transparent',
-            cursor: layer.comingSoon ? 'default' : 'pointer',
-            opacity: layer.comingSoon ? 0.5 : 1,
-          }}
+          className={`flex w-full items-center gap-10 rounded-sm px-10 py-8 transition-colors ${
+            layer.enabled ? 'bg-bg-secondary' : 'bg-transparent'
+          } ${layer.comingSoon ? 'cursor-default opacity-50' : 'cursor-pointer'}`}
         >
+          {/* 레이어 색 — 데이터 기반 색이라 인라인 유지 */}
           <span
-            className="w-10 h-10 rounded-xs flex-shrink-0"
-            style={{
-              background: layer.enabled ? layer.color : 'var(--border)',
-              transition: 'background 200ms',
-            }}
+            className={`size-10 shrink-0 rounded-xs transition-colors duration-200 ${
+              layer.enabled ? '' : 'bg-border-tertiary'
+            }`}
+            style={layer.enabled ? { background: layer.color } : undefined}
           />
           <span
-            className="text-sm flex-1"
-            style={{ color: layer.enabled ? 'var(--text)' : 'var(--text-muted)' }}
+            className={`flex-1 text-body-sm-regular ${
+              layer.enabled ? 'text-text-primary' : 'text-text-tertiary'
+            }`}
           >
             {layer.label}
           </span>
           {layer.comingSoon ? (
-            <span
-              className="text-xs px-6 py-2 rounded-xs"
-              style={{ background: 'var(--surface-elevated)', color: 'var(--text-muted)' }}
-            >
+            <StatusChip status="neutral" showIcon={false}>
               Soon
-            </span>
+            </StatusChip>
           ) : (
-            <span
-              className="text-xs font-mono"
-              style={{ color: 'var(--text-muted)' }}
-            >
+            <span className="text-body-xs-regular text-text-tertiary tabular-nums">
               {layer.featureCount}
             </span>
           )}
-        </button>
+          <Switch
+            size="sm"
+            checked={layer.enabled}
+            disabled={layer.comingSoon}
+            aria-label={layer.label}
+            onCheckedChange={() => {
+              if (!layer.comingSoon) onToggle(layer.id);
+            }}
+          />
+        </label>
       ))}
     </div>
   );

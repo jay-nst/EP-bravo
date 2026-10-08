@@ -1,14 +1,24 @@
 'use client';
 
 import { useState } from 'react';
+import { Form } from '@base-ui/react/form';
+import { Button, Field, Input } from '@naraspace-technology/nds/components';
 import { trackEvent } from '@/lib/analytics';
+
+// NDS 폼 패턴 — LeadCaptureModal 참조 구현과 같은 Base UI Form + Field.Root validate + Field.Error
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const validateEmail = (value: unknown) => {
+  const v = String(value ?? '').trim();
+  if (!v) return '이메일을 입력해주세요.';
+  return EMAIL_RE.test(v) ? null : '이메일 형식을 확인해주세요.';
+};
 
 export default function NewsletterForm() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'submitting' | 'done' | 'error'>('idle');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Form 이 validate 를 통과시켰을 때만 호출된다 (preventDefault 는 Form 이 처리)
+  const handleSubmit = async () => {
     if (!email.trim() || status === 'submitting') return;
 
     setStatus('submitting');
@@ -30,38 +40,28 @@ export default function NewsletterForm() {
 
   if (status === 'done') {
     return (
-      <p className="text-sm py-8" style={{ color: 'var(--accent)' }}>
+      <p className="text-body-sm-regular text-text-interactive-primary py-8">
         구독 완료! 매주 위성 뉴스를 보내드릴게요.
       </p>
     );
   }
 
   return (
-    <form className="flex gap-8 w-full sm:w-auto" onSubmit={handleSubmit}>
-      <input
-        type="email"
-        required
-        placeholder="이메일 주소"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="flex-1 sm:w-224 px-12 py-8 rounded-[6px] text-sm"
-        style={{
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          color: 'var(--text)',
-        }}
-      />
-      <button
-        type="submit"
-        disabled={status === 'submitting'}
-        className="px-16 py-8 rounded-[6px] text-sm font-medium"
-        style={{
-          background: status === 'submitting' ? 'var(--surface)' : 'var(--accent)',
-          color: status === 'submitting' ? 'var(--text-muted)' : '#0E0E10',
-        }}
-      >
-        {status === 'submitting' ? '...' : status === 'error' ? '재시도' : '구독'}
-      </button>
-    </form>
+    <Form className="flex items-start gap-8 w-full sm:w-auto" onFormSubmit={handleSubmit}>
+      <Field.Root name="email" validate={validateEmail} className="flex-1 sm:w-224">
+        {/* 원래 화면에 라벨이 없어 시각적으로만 숨긴다 — 입력 이름은 스크린리더에 전달 */}
+        <Field.Label className="sr-only">이메일 주소</Field.Label>
+        <Input
+          type="email"
+          placeholder="이메일 주소"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Field.Error />
+      </Field.Root>
+      <Button type="submit" loading={status === 'submitting'}>
+        {status === 'error' ? '재시도' : '구독'}
+      </Button>
+    </Form>
   );
 }

@@ -1,7 +1,21 @@
 'use client';
 
-import { SOURCE_KIND_BADGE } from '@/lib/seoul-data-sources';
+import { Collapsible, StatusChip } from '@naraspace-technology/nds/components';
+import type { StatusChipProps } from '@naraspace-technology/nds/components';
+import { SOURCE_KIND_BADGE, type SeoulSourceKind } from '@/lib/seoul-data-sources';
 import { GYEONGGI_DATA_SOURCES, type GyeonggiDataSource } from '@/lib/gyeonggi-data-sources';
+
+// SOURCE_KIND_BADGE 의 라벨은 그대로 쓰고, 표시는 NDS StatusChip status 로 한다
+// (LIVE→success, DEMO→neutral, 분석·통계→information, 영상→brand, 배경·경계→neutral).
+const KIND_STATUS: Record<SeoulSourceKind, StatusChipProps['status']> = {
+  live: 'success',
+  stat: 'information',
+  demo: 'neutral',
+  analysis: 'information',
+  imagery: 'brand',
+  basemap: 'neutral',
+  boundary: 'neutral',
+};
 
 // 사이드바 하단의 '데이터 출처' 섹션. 접힌 상태가 기본.
 // SeoulSourcePanel 과 같은 구조로, 읽는 레지스트리만 경기 것이다.
@@ -12,43 +26,21 @@ interface GyeonggiSourcePanelProps {
 
 export default function GyeonggiSourcePanel({ defaultOpen = false }: GyeonggiSourcePanelProps) {
   return (
-    <details
-      className="ep-src-details pt-16"
-      style={{ borderTop: '1px solid var(--border)' }}
-      open={defaultOpen}
-    >
-      <summary
-        className="text-xs font-mono tracking-wider uppercase cursor-pointer list-none flex items-center gap-6 py-4"
-        style={{ color: 'var(--text-muted)' }}
-      >
-        <span className="ep-src-caret" aria-hidden>
-          ▸
-        </span>
-        데이터 출처 ({GYEONGGI_DATA_SOURCES.length})
-      </summary>
+    // 접기/펼치기 — NDS Collapsible (Root → Trigger → Panel). 기본은 접힘.
+    <Collapsible.Root variant="outline" defaultOpen={defaultOpen}>
+      <Collapsible.Trigger>데이터 출처 ({GYEONGGI_DATA_SOURCES.length})</Collapsible.Trigger>
+      <Collapsible.Panel>
+        <ul className="space-y-10">
+          {GYEONGGI_DATA_SOURCES.map((s) => (
+            <SourceRow key={s.id} source={s} />
+          ))}
+        </ul>
 
-      <ul className="mt-8 space-y-10">
-        {GYEONGGI_DATA_SOURCES.map((s) => (
-          <SourceRow key={s.id} source={s} />
-        ))}
-      </ul>
-
-      <p className="text-xs leading-relaxed mt-12" style={{ color: 'var(--text-muted)' }}>
-        접근성 등고선은 공식 평가가 아니라 EarthPaper 자체 분석이다. 정책 판단 근거로 쓰지 않는다.
-      </p>
-
-      <style>{`
-        .ep-src-details > summary::-webkit-details-marker { display: none; }
-        .ep-src-details[open] .ep-src-caret { transform: rotate(90deg); }
-        .ep-src-details .ep-src-caret {
-          display: inline-block;
-          transition: transform var(--duration-short) var(--ease-move);
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .ep-src-details .ep-src-caret { transition: none; }
-        }
-      `}</style>
-    </details>
+        <p className="mt-12 text-body-xs-regular text-text-tertiary">
+          접근성 등고선은 공식 평가가 아니라 EarthPaper 자체 분석이다. 정책 판단 근거로 쓰지 않는다.
+        </p>
+      </Collapsible.Panel>
+    </Collapsible.Root>
   );
 }
 
@@ -56,29 +48,21 @@ function SourceRow({ source }: { source: GyeonggiDataSource }) {
   const badge = SOURCE_KIND_BADGE[source.kind];
 
   return (
-    <li className="text-xs leading-relaxed">
-      <div className="flex items-baseline gap-6">
-        <span
-          className="font-mono px-4 rounded-xs flex-shrink-0"
-          style={{
-            background: 'var(--surface-elevated)',
-            color: badge.color,
-            letterSpacing: '0.04em',
-          }}
-        >
+    <li className="text-body-xs-regular text-text-tertiary">
+      <div className="flex items-center gap-6">
+        <StatusChip status={KIND_STATUS[source.kind]} showIcon={false} className="shrink-0">
           {badge.label}
-        </span>
-        <span style={{ color: 'var(--text)' }}>{source.layer}</span>
+        </StatusChip>
+        <span className="text-text-primary">{source.layer}</span>
       </div>
 
-      <div className="mt-2" style={{ color: 'var(--text-muted)' }}>
+      <div className="mt-2">
         {source.url ? (
           <a
             href={source.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="underline"
-            style={{ color: 'var(--text-muted)', textDecorationColor: 'var(--border)' }}
+            className="text-text-tertiary underline decoration-border-tertiary"
           >
             {source.provider}
           </a>
@@ -87,13 +71,9 @@ function SourceRow({ source }: { source: GyeonggiDataSource }) {
         )}
       </div>
 
-      <div className="font-mono break-words" style={{ color: 'var(--text-muted)', opacity: 0.85 }}>
-        {source.dataset}
-      </div>
+      <div className="break-words opacity-85">{source.dataset}</div>
 
-      <p className="mt-2" style={{ color: 'var(--text-muted)', opacity: 0.75 }}>
-        {source.note}
-      </p>
+      <p className="mt-2 opacity-75">{source.note}</p>
     </li>
   );
 }

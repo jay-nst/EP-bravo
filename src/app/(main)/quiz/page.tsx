@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { useState, useEffect, useMemo } from 'react';
+import { Button, StatusChip } from '@naraspace-technology/nds/components';
+import { IconSatellite } from '@naraspace-technology/nds/icons';
 import { DAILY_QUIZZES } from '@/lib/sample-data';
 
 function getTodayQuiz() {
@@ -73,97 +75,88 @@ export default function QuizPage() {
   const isCorrect = selected === quiz.answer;
 
   return (
-    <div className="max-w-2xl mx-auto px-16 py-32 w-full">
+    <div className="mx-auto w-full max-w-2xl px-16 py-32">
       {/* Header */}
-      <div className="flex items-center justify-between mb-32">
+      <div className="mb-32 flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-8 mb-4">
-            <h1 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
+          <div className="mb-4 flex items-center gap-8">
+            <h1 className="text-heading-3xl text-text-primary">
               오늘의 퀴즈
             </h1>
-            <span
-              className="text-xs font-mono px-8 py-2 rounded-full"
-              style={{ background: 'rgba(27,191,168,0.1)', color: 'var(--accent)' }}
-            >
+            <StatusChip status="brand" showIcon={false}>
               DAILY
-            </span>
+            </StatusChip>
           </div>
-          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-body-sm-regular text-text-tertiary">
             위성 영상을 보고 장소를 맞혀보세요
           </p>
         </div>
         {/* Streak */}
         <div className="text-center">
           <div
-            className="w-48 h-48 rounded-full flex items-center justify-center text-lg font-mono font-semibold"
-            style={{
-              border: streak > 0 ? '2px solid var(--accent)' : '2px solid var(--border)',
-              color: streak > 0 ? 'var(--accent)' : 'var(--text-muted)',
-            }}
+            className={`flex size-48 items-center justify-center rounded-full border-2 text-body-lg-medium tabular-nums ${
+              streak > 0
+                ? 'border-border-interactive-primary text-text-interactive-primary'
+                : 'border-border-tertiary text-text-tertiary'
+            }`}
           >
             {streak}
           </div>
-          <p className="text-xs mt-4" style={{ color: 'var(--text-muted)' }}>연속</p>
+          <p className="mt-4 text-body-xs-regular text-text-tertiary">연속</p>
         </div>
       </div>
 
-      {/* Image / Hint area */}
-      <div
-        className="rounded-[12px] overflow-hidden mb-24"
-        style={{ border: '1px solid var(--border)' }}
-      >
+      {/* Image / Hint area — 자식 배경이 가장자리까지 차서 inset-ring 대신 border 로 테두리 */}
+      <div className="mb-24 overflow-hidden rounded-lg border border-border-tertiary">
         <div
-          className="aspect-[16/10] flex flex-col items-center justify-center p-32 text-center relative overflow-hidden"
+          className="relative flex aspect-[16/10] flex-col items-center justify-center overflow-hidden p-32 text-center"
           style={{ background: 'linear-gradient(135deg, #0a1a15 0%, #0d2818 30%, #0a1612 60%, #111a14 100%)' }}
         >
           <div
-            className="absolute inset-0 pointer-events-none"
+            className="pointer-events-none absolute inset-0"
             style={{
               backgroundImage: 'linear-gradient(rgba(27,191,168,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(27,191,168,0.05) 1px, transparent 1px)',
               backgroundSize: '20px 20px',
             }}
           />
-          <div
-            className="w-64 h-64 rounded-full flex items-center justify-center text-3xl mb-16 relative z-10"
-            style={{ background: 'rgba(27,191,168,0.08)' }}
-          >
-            <span style={{ color: 'var(--accent)' }}>&#128752;</span>
+          <div className="relative z-10 mb-16 flex size-64 items-center justify-center rounded-full bg-[rgba(27,191,168,0.08)]">
+            <IconSatellite className="size-24 text-icon-interactive-primary" />
           </div>
-          <p
-            className="text-sm leading-relaxed max-w-md relative z-10"
-            style={{ color: 'var(--text-muted)' }}
-          >
+          <p className="relative z-10 max-w-md text-body-sm-regular text-text-tertiary">
             {quiz.imageHint}
           </p>
-          <p className="text-xs font-mono mt-12 relative z-10" style={{ color: 'var(--text-muted)', opacity: 0.5 }}>
+          <p className="relative z-10 mt-12 text-body-xs-regular text-text-tertiary opacity-50">
             실제 위성 영상이 여기에 표시됩니다
           </p>
         </div>
       </div>
 
       {/* Question */}
-      <h2 className="text-lg font-semibold mb-16" style={{ color: 'var(--text)' }}>
+      <h2 className="mb-16 text-heading-lg text-text-primary">
         {quiz.question}
       </h2>
 
-      {/* Choices */}
-      <div className="space-y-10 mb-32">
+      {/* Choices — 정답/오답 상태를 보여주는 선택지 타일. NDS Button 에 해당 상태가 없어 네이티브 button 유지 */}
+      <div className="mb-32 space-y-10">
         {quiz.choices.map((choice, i) => {
-          let borderColor = 'var(--border)';
-          let bg = 'transparent';
-          let textColor = 'var(--text)';
+          let ringClass = 'inset-ring-border-tertiary';
+          let borderClass = 'border-border-tertiary';
+          let bgClass = '';
+          let textClass = 'text-text-primary';
 
           if (revealed) {
             if (i === quiz.answer) {
-              borderColor = 'var(--accent)';
-              bg = 'rgba(27,191,168,0.08)';
-              textColor = 'var(--accent)';
+              ringClass = 'inset-ring-border-interactive-primary';
+              borderClass = 'border-border-interactive-primary';
+              bgClass = 'bg-[rgba(27,191,168,0.08)]';
+              textClass = 'text-text-interactive-primary';
             } else if (i === selected && i !== quiz.answer) {
-              borderColor = 'var(--error)';
-              bg = 'rgba(196,92,74,0.08)';
-              textColor = 'var(--error)';
+              ringClass = 'inset-ring-status-danger';
+              borderClass = 'border-status-danger';
+              bgClass = 'bg-status-danger/8';
+              textClass = 'text-status-danger';
             } else {
-              textColor = 'var(--text-muted)';
+              textClass = 'text-text-tertiary';
             }
           }
 
@@ -172,23 +165,18 @@ export default function QuizPage() {
               key={i}
               onClick={() => handleSelect(i)}
               disabled={revealed}
-              className="w-full text-left rounded-[12px] px-20 py-16 transition-all flex items-center gap-12"
-              style={{ border: `1px solid ${borderColor}`, background: bg }}
+              className={`flex w-full items-center gap-12 rounded-md px-20 py-16 text-left inset-ring-1 transition-all ${ringClass} ${bgClass}`}
             >
               <span
-                className="w-28 h-28 rounded-full flex items-center justify-center text-xs font-mono font-semibold flex-shrink-0"
-                style={{
-                  border: `1.5px solid ${borderColor}`,
-                  color: textColor,
-                }}
+                className={`flex size-28 shrink-0 items-center justify-center rounded-full border-[1.5px] text-body-xs-regular tabular-nums ${borderClass} ${textClass}`}
               >
                 {String.fromCharCode(65 + i)}
               </span>
-              <span className="text-sm" style={{ color: textColor }}>
+              <span className={`text-body-sm-regular ${textClass}`}>
                 {choice}
               </span>
               {revealed && i === quiz.answer && (
-                <span className="ml-auto text-xs font-medium" style={{ color: 'var(--accent)' }}>
+                <span className="ml-auto text-body-xs-regular text-text-interactive-primary">
                   정답
                 </span>
               )}
@@ -200,62 +188,50 @@ export default function QuizPage() {
       {/* Result */}
       {revealed && (
         <div
-          className="rounded-[12px] p-24 space-y-16"
-          style={{
-            border: `1px solid ${isCorrect ? 'rgba(27,191,168,0.3)' : 'rgba(196,92,74,0.3)'}`,
-            background: isCorrect ? 'rgba(27,191,168,0.04)' : 'rgba(196,92,74,0.04)',
-          }}
+          className={`space-y-16 rounded-lg p-24 inset-ring-1 ${
+            isCorrect
+              ? 'bg-[rgba(27,191,168,0.04)] inset-ring-[rgba(27,191,168,0.3)]'
+              : 'bg-[rgba(196,92,74,0.04)] inset-ring-[rgba(196,92,74,0.3)]'
+          }`}
         >
           <div className="flex items-center gap-8">
             <span
-              className="text-sm font-semibold"
-              style={{ color: isCorrect ? 'var(--accent)' : 'var(--error)' }}
+              className={`text-body-sm-medium ${isCorrect ? 'text-text-interactive-primary' : 'text-status-danger'}`}
             >
               {isCorrect ? '정답입니다!' : '아쉽네요!'}
             </span>
             {isCorrect && streak > 1 && (
-              <span
-                className="text-xs font-mono px-8 py-2 rounded-full"
-                style={{ background: 'rgba(27,191,168,0.1)', color: 'var(--accent)' }}
-              >
+              <StatusChip status="brand" showIcon={false}>
                 {streak}일 연속 정답
-              </span>
+              </StatusChip>
             )}
           </div>
-          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-body-sm-regular text-text-tertiary">
             {quiz.explanation}
           </p>
-          <div className="flex items-center gap-16 text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
+          <div className="flex items-center gap-16 text-body-xs-regular tabular-nums text-text-tertiary">
             <span>{quiz.location}</span>
-            <span style={{ color: 'var(--border)' }}>&middot;</span>
+            <span className="text-border-tertiary">&middot;</span>
             <span>{quiz.coordinates}</span>
           </div>
           <div className="flex gap-12 pt-8">
-            <Link
-              href="/map"
-              className="px-16 py-8 rounded-sm text-sm font-medium transition-colors"
-              style={{ background: 'var(--accent)', color: '#0E0E10' }}
-            >
+            <Button render={<Link href="/map" />} nativeButton={false}>
               지도에서 보기
-            </Link>
-            <Link
-              href="/explore"
-              className="px-16 py-8 rounded-sm text-sm transition-colors"
-              style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
-            >
+            </Button>
+            <Button variant="outline" render={<Link href="/explore" />} nativeButton={false}>
               탐색하기
-            </Link>
+            </Button>
           </div>
         </div>
       )}
 
       {/* Tomorrow teaser */}
       {revealed && (
-        <div className="mt-32 text-center py-24" style={{ borderTop: '1px solid var(--border)' }}>
-          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+        <div className="mt-32 border-t border-border-tertiary py-24 text-center">
+          <p className="text-body-sm-regular text-text-tertiary">
             내일 새로운 퀴즈가 공개됩니다
           </p>
-          <p className="text-xs font-mono mt-4" style={{ color: 'var(--text-muted)', opacity: 0.5 }}>
+          <p className="mt-4 text-body-xs-regular text-text-tertiary opacity-50">
             매일 자정 업데이트
           </p>
         </div>

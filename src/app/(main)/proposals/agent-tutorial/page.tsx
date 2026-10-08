@@ -17,14 +17,7 @@ export default function AgentTutorialProposalPage() {
       <div className="hidden xl:block">
         <AgentTutorialDemo />
       </div>
-      <div
-        className="xl:hidden p-32 text-center text-sm rounded-[6px]"
-        style={{
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          color: 'var(--text-muted)',
-        }}
-      >
+      <div className="xl:hidden p-32 text-center text-body-sm-regular text-text-tertiary rounded-lg bg-bg-secondary inset-ring-1 inset-ring-border-tertiary">
         이 데모는 데스크톱 전용입니다 (최소 1280px). 더 넓은 화면에서 열어 주세요.
       </div>
     </div>

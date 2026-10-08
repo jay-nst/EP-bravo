@@ -1,5 +1,8 @@
 'use client';
 
+import { Spinner, StatusChip, Switch } from '@naraspace-technology/nds/components';
+import type { StatusChipProps } from '@naraspace-technology/nds/components';
+
 export type SeoulLayerId =
   | 'air-quality'
   | 'cai'
@@ -33,12 +36,17 @@ const GROUP_ORDER: SeoulLayer['group'][] = [
   '탄소·에너지',
 ];
 
-const SOURCE_BADGE: Record<DataSourceKind, { label: string; color: string }> = {
-  live: { label: 'LIVE', color: '#1bbfa8' },
-  demo: { label: 'DEMO', color: '#C8923A' },
-  analysis: { label: '분석', color: '#C45C4A' },
-  imagery: { label: '영상', color: '#4A9EC4' },
-  loading: { label: '···', color: '#8A8680' },
+// 데이터 성격 배지 — NDS StatusChip. status 는 의미대로 (docs/NDS_FULL_ADOPTION_RULES.md §4):
+// LIVE→success, DEMO→neutral, 분석·통계→information. 영상은 규칙에 없어 brand 로 구분한다.
+// loading 은 칩 대신 Spinner 로 표시한다.
+const SOURCE_BADGE: Record<
+  Exclude<DataSourceKind, 'loading'>,
+  { label: string; status: StatusChipProps['status'] }
+> = {
+  live: { label: 'LIVE', status: 'success' },
+  demo: { label: 'DEMO', status: 'neutral' },
+  analysis: { label: '분석', status: 'information' },
+  imagery: { label: '영상', status: 'brand' },
 };
 
 interface SeoulLayerPanelProps {
@@ -55,65 +63,60 @@ export default function SeoulLayerPanel({ layers, onToggle }: SeoulLayerPanelPro
 
         return (
           <div key={group} className="space-y-4">
-            <h3
-              className="text-xs font-mono tracking-wider uppercase mb-8"
-              style={{ color: 'var(--text-muted)' }}
-            >
+            <h3 className="mb-8 text-body-xs-regular text-text-tertiary">
               {group}
             </h3>
 
-            {groupLayers.map((layer) => {
-              const badge = SOURCE_BADGE[layer.source];
+            {groupLayers.map((layer) => (
+              // 행 전체가 label 이라 어디를 눌러도 Switch 가 토글된다.
+              <label
+                key={layer.id}
+                className={`flex w-full cursor-pointer items-center gap-10 rounded-sm px-10 py-8 transition-colors ${
+                  layer.enabled ? 'bg-bg-secondary' : ''
+                }`}
+              >
+                <span
+                  className={`size-10 shrink-0 rounded-xs transition-colors duration-200 ${
+                    layer.enabled ? '' : 'bg-border-tertiary'
+                  }`}
+                  // 레이어 고유색 (지도 데이터 색)
+                  style={layer.enabled ? { background: layer.color } : undefined}
+                />
 
-              return (
-                <button
-                  key={layer.id}
-                  onClick={() => onToggle(layer.id)}
-                  aria-pressed={layer.enabled}
-                  className="w-full flex items-center gap-10 px-10 py-8 rounded-[6px] text-left transition-colors"
-                  style={{ background: layer.enabled ? 'var(--surface)' : 'transparent' }}
-                >
+                <span className="min-w-0 flex-1">
                   <span
-                    className="w-10 h-10 rounded-xs flex-shrink-0"
-                    style={{
-                      background: layer.enabled ? layer.color : 'var(--border)',
-                      transition: 'background 200ms',
-                    }}
-                  />
-
-                  <span className="flex-1 min-w-0">
-                    <span
-                      className="block text-sm truncate"
-                      style={{ color: layer.enabled ? 'var(--text)' : 'var(--text-muted)' }}
-                    >
-                      {layer.label}
-                    </span>
-                    <span
-                      className="block text-xs truncate"
-                      style={{ color: 'var(--text-muted)' }}
-                    >
-                      {layer.sublabel}
-                    </span>
+                    className={`block truncate text-body-sm-regular ${
+                      layer.enabled ? 'text-text-primary' : 'text-text-tertiary'
+                    }`}
+                  >
+                    {layer.label}
                   </span>
-
-                  <span className="flex flex-col items-end gap-4 flex-shrink-0">
-                    <span
-                      className="text-xs font-mono px-6 py-2 rounded-xs"
-                      style={{
-                        background: 'var(--surface-elevated)',
-                        color: badge.color,
-                        letterSpacing: '0.04em',
-                      }}
-                    >
-                      {badge.label}
-                    </span>
-                    <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
-                      {layer.featureCount > 0 ? layer.featureCount : '—'}
-                    </span>
+                  <span className="block truncate text-body-xs-regular text-text-tertiary">
+                    {layer.sublabel}
                   </span>
-                </button>
-              );
-            })}
+                </span>
+
+                <span className="flex shrink-0 flex-col items-end gap-4">
+                  {layer.source === 'loading' ? (
+                    <Spinner size="sm" aria-label="불러오는 중" />
+                  ) : (
+                    <StatusChip status={SOURCE_BADGE[layer.source].status} showIcon={false}>
+                      {SOURCE_BADGE[layer.source].label}
+                    </StatusChip>
+                  )}
+                  <span className="text-body-xs-regular text-text-tertiary tabular-nums">
+                    {layer.featureCount > 0 ? layer.featureCount : '—'}
+                  </span>
+                </span>
+
+                <Switch
+                  size="sm"
+                  checked={layer.enabled}
+                  onCheckedChange={() => onToggle(layer.id)}
+                  aria-label={layer.label}
+                />
+              </label>
+            ))}
           </div>
         );
       })}

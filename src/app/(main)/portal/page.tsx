@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Button, Card, Spinner, StatusChip, type StatusChipProps } from '@naraspace-technology/nds/components';
+import { IconGlobe } from '@naraspace-technology/nds/icons';
 import { fmtNum } from '@/lib/format';
 
 interface OrderWithRelations {
@@ -21,13 +23,14 @@ interface OrderWithRelations {
   }[];
 }
 
-const STATUS_LABELS: Record<string, { text: string; color: string }> = {
-  pending: { text: '대기중', color: 'var(--warning)' },
-  payment_held: { text: '결제 확인', color: 'var(--accent)' },
-  processing: { text: '처리중', color: 'var(--accent)' },
-  completed: { text: '완료', color: 'var(--success)' },
-  failed: { text: '실패', color: 'var(--error)' },
-  refunded: { text: '환불됨', color: 'var(--text-muted)' },
+// 주문 상태 → NDS StatusChip status (기존 색 의미: warning·accent·success·error·muted)
+const STATUS_LABELS: Record<string, { text: string; status: StatusChipProps['status'] }> = {
+  pending: { text: '대기중', status: 'warning' },
+  payment_held: { text: '결제 확인', status: 'brand' },
+  processing: { text: '처리중', status: 'brand' },
+  completed: { text: '완료', status: 'success' },
+  failed: { text: '실패', status: 'error' },
+  refunded: { text: '환불됨', status: 'neutral' },
 };
 
 export default function PortalPage() {
@@ -69,49 +72,43 @@ export default function PortalPage() {
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <p style={{ color: 'var(--text-muted)' }}>주문 내역 로딩 중...</p>
+      <div className="flex flex-1 items-center justify-center gap-8">
+        <Spinner size="sm" aria-label="주문 내역 로딩 중" />
+        <p className="text-body-md-regular text-text-tertiary">주문 내역 로딩 중...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <p style={{ color: 'var(--error)' }}>{error}</p>
+      <div className="flex flex-1 items-center justify-center">
+        <p className="text-body-md-regular text-status-danger">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-16 py-32 w-full">
-      <h1 className="text-2xl font-semibold mb-24" style={{ color: 'var(--text)' }}>
+    <div className="mx-auto w-full max-w-4xl px-16 py-32">
+      <h1 className="mb-24 text-heading-3xl text-text-primary">
         내 주문
       </h1>
 
       {orders.length === 0 ? (
-        <div className="text-center py-64 space-y-12">
-          <div
-            className="w-56 h-56 rounded-full mx-auto flex items-center justify-center text-2xl"
-            style={{ background: 'var(--surface)' }}
-          >
-            &#127758;
+        <div className="space-y-12 py-64 text-center">
+          <div className="mx-auto flex size-56 items-center justify-center rounded-full bg-bg-secondary">
+            <IconGlobe className="size-24 text-icon-tertiary" />
           </div>
-          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>아직 주문 내역이 없습니다</p>
-          <a
-            href="/map"
-            className="inline-block text-sm px-20 py-10 rounded-sm font-medium transition-colors"
-            style={{ background: 'var(--accent)', color: '#0E0E10' }}
-          >
+          <p className="text-body-sm-regular text-text-tertiary">아직 주문 내역이 없습니다</p>
+          <Button render={<a href="/map" />} nativeButton={false}>
             지도에서 영상 구매하기
-          </a>
+          </Button>
         </div>
       ) : (
         <div className="space-y-16">
           {orders.map((order) => {
             const status = STATUS_LABELS[order.status] ?? {
               text: order.status,
-              color: 'var(--text-muted)',
+              status: 'neutral',
             };
             const hasDownload =
               order.status === 'completed' && order.downloads.length > 0;
@@ -120,66 +117,54 @@ export default function PortalPage() {
               download && new Date(download.expires_at) < new Date();
 
             return (
-              <div
-                key={order.id}
-                className="rounded-[12px] p-20 space-y-12"
-                style={{ border: '1px solid var(--border)' }}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="space-y-4">
-                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                      주문번호:{' '}
-                      <span className="font-mono text-xs" style={{ color: 'var(--text)' }}>
-                        {order.id.slice(0, 8)}
-                      </span>
-                    </p>
-                    <p className="text-sm font-mono" style={{ color: 'var(--text)' }}>
-                      면적: {fmtNum(order.aoi_area_km2, 2)} km² / 금액: $
-                      {fmtNum(Number(order.total_price), 2)}
-                    </p>
-                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                      {new Date(order.created_at).toLocaleString('ko-KR')}
-                    </p>
+              <Card.Root key={order.id}>
+                <Card.Body className="gap-12">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-4">
+                      <p className="text-body-sm-regular text-text-tertiary">
+                        주문번호:{' '}
+                        <span className="text-body-xs-regular tabular-nums text-text-primary">
+                          {order.id.slice(0, 8)}
+                        </span>
+                      </p>
+                      <p className="text-body-sm-regular tabular-nums text-text-primary">
+                        면적: {fmtNum(order.aoi_area_km2, 2)} km² / 금액: $
+                        {fmtNum(Number(order.total_price), 2)}
+                      </p>
+                      <p className="text-body-xs-regular tabular-nums text-text-tertiary">
+                        {new Date(order.created_at).toLocaleString('ko-KR')}
+                      </p>
+                    </div>
+                    <StatusChip status={status.status}>
+                      {status.text}
+                    </StatusChip>
                   </div>
-                  <span className="text-sm font-medium" style={{ color: status.color }}>
-                    {status.text}
-                  </span>
-                </div>
 
-                {order.error_message && (
-                  <p
-                    className="text-xs px-12 py-8 rounded-xs"
-                    style={{
-                      background: 'rgba(196, 92, 74, 0.1)',
-                      color: 'var(--error)',
-                    }}
-                  >
-                    {order.error_message}
-                  </p>
-                )}
+                  {order.error_message && (
+                    <p className="rounded-xs bg-status-danger/10 px-12 py-8 text-body-xs-regular text-status-danger">
+                      {order.error_message}
+                    </p>
+                  )}
 
-                {hasDownload && !isExpired && (
-                  <button
-                    onClick={() => handleDownload(order.id)}
-                    className="text-sm px-16 py-8 rounded-sm transition-colors"
-                    style={{ background: 'var(--accent)', color: '#0E0E10' }}
-                  >
-                    다운로드
-                  </button>
-                )}
+                  {hasDownload && !isExpired && (
+                    <Button className="self-start" onClick={() => handleDownload(order.id)}>
+                      다운로드
+                    </Button>
+                  )}
 
-                {hasDownload && isExpired && (
-                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                    다운로드 기간 만료
-                  </p>
-                )}
+                  {hasDownload && isExpired && (
+                    <p className="text-body-xs-regular text-text-tertiary">
+                      다운로드 기간 만료
+                    </p>
+                  )}
 
-                {order.status === 'processing' && (
-                  <p className="text-xs animate-pulse" style={{ color: 'var(--accent)' }}>
-                    영상 클리핑 처리 중...
-                  </p>
-                )}
-              </div>
+                  {order.status === 'processing' && (
+                    <p className="animate-pulse text-body-xs-regular text-text-interactive-primary">
+                      영상 클리핑 처리 중...
+                    </p>
+                  )}
+                </Card.Body>
+              </Card.Root>
             );
           })}
         </div>

@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { Button } from '@naraspace-technology/nds/components';
+import { IconArrowDown, IconArrowLeft, IconArrowUpRight } from '@naraspace-technology/nds/icons';
 
 const S3 = 'https://earthpaper.s3.ap-northeast-2.amazonaws.com/post/v2/editor/48';
 
@@ -176,65 +178,65 @@ export default function ShipyardsInteractive() {
   let sectionIdx = 0;
 
   return (
-    <div ref={progressRef} style={{ background: 'var(--bg)', color: 'var(--text)' }}>
+    <div ref={progressRef} className="bg-bg-tertiary text-text-primary">
       {/* Progress bar */}
-      <div className="fixed top-[var(--header-height)] left-0 right-0 z-40 h-2" style={{ background: 'var(--border)' }}>
-        <div className="h-full transition-all duration-150" style={{ background: 'var(--accent)', width: `${scrollProgress * 100}%` }} />
+      <div className="fixed top-[var(--header-height)] right-0 left-0 z-40 h-2 bg-border-tertiary">
+        <div className="h-full bg-bg-interactive-primary transition-all duration-150" style={{ width: `${scrollProgress * 100}%` }} />
       </div>
 
-      {/* Floating site indicator */}
-      <div className="fixed top-[calc(var(--header-height)+16px)] right-24 z-40 hidden lg:flex flex-col gap-6">
-        {SITES.map((site) => (
-          <a
-            key={site.id}
-            href={`#${site.id}`}
-            className="flex items-center gap-8 px-10 py-4 rounded-[6px] transition-all text-right"
-            style={{
-              background: activeSite === site.id ? 'var(--surface-elevated)' : 'transparent',
-              border: activeSite === site.id ? '1px solid var(--accent)' : '1px solid transparent',
-            }}
-          >
-            <span
-              className="w-8 h-8 rounded-full flex-shrink-0"
-              style={{ background: activeSite === site.id ? 'var(--accent)' : 'var(--border)' }}
-            />
-            <span className="text-[10px] font-mono" style={{ color: activeSite === site.id ? 'var(--accent)' : 'var(--text-muted)' }}>
-              {site.name}
-            </span>
-          </a>
-        ))}
+      {/* Floating site indicator — 스크롤 위치 표시용 앵커 내비 (버튼 아님) */}
+      <div className="fixed top-[calc(var(--header-height)+16px)] right-24 z-40 hidden flex-col gap-6 lg:flex">
+        {SITES.map((site) => {
+          const isActive = activeSite === site.id;
+          return (
+            <a
+              key={site.id}
+              href={`#${site.id}`}
+              className={`flex items-center gap-8 rounded-sm px-10 py-4 text-right transition-all ${
+                isActive ? 'bg-bg-primary inset-ring-1 inset-ring-border-interactive-primary' : ''
+              }`}
+            >
+              <span
+                className={`size-8 shrink-0 rounded-full ${isActive ? 'bg-bg-interactive-primary' : 'bg-border-tertiary'}`}
+              />
+              <span className={`text-body-xs-regular ${isActive ? 'text-text-interactive-primary' : 'text-text-tertiary'}`}>
+                {site.name}
+              </span>
+            </a>
+          );
+        })}
       </div>
 
       {/* ===== COVER ===== */}
-      <section className="relative min-h-[80vh] flex items-center overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none" style={{
+      <section className="relative flex min-h-[80vh] items-center overflow-hidden">
+        <div className="pointer-events-none absolute inset-0" style={{
           background: 'repeating-linear-gradient(0deg, transparent, transparent 4px, rgba(27,191,168,0.015) 4px, rgba(27,191,168,0.015) 5px)',
         }} />
-        <div className="absolute inset-0 pointer-events-none" style={{
+        <div className="pointer-events-none absolute inset-0" style={{
           background: 'radial-gradient(ellipse at 65% 30%, rgba(27,191,168,0.08), transparent 60%)',
         }} />
 
-        <div className="max-w-3xl mx-auto px-24 py-96 relative z-10">
+        <div className="relative z-10 mx-auto max-w-3xl px-24 py-96">
           <div
             ref={setRef(sectionIdx++)}
             className="transition-all duration-700"
             style={{ opacity: visible[0] !== false ? 1 : 0, transform: visible[0] !== false ? 'translateY(0)' : 'translateY(30px)' }}
           >
-            <div className="flex items-center gap-8 mb-24">
-              <span className="inline-block w-32 h-px" style={{ background: '#3D5A80' }} />
-              <span className="text-xs font-mono tracking-[0.15em] uppercase font-semibold" style={{ color: '#3D5A80' }}>
+            <div className="mb-24 flex items-center gap-8">
+              <span className="inline-block h-px w-32 bg-[#3D5A80]" />
+              <span className="text-body-xs-regular text-[#3D5A80]">
                 Northpaper Original · 방위 분석
               </span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold leading-[1.15] mb-24" style={{ color: 'var(--text)' }}>
+            <h1 className="mb-24 text-display-md text-text-primary md:text-display-lg">
               위성이 포착한<br />
               북한 5대 조선소
             </h1>
-            <p className="text-lg md:text-xl leading-relaxed mb-32" style={{ color: 'var(--text-muted)' }}>
+            <p className="mb-32 text-body-lg-regular text-text-tertiary md:text-heading-xl">
               사라진 선박의 행방 — 남포, 신포, 마양도, 청진, 라진<br />
               5개 핵심 거점의 구조 변화를 위성영상으로 추적합니다.
             </p>
-            <div className="flex items-center gap-16 text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
+            <div className="flex items-center gap-16 text-body-xs-regular tabular-nums text-text-tertiary">
               <span>2026.05.26</span>
               <span>·</span>
               <span>6분 읽기</span>
@@ -245,23 +247,21 @@ export default function ShipyardsInteractive() {
         </div>
 
         <div className="absolute bottom-32 left-1/2 -translate-x-1/2 animate-bounce">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round">
-            <path d="M12 5v14M19 12l-7 7-7-7" />
-          </svg>
+          <IconArrowDown className="size-20 text-icon-tertiary" />
         </div>
       </section>
 
       {/* ===== EXECUTIVE SUMMARY ===== */}
-      <section className="py-80" style={{ borderTop: '1px solid var(--border)' }}>
-        <div className="max-w-3xl mx-auto px-24">
+      <section className="border-t border-border-tertiary py-80">
+        <div className="mx-auto max-w-3xl px-24">
           <div
             ref={setRef(sectionIdx++)}
-            className="transition-all duration-700 delay-100"
+            className="transition-all delay-100 duration-700"
             style={{ opacity: visible[1] ? 1 : 0, transform: visible[1] ? 'translateY(0)' : 'translateY(30px)' }}
           >
-            <p className="text-xs font-mono tracking-wider mb-16 uppercase" style={{ color: 'var(--accent)' }}>Executive Summary</p>
-            <p className="text-base md:text-lg leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-              위성영상 분석 결과, 북한 5개 핵심 조선소·항만에서 <span style={{ color: 'var(--text)' }}>조직적인 해군 활동 징후</span>가 식별되었습니다.
+            <p className="mb-16 text-body-xs-regular text-text-tertiary">Executive Summary</p>
+            <p className="text-body-md-regular text-text-tertiary md:text-body-lg-regular">
+              위성영상 분석 결과, 북한 5개 핵심 조선소·항만에서 <span className="text-text-primary">조직적인 해군 활동 징후</span>가 식별되었습니다.
               남포와 청진에서는 신형 수상함(최현함, 강건함)이, 신포와 마양도에서는 잠수함 지원 활동이 관측되었습니다.
               청진에서 좌초된 강건함은 라진항에서 재진수에 성공한 것으로 확인됩니다.
             </p>
@@ -270,7 +270,7 @@ export default function ShipyardsInteractive() {
           {/* Overview stats */}
           <div
             ref={setRef(sectionIdx++)}
-            className="grid grid-cols-3 gap-24 mt-48 transition-all duration-700 delay-200"
+            className="mt-48 grid grid-cols-3 gap-24 transition-all delay-200 duration-700"
             style={{ opacity: visible[2] ? 1 : 0, transform: visible[2] ? 'translateY(0)' : 'translateY(30px)' }}
           >
             {[
@@ -278,9 +278,9 @@ export default function ShipyardsInteractive() {
               { label: '분석 기간', value: '2023–2026', unit: '' },
               { label: '주요 변화', value: '12', unit: '건' },
             ].map((stat) => (
-              <div key={stat.label} className="text-center p-16 rounded-sm" style={{ border: '1px solid var(--border)' }}>
-                <p className="text-2xl font-bold font-mono" style={{ color: 'var(--accent)' }}>{stat.value}</p>
-                <p className="text-[10px] font-mono mt-4" style={{ color: 'var(--text-muted)' }}>{stat.label} {stat.unit}</p>
+              <div key={stat.label} className="rounded-lg bg-bg-tertiary p-16 text-center inset-ring-1 inset-ring-border-tertiary">
+                <p className="text-heading-3xl tabular-nums text-text-interactive-primary">{stat.value}</p>
+                <p className="mt-4 text-body-xs-regular text-text-tertiary">{stat.label} {stat.unit}</p>
               </div>
             ))}
           </div>
@@ -296,27 +296,26 @@ export default function ShipyardsInteractive() {
             key={site.id}
             id={site.id}
             data-site={site.id}
-            className="py-80"
-            style={{ borderTop: '1px solid var(--border)' }}
+            className="border-t border-border-tertiary py-80"
           >
-            <div className="max-w-3xl mx-auto px-24">
+            <div className="mx-auto max-w-3xl px-24">
               {/* Site header */}
               <div
                 ref={setRef(refIdx)}
                 className="transition-all duration-700"
                 style={{ opacity: visible[refIdx] ? 1 : 0, transform: visible[refIdx] ? 'translateY(0)' : 'translateY(30px)' }}
               >
-                <div className="flex items-center gap-12 mb-8">
-                  <span className="text-sm font-bold font-mono" style={{ color: 'var(--accent)' }}>
+                <div className="mb-8 flex items-center gap-12">
+                  <span className="text-body-sm-medium tabular-nums text-text-interactive-primary">
                     {String(siteIndex + 1).padStart(2, '0')}
                   </span>
-                  <span className="w-32 h-px" style={{ background: 'var(--accent)' }} />
-                  <span className="text-[10px] font-mono px-8 py-2 rounded-xs" style={{ background: 'rgba(27,191,168,0.15)', color: 'var(--accent)' }}>
+                  <span className="h-px w-32 bg-bg-interactive-primary" />
+                  <span className="rounded-full bg-[rgba(27,191,168,0.15)] px-8 py-2 text-body-xs-regular text-text-interactive-primary">
                     {site.badge}
                   </span>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-bold mb-4">{site.name}</h2>
-                <p className="text-sm font-mono mb-24" style={{ color: 'var(--text-muted)' }}>
+                <h2 className="mb-4 text-heading-3xl">{site.name}</h2>
+                <p className="mb-24 text-body-sm-regular tabular-nums text-text-tertiary">
                   {site.nameEn} · {site.coord.lat}°N {site.coord.lng}°E
                 </p>
               </div>
@@ -324,55 +323,58 @@ export default function ShipyardsInteractive() {
               {/* Before/After comparison visual */}
               <div
                 ref={setRef(contentRefIdx)}
-                className="transition-all duration-700 delay-150"
+                className="transition-all delay-150 duration-700"
                 style={{ opacity: visible[contentRefIdx] ? 1 : 0, transform: visible[contentRefIdx] ? 'translateY(0)' : 'translateY(30px)' }}
               >
-                <div className="grid grid-cols-2 gap-16 mb-32">
-                  <div className="rounded-sm overflow-hidden relative" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                {/* 이미지가 inset-ring 을 덮으므로 썸네일 테두리는 border 로 둔다 */}
+                <div className="mb-32 grid grid-cols-2 gap-16">
+                  <div className="relative overflow-hidden rounded-md border border-border-tertiary bg-bg-secondary">
                     <img
                       src={site.images.before}
                       alt={`${site.name} — ${site.dates.before}`}
-                      className="w-full h-auto block"
+                      className="block h-auto w-full"
                       loading="lazy"
                     />
                     <div className="absolute top-12 left-12">
-                      <span className="text-[10px] font-mono px-8 py-2 rounded-xs" style={{ background: 'rgba(14,14,16,0.8)', color: 'var(--text-muted)', backdropFilter: 'blur(4px)' }}>
+                      <span className="rounded-xs bg-bg-tertiary/80 px-8 py-2 text-body-xs-regular tabular-nums text-text-tertiary backdrop-blur-xs">
                         BEFORE · {site.dates.before}
                       </span>
                     </div>
                   </div>
-                  <div className="rounded-sm overflow-hidden relative" style={{ background: 'var(--surface)', border: '1px solid var(--accent)' }}>
+                  <div className="relative overflow-hidden rounded-md border border-border-interactive-primary bg-bg-secondary">
                     <img
                       src={site.images.after}
                       alt={`${site.name} — ${site.dates.after}`}
-                      className="w-full h-auto block"
+                      className="block h-auto w-full"
                       loading="lazy"
                     />
                     <div className="absolute top-12 left-12">
-                      <span className="text-[10px] font-mono px-8 py-2 rounded-xs" style={{ background: 'rgba(14,14,16,0.8)', color: 'var(--accent)', backdropFilter: 'blur(4px)' }}>
+                      <span className="rounded-xs bg-bg-tertiary/80 px-8 py-2 text-body-xs-regular tabular-nums text-text-interactive-primary backdrop-blur-xs">
                         AFTER · {site.dates.after}
                       </span>
                     </div>
-                    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                      <div style={{
-                        position: 'absolute', left: 0, right: 0, height: 2,
-                        background: 'linear-gradient(90deg, transparent, var(--accent), transparent)',
-                        animation: 'scan-line 3s ease-in-out infinite',
-                      }} />
+                    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                      <div
+                        className="absolute inset-x-0 h-2"
+                        style={{
+                          background: 'linear-gradient(90deg, transparent, var(--accent), transparent)',
+                          animation: 'scan-line 3s ease-in-out infinite',
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
 
                 {/* Key change callout */}
-                <div className="p-16 rounded-sm mb-32" style={{ background: 'rgba(27,191,168,0.06)', border: '1px solid rgba(27,191,168,0.2)' }}>
-                  <p className="text-[10px] font-mono tracking-wider mb-4 uppercase" style={{ color: 'var(--accent)' }}>Key Change</p>
-                  <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>{site.keyChange}</p>
+                <div className="mb-32 rounded-md bg-[rgba(27,191,168,0.06)] p-16 inset-ring-1 inset-ring-[rgba(27,191,168,0.2)]">
+                  <p className="mb-4 text-body-xs-regular text-text-tertiary">Key Change</p>
+                  <p className="text-body-sm-medium text-text-primary">{site.keyChange}</p>
                 </div>
 
                 {/* Paragraphs */}
                 <div className="space-y-16">
                   {site.paragraphs.map((p, i) => (
-                    <p key={i} className="text-sm leading-[1.8]" style={{ color: 'var(--text-muted)' }}>
+                    <p key={i} className="text-body-sm-regular text-text-tertiary">
                       {p}
                     </p>
                   ))}
@@ -384,42 +386,53 @@ export default function ShipyardsInteractive() {
       })}
 
       {/* ===== CONCLUSION ===== */}
-      <section className="py-80" style={{ borderTop: '1px solid var(--border)' }}>
-        <div className="max-w-3xl mx-auto px-24">
+      <section className="border-t border-border-tertiary py-80">
+        <div className="mx-auto max-w-3xl px-24">
           <div
             ref={setRef(sectionIdx++)}
             className="transition-all duration-700"
             style={{ opacity: visible[sectionIdx - 1] ? 1 : 0, transform: visible[sectionIdx - 1] ? 'translateY(0)' : 'translateY(30px)' }}
           >
-            <p className="text-xs font-mono tracking-wider mb-16 uppercase" style={{ color: 'var(--accent)' }}>Conclusion</p>
-            <p className="text-base md:text-lg leading-relaxed mb-24" style={{ color: 'var(--text-muted)' }}>
+            <p className="mb-16 text-body-xs-regular text-text-tertiary">Conclusion</p>
+            <p className="mb-24 text-body-md-regular text-text-tertiary md:text-body-lg-regular">
               위성영상만으로 함정의 내부 능력이나 구체적 용도를 완전히 평가하는 데는 한계가 있습니다.
-              그러나 <span style={{ color: 'var(--text)' }}>지속적인 위성영상 분석</span>은 함정 위치 변화, 시설 및 지형 변화, 재고 야적장 상태를 객관적으로 추적하는 데 상당한 가치를 지닙니다.
-              이러한 데이터의 축적은 <span style={{ color: 'var(--text)' }}>북한 내부 변화를 분석하는 보다 정밀하고 과학적인 근거</span>가 됩니다.
+              그러나 <span className="text-text-primary">지속적인 위성영상 분석</span>은 함정 위치 변화, 시설 및 지형 변화, 재고 야적장 상태를 객관적으로 추적하는 데 상당한 가치를 지닙니다.
+              이러한 데이터의 축적은 <span className="text-text-primary">북한 내부 변화를 분석하는 보다 정밀하고 과학적인 근거</span>가 됩니다.
             </p>
           </div>
 
           {/* CTA */}
-          <div className="flex flex-col sm:flex-row items-start gap-16 mt-48 p-24 rounded-[12px]" style={{ border: '1px solid var(--border)' }}>
+          <div className="mt-48 flex flex-col items-start gap-16 rounded-lg bg-bg-tertiary p-24 inset-ring-1 inset-ring-border-tertiary sm:flex-row">
             <div className="flex-1">
-              <p className="text-sm font-semibold mb-4">방위·보안 분야 위성영상 분석이 필요하신가요?</p>
-              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Nara Space의 위성영상 분석 솔루션에 대해 알아보세요.</p>
+              <p className="mb-4 text-body-sm-medium">방위·보안 분야 위성영상 분석이 필요하신가요?</p>
+              <p className="text-body-xs-regular text-text-tertiary">Nara Space의 위성영상 분석 솔루션에 대해 알아보세요.</p>
             </div>
-            <a
-              href="https://ep.naraspace.com/post/contents/satellite-imagery-changes-five-major-north-korean-shipyards-ports"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-20 py-10 rounded-[6px] text-sm font-medium flex-shrink-0"
-              style={{ background: 'var(--accent)', color: '#0E0E10' }}
+            <Button
+              className="shrink-0"
+              rightIcon={<IconArrowUpRight />}
+              render={
+                <a
+                  href="https://ep.naraspace.com/post/contents/satellite-imagery-changes-five-major-north-korean-shipyards-ports"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                />
+              }
+              nativeButton={false}
             >
-              원문 보기 →
-            </a>
+              원문 보기
+            </Button>
           </div>
 
           <div className="mt-32">
-            <Link href="/" className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
-              ← EarthPaper 홈으로
-            </Link>
+            <Button
+              variant="text"
+              size="sm"
+              leftIcon={<IconArrowLeft />}
+              render={<Link href="/" />}
+              nativeButton={false}
+            >
+              EarthPaper 홈으로
+            </Button>
           </div>
         </div>
       </section>

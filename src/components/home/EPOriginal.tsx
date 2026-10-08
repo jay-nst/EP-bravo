@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { Card } from '@naraspace-technology/nds/components';
+import { IconSatellite } from '@naraspace-technology/nds/icons';
 import { DAILY_EARTH, DAILY_QUIZZES } from '@/lib/sample-data';
 
 export default function EPOriginal() {
@@ -8,25 +10,15 @@ export default function EPOriginal() {
 
   return (
     <div className="space-y-16">
-      <h3
-        className="text-xs font-mono tracking-wider uppercase"
-        style={{ color: 'var(--text-muted)' }}
-      >
+      <h3 className="text-body-xs-regular text-text-tertiary">
         EP Original
       </h3>
 
       {/* Daily Earth */}
-      <Link
-        href="/daily"
-        className="block rounded-sm overflow-hidden transition-colors"
-        style={{ border: '1px solid var(--border)' }}
-      >
-        <div
-          className="p-12 flex items-center gap-12"
-          style={{ background: 'var(--surface)' }}
-        >
+      <Card.Root interactive render={<Link href="/daily" />}>
+        <Card.Body className="flex-row items-center gap-12 p-4">
           <div
-            className="w-40 h-40 rounded-[6px] flex items-center justify-center flex-shrink-0 relative overflow-hidden"
+            className="size-40 rounded-md flex items-center justify-center shrink-0 relative overflow-hidden"
             style={{
               background:
                 'linear-gradient(135deg, #0a1a15 0%, #0d2818 50%, #0a1612 100%)',
@@ -40,58 +32,37 @@ export default function EPOriginal() {
                 backgroundSize: '8px 8px',
               }}
             />
-            <span
-              className="text-xs font-mono relative z-10"
-              style={{ color: 'var(--accent)', opacity: 0.7 }}
-            >
+            <span className="text-body-xs-regular text-text-interactive-primary opacity-70 relative z-10">
               DE
             </span>
           </div>
           <div className="flex-1 min-w-0">
-            <p
-              className="text-xs font-medium truncate"
-              style={{ color: 'var(--text)' }}
-            >
+            <p className="text-body-xs-regular text-text-primary truncate">
               {today.title}
             </p>
-            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            <p className="text-body-xs-regular text-text-tertiary">
               {today.date} &middot; {today.location}
             </p>
           </div>
-        </div>
-      </Link>
+        </Card.Body>
+      </Card.Root>
 
       {/* Quiz */}
-      <Link
-        href="/quiz"
-        className="block rounded-sm overflow-hidden transition-colors"
-        style={{ border: '1px solid var(--border)' }}
-      >
-        <div
-          className="p-12 flex items-center gap-12"
-          style={{ background: 'var(--surface)' }}
-        >
-          <div
-            className="w-40 h-40 rounded-[6px] flex items-center justify-center flex-shrink-0"
-            style={{ background: 'rgba(27,191,168,0.08)' }}
-          >
-            <span className="text-lg" style={{ color: 'var(--accent)' }}>
-              &#128752;
-            </span>
+      <Card.Root interactive render={<Link href="/quiz" />}>
+        <Card.Body className="flex-row items-center gap-12 p-4">
+          <div className="size-40 rounded-md flex items-center justify-center shrink-0 bg-bg-interactive-primary/8">
+            <IconSatellite className="size-20 text-icon-interactive-primary" />
           </div>
           <div className="flex-1 min-w-0">
-            <p
-              className="text-xs font-medium truncate"
-              style={{ color: 'var(--text)' }}
-            >
+            <p className="text-body-xs-regular text-text-primary truncate">
               {quiz.question}
             </p>
-            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            <p className="text-body-xs-regular text-text-tertiary">
               오늘의 퀴즈
             </p>
           </div>
-        </div>
-      </Link>
+        </Card.Body>
+      </Card.Root>
     </div>
   );
 }

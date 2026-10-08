@@ -25,22 +25,16 @@ import { MAP_STYLES, DEFAULT_STYLE_IDS } from '@/components/map/EarthMap';
 import type { MapStyleId } from '@/components/map/EarthMap';
 import { fmtNum } from '@/lib/format';
 import { trackEvent } from '@/lib/analytics';
+import { Button, Spinner, StatusChip } from '@naraspace-technology/nds/components';
+import { IconLayers } from '@naraspace-technology/nds/icons';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
   loading: () => (
-    <div
-      className="w-full h-full flex items-center justify-center"
-      style={{ background: 'var(--bg)' }}
-    >
-      <div className="text-center">
-        <div
-          className="w-32 h-32 rounded-full border-2 border-t-transparent animate-spin mx-auto mb-12"
-          style={{ borderColor: 'var(--border)', borderTopColor: 'transparent' }}
-        />
-        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-          지도 로딩 중...
-        </p>
+    <div className="flex size-full items-center justify-center bg-bg-tertiary">
+      <div className="flex flex-col items-center gap-12">
+        <Spinner size="md" aria-label="지도 로딩 중" />
+        <p className="text-body-sm-regular text-text-tertiary">지도 로딩 중...</p>
       </div>
     </div>
   ),
@@ -538,30 +532,21 @@ export default function GyeonggiPage() {
 
       {/* 상단 헤더 */}
       <div
-        className="absolute top-0 left-0 right-0 z-10 flex items-center gap-16 px-16 py-12 pointer-events-none"
+        className="pointer-events-none absolute top-0 right-0 left-0 z-10 flex items-center gap-16 px-16 py-12"
         style={{
           background: 'linear-gradient(to bottom, rgba(14,14,16,0.9), rgba(14,14,16,0))',
         }}
       >
         <div className="pointer-events-auto">
-          <h1 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
-            경기 공원 접근성 지도
-          </h1>
-          <p
-            className="text-xs font-mono flex items-center gap-6 flex-wrap"
-            style={{ color: 'var(--text-muted)' }}
-          >
-            <span
-              className="inline-block w-6 h-6 rounded-full"
-              style={{ background: '#4A9E6B' }}
-              aria-hidden
-            />
-            <span style={{ color: '#4A9E6B' }}>평가 기준 {CRTR_LABEL}</span>
+          <h1 className="text-body-md-medium text-text-primary">경기 공원 접근성 지도</h1>
+          <p className="mt-2 flex flex-wrap items-center gap-6 text-body-xs-regular text-text-tertiary tabular-nums">
+            {/* 기준일 고정 공식 통계 — '통계' 배지와 같은 information */}
+            <StatusChip status="information">평가 기준 {CRTR_LABEL}</StatusChip>
             <span>· {activeCount} LAYERS</span>
           </p>
         </div>
 
-        <div className="hidden md:flex items-center gap-20 ml-auto pointer-events-auto">
+        <div className="pointer-events-auto ml-auto hidden items-center gap-20 md:flex">
           <Stat label="공원 폴리곤" value={fmtNum(PARK_FEATURE_COUNT)} unit="개" />
           <Stat label="공원 총면적" value={fmtNum(Math.round(PARK_TOTAL_AREA_KM2))} unit="km²" />
           <Stat label="평가 구역" value={fmtNum(EMD_COUNT)} unit="읍면동" />
@@ -570,79 +555,65 @@ export default function GyeonggiPage() {
           </div>
         </div>
 
-        <button
+        <Button
+          variant="outline"
+          size="sm"
+          leftIcon={<IconLayers />}
           onClick={() => setSidebarOpen((v) => !v)}
-          className="md:hidden ml-auto px-12 py-8 rounded-[6px] text-sm pointer-events-auto"
-          style={{ background: 'var(--surface)', color: 'var(--text)' }}
+          className="pointer-events-auto ml-auto md:hidden"
           aria-label="레이어 패널 열기"
         >
           레이어
-        </button>
+        </Button>
       </div>
 
-      {/* 사이드바 */}
+      {/* 사이드바 — 지도 위 글래스 패널. 반투명 배경(--panel-bg)은 색이라 유지 */}
       <aside
-        className={`absolute top-0 bottom-0 left-0 z-20 w-288 overflow-y-auto transition-transform md:translate-x-0 ${
+        className={`absolute top-0 bottom-0 left-0 z-20 w-288 overflow-y-auto border-r border-border-tertiary bg-panel-bg pt-72 backdrop-blur-[12px] transition-transform md:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
-        style={{
-          background: 'var(--panel-bg)',
-          backdropFilter: 'blur(12px)',
-          borderRight: '1px solid var(--border)',
-          paddingTop: '72px',
-        }}
       >
-        <div className="px-16 pb-24 space-y-20">
+        <div className="space-y-20 px-16 pb-24">
           <GyeonggiLayerPanel layers={layers} onToggle={handleToggle} />
 
-          <div className="pt-16" style={{ borderTop: '1px solid var(--border)' }}>
-            <h3
-              className="text-xs font-mono tracking-wider uppercase mb-8"
-              style={{ color: 'var(--text-muted)' }}
-            >
-              배경 지도
-            </h3>
+          <div className="border-t border-border-tertiary pt-16">
+            <h3 className="mb-8 text-body-xs-regular text-text-tertiary">배경 지도</h3>
             <div className="flex gap-6">
               {DEFAULT_STYLE_IDS.map((id) => (
-                <button
+                <Button
                   key={id}
+                  variant="outline"
+                  size="sm"
+                  active={mapStyleId === id}
+                  aria-pressed={mapStyleId === id}
                   onClick={() => setMapStyleId(id)}
-                  className="flex-1 px-8 py-6 rounded-xs text-xs transition-colors"
-                  style={{
-                    background: mapStyleId === id ? 'var(--surface)' : 'transparent',
-                    color: mapStyleId === id ? 'var(--text)' : 'var(--text-muted)',
-                    border: '1px solid var(--border)',
-                  }}
+                  className="flex-1"
                 >
                   {MAP_STYLES[id].label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
 
           {showContourLegend && (
-            <div className="pt-16" style={{ borderTop: '1px solid var(--border)' }}>
-              <h3
-                className="text-xs font-mono tracking-wider uppercase mb-8"
-                style={{ color: 'var(--text-muted)' }}
-              >
-                접근성 등급
-              </h3>
+            <div className="border-t border-border-tertiary pt-16">
+              <h3 className="mb-8 text-body-xs-regular text-text-tertiary">접근성 등급</h3>
               <div className="space-y-4">
                 {ACCESS_LEVELS.map((lv, i) => (
                   <div key={lv.label} className="flex items-center gap-8">
+                    {/* 범례 스와치 — 지도 데이터 색 */}
                     <span
-                      className="w-10 h-10 rounded-xs flex-shrink-0"
+                      className="size-10 shrink-0 rounded-xs"
                       style={{ background: CONTOUR_COLORS[i] }}
                     />
-                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                    <span className="text-body-xs-regular text-text-tertiary">
                       {lv.label}
-                      <span className="font-mono opacity-70"> ≥ {lv.min}</span>
+                      <span className="opacity-70 tabular-nums"> ≥ {lv.min}</span>
                     </span>
                   </div>
                 ))}
               </div>
-              <p className="text-xs mt-8 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+              <p className="mt-8 text-body-xs-regular text-text-tertiary">
                 공원 유형·면적 기반 서비스 반경에 읍면동 평가점수를 가중해 중첩한 영향
                 지수입니다. 평가가 좋은 지역의 공원일수록 넓은 범위에 영향을 줍니다.
               </p>
@@ -650,23 +621,16 @@ export default function GyeonggiPage() {
           )}
 
           {showEmdLegend && (
-            <div className="pt-16" style={{ borderTop: '1px solid var(--border)' }}>
-              <h3
-                className="text-xs font-mono tracking-wider uppercase mb-8"
-                style={{ color: 'var(--text-muted)' }}
-              >
-                읍면동 종합점수
-              </h3>
+            <div className="border-t border-border-tertiary pt-16">
+              <h3 className="mb-8 text-body-xs-regular text-text-tertiary">읍면동 종합점수</h3>
+              {/* 범례 램프 — 지도 데이터 색 */}
               <div
-                className="h-8 rounded-xs mb-4"
+                className="mb-4 h-8 rounded-xs"
                 style={{
                   background: `linear-gradient(to right, ${EMD_SCORE_STOPS.map(([, c]) => c).join(', ')})`,
                 }}
               />
-              <div
-                className="flex justify-between text-xs font-mono"
-                style={{ color: 'var(--text-muted)' }}
-              >
+              <div className="flex justify-between text-body-xs-regular text-text-tertiary tabular-nums">
                 <span>{EMD_SCORE_STOPS[0][0]}점</span>
                 <span>{EMD_SCORE_STOPS[EMD_SCORE_STOPS.length - 1][0]}점</span>
               </div>
@@ -674,49 +638,55 @@ export default function GyeonggiPage() {
           )}
 
           {/* 시군 순위표 */}
-          <div className="pt-16" style={{ borderTop: '1px solid var(--border)' }}>
-            <h3
-              className="text-xs font-mono tracking-wider uppercase mb-8"
-              style={{ color: 'var(--text-muted)' }}
-            >
-              시군 평가 순위
-            </h3>
-            <ol className="space-y-2 max-h-224 overflow-y-auto pr-4">
+          <div className="border-t border-border-tertiary pt-16">
+            <h3 className="mb-8 text-body-xs-regular text-text-tertiary">시군 평가 순위</h3>
+            <ol className="max-h-224 space-y-2 overflow-y-auto pr-4">
               {SIGUN_PARK_SCORES.map((s, i) => (
                 <li key={s.code}>
-                  <button
+                  {/* 행 이동 버튼 — 도구성이라 text variant. 글자 크기는 Button size 가 정한다 */}
+                  <Button
+                    variant="text"
+                    size="sm"
+                    display="block"
                     onClick={() => flyToSigun(s.lng, s.lat)}
-                    className="w-full flex items-center gap-8 px-6 py-4 rounded-xs text-left transition-colors hover:bg-[var(--surface)]"
                   >
-                    <span
-                      className="text-xs font-mono w-20 text-right flex-shrink-0"
-                      style={{ color: i < 3 ? '#1bbfa8' : 'var(--text-muted)' }}
-                    >
-                      {i + 1}
+                    <span className="flex w-full items-center gap-8 text-left tabular-nums">
+                      <span
+                        className={`w-20 shrink-0 text-right ${
+                          i < 3 ? 'text-text-interactive-primary' : 'text-text-tertiary'
+                        }`}
+                      >
+                        {i + 1}
+                      </span>
+                      <span className="flex-1 truncate">{s.name}</span>
+                      <span className="text-text-tertiary">{s.score.toFixed(1)}</span>
                     </span>
-                    <span className="flex-1 text-xs truncate" style={{ color: 'var(--text)' }}>
-                      {s.name}
-                    </span>
-                    <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
-                      {s.score.toFixed(1)}
-                    </span>
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ol>
-            <p className="text-xs mt-8 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+            <p className="mt-8 text-body-xs-regular text-text-tertiary">
               공원 서비스 종합평가 점수(0~100). 행을 누르면 해당 시군으로 이동합니다.
             </p>
           </div>
 
-          <div className="text-xs leading-relaxed space-y-4" style={{ color: 'var(--text-muted)' }}>
-            <p>
-              <span style={{ color: '#1bbfa8' }}>LIVE</span> 공공 API 수신 ·{' '}
-              <span style={{ color: '#4A9E6B' }}>통계</span> 기준일 고정 공식 통계
+          {/* 배지 범례 — 레이어 패널과 같은 StatusChip */}
+          <div className="space-y-6 text-body-xs-regular text-text-tertiary">
+            <p className="flex items-center gap-6">
+              <StatusChip status="success" showIcon={false}>LIVE</StatusChip>
+              공공 API 수신
             </p>
-            <p>
-              <span style={{ color: '#C45C4A' }}>분석</span> EarthPaper 자체 모델 ·{' '}
-              <span style={{ color: '#4A9EC4' }}>영상</span> 위성 래스터
+            <p className="flex items-center gap-6">
+              <StatusChip status="information" showIcon={false}>통계</StatusChip>
+              기준일 고정 공식 통계
+            </p>
+            <p className="flex items-center gap-6">
+              <StatusChip status="information" showIcon={false}>분석</StatusChip>
+              EarthPaper 자체 모델
+            </p>
+            <p className="flex items-center gap-6">
+              <StatusChip status="brand" showIcon={false}>영상</StatusChip>
+              위성 래스터
             </p>
           </div>
 
@@ -726,18 +696,18 @@ export default function GyeonggiPage() {
 
       {/* 지도 하단 크레딧 */}
       <div
-        className="absolute bottom-0 right-0 z-10 max-w-full md:max-w-[60%] px-12 py-6 text-xs font-mono leading-relaxed text-right pointer-events-none"
+        className="pointer-events-none absolute right-0 bottom-0 z-10 max-w-full px-12 py-6 text-right text-body-xs-regular text-text-tertiary md:max-w-[60%]"
         style={{
-          color: 'var(--text-muted)',
           background: 'linear-gradient(to top, rgba(14,14,16,0.85), rgba(14,14,16,0))',
         }}
       >
         출처: {GYEONGGI_SOURCE_PROVIDERS.join(' · ')} · 상세는 좌측 패널
       </div>
 
+      {/* 모바일 사이드바 스크림 — 버튼 모양이 아닌 배경 클릭 영역이라 NDS Button 대상이 아니다 */}
       {sidebarOpen && (
         <button
-          className="md:hidden absolute inset-0 z-10"
+          className="absolute inset-0 z-10 md:hidden"
           style={{ background: 'rgba(0,0,0,0.5)' }}
           onClick={() => setSidebarOpen(false)}
           aria-label="닫기"
@@ -750,14 +720,9 @@ export default function GyeonggiPage() {
 function Stat({ label, value, unit }: { label: string; value: string; unit: string }) {
   return (
     <div className="text-right">
-      <div className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
-        {label}
-      </div>
-      <div className="text-sm" style={{ color: 'var(--text)' }}>
-        <span className="font-semibold">{value}</span>{' '}
-        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-          {unit}
-        </span>
+      <div className="text-body-xs-regular text-text-tertiary">{label}</div>
+      <div className="text-body-sm-medium text-text-primary tabular-nums">
+        {value} <span className="text-body-xs-regular text-text-tertiary">{unit}</span>
       </div>
     </div>
   );

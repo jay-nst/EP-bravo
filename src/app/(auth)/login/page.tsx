@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Form } from '@base-ui/react/form';
+import { Button, Field, Input } from '@naraspace-technology/nds/components';
 import { createClient } from '@/lib/supabase/client';
 
 export default function LoginPage() {
@@ -12,8 +14,8 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Form 이 필드 검증(required·type=email)을 통과시켰을 때만 호출된다
+  const handleLogin = async () => {
     setError(null);
     setLoading(true);
 
@@ -34,21 +36,18 @@ export default function LoginPage() {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center px-16 relative"
-      style={{ background: 'var(--bg)' }}
-    >
+    <div className="relative flex min-h-screen items-center justify-center bg-bg-tertiary px-16">
       {/* Subtle grid background */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="pointer-events-none absolute inset-0"
         style={{
           backgroundImage: 'radial-gradient(rgba(27,191,168,0.04) 1px, transparent 1px)',
           backgroundSize: '40px 40px',
         }}
       />
-      <div className="w-full max-w-sm space-y-32 relative z-10">
+      <div className="relative z-10 w-full max-w-sm space-y-32">
         <div className="text-center">
-          <Link href="/" className="text-2xl font-semibold tracking-tight inline-flex items-center gap-10 justify-center" style={{ color: 'var(--text)' }}>
+          <Link href="/" className="inline-flex items-center justify-center gap-10 text-heading-3xl text-text-primary">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="1.5" />
               <ellipse cx="12" cy="12" rx="10" ry="4" stroke="var(--accent)" strokeWidth="1" transform="rotate(-30 12 12)" opacity="0.6" />
@@ -56,89 +55,49 @@ export default function LoginPage() {
             </svg>
             EARTHPAPER
           </Link>
-          <p className="mt-8 text-sm" style={{ color: 'var(--text-muted)' }}>
+          <p className="mt-8 text-body-sm-regular text-text-tertiary">
             위성 영상 셀프서비스 포털
           </p>
-          <div
-            className="mt-12 mx-auto"
-            style={{
-              width: '32px',
-              height: '2px',
-              background: 'var(--accent)',
-              borderRadius: '1px',
-              opacity: 0.6,
-            }}
-          />
+          <div className="mx-auto mt-12 h-2 w-32 rounded-xs bg-bg-interactive-primary opacity-60" />
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-16">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium mb-4"
-              style={{ color: 'var(--text)' }}
-            >
-              이메일
-            </label>
-            <input
-              id="email"
+        <Form onFormSubmit={handleLogin} className="flex flex-col gap-16">
+          <Field.Root name="email">
+            <Field.Label>이메일</Field.Label>
+            <Input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-12 py-8 rounded-sm text-sm focus:outline-none focus:ring-2 transition-colors"
-              style={{
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                color: 'var(--text)',
-                '--tw-ring-color': 'var(--accent)',
-              } as React.CSSProperties}
               placeholder="you@example.com"
             />
-          </div>
+            <Field.Error />
+          </Field.Root>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium mb-4"
-              style={{ color: 'var(--text)' }}
-            >
-              비밀번호
-            </label>
-            <input
-              id="password"
+          <Field.Root name="password">
+            <Field.Label>비밀번호</Field.Label>
+            <Input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-12 py-8 rounded-sm text-sm focus:outline-none focus:ring-2 transition-colors"
-              style={{
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                color: 'var(--text)',
-                '--tw-ring-color': 'var(--accent)',
-              } as React.CSSProperties}
               placeholder="••••••••"
             />
-          </div>
+            <Field.Error />
+          </Field.Root>
 
           {error && (
-            <p className="text-sm" style={{ color: 'var(--error)' }}>{error}</p>
+            <p role="alert" className="text-body-sm-regular text-status-danger">{error}</p>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-8 rounded-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ background: 'var(--accent)', color: '#0E0E10' }}
-          >
+          <Button type="submit" display="block" loading={loading}>
             {loading ? '로그인 중...' : '로그인'}
-          </button>
-        </form>
+          </Button>
+        </Form>
 
-        <p className="text-center text-sm" style={{ color: 'var(--text-muted)' }}>
+        <p className="text-center text-body-sm-regular text-text-tertiary">
           계정이 없으신가요?{' '}
-          <Link href="/signup" style={{ color: 'var(--accent)' }}>
+          <Link href="/signup" className="text-text-interactive-primary">
             회원가입
           </Link>
         </p>

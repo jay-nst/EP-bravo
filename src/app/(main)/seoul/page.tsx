@@ -17,22 +17,16 @@ import { MAP_STYLES, DEFAULT_STYLE_IDS } from '@/components/map/EarthMap';
 import type { MapStyleId } from '@/components/map/EarthMap';
 import { fmtNum } from '@/lib/format';
 import { trackEvent } from '@/lib/analytics';
+import { Button, Spinner, StatusChip } from '@naraspace-technology/nds/components';
+import { IconLayers } from '@naraspace-technology/nds/icons';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
   loading: () => (
-    <div
-      className="w-full h-full flex items-center justify-center"
-      style={{ background: 'var(--bg)' }}
-    >
-      <div className="text-center">
-        <div
-          className="w-32 h-32 rounded-full border-2 border-t-transparent animate-spin mx-auto mb-12"
-          style={{ borderColor: 'var(--border)', borderTopColor: 'transparent' }}
-        />
-        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-          지도 로딩 중...
-        </p>
+    <div className="flex size-full items-center justify-center bg-bg-tertiary">
+      <div className="flex flex-col items-center gap-12">
+        <Spinner size="md" aria-label="지도 로딩 중" />
+        <p className="text-body-sm-regular text-text-tertiary">지도 로딩 중...</p>
       </div>
     </div>
   ),
@@ -1251,29 +1245,22 @@ export default function SeoulPage() {
 
       {/* 상단 헤더 */}
       <div
-        className="absolute top-0 left-0 right-0 z-10 flex items-center gap-16 px-16 py-12 pointer-events-none"
+        className="pointer-events-none absolute top-0 right-0 left-0 z-10 flex items-center gap-16 px-16 py-12"
         style={{
           background: 'linear-gradient(to bottom, rgba(14,14,16,0.9), rgba(14,14,16,0))',
         }}
       >
         <div className="pointer-events-auto">
-          <h1 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
-            서울 기후 대시보드
-          </h1>
-          <p className="text-xs font-mono flex items-center gap-6 flex-wrap" style={{ color: 'var(--text-muted)' }}>
-            <span
-              className="inline-block w-6 h-6 rounded-full animate-pulse"
-              style={{ background: '#1bbfa8' }}
-              aria-hidden
-            />
-            <span style={{ color: '#1bbfa8' }}>LIVE</span>
+          <h1 className="text-body-md-medium text-text-primary">서울 기후 대시보드</h1>
+          <p className="mt-2 flex flex-wrap items-center gap-6 text-body-xs-regular text-text-tertiary tabular-nums">
+            <StatusChip status="success">LIVE</StatusChip>
             <span>· {activeCount} LAYERS</span>
             {lastUpdated && <span>· 갱신 {lastUpdated}</span>}
             <span>· 다음 {countdown}s</span>
           </p>
         </div>
 
-        <div className="hidden md:flex items-center gap-20 ml-auto pointer-events-auto">
+        <div className="pointer-events-auto ml-auto hidden items-center gap-20 md:flex">
           <Stat label="평균 PM2.5" value={liveAvgPm25 !== null ? `${liveAvgPm25}` : '—'} unit="㎍/㎥" />
           <Stat label="S-DoT 기온" value={liveAvgTemp !== null ? `${liveAvgTemp}` : '—'} unit="°C" />
           <Stat label="폭염취약" value={fmtNum(Math.round(VULNERABLE_AREA_KM2))} unit="km²" />
@@ -1292,92 +1279,87 @@ export default function SeoulPage() {
           <Stat label="태양광" value={fmtNum(Math.round(seoulSolarTotal))} unit="kW" />
         </div>
 
-        <button
+        <Button
+          variant="outline"
+          size="sm"
+          leftIcon={<IconLayers />}
           onClick={() => setSidebarOpen((v) => !v)}
-          className="md:hidden ml-auto px-12 py-8 rounded-[6px] text-sm pointer-events-auto"
-          style={{ background: 'var(--surface)', color: 'var(--text)' }}
+          className="pointer-events-auto ml-auto md:hidden"
           aria-label="레이어 패널 열기"
         >
           레이어
-        </button>
+        </Button>
       </div>
 
-      {/* 사이드바 */}
+      {/* 사이드바 — 지도 위 글래스 패널. 반투명 배경(--panel-bg)은 색이라 유지 */}
       <aside
-        className={`absolute top-0 bottom-0 left-0 z-20 w-288 overflow-y-auto transition-transform md:translate-x-0 ${
+        className={`absolute top-0 bottom-0 left-0 z-20 w-288 overflow-y-auto border-r border-border-tertiary bg-panel-bg pt-72 backdrop-blur-[12px] transition-transform md:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
-        style={{
-          background: 'var(--panel-bg)',
-          backdropFilter: 'blur(12px)',
-          borderRight: '1px solid var(--border)',
-          paddingTop: '72px',
-        }}
       >
-        <div className="px-16 pb-24 space-y-20">
+        <div className="space-y-20 px-16 pb-24">
           <SeoulLayerPanel layers={layers} onToggle={handleToggle} />
 
-          <div className="pt-16" style={{ borderTop: '1px solid var(--border)' }}>
-            <h3
-              className="text-xs font-mono tracking-wider uppercase mb-8"
-              style={{ color: 'var(--text-muted)' }}
-            >
-              배경 지도
-            </h3>
+          <div className="border-t border-border-tertiary pt-16">
+            <h3 className="mb-8 text-body-xs-regular text-text-tertiary">배경 지도</h3>
             <div className="flex gap-6">
               {DEFAULT_STYLE_IDS.map((id) => (
-                <button
+                <Button
                   key={id}
+                  variant="outline"
+                  size="sm"
+                  active={mapStyleId === id}
+                  aria-pressed={mapStyleId === id}
                   onClick={() => setMapStyleId(id)}
-                  className="flex-1 px-8 py-6 rounded-xs text-xs transition-colors"
-                  style={{
-                    background: mapStyleId === id ? 'var(--surface)' : 'transparent',
-                    color: mapStyleId === id ? 'var(--text)' : 'var(--text-muted)',
-                    border: '1px solid var(--border)',
-                  }}
+                  className="flex-1"
                 >
                   {MAP_STYLES[id].label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
 
           {/* 혼잡도는 4색 램프라 범례 없이는 읽히지 않는다. 해당 레이어를 켤 때만 띄운다. */}
           {showCongestLegend && (
-            <div className="pt-16" style={{ borderTop: '1px solid var(--border)' }}>
-              <h3
-                className="text-xs font-mono tracking-wider uppercase mb-8"
-                style={{ color: 'var(--text-muted)' }}
-              >
-                혼잡도
-              </h3>
+            <div className="border-t border-border-tertiary pt-16">
+              <h3 className="mb-8 text-body-xs-regular text-text-tertiary">혼잡도</h3>
               <div className="flex items-center gap-8">
                 {CONGEST_LABELS.map((label, i) => (
                   <div key={label} className="flex items-center gap-6">
+                    {/* 범례 스와치 — 지도 데이터 색 */}
                     <span
-                      className="w-10 h-10 rounded-xs flex-shrink-0"
+                      className="size-10 shrink-0 rounded-xs"
                       style={{ background: CONGEST_COLORS[i] }}
                     />
-                    <span className="text-xs whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>
+                    <span className="text-body-xs-regular whitespace-nowrap text-text-tertiary">
                       {label}
                     </span>
                   </div>
                 ))}
               </div>
-              <p className="text-xs mt-8 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+              <p className="mt-8 text-body-xs-regular text-text-tertiary">
                 원의 크기는 실시간 생활인구 규모입니다.
               </p>
             </div>
           )}
 
-          <div className="text-xs leading-relaxed space-y-4" style={{ color: 'var(--text-muted)' }}>
-            <p>
-              <span style={{ color: '#1bbfa8' }}>LIVE</span> 공공 API 실시간 수신 ·{' '}
-              <span style={{ color: '#C8923A' }}>DEMO</span> 공개 통계 기반 데모
+          {/* 배지 범례 — 레이어 패널과 같은 StatusChip */}
+          <div className="space-y-6 text-body-xs-regular text-text-tertiary">
+            <p className="flex items-center gap-6">
+              <StatusChip status="success" showIcon={false}>LIVE</StatusChip>
+              공공 API 실시간 수신
             </p>
-            <p>
-              <span style={{ color: '#C45C4A' }}>분석</span> 위성 데이터 처리 결과 ·{' '}
-              <span style={{ color: '#4A9EC4' }}>영상</span> 위성 래스터
+            <p className="flex items-center gap-6">
+              <StatusChip status="neutral" showIcon={false}>DEMO</StatusChip>
+              공개 통계 기반 데모
+            </p>
+            <p className="flex items-center gap-6">
+              <StatusChip status="information" showIcon={false}>분석</StatusChip>
+              위성 데이터 처리 결과
+            </p>
+            <p className="flex items-center gap-6">
+              <StatusChip status="brand" showIcon={false}>영상</StatusChip>
+              위성 래스터
             </p>
             <p>실시간 레이어는 {REFRESH_SEC}초마다 자동 갱신됩니다.</p>
           </div>
@@ -1390,18 +1372,18 @@ export default function SeoulPage() {
       {/* 지도 하단 크레딧. EarthMap 이 hideControls 로 Mapbox 기본 attribution 을
           끄기 때문에, Mapbox·OpenStreetMap 표기도 이 줄이 대신 진다. */}
       <div
-        className="absolute bottom-0 right-0 z-10 max-w-full md:max-w-[60%] px-12 py-6 text-xs font-mono leading-relaxed text-right pointer-events-none"
+        className="pointer-events-none absolute right-0 bottom-0 z-10 max-w-full px-12 py-6 text-right text-body-xs-regular text-text-tertiary md:max-w-[60%]"
         style={{
-          color: 'var(--text-muted)',
           background: 'linear-gradient(to top, rgba(14,14,16,0.85), rgba(14,14,16,0))',
         }}
       >
         출처: {SEOUL_SOURCE_PROVIDERS.join(' · ')} · 상세는 좌측 패널
       </div>
 
+      {/* 모바일 사이드바 스크림 — 버튼 모양이 아닌 배경 클릭 영역이라 NDS Button 대상이 아니다 */}
       {sidebarOpen && (
         <button
-          className="md:hidden absolute inset-0 z-10"
+          className="absolute inset-0 z-10 md:hidden"
           style={{ background: 'rgba(0,0,0,0.5)' }}
           onClick={() => setSidebarOpen(false)}
           aria-label="닫기"
@@ -1414,14 +1396,9 @@ export default function SeoulPage() {
 function Stat({ label, value, unit }: { label: string; value: string; unit: string }) {
   return (
     <div className="text-right">
-      <div className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
-        {label}
-      </div>
-      <div className="text-sm" style={{ color: 'var(--text)' }}>
-        <span className="font-semibold">{value}</span>{' '}
-        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-          {unit}
-        </span>
+      <div className="text-body-xs-regular text-text-tertiary">{label}</div>
+      <div className="text-body-sm-medium text-text-primary tabular-nums">
+        {value} <span className="text-body-xs-regular text-text-tertiary">{unit}</span>
       </div>
     </div>
   );

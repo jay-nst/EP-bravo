@@ -1,6 +1,15 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Button, Input, StatusChip } from '@naraspace-technology/nds/components';
+import {
+  IconArrowRight,
+  IconChevronLeft,
+  IconChevronRight,
+  IconInfoCircle,
+  IconSearch,
+  IconX,
+} from '@naraspace-technology/nds/icons';
 import { DAMAGE_PANEL, MAP_TOP_BARS } from '@/lib/agent-tutorial-steps';
 
 interface BeforeAfterSliderProps {
@@ -37,6 +46,7 @@ export default function BeforeAfterSlider({
   const draggingRef = useRef(false);
   const sweepRef = useRef<number | null>(null);
   const interactedRef = useRef(false);
+  const liveScale = useLiveScale(containerRef);
 
   // 자동 스윕: 15% → 85% → 50% (1.8s). 사용자가 만지면 즉시 중단.
   useEffect(() => {
@@ -112,7 +122,6 @@ export default function BeforeAfterSlider({
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={Math.round(pct)}
-      style={{ fontFamily: 'var(--font-body)', fontSize: '0.875cqw', letterSpacing: '-0.2px' }}
     >
       {/* 화재 전 (base) */}
       {/* eslint-disable-next-line @next/next/no-img-element -- 정적 캡쳐, 최적화 불필요 */}
@@ -143,88 +152,94 @@ export default function BeforeAfterSlider({
 
       {/* 핸들 라인 + 그립 (실서비스 compare-swiper 재현) */}
       <div
-        className="absolute top-0 bottom-0 pointer-events-none"
-        style={{ left: `${pct}%`, width: '2px', background: '#1bbfa8', marginLeft: '-1px' }}
+        className="absolute top-0 bottom-0 w-2 -ml-1 pointer-events-none bg-bg-interactive-primary"
+        style={{ left: `${pct}%` }}
         aria-hidden
       >
         <div
-          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 left-1/2 w-36 h-36 rounded-full flex items-center justify-center text-sm font-semibold shadow-lg${
+          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 left-1/2 size-36 rounded-full flex items-center justify-center shadow-8 bg-bg-interactive-primary text-[#0E0E10]${
             handleHinted && hintsEnabled ? ' ep-hint-blink' : ''
           }`}
-          style={{ background: '#1bbfa8', color: '#0E0E10' }}
         >
-          ↔
+          <IconChevronLeft className="size-16 -mr-2" />
+          <IconChevronRight className="size-16 -ml-2" />
         </div>
       </div>
 
-      {/* 지도 상단 UI — 실서비스 현행 디자인 재현 (장식용, 조작 불가).
-          캡쳐의 옛 통합 바(검색+비교 겹침)는 이미지에서 지웠다 */}
-      <MapTopBars />
-
-      {/* '산불 피해 보기' 패널 — 실캡쳐 위치·색 실측값으로 DOM 재현 (불투명도 실동작) */}
+      {/* 라이브 px 레이어 — 실서비스 지도 영역(940×944 px)을 1:1 좌표로 깔고 컨테이너 폭에
+          맞춰 transform 으로 축소한다. 안쪽은 NDS 컴포넌트·클래스를 px 그대로 쓴다.
+          측정 전(첫 레이아웃)에는 숨겨 0 배율 플래시를 막는다 */}
       <div
-        className="absolute cursor-default"
+        className="absolute top-0 left-0 origin-top-left pointer-events-none"
         style={{
-          left: `${rect.x}%`,
-          top: `${rect.y}%`,
-          width: `${rect.w}%`,
-          height: `${rect.h}%`,
-          background: colors.bg,
-          borderRadius: '0.7em',
-          padding: '0.9em 1.2em',
-          color: '#E7EBEF',
-        }}
-        onPointerDown={(e) => {
-          // 패널 조작이 비교 슬라이더 드래그로 번지지 않게
-          e.stopPropagation();
-          setPanelHinted(false);
+          ...LIVE_THEME,
+          width: LIVE_MAP_PX.w,
+          height: LIVE_MAP_PX.h,
+          transform: `scale(${liveScale ?? 1})`,
+          visibility: liveScale === null ? 'hidden' : undefined,
         }}
       >
-        <div className="flex items-center justify-between" style={{ marginBottom: '0.9em' }}>
-          <span style={{ fontSize: '1.07em', fontWeight: 600 }}>산불 피해 보기</span>
-          <span aria-hidden style={{ color: '#8fa0b3', fontSize: '1.1em', lineHeight: 1 }}>
-            ✕
-          </span>
-        </div>
+        {/* 지도 상단 UI — 실서비스 현행 마크업 그대로 (장식용, 조작 불가).
+            캡쳐의 옛 통합 바(검색+비교 겹침)는 이미지에서 지웠다 */}
+        <MapTopBars />
 
-        <div className="flex items-center justify-between" style={{ marginBottom: '0.45em' }}>
-          <span style={{ fontWeight: 600 }}>불투명도</span>
-          <span style={{ color: '#9db0c4' }}>{opacity}%</span>
-        </div>
-        {/* 조작 가능 어포던스 — 슬라이더의 민트 썸(점)이 반짝인다 (첫 조작 시 해제) */}
-        <input
-          type="range"
-          min={0}
-          max={100}
-          value={opacity}
-          onChange={(e) => {
-            setOpacity(Number(e.target.value));
-            setPanelHinted(false); // 키보드 조작도 어포던스 해제
+        {/* '산불 피해 보기' 패널 — 실캡쳐 위치·색 실측값으로 DOM 재현 (불투명도 실동작) */}
+        <div
+          className="absolute cursor-default pointer-events-auto rounded-sm px-16 py-12 text-[#E7EBEF]"
+          style={{
+            left: `${rect.x}%`,
+            top: `${rect.y}%`,
+            width: `${rect.w}%`,
+            height: `${rect.h}%`,
+            background: colors.bg,
           }}
-          className={`ep-opacity-range w-full${
-            panelHinted && hintsEnabled ? ' ep-opacity-hint' : ''
-          }`}
-          aria-label="심각도 오버레이 불투명도"
-        />
+          onPointerDown={(e) => {
+            // 패널 조작이 비교 슬라이더 드래그로 번지지 않게
+            e.stopPropagation();
+            setPanelHinted(false);
+          }}
+        >
+          <div className="flex items-center justify-between mb-12">
+            <span className="text-body-md-medium">산불 피해 보기</span>
+            <IconX aria-hidden className="size-16 text-[#8fa0b3]" />
+          </div>
 
-        <div style={{ marginTop: '0.9em' }}>
-          <p style={{ color: '#8fa0b3', fontSize: '0.86em', marginBottom: '0.4em' }}>심각도</p>
-          <div className="flex items-center" style={{ gap: '1.1em' }}>
-            {(
-              [
-                ['상', colors.high],
-                ['중', colors.mid],
-                ['하', colors.low],
-              ] as const
-            ).map(([label, color]) => (
-              <span key={label} className="flex items-center" style={{ gap: '0.4em' }}>
-                <span
-                  className="inline-block"
-                  style={{ width: '1em', height: '1em', background: color, borderRadius: '0.15em' }}
-                />
-                {label}
-              </span>
-            ))}
+          <div className="flex items-center justify-between mb-6">
+            <span className="text-body-sm-medium">불투명도</span>
+            <span className="text-body-sm-regular tabular-nums text-[#9db0c4]">{opacity}%</span>
+          </div>
+          {/* 조작 가능 어포던스 — 슬라이더의 민트 썸(점)이 반짝인다 (첫 조작 시 해제) */}
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={opacity}
+            onChange={(e) => {
+              setOpacity(Number(e.target.value));
+              setPanelHinted(false); // 키보드 조작도 어포던스 해제
+            }}
+            className={`ep-opacity-range w-full${
+              panelHinted && hintsEnabled ? ' ep-opacity-hint' : ''
+            }`}
+            aria-label="심각도 오버레이 불투명도"
+          />
+
+          <div className="mt-12">
+            <p className="text-body-xs-regular text-[#8fa0b3] mb-4">심각도</p>
+            <div className="flex items-center gap-16">
+              {(
+                [
+                  ['상', colors.high],
+                  ['중', colors.mid],
+                  ['하', colors.low],
+                ] as const
+              ).map(([label, color]) => (
+                <span key={label} className="flex items-center gap-6 text-body-sm-regular">
+                  <span className="inline-block size-14 rounded-xs" style={{ background: color }} />
+                  {label}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -236,111 +251,103 @@ function easeInOut(t: number): number {
   return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 }
 
-// 실서비스의 지도 상단 UI 재현: 좌상단 검색 박스 + 상단 중앙 비교 알약.
-// 색·치수·아이콘은 라이브 번들 실측값 (MAP_TOP_BARS 주석 참조). 지도 크롭은
-// 실서비스 1px = 스테이지 1px(1/16 cqw)이라 px 값을 lp() 로 그대로 옮긴다.
-// 장식용이라 pointer-events 를 받지 않는다 — 클릭/드래그는 비교 슬라이더로 통과.
-const lp = (n: number) => `${n / 16}cqw`;
+// 지도 크롭 = 실서비스 지도 영역 실측 (660,56,940,944 — map-compare 핫스팟과 동일).
+// 캡쳐는 1600px 뷰포트 1:1 이라, 스테이지 폭이 바뀌면 지도 영역도 같은 비율로 줄어든다.
+const LIVE_MAP_PX = { w: 940, h: 944 } as const;
 
-// 라이브 아이콘 SVG 경로 (viewBox 0 0 24 24)
-const ICON_SEARCH =
-  'M11.3918 3C15.6119 3.00018 19.0325 6.42164 19.0325 10.6418C19.0325 12.3927 18.4442 14.0058 17.4539 15.2943L17.316 15.4733L20.5237 18.681C20.8254 18.9828 20.8254 19.4719 20.5237 19.7737C20.2219 20.0754 19.7328 20.0754 19.431 19.7737L16.2234 16.566L16.0443 16.7039C14.7558 17.6942 13.1427 18.2825 11.3918 18.2825C7.17164 18.2825 3.75018 14.8619 3.75 10.6418C3.75 6.42152 7.17152 3 11.3918 3ZM11.3918 4.54546C8.02506 4.54546 5.29546 7.27506 5.29546 10.6418C5.29564 14.0083 8.02517 16.7371 11.3918 16.7371C13.0293 16.737 14.5166 16.0913 15.6116 15.0407L15.6247 15.0286L15.6347 15.0145C15.6534 14.991 15.6742 14.968 15.6961 14.9461C15.718 14.9242 15.741 14.9034 15.7645 14.8847L15.7786 14.8747L15.7907 14.8616C16.8413 13.7666 17.487 12.2793 17.4871 10.6418C17.4871 7.27517 14.7583 4.54564 11.3918 4.54546Z';
-const ICON_ARROW =
-  'M11.5001 5.24824C11.8271 4.91724 12.357 4.91726 12.684 5.24824L18.755 11.4001C19.0817 11.7315 19.0817 12.2685 18.755 12.5998L12.684 18.7518C12.357 19.0827 11.8271 19.0828 11.5001 18.7518C11.173 18.4203 11.173 17.8825 11.5001 17.551L16.1408 12.8485L4.83733 12.8485C4.37477 12.8485 4 12.4687 4 12C4 11.5313 4.37477 11.1515 4.83733 11.1515L16.1408 11.1515L11.5001 6.44898C11.173 6.11754 11.173 5.57968 11.5001 5.24824Z';
-const ICON_INFO = [
-  'M12 11.0092C12.5472 11.0092 12.9908 11.4528 12.9908 12V15.3024C12.9908 15.8496 12.5472 16.2932 12 16.2932C11.4528 16.2931 11.0092 15.8496 11.0092 15.3024V12C11.0092 11.4528 11.4528 11.0092 12 11.0092Z',
-  'M12.0087 7.70683C12.5558 7.70702 12.9995 8.15055 12.9995 8.69763C12.9993 9.24455 12.5556 9.68825 12.0087 9.68844H12C11.453 9.68839 11.0094 9.24464 11.0092 8.69763C11.0092 8.15046 11.4528 7.70687 12 7.70683H12.0087Z',
-  'M12 3.00049C16.9703 3.00062 21.0003 7.02976 21.0005 12C21.0003 16.9702 16.9702 21.0004 12 21.0005C7.0298 21.0003 3.00068 16.9702 3.00049 12C3.00066 7.02979 7.02979 3.00066 12 3.00049ZM12 4.4867C7.8506 4.48687 4.48687 7.8506 4.4867 12C4.4869 16.1494 7.85061 19.5141 12 19.5143C16.1494 19.5141 19.5141 16.1494 19.5143 12C19.5141 7.85057 16.1494 4.48683 12 4.4867Z',
-];
-const ICON_X =
-  'M17.5095 5.2047C17.8681 4.91217 18.3979 4.93295 18.7322 5.2672L18.7947 5.33654C19.0677 5.67127 19.0677 6.15512 18.7947 6.48986L18.7322 6.55822L13.2908 11.9996L18.7322 17.441C19.0887 17.7975 19.0885 18.3755 18.7322 18.732C18.3756 19.0886 17.7977 19.0886 17.4412 18.732L11.9998 13.2906L6.55835 18.732C6.22405 19.0663 5.69432 19.0881 5.33569 18.7955L5.26733 18.732C4.91082 18.3755 4.91079 17.7976 5.26733 17.441L10.7087 11.9996L5.26733 6.55822C4.91077 6.20165 4.91077 5.62377 5.26733 5.2672L5.33569 5.2047C5.69432 4.91215 6.22405 4.9329 6.55835 5.2672L11.9998 10.7086L17.4412 5.2672L17.5095 5.2047Z';
-
-function LiveIcon({ paths, size, color }: { paths: readonly string[]; size: number; color: string }) {
-  return (
-    <svg viewBox="0 0 24 24" width={lp(size)} height={lp(size)} fill="none" aria-hidden style={{ color, flexShrink: 0 }}>
-      {paths.map((d) => (
-        <path key={d} d={d} fill="currentColor" fillRule="evenodd" clipRule="evenodd" />
-      ))}
-    </svg>
-  );
+// 라이브 px → 화면 px 배율 = 지도 영역 실제 폭 / 940.
+// NDS 컴포넌트는 px(1px 간격 단위)·rem 타이포로 크기가 고정돼 cqw 로 늘이고 줄일 수 없다.
+// 그래서 1:1 레이어 전체에 transform scale 을 건다 (CSS 만으로는 길이÷길이 배율을
+// 아직 브라우저 공통으로 계산할 수 없어 ResizeObserver 로 잰다). 이전 lp() 의
+// `n/16 cqw` 와 같은 값이다: 지도 폭 = 58.75cqw → 1 라이브px = 58.75/940 cqw = 1/16 cqw.
+function useLiveScale(ref: React.RefObject<HTMLDivElement | null>): number | null {
+  const [scale, setScale] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    // clientWidth 는 정수로 반올림돼 배율이 미세하게 어긋난다 — 소수 폭을 쓴다
+    const measure = () => setScale(el.getBoundingClientRect().width / LIVE_MAP_PX.w);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [ref]);
+  return scale;
 }
 
+// 실서비스(Agent EP) 다크 테마 토큰을 레이어 범위에만 주입한다. EP 팔레트의 같은 이름
+// 토큰과 값이 달라서, NDS 컴포넌트에 색 클래스를 덮어쓰지 않고 테마 변수로 맞춘다
+// (NDS 의 테마 방식 그대로 — 실서비스도 알약에서 status 토큰을 inline 변수로 바꾼다).
+const { colors: LIVE } = MAP_TOP_BARS;
+const LIVE_THEME = {
+  '--bg-tertiary': LIVE.bg,
+  '--border-tertiary': LIVE.border,
+  '--text-primary': LIVE.text,
+  '--text-tertiary': LIVE.textTertiary,
+  '--icon-primary': LIVE.iconPrimary,
+  '--icon-secondary': LIVE.icon,
+  '--elevation-6': LIVE.searchShadow,
+} as React.CSSProperties;
+
+// 실서비스 알약은 다크 테마에서도 Before/After 칩에 라이트 status 토큰을 강제한다
+const LIVE_STATUS_LIGHT = {
+  '--status-info-subtle': LIVE.infoSubtle,
+  '--status-info-bold': LIVE.infoBold,
+  '--status-danger-subtle': LIVE.dangerSubtle,
+  '--status-danger-bold': LIVE.dangerBold,
+} as React.CSSProperties;
+
+// 실서비스의 지도 상단 UI: 좌상단 검색 Input + 상단 중앙 비교 알약.
+// 라이브 번들(agent.ep.naraspace.com, 2026-10-08)의 마크업·클래스를 그대로 옮겼다 —
+// 검색 = NDS Input(leftIcon, bg-bg-tertiary shadow-6), 칩 = NDS StatusChip
+// (showIcon=false, solid, rounded-full leading-[16px]), 도움말·닫기 = NDS Button
+// (text, sm, iconOnly). 장식용이라 inert — 포커스·클릭·보조기술 모두 받지 않고
+// 클릭/드래그는 아래 비교 슬라이더로 통과한다.
 function MapTopBars() {
-  const { search, compare, colors: c } = MAP_TOP_BARS;
-  // text-body-sm (14px, -0.2px) — 배지는 regular + leading-[16px], 날짜는 medium
-  const bodySm = { fontSize: lp(14), letterSpacing: '-0.2px' } as const;
-  // Badge: inline-flex rounded-full px-8 py-2 text-body-sm-regular leading-[16px]
-  const badge = (bg: string, fg: string): React.CSSProperties => ({
-    ...bodySm,
-    display: 'inline-flex',
-    alignItems: 'center',
-    background: bg,
-    color: fg,
-    borderRadius: '9999px',
-    padding: `${lp(2)} ${lp(8)}`,
-    fontWeight: 400,
-    lineHeight: lp(16),
-    whiteSpace: 'nowrap',
-  });
-  const date: React.CSSProperties = { ...bodySm, color: c.text, fontWeight: 500, lineHeight: lp(24) };
+  const { search, compare } = MAP_TOP_BARS;
   return (
-    <div className="pointer-events-none" aria-hidden>
-      {/* 검색 박스 — Input: rounded-lg(24) py-6 pl-12 pr-16 gap-12, inset-ring border-tertiary, shadow-6 */}
-      <div
-        className="absolute flex items-center"
-        style={{
-          left: `${search.rect.x}%`,
-          top: `${search.rect.y}%`,
-          width: `${search.rect.w}%`,
-          background: c.bg,
-          borderRadius: lp(24),
-          boxShadow: `inset 0 0 0 1px ${c.border}, ${c.searchShadow}`,
-          padding: `${lp(6)} ${lp(16)} ${lp(6)} ${lp(12)}`,
-          gap: lp(12),
-        }}
-      >
-        <LiveIcon paths={[ICON_SEARCH]} size={24} color={c.iconPrimary} />
-        <span
-          style={{
-            fontSize: lp(16),
-            lineHeight: lp(28),
-            letterSpacing: '-0.2px',
-            fontWeight: 400,
-            color: c.placeholder,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {search.placeholder}
-        </span>
+    <div inert>
+      <div className="absolute top-20 left-20 w-280">
+        <Input
+          leftIcon={<IconSearch />}
+          placeholder={search.placeholder}
+          className="bg-bg-tertiary shadow-6"
+          readOnly
+        />
       </div>
 
-      {/* 비교 알약 — rounded-full bg-tertiary py-4 pr-6 pl-12 gap-8, 그림자 없음 */}
-      <div
-        className="absolute flex items-center"
-        style={{
-          left: '50%',
-          top: `${compare.top}%`,
-          transform: 'translateX(-50%)',
-          background: c.bg,
-          borderRadius: '9999px',
-          padding: `${lp(4)} ${lp(6)} ${lp(4)} ${lp(12)}`,
-          gap: lp(8),
-          whiteSpace: 'nowrap',
-        }}
-      >
-        <span className="flex items-center" style={{ gap: lp(12) }}>
-          <span className="flex items-center" style={{ gap: lp(6) }}>
-            <span style={badge(c.infoSubtle, c.infoBold)}>{compare.beforeLabel}</span>
-            <span style={date}>{compare.beforeDate}</span>
-          </span>
-          <LiveIcon paths={[ICON_ARROW]} size={18} color={c.icon} />
-          <span className="flex items-center" style={{ gap: lp(6) }}>
-            <span style={badge(c.dangerSubtle, c.dangerBold)}>{compare.afterLabel}</span>
-            <span style={date}>{compare.afterDate}</span>
-          </span>
-          <LiveIcon paths={ICON_INFO} size={24} color={c.iconPrimary} />
-        </span>
-        <LiveIcon paths={[ICON_X]} size={24} color={c.iconPrimary} />
+      <div className="absolute top-20 left-1/2 -translate-x-1/2 flex items-center gap-8 rounded-full bg-bg-tertiary py-4 pr-6 pl-12 whitespace-nowrap">
+        <div className="flex items-center gap-12" style={LIVE_STATUS_LIGHT}>
+          <div className="flex items-center gap-6">
+            <StatusChip
+              showIcon={false}
+              status="information"
+              variant="solid"
+              className="rounded-full leading-[16px]"
+            >
+              {compare.beforeLabel}
+            </StatusChip>
+            <span className="text-body-sm-medium text-text-primary">{compare.beforeDate}</span>
+          </div>
+          <IconArrowRight className="size-18 text-icon-secondary" />
+          <div className="flex items-center gap-6">
+            <StatusChip
+              showIcon={false}
+              status="error"
+              variant="solid"
+              className="rounded-full leading-[16px]"
+            >
+              {compare.afterLabel}
+            </StatusChip>
+            <span className="text-body-sm-medium text-text-primary">{compare.afterDate}</span>
+          </div>
+          <Button variant="text" size="sm" iconOnly aria-label="비교 도움말">
+            <IconInfoCircle />
+          </Button>
+        </div>
+        <Button variant="text" size="sm" iconOnly aria-label="비교 닫기">
+          <IconX />
+        </Button>
       </div>
     </div>
   );

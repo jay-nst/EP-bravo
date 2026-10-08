@@ -17,22 +17,16 @@ import type { PublicLayerId } from '@/types/public-data';
 import { MAP_STYLES, CORE_STYLE_IDS } from '@/components/map/EarthMap';
 import type { MapStyleId } from '@/components/map/EarthMap';
 import { LayerAnimationController, LAYER_ANIMATION_MAP } from '@/lib/layer-animations';
+import { Button, Card, Spinner, Tabs } from '@naraspace-technology/nds/components';
+import { IconMap, IconMenu, IconMoon, IconSatellite, IconSun, IconX } from '@naraspace-technology/nds/icons';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
   loading: () => (
-    <div
-      className="w-full h-full flex items-center justify-center"
-      style={{ background: 'var(--bg)' }}
-    >
-      <div className="text-center">
-        <div
-          className="w-32 h-32 rounded-full border-2 border-t-transparent animate-spin mx-auto mb-12"
-          style={{ borderColor: 'var(--border)', borderTopColor: 'transparent' }}
-        />
-        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-          지도 로딩 중...
-        </p>
+    <div className="flex h-full w-full items-center justify-center bg-bg-tertiary">
+      <div className="flex flex-col items-center gap-12">
+        <Spinner aria-label="지도 로딩 중" />
+        <p className="text-body-sm-regular text-text-tertiary">지도 로딩 중...</p>
       </div>
     </div>
   ),
@@ -198,6 +192,14 @@ const PUBLIC_LAYER_IDS: Record<PublicLayerId, { source: string; layers: string[]
 };
 
 const EMPTY_FC: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
+
+// 배경지도 스위처 아이콘 — MAP_STYLES.icon(이모지) 대신 NDS 아이콘
+const MAP_STYLE_ICONS: Record<MapStyleId, typeof IconSatellite> = {
+  satellite: IconSatellite,
+  dark: IconMoon,
+  'night-nav': IconMap,
+  light: IconSun,
+};
 
 export default function CorePage() {
   const [satellite, setSatellite] = useState<SatelliteType>('observer');
@@ -667,22 +669,22 @@ export default function CorePage() {
         const gradeColor = AIR_QUALITY_COLORS[props.grade] ?? AIR_QUALITY_COLORS.moderate;
         const gradeLabel: Record<string, string> = { good: '좋음', moderate: '보통', unhealthy: '나쁨', very_unhealthy: '매우나쁨', hazardous: '위험' };
         popupEl.innerHTML = `
-          <div style="padding:8px;">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-              <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${gradeColor}"></span>
-              <span style="font-size:13px;font-weight:600;color:#E8E4DF;">${props.name}</span>
+          <div class="p-8">
+            <div class="mb-6 flex items-center gap-6">
+              <span class="inline-block size-8 rounded-full" style="background:${gradeColor}"></span>
+              <span class="text-body-sm-medium" style="color:#E8E4DF;">${props.name}</span>
             </div>
-            <div style="font-size:11px;color:#8A8680;line-height:1.8;">
-              <span style="color:${gradeColor};font-weight:500;">${gradeLabel[props.grade] ?? props.grade}</span><br/>
-              PM2.5 <b style="color:#E8E4DF">${props.pm25 ?? '-'}</b> ㎍/㎥ · PM10 <b style="color:#E8E4DF">${props.pm10 ?? '-'}</b> ㎍/㎥
+            <div class="text-body-xs-regular" style="color:#8A8680;">
+              <span style="color:${gradeColor};">${gradeLabel[props.grade] ?? props.grade}</span><br/>
+              PM2.5 <span style="color:#E8E4DF">${props.pm25 ?? '-'}</span> ㎍/㎥ · PM10 <span style="color:#E8E4DF">${props.pm10 ?? '-'}</span> ㎍/㎥
             </div>
           </div>
         `;
       } else {
         popupEl.innerHTML = `
-          <div style="padding:8px;">
-            <p style="font-size:13px;font-weight:600;color:#E8E4DF;margin:0 0 6px;">${props.name}</p>
-            <div style="font-size:11px;color:#8A8680;line-height:1.8;font-family:'IBM Plex Mono',monospace;">
+          <div class="p-8">
+            <p class="mb-6 text-body-sm-medium" style="color:#E8E4DF;">${props.name}</p>
+            <div class="text-body-xs-regular tabular-nums" style="color:#8A8680;">
               🌡️ ${props.temp ?? '-'}°C · 💧 ${props.humidity ?? '-'}%<br/>
               💨 ${props.windSpeed ?? '-'} m/s · 🌧️ ${props.rainfall1h ?? '0'} mm
             </div>
@@ -712,14 +714,14 @@ export default function CorePage() {
       const popupEl = document.createElement('div');
       popupEl.style.cssText = 'max-width:240px;font-family:var(--font-pretendard),sans-serif;';
       popupEl.innerHTML = `
-        <div style="padding:8px;">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${skyColor}"></span>
-            <span style="font-size:13px;font-weight:600;color:#E8E4DF;">${props.name}</span>
+        <div class="p-8">
+          <div class="mb-6 flex items-center gap-6">
+            <span class="inline-block size-8 rounded-full" style="background:${skyColor}"></span>
+            <span class="text-body-sm-medium" style="color:#E8E4DF;">${props.name}</span>
           </div>
-          <div style="font-size:11px;color:#8A8680;line-height:1.8;">
-            <span style="color:${skyColor};font-weight:500;">${skyLabel}</span>${precipLabel ? ` · ${precipLabel}` : ''}<br/>
-            🌡️ <b style="color:#E8E4DF">${props.temperature ?? '-'}°C</b> · 💧 ${props.humidity ?? '-'}%<br/>
+          <div class="text-body-xs-regular" style="color:#8A8680;">
+            <span style="color:${skyColor};">${skyLabel}</span>${precipLabel ? ` · ${precipLabel}` : ''}<br/>
+            🌡️ <span style="color:#E8E4DF">${props.temperature ?? '-'}°C</span> · 💧 ${props.humidity ?? '-'}%<br/>
             💨 ${props.windSpeed ?? '-'} m/s${props.precipAmount > 0 ? ` · 🌧️ ${props.precipAmount} mm` : ''}
           </div>
         </div>
@@ -741,14 +743,14 @@ export default function CorePage() {
       const popupEl = document.createElement('div');
       popupEl.style.cssText = 'max-width:260px;font-family:var(--font-pretendard),sans-serif;';
       popupEl.innerHTML = `
-        <div style="padding:8px;">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-            <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${statusColor}"></span>
-            <span style="font-size:11px;font-weight:500;color:${statusColor};">${statusLabel}</span>
+        <div class="p-8">
+          <div class="mb-6 flex items-center gap-6">
+            <span class="inline-block size-8 rounded-xs" style="background:${statusColor}"></span>
+            <span class="text-body-xs-regular" style="color:${statusColor};">${statusLabel}</span>
           </div>
-          <p style="font-size:13px;font-weight:600;color:#E8E4DF;margin:0 0 4px;">${props.name}</p>
-          <p style="font-size:11px;color:#8A8680;margin:0 0 6px;line-height:1.5;">${props.description ?? ''}</p>
-          <div style="font-size:11px;color:#8A8680;font-family:'IBM Plex Mono',monospace;">
+          <p class="mb-4 text-body-sm-medium" style="color:#E8E4DF;">${props.name}</p>
+          <p class="mb-6 text-body-xs-regular" style="color:#8A8680;">${props.description ?? ''}</p>
+          <div class="text-body-xs-regular tabular-nums" style="color:#8A8680;">
             피해면적 ${props.affectedArea} ha · ${props.startedAt?.slice(0, 10) ?? ''}
           </div>
         </div>
@@ -768,13 +770,13 @@ export default function CorePage() {
       const popupEl = document.createElement('div');
       popupEl.style.cssText = 'max-width:260px;font-family:var(--font-pretendard),sans-serif;';
       popupEl.innerHTML = `
-        <div style="padding:8px;">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#D32F2F"></span>
-            <span style="font-size:11px;font-weight:500;color:#EF5350;">규모 ${props.magnitude} · 진도 ${props.maxIntensity}</span>
+        <div class="p-8">
+          <div class="mb-6 flex items-center gap-6">
+            <span class="inline-block size-8 rounded-full" style="background:#D32F2F"></span>
+            <span class="text-body-xs-regular" style="color:#EF5350;">규모 ${props.magnitude} · 진도 ${props.maxIntensity}</span>
           </div>
-          <p style="font-size:13px;font-weight:600;color:#E8E4DF;margin:0 0 4px;">${props.location}</p>
-          <div style="font-size:11px;color:#8A8680;font-family:'IBM Plex Mono',monospace;line-height:1.8;">
+          <p class="mb-4 text-body-sm-medium" style="color:#E8E4DF;">${props.location}</p>
+          <div class="text-body-xs-regular tabular-nums" style="color:#8A8680;">
             깊이 ${props.depth} km<br/>
             ${props.occurredAt?.replace('T', ' ') ?? ''}
           </div>
@@ -917,14 +919,14 @@ export default function CorePage() {
       popupEl.style.cssText = 'max-width:260px;font-family:var(--font-pretendard),sans-serif;';
       const sevColor = SEVERITY_COLORS[props.severity as CitadelSeverity] ?? SEVERITY_COLORS.moderate;
       popupEl.innerHTML = `
-        <div style="padding:8px;">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-            <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${sevColor}"></span>
-            <span style="font-size:11px;font-weight:500;color:#E8E4DF;">${props.severity} · ${props.event_type}</span>
+        <div class="p-8">
+          <div class="mb-6 flex items-center gap-6">
+            <span class="inline-block size-8 rounded-xs" style="background:${sevColor}"></span>
+            <span class="text-body-xs-regular" style="color:#E8E4DF;">${props.severity} · ${props.event_type}</span>
           </div>
-          <p style="font-size:13px;font-weight:600;color:#E8E4DF;margin:0 0 4px;">${props.title}</p>
-          <p style="font-size:11px;color:#8A8680;margin:0 0 6px;line-height:1.5;">${props.description ?? ''}</p>
-          <div style="font-size:11px;color:#8A8680;font-family:'IBM Plex Mono',monospace;">
+          <p class="mb-4 text-body-sm-medium" style="color:#E8E4DF;">${props.title}</p>
+          <p class="mb-6 text-body-xs-regular" style="color:#8A8680;">${props.description ?? ''}</p>
+          <div class="text-body-xs-regular tabular-nums" style="color:#8A8680;">
             ${props.location_name} · ${props.source ?? ''}
           </div>
         </div>
@@ -1091,9 +1093,9 @@ export default function CorePage() {
   }, [aoi, catalogItemId, userEmail]);
 
   return (
-    <div className="flex relative" style={{ height: 'calc(100vh - var(--header-height))' }}>
+    <div className="relative flex h-[calc(100vh-var(--header-height))]">
       {/* Map */}
-      <div className="flex-1 relative">
+      <div className="relative flex-1">
         <EarthMap
           onAoiChange={handleAoiChange}
           satellite={satellite}
@@ -1103,81 +1105,56 @@ export default function CorePage() {
         />
 
         {/* Mobile sidebar toggle */}
-        <button
-          className="md:hidden absolute top-12 right-12 z-20 p-10 rounded-sm"
-          style={{
-            background: 'rgba(14,14,16,0.85)',
-            backdropFilter: 'blur(8px)',
-            border: '1px solid var(--border)',
-            color: sidebarOpen ? 'var(--accent)' : 'var(--text-muted)',
-          }}
+        <Button
+          variant="outline"
+          iconOnly
+          active={sidebarOpen}
+          className="absolute top-12 right-12 z-20 md:hidden"
           onClick={() => setSidebarOpen(!sidebarOpen)}
           aria-label={sidebarOpen ? '패널 닫기' : '패널 열기'}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            {sidebarOpen ? <path d="M18 6L6 18M6 6l12 12" /> : <path d="M3 6h18M3 12h18M3 18h18" />}
-          </svg>
-        </button>
+          {sidebarOpen ? <IconX /> : <IconMenu />}
+        </Button>
 
-        {/* Map style switcher */}
-        <div
-          className="absolute bottom-16 left-16 md:left-auto md:right-16 flex gap-4 p-4 rounded-sm z-10"
-          style={{
-            background: 'rgba(14,14,16,0.85)',
-            backdropFilter: 'blur(8px)',
-            border: '1px solid var(--border)',
-          }}
-        >
+        {/* Map style switcher — 지도 위 떠 있는 패널이라 어두운 반투명 배경 유지 */}
+        <div className="absolute bottom-16 left-16 z-10 flex gap-4 rounded-lg bg-[rgba(14,14,16,0.85)] p-4 inset-ring-1 inset-ring-border-tertiary backdrop-blur-sm md:right-16 md:left-auto">
           {CORE_STYLE_IDS.map((id) => {
             const style = MAP_STYLES[id];
+            const StyleIcon = MAP_STYLE_ICONS[id];
             return (
-            <button
-              key={id}
-              onClick={() => {
-                setMapStyleId(id);
-                trackEvent('map_style_change', id, {});
-              }}
-              className="px-8 md:px-10 py-6 rounded-[6px] text-xs font-medium transition-colors"
-              style={{
-                background: mapStyleId === id ? 'var(--surface-elevated)' : 'transparent',
-                color: mapStyleId === id ? 'var(--text)' : 'var(--text-muted)',
-                border: mapStyleId === id ? '1px solid var(--border)' : '1px solid transparent',
-              }}
-              title={style.label}
-            >
-              <span className="mr-4 hidden sm:inline">{style.icon}</span>
-              {style.label}
-            </button>
+              <Button
+                key={id}
+                variant="text"
+                size="sm"
+                active={mapStyleId === id}
+                aria-pressed={mapStyleId === id}
+                onClick={() => {
+                  setMapStyleId(id);
+                  trackEvent('map_style_change', id, {});
+                }}
+                leftIcon={<StyleIcon className="hidden sm:block" />}
+                title={style.label}
+              >
+                {style.label}
+              </Button>
             );
           })}
         </div>
 
         {/* Active layers indicator */}
-        <div
-          className="absolute top-12 left-56 flex gap-6 z-10 max-w-[calc(100%-120px)] md:max-w-none overflow-x-auto"
-          style={{ scrollbarWidth: 'none' }}
-        >
+        <div className="absolute top-12 left-56 z-10 flex max-w-[calc(100%-120px)] gap-6 overflow-x-auto [scrollbar-width:none] md:max-w-none">
           {layers
             .filter((l) => l.enabled && !l.comingSoon)
             .map((l) => (
               <div
                 key={l.id}
-                className="flex items-center gap-6 px-10 py-6 rounded-full text-xs"
-                style={{
-                  background: 'rgba(14,14,16,0.85)',
-                  backdropFilter: 'blur(8px)',
-                  color: 'var(--text)',
-                  border: `1px solid ${l.color}33`,
-                }}
+                className="flex items-center gap-6 rounded-full bg-[rgba(14,14,16,0.85)] px-10 py-6 text-body-xs-regular text-text-primary backdrop-blur-sm"
+                // 레이어 고유색 테두리 (지도 데이터 색)
+                style={{ border: `1px solid ${l.color}33` }}
               >
-                <span
-                  className="w-6 h-6 rounded-full"
-                  style={{ background: l.color }}
-                />
+                <span className="size-6 rounded-full" style={{ background: l.color }} />
                 {l.label}
-                <span style={{ color: 'var(--text-muted)' }}>
-                  {l.featureCount}
-                </span>
+                <span className="text-text-tertiary tabular-nums">{l.featureCount}</span>
               </div>
             ))}
         </div>
@@ -1186,8 +1163,7 @@ export default function CorePage() {
       {/* Mobile backdrop */}
       {sidebarOpen && (
         <div
-          className="md:hidden fixed inset-0 z-30"
-          style={{ background: 'rgba(0,0,0,0.5)' }}
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -1196,71 +1172,35 @@ export default function CorePage() {
       <div
         className={`
           fixed md:relative inset-y-0 right-0 z-40 md:z-auto
-          w-[300px] md:w-320 flex flex-col border-l
+          w-300 md:w-320 flex flex-col border-l border-border-tertiary
+          bg-[rgba(14,14,16,0.95)] backdrop-blur-md
           transition-transform duration-200 ease-out
           ${sidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
         `}
-        style={{
-          background: 'rgba(14,14,16,0.95)',
-          backdropFilter: 'blur(12px)',
-          borderColor: 'var(--border)',
-          top: 'var(--header-height)',
-        }}
+        style={{ top: 'var(--header-height)' }}
       >
-        {/* Tabs */}
-        <div
-          className="flex border-b"
-          style={{ borderColor: 'var(--border)' }}
+        <Tabs.Root
+          value={sidebarTab}
+          onValueChange={(value) => setSidebarTab(value === 'purchase' ? 'purchase' : 'layers')}
+          className="min-h-0 flex-1"
         >
-          <button
-            onClick={() => setSidebarTab('layers')}
-            className="flex-1 py-12 text-sm font-medium transition-colors"
-            style={{
-              color: sidebarTab === 'layers' ? 'var(--text)' : 'var(--text-muted)',
-              borderBottom: sidebarTab === 'layers' ? '2px solid var(--accent)' : '2px solid transparent',
-            }}
-          >
-            레이어
-          </button>
-          <button
-            onClick={() => setSidebarTab('purchase')}
-            className="flex-1 py-12 text-sm font-medium transition-colors"
-            style={{
-              color: sidebarTab === 'purchase' ? 'var(--text)' : 'var(--text-muted)',
-              borderBottom: sidebarTab === 'purchase' ? '2px solid var(--accent)' : '2px solid transparent',
-            }}
-          >
-            영상 구매
-          </button>
-        </div>
+          <Tabs.List variant="line" className="w-full">
+            <Tabs.Tab value="layers">레이어</Tabs.Tab>
+            <Tabs.Tab value="purchase">영상 구매</Tabs.Tab>
+          </Tabs.List>
 
-        {/* Tab content */}
-        <div className="flex-1 overflow-y-auto p-16">
-          {sidebarTab === 'layers' ? (
+          <Tabs.Panel value="layers" className="flex-1 overflow-y-auto p-16">
             <div className="space-y-24">
               <LayerPanel layers={layers} onToggle={handleLayerToggle} />
 
               {/* Legend */}
               <div>
-                <h3
-                  className="text-xs font-mono tracking-wider uppercase mb-8"
-                  style={{ color: 'var(--text-muted)' }}
-                >
-                  Severity
-                </h3>
+                <h3 className="mb-8 text-body-xs-regular text-text-tertiary">Severity</h3>
                 <div className="space-y-4">
                   {(['critical', 'high', 'moderate', 'low'] as const).map((sev) => (
                     <div key={sev} className="flex items-center gap-8 px-10 py-4">
-                      <span
-                        className="w-8 h-8 rounded-xs"
-                        style={{ background: SEVERITY_COLORS[sev] }}
-                      />
-                      <span
-                        className="text-xs capitalize"
-                        style={{ color: 'var(--text-muted)' }}
-                      >
-                        {sev}
-                      </span>
+                      <span className="size-8 rounded-xs" style={{ background: SEVERITY_COLORS[sev] }} />
+                      <span className="text-body-xs-regular text-text-tertiary capitalize">{sev}</span>
                     </div>
                   ))}
                 </div>
@@ -1269,12 +1209,7 @@ export default function CorePage() {
               {/* Air Quality Legend */}
               {layers.find((l) => l.id === 'air-quality')?.enabled && (
                 <div>
-                  <h3
-                    className="text-xs font-mono tracking-wider uppercase mb-8"
-                    style={{ color: 'var(--text-muted)' }}
-                  >
-                    대기질 등급
-                  </h3>
+                  <h3 className="mb-8 text-body-xs-regular text-text-tertiary">대기질 등급</h3>
                   <div className="space-y-4">
                     {([
                       ['good', '좋음'],
@@ -1284,16 +1219,8 @@ export default function CorePage() {
                       ['hazardous', '위험'],
                     ] as const).map(([key, label]) => (
                       <div key={key} className="flex items-center gap-8 px-10 py-4">
-                        <span
-                          className="w-8 h-8 rounded-full"
-                          style={{ background: AIR_QUALITY_COLORS[key] }}
-                        />
-                        <span
-                          className="text-xs"
-                          style={{ color: 'var(--text-muted)' }}
-                        >
-                          {label}
-                        </span>
+                        <span className="size-8 rounded-full" style={{ background: AIR_QUALITY_COLORS[key] }} />
+                        <span className="text-body-xs-regular text-text-tertiary">{label}</span>
                       </div>
                     ))}
                   </div>
@@ -1303,12 +1230,7 @@ export default function CorePage() {
               {/* Weather Forecast Legend */}
               {layers.find((l) => l.id === 'weather-forecast')?.enabled && (
                 <div>
-                  <h3
-                    className="text-xs font-mono tracking-wider uppercase mb-8"
-                    style={{ color: 'var(--text-muted)' }}
-                  >
-                    하늘 상태
-                  </h3>
+                  <h3 className="mb-8 text-body-xs-regular text-text-tertiary">하늘 상태</h3>
                   <div className="space-y-4">
                     {([
                       ['clear', '맑음'],
@@ -1317,16 +1239,8 @@ export default function CorePage() {
                       ['overcast', '흐림'],
                     ] as const).map(([key, label]) => (
                       <div key={key} className="flex items-center gap-8 px-10 py-4">
-                        <span
-                          className="w-8 h-8 rounded-full"
-                          style={{ background: SKY_COLORS[key] }}
-                        />
-                        <span
-                          className="text-xs"
-                          style={{ color: 'var(--text-muted)' }}
-                        >
-                          {label}
-                        </span>
+                        <span className="size-8 rounded-full" style={{ background: SKY_COLORS[key] }} />
+                        <span className="text-body-xs-regular text-text-tertiary">{label}</span>
                       </div>
                     ))}
                   </div>
@@ -1336,12 +1250,7 @@ export default function CorePage() {
               {/* Wildfire Legend */}
               {layers.find((l) => l.id === 'wildfire')?.enabled && (
                 <div>
-                  <h3
-                    className="text-xs font-mono tracking-wider uppercase mb-8"
-                    style={{ color: 'var(--text-muted)' }}
-                  >
-                    산불 상태
-                  </h3>
+                  <h3 className="mb-8 text-body-xs-regular text-text-tertiary">산불 상태</h3>
                   <div className="space-y-4">
                     {([
                       ['active', '진화중'],
@@ -1349,16 +1258,8 @@ export default function CorePage() {
                       ['extinguished', '진화완료'],
                     ] as const).map(([key, label]) => (
                       <div key={key} className="flex items-center gap-8 px-10 py-4">
-                        <span
-                          className="w-8 h-8 rounded-xs"
-                          style={{ background: WILDFIRE_STATUS_COLORS[key] }}
-                        />
-                        <span
-                          className="text-xs"
-                          style={{ color: 'var(--text-muted)' }}
-                        >
-                          {label}
-                        </span>
+                        <span className="size-8 rounded-xs" style={{ background: WILDFIRE_STATUS_COLORS[key] }} />
+                        <span className="text-body-xs-regular text-text-tertiary">{label}</span>
                       </div>
                     ))}
                   </div>
@@ -1368,12 +1269,7 @@ export default function CorePage() {
               {/* Earthquake Legend */}
               {layers.find((l) => l.id === 'earthquake')?.enabled && (
                 <div>
-                  <h3
-                    className="text-xs font-mono tracking-wider uppercase mb-8"
-                    style={{ color: 'var(--text-muted)' }}
-                  >
-                    지진 규모
-                  </h3>
+                  <h3 className="mb-8 text-body-xs-regular text-text-tertiary">지진 규모</h3>
                   <div className="space-y-4">
                     {([
                       [2.0, '#FFD54F', '2.0+'],
@@ -1382,16 +1278,8 @@ export default function CorePage() {
                       [5.0, '#B71C1C', '5.0+'],
                     ] as const).map(([mag, color, label]) => (
                       <div key={mag} className="flex items-center gap-8 px-10 py-4">
-                        <span
-                          className="w-8 h-8 rounded-full"
-                          style={{ background: color }}
-                        />
-                        <span
-                          className="text-xs"
-                          style={{ color: 'var(--text-muted)' }}
-                        >
-                          {label}
-                        </span>
+                        <span className="size-8 rounded-full" style={{ background: color }} />
+                        <span className="text-body-xs-regular text-text-tertiary tabular-nums">{label}</span>
                       </div>
                     ))}
                   </div>
@@ -1401,18 +1289,14 @@ export default function CorePage() {
               {/* Citadel Events list */}
               {layers.find((l) => l.id === 'citadel')?.enabled && (
                 <div>
-                  <h3
-                    className="text-xs font-mono tracking-wider uppercase mb-8"
-                    style={{ color: 'var(--text-muted)' }}
-                  >
-                    Active Events
-                  </h3>
+                  <h3 className="mb-8 text-body-xs-regular text-text-tertiary">Active Events</h3>
                   <div className="space-y-8">
                     {CITADEL_GEOJSON.features.map((f) => {
                       const sev = f.properties.severity as CitadelSeverity;
                       return (
-                        <button
+                        <Card.Root
                           key={f.properties.id}
+                          interactive
                           onClick={() => {
                             if (!mapRef.current) return;
                             const geom = f.geometry;
@@ -1433,47 +1317,28 @@ export default function CorePage() {
                               });
                             }
                           }}
-                          className="w-full text-left p-10 rounded-[6px] transition-colors"
-                          style={{ background: 'var(--surface)' }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background = 'var(--surface-elevated)';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background = 'var(--surface)';
-                          }}
                         >
-                          <div className="flex items-center gap-6 mb-4">
-                            <span
-                              className="w-6 h-6 rounded-full"
-                              style={{ background: SEVERITY_COLORS[sev] }}
-                            />
-                            <span
-                              className="text-xs font-mono"
-                              style={{ color: SEVERITY_COLORS[sev] }}
-                            >
-                              {f.properties.severity} &middot; {f.properties.event_type}
-                            </span>
-                          </div>
-                          <p
-                            className="text-sm font-medium line-clamp-1"
-                            style={{ color: 'var(--text)' }}
-                          >
-                            {f.properties.title}
-                          </p>
-                          <p
-                            className="text-xs mt-2"
-                            style={{ color: 'var(--text-muted)' }}
-                          >
-                            {f.properties.location_name}
-                          </p>
-                        </button>
+                          <Card.Body className="gap-4">
+                            <div className="flex items-center gap-6">
+                              {/* severity 색 — Citadel 데이터 색 */}
+                              <span className="size-6 rounded-full" style={{ background: SEVERITY_COLORS[sev] }} />
+                              <span className="text-body-xs-regular" style={{ color: SEVERITY_COLORS[sev] }}>
+                                {f.properties.severity} &middot; {f.properties.event_type}
+                              </span>
+                            </div>
+                            <Card.Title className="line-clamp-1">{f.properties.title}</Card.Title>
+                            <Card.Content>{f.properties.location_name}</Card.Content>
+                          </Card.Body>
+                        </Card.Root>
                       );
                     })}
                   </div>
                 </div>
               )}
             </div>
-          ) : (
+          </Tabs.Panel>
+
+          <Tabs.Panel value="purchase" className="flex-1 overflow-y-auto p-16">
             <div className="space-y-16">
               <AoiPanel
                 aoi={aoi}
@@ -1485,8 +1350,8 @@ export default function CorePage() {
                 bare
               />
             </div>
-          )}
-        </div>
+          </Tabs.Panel>
+        </Tabs.Root>
       </div>
     </div>
   );

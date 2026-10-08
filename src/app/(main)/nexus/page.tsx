@@ -1,5 +1,6 @@
 'use client';
 
+import { Badge, Button, Card } from '@naraspace-technology/nds/components';
 import OtherSolutions from '@/components/landing/OtherSolutions';
 
 const NEXUS_COLOR = '#C8923A';
@@ -40,157 +41,94 @@ const DATA_STATS = [
 
 export default function NexusPage() {
   return (
-    <div className="ep-page" style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+    <div className="min-h-screen bg-bg-tertiary">
       {/* Hero */}
-      <section style={{ padding: '80px 24px 64px', maxWidth: 960, margin: '0 auto' }}>
+      <section className="mx-auto max-w-960 px-16 pb-32 pt-48 sm:px-24 sm:pb-64 sm:pt-80">
         <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '4px 12px',
-            borderRadius: 4,
-            background: `${NEXUS_COLOR}1A`,
-            marginBottom: 20,
-          }}
+          className="mb-20 inline-flex items-center gap-8 rounded-full px-12 py-4"
+          style={{ background: `${NEXUS_COLOR}1A` }}
         >
-          <span style={{ width: 8, height: 8, borderRadius: 2, background: NEXUS_COLOR }} />
-          <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: 'var(--text-muted)', fontWeight: 400 }}>
-            EarthPaper ·
-          </span>
-          <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: NEXUS_COLOR, fontWeight: 600 }}>
-            Nexus
-          </span>
+          <span className="size-8 rounded-xs" style={{ background: NEXUS_COLOR }} />
+          <span className="text-body-xs-regular text-text-tertiary">EarthPaper ·</span>
+          <span className="text-body-xs-regular" style={{ color: NEXUS_COLOR }}>Nexus</span>
         </div>
 
-        <h1 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 600, lineHeight: 1.3, color: 'var(--text)', marginBottom: 16 }}>
+        <h1 className="mb-16 text-heading-3xl text-text-primary md:text-display-md">
           위성 데이터,<br />
           바로 연결합니다
         </h1>
 
-        <p style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--text-muted)', maxWidth: '52ch', marginBottom: 32 }}>
+        <p className="mb-32 max-w-[52ch] text-body-md-regular text-text-tertiary">
           검색에서 다운로드까지 한 곳에서. API 자동화, 아카이브 탐색,
           산업별 맞춤 패키지로 위성 데이터를 가장 빠르게 확보하세요.
         </p>
 
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' as const }}>
-          <a
-            href="#contact"
-            className="ep-cta"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '10px 20px', borderRadius: 8, background: NEXUS_COLOR,
-              color: '#fff', fontSize: 14, fontWeight: 500, textDecoration: 'none',
-            }}
-          >
+        <div className="flex flex-wrap gap-12">
+          <Button size="lg" render={<a href="#contact" />} nativeButton={false}>
             API 키 신청
-          </a>
-          <a
-            href="#verticals"
-            className="ep-cta"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '10px 20px', borderRadius: 8, border: '1px solid var(--border)',
-              color: 'var(--text-muted)', fontSize: 14, textDecoration: 'none',
-            }}
-          >
+          </Button>
+          <Button size="lg" variant="outline" render={<a href="#verticals" />} nativeButton={false}>
             데이터 살펴보기
-          </a>
+          </Button>
         </div>
       </section>
 
       {/* Data Stats */}
-      <section style={{ padding: '0 24px 64px', maxWidth: 960, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
+      <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-12">
           {DATA_STATS.map((s) => (
-            <div
-              key={s.label}
-              style={{
-                padding: 20,
-                borderRadius: 8,
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-              }}
-            >
-              <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: 'var(--text-muted)', display: 'block', marginBottom: 8 }}>
-                {s.label}
-              </span>
-              <span style={{ fontSize: 28, fontWeight: 700, color: NEXUS_COLOR, display: 'block', marginBottom: 4, fontFamily: "'IBM Plex Mono', monospace" }}>
-                {s.value}
-              </span>
-              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                {s.sub}
-              </span>
-            </div>
+            <Card.Root key={s.label}>
+              <Card.Body>
+                <span className="mb-8 block text-body-xs-regular text-text-tertiary">
+                  {s.label}
+                </span>
+                <span className="mb-4 block text-heading-3xl tabular-nums" style={{ color: NEXUS_COLOR }}>
+                  {s.value}
+                </span>
+                <span className="text-body-xs-regular text-text-tertiary">
+                  {s.sub}
+                </span>
+              </Card.Body>
+            </Card.Root>
           ))}
         </div>
       </section>
 
       {/* Verticals */}
-      <section id="verticals" style={{ padding: '64px 24px', maxWidth: 960, margin: '0 auto' }}>
-        <h2
-          style={{
-            fontSize: 11, fontFamily: "'IBM Plex Mono', monospace",
-            letterSpacing: '0.12em', textTransform: 'uppercase' as const,
-            color: 'var(--text-muted)', marginBottom: 32,
-            paddingBottom: 12, borderBottom: '1px solid var(--border)',
-          }}
-        >
+      <section id="verticals" className="mx-auto max-w-960 px-16 py-64 sm:px-24">
+        <h2 className="mb-32 border-b border-border-tertiary pb-12 text-body-xs-regular text-text-tertiary">
           데이터 접근 방식
         </h2>
 
-        <div style={{ display: 'grid', gap: 16 }}>
+        <div className="grid gap-16">
           {VERTICALS.map((v) => (
-            <div
-              key={v.id}
-              style={{ borderRadius: 8, border: '1px solid var(--border)', overflow: 'hidden' }}
-            >
-              <div
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  padding: '16px 20px', background: 'var(--surface)',
-                  borderBottom: '1px solid var(--border)',
-                }}
-              >
-                <div style={{ flex: 1 }}>
-                  <h3 style={{ fontSize: 16, fontWeight: 600, color: NEXUS_COLOR }}>{v.title}</h3>
+            <Card.Root key={v.id}>
+              <Card.Body className="gap-16">
+                <div className="flex items-center gap-12">
+                  <h3 className="flex-1 text-body-md-medium" style={{ color: NEXUS_COLOR }}>{v.title}</h3>
+                  <Badge type="letter">{v.label}</Badge>
                 </div>
-                <span
-                  style={{
-                    fontFamily: "'IBM Plex Mono', monospace", fontSize: 10,
-                    letterSpacing: '0.06em', padding: '3px 8px', borderRadius: 3,
-                    border: '1px solid var(--border)', color: 'var(--text-muted)',
-                  }}
-                >
-                  {v.label}
-                </span>
-              </div>
 
-              <div style={{ padding: 20, background: 'var(--bg)' }}>
-                <p style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--text-muted)', marginBottom: 16, maxWidth: '60ch' }}>
+                <p className="max-w-[60ch] text-body-sm-regular text-text-tertiary">
                   {v.desc}
                 </p>
 
-                <div className="ep-cols-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="grid grid-cols-1 gap-12 sm:grid-cols-2">
                   <div>
-                    <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: 'var(--text-muted)', display: 'block', marginBottom: 6 }}>
+                    <span className="mb-6 block text-body-xs-regular text-text-tertiary">
                       고객
                     </span>
-                    <p style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.5 }}>{v.customers}</p>
+                    <p className="text-body-sm-regular text-text-primary">{v.customers}</p>
                   </div>
                   <div>
-                    <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: 'var(--text-muted)', display: 'block', marginBottom: 6 }}>
+                    <span className="mb-6 block text-body-xs-regular text-text-tertiary">
                       제공 항목
                     </span>
-                    <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 4 }}>
+                    <div className="flex flex-wrap gap-4">
                       {v.outputs.map((o) => (
                         <span
                           key={o}
-                          style={{
-                            fontSize: 12, padding: '3px 8px', borderRadius: 3,
-                            background: 'var(--surface)', border: '1px solid var(--border)',
-                            color: 'var(--text)',
-                          }}
+                          className="rounded-full bg-bg-secondary px-8 py-2 text-body-xs-regular text-text-primary inset-ring-1 inset-ring-border-tertiary"
                         >
                           {o}
                         </span>
@@ -198,51 +136,31 @@ export default function NexusPage() {
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </Card.Body>
+            </Card.Root>
           ))}
         </div>
       </section>
 
       {/* Contact CTA */}
-      <section id="contact" style={{ padding: '64px 24px 80px', maxWidth: 960, margin: '0 auto' }}>
-        <div
-          style={{
-            padding: 40, borderRadius: 8, border: '1px solid var(--border)',
-            background: 'var(--surface)', textAlign: 'center' as const,
-          }}
-        >
-          <h2 style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>
-            데이터에 바로 연결하세요
-          </h2>
-          <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 24, maxWidth: '44ch', margin: '0 auto 24px' }}>
-            API 키를 발급받고 위성 영상 카탈로그에 즉시 접근하거나,
-            맞춤 데이터 패키지를 상담하세요.
-          </p>
-          <a
-            href="mailto:support@naraspace.com"
-            className="ep-cta"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '12px 28px', borderRadius: 8, background: NEXUS_COLOR,
-              color: '#fff', fontSize: 14, fontWeight: 500, textDecoration: 'none',
-            }}
-          >
-            문의하기
-          </a>
-        </div>
+      <section id="contact" className="mx-auto max-w-960 px-16 pb-80 pt-64 sm:px-24">
+        <Card.Root>
+          <Card.Body className="items-center gap-8 py-32 text-center">
+            <h2 className="text-heading-xl text-text-primary">
+              데이터에 바로 연결하세요
+            </h2>
+            <p className="mb-16 max-w-[44ch] text-body-sm-regular text-text-tertiary">
+              API 키를 발급받고 위성 영상 카탈로그에 즉시 접근하거나,
+              맞춤 데이터 패키지를 상담하세요.
+            </p>
+            <Button size="lg" render={<a href="mailto:support@naraspace.com" />} nativeButton={false}>
+              문의하기
+            </Button>
+          </Card.Body>
+        </Card.Root>
       </section>
 
       <OtherSolutions current="nexus" />
-
-      <style>{`
-        @media (max-width: 640px) {
-          .ep-page > section { padding-left: 16px !important; padding-right: 16px !important; }
-          .ep-page > section:first-of-type { padding-top: 48px !important; padding-bottom: 32px !important; }
-          .ep-cols-2 { grid-template-columns: 1fr !important; }
-          .ep-cta { min-height: 48px !important; }
-        }
-      `}</style>
     </div>
   );
 }

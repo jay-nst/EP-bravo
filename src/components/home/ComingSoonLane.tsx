@@ -1,5 +1,6 @@
 'use client';
 
+import { Button, StatusChip } from '@naraspace-technology/nds/components';
 import { trackEvent } from '@/lib/analytics';
 
 const PLATFORM_META = {
@@ -35,45 +36,31 @@ export default function ComingSoonLane({ platform }: { platform: PlatformKey }) 
           className="inline-block w-8 h-8 rounded-full"
           style={{ background: meta.color }}
         />
-        <h2
-          className="text-base font-semibold"
-          style={{ color: meta.color }}
-        >
+        <h2 className="text-body-md-medium" style={{ color: meta.color }}>
           {meta.name}
         </h2>
-        <span
-          className="text-xs px-8 py-2 rounded-full"
-          style={{
-            background: 'var(--surface-elevated)',
-            color: 'var(--text-muted)',
-          }}
-        >
+        <StatusChip status="neutral" showIcon={false}>
           Coming Soon
-        </span>
+        </StatusChip>
       </div>
+      {/* 표면 — 플랫폼 색 틴트 배경은 데이터 색이라 인라인 유지 */}
       <div
-        className="rounded-sm p-24 text-center"
-        style={{
-          background: `color-mix(in srgb, ${meta.hex} 5%, var(--surface))`,
-          border: '1px solid var(--border)',
-        }}
+        className="rounded-lg p-24 text-center inset-ring-1 inset-ring-border-tertiary"
+        style={{ background: `color-mix(in srgb, ${meta.hex} 5%, var(--surface))` }}
       >
-        <p className="text-sm font-medium mb-4" style={{ color: meta.color }}>
+        <p className="text-body-sm-medium mb-4" style={{ color: meta.color }}>
           {meta.name}
         </p>
-        <p className="text-xs mb-16" style={{ color: 'var(--text-muted)' }}>
+        <p className="text-body-xs-regular text-text-tertiary mb-16">
           {meta.description}
         </p>
-        <button
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => trackEvent('cta_click', 'coming_soon_notify', { platform })}
-          className="text-xs px-16 py-8 rounded-[6px] transition-colors"
-          style={{
-            border: '1px solid var(--accent)',
-            color: 'var(--accent)',
-          }}
         >
           출시 알림 받기
-        </button>
+        </Button>
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@naraspace-technology/nds/components';
 import type { SatelliteType } from '@/types/database';
 import { SATELLITE_CONFIG } from '@/constants/satellite';
 import { fmtNum } from '@/lib/format';
@@ -36,62 +37,46 @@ export default function AoiPanel({
 
   const content = (
     <>
-      <h2 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>
-        영상 구매
-      </h2>
+      <h2 className="text-heading-lg text-text-primary">영상 구매</h2>
 
       {/* Satellite selector */}
       <div>
-        <label
-          className="block text-sm font-medium mb-4"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          위성 선택
-        </label>
+        <label className="mb-4 block text-body-sm-medium text-text-tertiary">위성 선택</label>
         <div className="flex gap-8">
           {(Object.keys(SATELLITE_CONFIG) as SatelliteType[]).map((key) => (
-            <button
+            <Button
               key={key}
+              variant="outline"
+              active={satellite === key}
+              aria-pressed={satellite === key}
               onClick={() => onSatelliteChange(key)}
-              className="flex-1 px-12 py-8 text-sm rounded-[6px] border transition-colors"
-              style={{
-                background: satellite === key ? 'var(--accent)' : 'var(--surface)',
-                color: satellite === key ? '#0E0E10' : 'var(--text)',
-                borderColor: satellite === key ? 'var(--accent)' : 'var(--border)',
-              }}
+              className="flex-1"
             >
               {SATELLITE_CONFIG[key].name}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
 
       {/* Satellite info */}
-      <div
-        className="rounded-[6px] p-12 text-sm"
-        style={{ background: 'var(--surface)', color: 'var(--text-muted)' }}
-      >
+      <div className="rounded-md bg-bg-secondary p-12 text-body-sm-regular text-text-tertiary">
         <div className="flex justify-between">
           <span>해상도</span>
-          <span className="font-medium" style={{ color: 'var(--text)' }}>
-            {config.resolution}
-          </span>
+          <span className="text-body-sm-medium text-text-primary">{config.resolution}</span>
         </div>
-        <div className="flex justify-between mt-4">
+        <div className="mt-4 flex justify-between">
           <span>초해상도</span>
-          <span className="font-medium" style={{ color: 'var(--text)' }}>
-            {config.supersolution}
-          </span>
+          <span className="text-body-sm-medium text-text-primary">{config.supersolution}</span>
         </div>
-        <div className="flex justify-between mt-4">
+        <div className="mt-4 flex justify-between">
           <span>가격</span>
-          <span className="font-medium font-mono" style={{ color: 'var(--text)' }}>
+          <span className="text-body-sm-medium text-text-primary tabular-nums">
             ${config.pricePerKm2}/km²
           </span>
         </div>
-        <div className="flex justify-between mt-4">
+        <div className="mt-4 flex justify-between">
           <span>최소 면적</span>
-          <span className="font-medium font-mono" style={{ color: 'var(--text)' }}>
+          <span className="text-body-sm-medium text-text-primary tabular-nums">
             {config.minAreaKm2}km²
           </span>
         </div>
@@ -99,73 +84,46 @@ export default function AoiPanel({
 
       {/* AOI info */}
       {!aoi ? (
-        <div
-          className="text-sm text-center py-24"
-          style={{ color: 'var(--text-muted)' }}
-        >
+        <div className="py-24 text-center text-body-sm-regular text-text-tertiary">
           지도에서 다각형 도구로
           <br />
           관심 영역(AOI)을 그려주세요
         </div>
       ) : (
         <>
-          <div
-            className="rounded-[6px] p-12 text-sm"
-            style={{ background: 'var(--surface)' }}
-          >
-            <div className="flex justify-between" style={{ color: 'var(--text-muted)' }}>
+          <div className="rounded-md bg-bg-secondary p-12 text-body-sm-regular">
+            <div className="flex justify-between text-text-tertiary">
               <span>선택 면적</span>
-              <span className="font-medium font-mono" style={{ color: 'var(--text)' }}>
+              <span className="text-body-sm-medium text-text-primary tabular-nums">
                 {fmtNum(aoi.areaKm2, 1)} km²
               </span>
             </div>
-            <div
-              className="flex justify-between mt-8 text-base font-semibold"
-              style={{ color: 'var(--text)' }}
-            >
+            <div className="mt-8 flex justify-between text-body-md-medium text-text-primary">
               <span>예상 가격</span>
-              <span className="font-mono" style={{ color: 'var(--accent)' }}>
+              <span className="text-text-interactive-primary tabular-nums">
                 ${fmtNum(aoi.price, 2)}
               </span>
             </div>
           </div>
 
           {aoi.validationError && (
-            <div
-              className="rounded-[6px] p-12 text-sm"
-              style={{
-                background: 'rgba(196, 92, 74, 0.1)',
-                border: '1px solid rgba(196, 92, 74, 0.2)',
-                color: 'var(--error)',
-              }}
-            >
+            <div className="rounded-md bg-status-danger/10 p-12 text-body-sm-regular text-status-danger inset-ring-1 inset-ring-status-danger/20">
               {aoi.validationError}
             </div>
           )}
 
           {!hasCatalogItem && !aoi.validationError && (
-            <div
-              className="rounded-[6px] p-12 text-sm"
-              style={{
-                background: 'rgba(200, 146, 58, 0.1)',
-                border: '1px solid rgba(200, 146, 58, 0.2)',
-                color: 'var(--warning)',
-              }}
-            >
+            <div className="rounded-md bg-status-warning/10 p-12 text-body-sm-regular text-status-warning inset-ring-1 inset-ring-status-warning/20">
               이 영역에 사용 가능한 영상이 없습니다. 지도를 이동하여 영상이 있는
               영역을 선택해주세요.
             </div>
           )}
 
-          <button
+          <Button
+            display="block"
             onClick={onPurchase}
             disabled={!canPurchase}
-            className="w-full py-12 rounded-[6px] text-sm font-medium transition-colors"
-            style={{
-              background: canPurchase ? 'var(--accent)' : 'var(--surface)',
-              color: canPurchase ? '#0E0E10' : 'var(--text-muted)',
-              cursor: canPurchase ? 'pointer' : 'not-allowed',
-            }}
+            loading={purchasing}
           >
             {purchasing
               ? '결제 진행 중...'
@@ -174,7 +132,7 @@ export default function AoiPanel({
                 : !hasCatalogItem
                   ? '영상 없음'
                   : '구매하기'}
-          </button>
+          </Button>
         </>
       )}
     </>
@@ -183,10 +141,7 @@ export default function AoiPanel({
   if (bare) return content;
 
   return (
-    <div
-      className="w-320 glass-panel border-l flex flex-col gap-16 overflow-y-auto p-16"
-      style={{ borderColor: 'var(--border)' }}
-    >
+    <div className="glass-panel flex w-320 flex-col gap-16 overflow-y-auto border-l border-border-tertiary p-16">
       {content}
     </div>
   );

@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Button, Spinner } from '@naraspace-technology/nds/components';
+import { IconAlertCircle, IconCheck, IconX } from '@naraspace-technology/nds/icons';
 
 type ResultState =
   | { status: 'loading' }
@@ -64,12 +66,9 @@ export default function PaymentSuccessPage() {
   if (result.status === 'loading') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-16">
-        <div
-          className="w-32 h-32 border-2 border-t-transparent rounded-full animate-spin"
-          style={{ borderColor: 'var(--accent)', borderTopColor: 'transparent' }}
-        />
-        <p style={{ color: 'var(--text-muted)' }}>결제 확인 및 영상 클리핑 처리 중...</p>
-        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>잠시만 기다려주세요</p>
+        <Spinner aria-label="결제 확인 중" />
+        <p className="text-body-md-regular text-text-tertiary">결제 확인 및 영상 클리핑 처리 중...</p>
+        <p className="text-body-xs-regular text-text-tertiary">잠시만 기다려주세요</p>
       </div>
     );
   }
@@ -77,33 +76,22 @@ export default function PaymentSuccessPage() {
   if (result.status === 'completed') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-16">
-        <div
-          className="w-48 h-48 rounded-full flex items-center justify-center text-2xl"
-          style={{ background: 'rgba(74, 158, 107, 0.1)', color: 'var(--success)' }}
-        >
-          ✓
+        <div className="flex size-48 items-center justify-center rounded-full bg-status-success/10 text-status-success">
+          <IconCheck className="size-24" />
         </div>
-        <h2 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>
+        <h2 className="text-heading-xl text-text-primary">
           결제 및 클리핑 완료
         </h2>
-        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+        <p className="text-body-sm-regular text-text-tertiary">
           영상이 준비되었습니다
         </p>
-        <div className="flex gap-12 mt-16">
-          <Link
-            href="/portal"
-            className="px-20 py-8 rounded-sm text-sm font-medium transition-colors"
-            style={{ background: 'var(--accent)', color: '#0E0E10' }}
-          >
+        <div className="mt-16 flex gap-12">
+          <Button render={<Link href="/portal" />} nativeButton={false}>
             내 주문에서 다운로드
-          </Link>
-          <Link
-            href="/map"
-            className="px-20 py-8 rounded-sm text-sm font-medium transition-colors"
-            style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
-          >
+          </Button>
+          <Button variant="outline" render={<Link href="/map" />} nativeButton={false}>
             지도로 돌아가기
-          </Link>
+          </Button>
         </div>
       </div>
     );
@@ -112,46 +100,32 @@ export default function PaymentSuccessPage() {
   if (result.status === 'refunded') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-16">
-        <div
-          className="w-48 h-48 rounded-full flex items-center justify-center text-2xl"
-          style={{ background: 'rgba(200, 146, 58, 0.1)', color: 'var(--warning)' }}
-        >
-          !
+        <div className="flex size-48 items-center justify-center rounded-full bg-status-warning/10 text-status-warning">
+          <IconAlertCircle className="size-24" />
         </div>
-        <h2 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>
+        <h2 className="text-heading-xl text-text-primary">
           클리핑 실패 - 자동 환불
         </h2>
-        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{result.message}</p>
-        <Link
-          href="/map"
-          className="mt-16 px-20 py-8 rounded-sm text-sm font-medium transition-colors"
-          style={{ background: 'var(--accent)', color: '#0E0E10' }}
-        >
+        <p className="text-body-sm-regular text-text-tertiary">{result.message}</p>
+        <Button className="mt-16" render={<Link href="/map" />} nativeButton={false}>
           다시 시도하기
-        </Link>
+        </Button>
       </div>
     );
   }
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center gap-16">
-      <div
-        className="w-48 h-48 rounded-full flex items-center justify-center text-2xl"
-        style={{ background: 'rgba(196, 92, 74, 0.1)', color: 'var(--error)' }}
-      >
-        ✕
+      <div className="flex size-48 items-center justify-center rounded-full bg-status-danger/10 text-status-danger">
+        <IconX className="size-24" />
       </div>
-      <h2 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>
+      <h2 className="text-heading-xl text-text-primary">
         결제 처리 실패
       </h2>
-      <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{result.message}</p>
-      <Link
-        href="/map"
-        className="mt-16 px-20 py-8 rounded-sm text-sm font-medium transition-colors"
-        style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
-      >
+      <p className="text-body-sm-regular text-text-tertiary">{result.message}</p>
+      <Button className="mt-16" variant="outline" render={<Link href="/map" />} nativeButton={false}>
         지도로 돌아가기
-      </Link>
+      </Button>
     </div>
   );
 }

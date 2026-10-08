@@ -1,58 +1,80 @@
-/* driver.js 팝오버 — DESIGN.md (Quiet Observatory) 테마 오버라이드 */
+/* driver.js 팝오버 — NDS 테마 오버라이드 (색은 EP 팔레트 유지)
+   driver 가 만드는 DOM 이라 NDS 컴포넌트를 쓸 수 없어 NDS 값을 CSS 로 옮긴다:
+   표면 = NDS Tooltip 과 같은 rounded-md + inset-ring border-tertiary + elevation,
+   타이포 = heading-lg / body-sm-regular / body-xs-regular, 버튼 = NDS Button sm,
+   아이콘 = NDS IconX · IconChevronRight 경로를 mask 로 그린다. */
 
 .driver-popover.ep-tutorial-popover {
-  background: var(--surface-elevated);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  background: var(--bg-primary); /* = EP --surface-elevated */
+  color: var(--text-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  box-shadow:
+    inset 0 0 0 1px var(--border-tertiary),
+    var(--elevation-16);
+  padding: 16px;
   max-width: 340px;
   font-family: inherit;
 }
 
+/* NDS text-heading-lg (18px / 28px / 600 / -0.2px) */
 .ep-tutorial-popover .driver-popover-title {
   font-family: inherit;
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 1.4;
-  color: var(--text);
+  font-size: var(--text-heading-lg);
+  font-weight: var(--text-heading-lg--font-weight);
+  line-height: var(--text-heading-lg--line-height);
+  letter-spacing: var(--text-heading-lg--letter-spacing);
+  color: var(--text-primary);
   /* X(닫기) 칩 자리 예약 — driver 의 X 는 절대배치라 긴 타이틀이 밑으로 흘러
      들어가 글리프가 텍스트에 묻힌다 (시작 스텝에서 재현, 2026-10-07) */
-  padding-right: 44px;
+  padding-right: 40px;
 }
 
+/* NDS text-body-sm-regular (14px / 24px / 400 / -0.2px) */
 .ep-tutorial-popover .driver-popover-description {
   font-family: inherit;
-  font-size: 14.5px;
-  line-height: 1.65;
+  font-size: var(--text-body-sm-regular);
+  font-weight: var(--text-body-sm-regular--font-weight);
+  line-height: var(--text-body-sm-regular--line-height);
+  letter-spacing: var(--text-body-sm-regular--letter-spacing);
   /* 리뷰 반영(2026-09-28): 액션 안내 본문이 --text-muted 로는 어두워 잘 안 읽힘 —
      타이틀보다는 낮되 명도를 올린 중간 톤 */
-  color: color-mix(in srgb, var(--text) 75%, var(--text-muted));
+  color: color-mix(in srgb, var(--text-primary) 75%, var(--text-tertiary));
 }
 
+/* NDS text-body-xs-regular */
 .ep-tutorial-popover .driver-popover-progress-text {
-  font-size: 12px;
-  color: var(--text-muted);
+  font-size: var(--text-body-xs-regular);
+  font-weight: var(--text-body-xs-regular--font-weight);
+  line-height: var(--text-body-xs-regular--line-height);
+  letter-spacing: var(--text-body-xs-regular--letter-spacing);
+  color: var(--text-tertiary);
 }
 
 .ep-tutorial-popover {
   max-width: 380px !important;
 }
 
+/* NDS Button size="sm" 치수 — min-h-32 py-4 rounded-xl, text-body-sm-medium.
+   NDS 버튼 테두리는 inset-ring 이라 box-shadow 로 그린다 (크기 불변) */
 .ep-tutorial-popover .driver-popover-navigation-btns button {
   font-family: inherit;
-  font-size: 14px;
-  padding: 7px 16px;
-  border-radius: var(--radius-xs);
+  font-size: var(--text-body-sm-medium);
+  font-weight: var(--text-body-sm-medium--font-weight);
+  line-height: var(--text-body-sm-medium--line-height);
+  letter-spacing: var(--text-body-sm-medium--letter-spacing);
+  min-height: 32px;
+  padding: 4px 12px;
+  border-radius: var(--radius-xl);
   text-shadow: none;
-  background: var(--accent);
+  background: var(--bg-interactive-primary); /* = EP --accent */
   color: #0e0e10;
   border: none;
   transition: opacity var(--duration-short) var(--ease-enter);
 }
 
 .ep-tutorial-popover .driver-popover-navigation-btns button:hover {
-  background: var(--accent);
+  background: var(--bg-interactive-primary);
   opacity: 0.85;
 }
 
@@ -60,31 +82,45 @@
    올리고 hover 시 배경 채움으로 변화를 분명하게 */
 .ep-tutorial-popover .driver-popover-navigation-btns button.driver-popover-prev-btn {
   background: transparent;
-  color: var(--text);
-  border: 1px solid var(--text-muted);
+  color: var(--text-primary);
+  box-shadow: inset 0 0 0 1px var(--text-tertiary);
 }
 
 .ep-tutorial-popover .driver-popover-navigation-btns button.driver-popover-prev-btn:hover {
-  background: var(--surface);
-  border-color: var(--text);
-  color: var(--text);
+  background: var(--bg-secondary); /* = EP --surface */
+  box-shadow: inset 0 0 0 1px var(--text-primary);
+  color: var(--text-primary);
   opacity: 1;
 }
 
 /* 리뷰 반영(2026-09-28): X(닫기) 버튼이 너무 작음 — 히트 영역과 글리프 확대.
    피드백(2026-10-07 3차): 흰 글리프는 유지하되 배경 칩은 빼고 담백하게.
-   긴 타이틀과의 겹침은 타이틀 padding-right 예약으로 해결 (아래 title 규칙) */
+   긴 타이틀과의 겹침은 타이틀 padding-right 예약으로 해결 (위 title 규칙).
+   NDS Button sm iconOnly 와 같은 32px 원형 히트 영역에 NDS IconX(24px)를 mask 로
+   그린다 — driver 가 넣는 '×' 문자는 font-size 0 으로 숨긴다 */
 .ep-tutorial-popover .driver-popover-close-btn {
-  color: var(--text);
+  color: var(--text-primary);
   background: transparent;
-  width: 34px;
-  height: 34px;
-  font-size: 20px;
-  line-height: 1;
-  border-radius: var(--radius-xs);
-  top: 8px;
-  right: 8px;
+  width: 32px;
+  height: 32px;
+  font-size: 0;
+  line-height: 0;
+  border-radius: var(--radius-xl);
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background var(--duration-short) var(--ease-enter);
+}
+
+.ep-tutorial-popover .driver-popover-close-btn::before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  background-color: currentColor;
+  -webkit-mask: var(--ep-icon-x) center / contain no-repeat;
+  mask: var(--ep-icon-x) center / contain no-repeat;
 }
 
 /* driver.css 는 :hover 뿐 아니라 :focus 에도 라이트 테마용 #2d2d2d 를 입힌다.
@@ -93,42 +129,59 @@
 .ep-tutorial-popover .driver-popover-close-btn:hover,
 .ep-tutorial-popover .driver-popover-close-btn:focus,
 .ep-tutorial-popover .driver-popover-close-btn:focus-visible {
-  color: var(--text);
-  background: var(--surface);
+  color: var(--text-primary);
+  background: var(--bg-secondary);
 }
 
 .ep-tutorial-popover .driver-popover-arrow-side-left.driver-popover-arrow {
-  border-left-color: var(--surface-elevated);
+  border-left-color: var(--bg-primary);
 }
 .ep-tutorial-popover .driver-popover-arrow-side-right.driver-popover-arrow {
-  border-right-color: var(--surface-elevated);
+  border-right-color: var(--bg-primary);
 }
 .ep-tutorial-popover .driver-popover-arrow-side-top.driver-popover-arrow {
-  border-top-color: var(--surface-elevated);
+  border-top-color: var(--bg-primary);
 }
 .ep-tutorial-popover .driver-popover-arrow-side-bottom.driver-popover-arrow {
-  border-bottom-color: var(--surface-elevated);
+  border-bottom-color: var(--bg-primary);
 }
 
+/* 액션 안내 — NDS text-body-sm-regular, 아이콘은 NDS IconChevronRight */
 .ep-tutorial-click-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
   margin-top: 8px;
-  font-size: 13.5px;
-  color: var(--accent);
+  font-size: var(--text-body-sm-regular);
+  font-weight: var(--text-body-sm-regular--font-weight);
+  line-height: var(--text-body-sm-regular--line-height);
+  letter-spacing: var(--text-body-sm-regular--letter-spacing);
+  color: var(--text-interactive-primary); /* = EP --accent */
 }
 
-/* 리뷰 반영(2026-09-28): 안내문 앞 ▸ 아이콘이 너무 작음 — 글자보다 크게 */
+/* 리뷰 반영(2026-09-28): 안내문 앞 ▸ 아이콘이 너무 작음 — 글자보다 크게.
+   NDS 독립 아이콘 크기 size-20, 본문 줄높이(24px) 중앙 정렬 */
 .ep-tutorial-click-arrow {
-  font-size: 1.4em;
-  line-height: 1;
-  vertical-align: -0.12em;
-  margin-right: 2px;
+  flex-shrink: 0;
+  width: 20px;
+  height: 24px;
+  background-color: currentColor;
+  -webkit-mask: var(--ep-icon-chevron-right) center / 20px 20px no-repeat;
+  mask: var(--ep-icon-chevron-right) center / 20px 20px no-repeat;
 }
 
-/* 불투명도 슬라이더 — 실서비스 패널 스타일 재현 (트랙 어둡게 + 민트 썸) */
+/* NDS 아이콘 경로 (@naraspace-technology/nds/icons IconX, IconChevronRight — viewBox 24) */
+.ep-tutorial-popover {
+  --ep-icon-x: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M17.5095 5.2047C17.8681 4.91217 18.3979 4.93295 18.7322 5.2672L18.7947 5.33654C19.0677 5.67127 19.0677 6.15512 18.7947 6.48986L18.7322 6.55822L13.2908 11.9996L18.7322 17.441C19.0887 17.7975 19.0885 18.3755 18.7322 18.732C18.3756 19.0886 17.7977 19.0886 17.4412 18.732L11.9998 13.2906L6.55835 18.732C6.22405 19.0663 5.69432 19.0881 5.33569 18.7955L5.26733 18.732C4.91082 18.3755 4.91079 17.7976 5.26733 17.441L10.7087 11.9996L5.26733 6.55822C4.91077 6.20165 4.91077 5.62377 5.26733 5.2672L5.33569 5.2047C5.69432 4.91215 6.22405 4.9329 6.55835 5.2672L11.9998 10.7086L17.4412 5.2672L17.5095 5.2047Z'/%3E%3C/svg%3E");
+  --ep-icon-chevron-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M11.3787 17.7708C11.0633 18.0765 10.552 18.0765 10.2365 17.7708C9.92117 17.4652 9.92113 16.9698 10.2365 16.6642L15.0502 12L10.2365 7.33592C9.92118 7.03029 9.92113 6.53486 10.2365 6.22925C10.552 5.92364 11.0633 5.92368 11.3787 6.22925L16.7634 11.4467C17.0789 11.7523 17.0789 12.2477 16.7634 12.5534L11.3787 17.7708Z'/%3E%3C/svg%3E");
+}
+
+/* 불투명도 슬라이더 — 실서비스 패널 스타일 재현 (트랙 어둡게 + 민트 썸).
+   패널은 BeforeAfterSlider 의 라이브 px 레이어 안이라 px 값이 곧 실서비스 px 이다 */
 .ep-opacity-range {
   appearance: none;
-  height: 0.35em;
-  border-radius: 999px;
+  height: 4px;
+  border-radius: 9999px;
   background: rgba(231, 235, 239, 0.18);
   outline: none;
   cursor: pointer;
@@ -136,16 +189,16 @@
 
 .ep-opacity-range::-webkit-slider-thumb {
   appearance: none;
-  width: 1.1em;
-  height: 1.1em;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: #35d9c0;
   border: none;
 }
 
 .ep-opacity-range::-moz-range-thumb {
-  width: 1.1em;
-  height: 1.1em;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: #35d9c0;
   border: none;
@@ -361,7 +414,7 @@
 .ep-click-ping {
   position: absolute;
   inset: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   pointer-events: none;
 }
 

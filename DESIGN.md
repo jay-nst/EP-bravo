@@ -50,14 +50,18 @@ Opt-in via `class="light"` on `:root`. Not used in MVP.
 
 ## Typography
 
-| Role | Family | Weight | Usage |
-|------|--------|--------|-------|
-| Display | Pretendard Variable | 600–700 | Headings, hero text |
-| Body | Pretendard Variable | 400–500 | Paragraphs, UI labels |
-| Mono | IBM Plex Mono | 400–500 | Data, coordinates, timestamps |
+Pretendard Variable 단일 서체 + **NDS 타이포 스케일만** 사용 (크기·줄높이·굵기·자간이 클래스 하나에 포함 — font-weight/leading/tracking 덧붙이지 않음).
+mono 서체 없음 (NDS 에 없음, IBM Plex Mono 제거 2026-10-08) — 숫자 정렬은 `tabular-nums`.
 
-- Letter spacing: `-0.2px` globally
-- Monospace: `font-feature-settings: 'tnum' 1` for tabular numbers
+| Class | Size / line | Weight | Usage |
+|---|---|---|---|
+| `text-display-lg` / `-md` | 52(60)/64 · 44(52)/56 | 400 | 히어로 |
+| `text-heading-3xl` · `-2xl` · `-xl` · `-lg` | 24(28) · 22(24) · 20 · 18 | 600 | 제목 (괄호는 sm 이상) |
+| `text-body-lg-*` · `-md-*` · `-sm-*` | 18 · 16 · 14 | 400 regular / 500 medium | 본문·UI |
+| `text-body-xs-regular` | 12/16 | 400 | 캡션·eyebrow·메타 |
+
+- Letter spacing: `-0.2px` (스케일에 포함)
+- 변환 기준: docs/NDS_FULL_ADOPTION_RULES.md §1
 - Font smoothing: antialiased on all platforms
 
 ## Spacing

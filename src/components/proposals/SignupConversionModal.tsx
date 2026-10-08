@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Dialog } from '@naraspace-technology/nds/components';
 import { MODAL_STEP } from '@/lib/agent-tutorial-steps';
 
 interface SignupConversionModalProps {
@@ -10,8 +11,17 @@ interface SignupConversionModalProps {
 }
 
 // 스텝 5 — 튜토리얼의 클라이맥스이자 전환 지점.
-// CTA 는 데모에서는 비활성: 클릭하면 실서비스 연결 안내 툴팁만 띄운다
+// CTA 는 데모에서는 비활성: 클릭하면 실서비스 연결 안내만 띄운다
 // (재시작 순환은 승인자를 혼란시킬 수 있어 배제 — 설계문서 구현 스펙).
+//
+// NDS Dialog anatomy (참조: src/components/shared/LeadCaptureModal.tsx):
+// Title → Description → 본문(CTA 안내) → SubDescription → Footer(Cancel + Action), × 없음.
+//  - 닫기 = Esc · 바깥 클릭 → onClose (기존 × 와 같은 경로)
+//  - Cancel 자리 = '데모 다시 보기' → onReplay. Cancel 은 Dialog.Close 라 그대로 두면
+//    onReplay 직후 onOpenChange(false) → onClose 가 이어져 재시작이 'done' 으로 덮인다.
+//    그래서 Base UI 의 닫기 핸들러를 막고(preventBaseUIHandler) onReplay 만 부른다 —
+//    부모가 phase 를 바꾸면 open=false 로 닫힌다
+//  - Action = '회원가입하고 시작하기' → 닫지 않고 안내 문구만 표시
 export default function SignupConversionModal({
   open,
   onReplay,
@@ -19,84 +29,38 @@ export default function SignupConversionModal({
 }: SignupConversionModalProps) {
   const [ctaHint, setCtaHint] = useState(false);
 
-  if (!open || !MODAL_STEP) return null;
+  if (!MODAL_STEP) return null;
 
   return (
-    <div
-      className="absolute inset-0 z-30 flex items-center justify-center p-24"
-      style={{ background: 'rgba(14,14,16,0.75)', backdropFilter: 'blur(4px)' }}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="signup-modal-title"
+    <Dialog.Root
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) onClose();
+      }}
     >
-      <div
-        className="relative w-full max-w-md p-32 text-center"
-        style={{
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          borderRadius: '12px',
-        }}
-      >
-        {/* 투어 팝오버의 X 와 동일한 룩 — 흰 글리프, 배경 없음, hover 시만 배경 */}
-        <button
-          onClick={onClose}
-          className="absolute top-12 right-12 w-32 h-32 rounded-[6px] flex items-center justify-center transition-colors hover:bg-[var(--surface-elevated)]"
-          style={{ color: 'var(--text)', fontSize: 18 }}
-          aria-label="닫기"
-        >
-          ✕
-        </button>
+      <Dialog.Popup>
+        <Dialog.Title>{MODAL_STEP.title}</Dialog.Title>
+        <Dialog.Description>{MODAL_STEP.body}</Dialog.Description>
 
-        <p
-          className="text-xs font-mono tracking-wider uppercase mb-12"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          Step 5 / 5 — 가입 전환
-        </p>
+        {ctaHint && (
+          <p role="status" className="text-body-sm-regular text-text-interactive-primary">
+            실서비스에서는 여기서 가입 플로우로 연결됩니다
+          </p>
+        )}
 
-        <h3
-          id="signup-modal-title"
-          className="text-xl font-semibold mb-12"
-          style={{ color: 'var(--text)' }}
-        >
-          {MODAL_STEP.title}
-        </h3>
-
-        <p className="text-[15px] leading-relaxed mb-24" style={{ color: 'var(--text-muted)' }}>
-          {MODAL_STEP.body}
-        </p>
-
-        <div className="relative">
-          <button
-            onClick={() => setCtaHint(true)}
-            className="w-full py-12 rounded-[6px] text-sm font-semibold transition-opacity hover:opacity-85"
-            style={{ background: 'var(--accent)', color: '#0E0E10' }}
+        <Dialog.SubDescription>Step 5 / 5 — 가입 전환</Dialog.SubDescription>
+        <Dialog.Footer>
+          <Dialog.Cancel
+            onClick={(event) => {
+              event.preventBaseUIHandler();
+              onReplay();
+            }}
           >
-            회원가입하고 시작하기
-          </button>
-          {ctaHint && (
-            <div
-              className="absolute left-1/2 -translate-x-1/2 -top-44 px-12 py-8 rounded-[6px] text-xs whitespace-nowrap"
-              style={{
-                background: 'var(--surface-elevated)',
-                border: '1px solid var(--border)',
-                color: 'var(--text)',
-              }}
-              role="status"
-            >
-              실서비스에서는 여기서 가입 플로우로 연결됩니다
-            </div>
-          )}
-        </div>
-
-        <button
-          onClick={onReplay}
-          className="mt-16 text-xs underline underline-offset-2 transition-colors hover:text-[var(--text)]"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          데모 다시 보기
-        </button>
-      </div>
-    </div>
+            데모 다시 보기
+          </Dialog.Cancel>
+          <Dialog.Action onClick={() => setCtaHint(true)}>회원가입하고 시작하기</Dialog.Action>
+        </Dialog.Footer>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 }

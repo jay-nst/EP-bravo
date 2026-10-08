@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { FeedItem, FeedType, DashboardSummary } from '@/types/dashboard';
@@ -9,6 +9,17 @@ import { trackEvent } from '@/lib/analytics';
 import { fmtNum } from '@/lib/format';
 import dynamic from 'next/dynamic';
 import NewsletterForm from '@/components/home/NewsletterForm';
+import { Button, Card, Field, Input, Skeleton, Spinner, StatusChip, Tabs } from '@naraspace-technology/nds/components';
+import {
+  IconArrowRight,
+  IconHelpCircle,
+  IconMap,
+  IconMessageSquare,
+  IconPlay,
+  IconSatelliteSignal,
+  IconShoppingBag,
+  IconShuffle,
+} from '@naraspace-technology/nds/icons';
 
 const MiniMap = dynamic(() => import('./MiniMap'), { ssr: false });
 
@@ -187,18 +198,12 @@ export default function DashboardClient() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: 'var(--bg)' }}>
+    <div className="flex flex-col min-h-screen bg-bg-tertiary">
       {/* ===== BREAKING STRIP ===== */}
       <BreakingStrip items={feedItems} />
 
       {/* ===== FEATURED HERO (Bloomberg-style) ===== */}
-      <section
-        className="relative overflow-hidden cursor-pointer min-h-[280px] md:min-h-[400px]"
-        style={{
-          background: 'var(--surface)',
-          borderBottom: '1px solid var(--border)',
-        }}
-      >
+      <section className="relative overflow-hidden cursor-pointer min-h-280 md:min-h-400 bg-bg-secondary border-b border-border-tertiary">
         {/* Satellite background image */}
         <div
           className="absolute inset-0 pointer-events-none"
@@ -229,78 +234,83 @@ export default function DashboardClient() {
           <Link href="/interactive/north-korean-shipyards" className="block relative z-10">
             <div className="max-w-6xl mx-auto px-16 md:px-24 py-40 md:py-64">
               <div className="flex items-center gap-8 mb-16 md:mb-20">
-                <span className="inline-block w-24 h-px" style={{ background: 'var(--accent)' }} />
-                <span className="text-xs font-mono tracking-[0.15em] uppercase font-semibold" style={{ color: '#3D5A80' }}>
+                <span className="inline-block w-24 h-px bg-bg-interactive-primary" />
+                <span className="text-body-xs-regular" style={{ color: '#3D5A80' }}>
                   Northpaper Original · 방위 분석
                 </span>
               </div>
-              <h1 className="text-2xl md:text-4xl font-bold leading-tight mb-12 md:mb-16 max-w-2xl" style={{ color: 'var(--text)' }}>
+              <h1 className="text-heading-3xl md:text-display-md text-text-primary mb-12 md:mb-16 max-w-2xl">
                 {editorPick.title}
               </h1>
-              <p className="text-sm md:text-base leading-relaxed max-w-xl mb-20 md:mb-24" style={{ color: 'var(--text-muted)' }}>
+              <p className="text-body-sm-regular md:text-body-md-regular text-text-tertiary max-w-xl mb-20 md:mb-24">
                 {editorPick.description}
               </p>
               <div className="flex items-center gap-12 md:gap-16 flex-wrap">
-                <span className="text-xs font-medium px-12 py-6 rounded-xs" style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }}>
+                <StatusChip status="brand" variant="outline" showIcon={false}>
                   인터랙티브
-                </span>
-                <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>6분 읽기</span>
-                <span className="text-xs hidden sm:inline" style={{ color: 'var(--text-muted)' }}>{editorPick.source}</span>
-                <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
+                </StatusChip>
+                <span className="text-body-xs-regular text-text-tertiary tabular-nums">6분 읽기</span>
+                <span className="text-body-xs-regular text-text-tertiary hidden sm:inline">{editorPick.source}</span>
+                <span className="text-body-xs-regular text-text-tertiary tabular-nums">
                   {new Date(editorPick.published_at).toLocaleDateString('ko-KR')}
                 </span>
               </div>
             </div>
           </Link>
         ) : (
-          <div className="max-w-6xl mx-auto px-16 md:px-24 py-40 md:py-64 relative z-10 animate-pulse space-y-16">
-            <div className="h-16 w-160 rounded-xs" style={{ background: 'var(--surface-elevated)' }} />
-            <div className="h-40 w-full max-w-384 rounded-xs" style={{ background: 'var(--surface-elevated)' }} />
-            <div className="h-20 w-full max-w-320 rounded-xs" style={{ background: 'var(--surface-elevated)' }} />
+          <div className="max-w-6xl mx-auto px-16 md:px-24 py-40 md:py-64 relative z-10">
+            <Skeleton.Group orientation="vertical">
+              <Skeleton.Item variant="content" className="w-160" />
+              <Skeleton.Item variant="title" className="w-full max-w-384" />
+              <Skeleton.Item variant="subtitle" className="w-full max-w-320" />
+            </Skeleton.Group>
           </div>
         )}
       </section>
 
       {/* ===== CURATED FEED STRIP (auto-scroll, multi-platform) ===== */}
-      <section className="py-16" style={{ borderBottom: '1px solid var(--border)' }}>
+      <section className="py-16 border-b border-border-tertiary">
         <div className="flex items-center gap-8 px-16 md:px-24 mb-12">
-          <span className="w-8 h-8 rounded-full" style={{ background: 'var(--accent)', animation: 'pulse-dot 1.5s ease-in-out infinite' }} />
-          <span className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+          <span className="w-8 h-8 rounded-full bg-bg-interactive-primary" style={{ animation: 'pulse-dot 1.5s ease-in-out infinite' }} />
+          <span className="text-body-sm-medium text-text-tertiary">
             Live Feed
           </span>
         </div>
         <div
           ref={curatedRef}
-          className="flex gap-12 md:gap-16 px-16 md:px-24 overflow-x-auto"
-          style={{ scrollbarWidth: 'none' }}
+          className="flex gap-12 md:gap-16 px-16 md:px-24 overflow-x-auto [scrollbar-width:none]"
         >
           {curatedItems.map((item) => {
             const isExternal = item.linkAction === 'external' && item.href.startsWith('http');
-            const CardTag = isExternal ? 'a' : Link;
-            const linkProps = isExternal
-              ? { href: item.href, target: '_blank' as const, rel: 'noopener noreferrer' }
-              : { href: item.href };
             return (
-              <CardTag
+              <Card.Root
                 key={item.id}
-                {...linkProps}
-                className="flex-shrink-0 w-[240px] md:w-[280px] p-12 md:p-16 rounded-sm cursor-pointer transition-colors hover:bg-[var(--surface-elevated)] no-underline"
-                style={{ border: `1px solid ${item.color}30`, background: `${item.color}08`, textDecoration: 'none' }}
+                interactive
+                render={
+                  isExternal
+                    ? <a href={item.href} target="_blank" rel="noopener noreferrer" />
+                    : <Link href={item.href} />
+                }
+                className="shrink-0 w-240 md:w-280"
               >
-                <div className="flex items-center gap-8 mb-8">
-                  <span className="text-xs font-mono font-semibold px-6 py-2 rounded-xs uppercase"
-                    style={{ background: `${item.color}20`, color: item.color }}
-                  >
-                    {item.badge}
-                  </span>
-                </div>
-                <p className="text-sm font-medium leading-snug mb-8" style={{ color: 'var(--text)' }}>
-                  {item.title}
-                </p>
-                <p className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
-                  {item.sub}
-                </p>
-              </CardTag>
+                <Card.Body className="gap-8 p-4 md:p-8">
+                  <div className="flex items-center gap-8">
+                    {/* 플랫폼 배지 — 데이터 색 */}
+                    <span
+                      className="text-body-xs-regular px-6 py-2 rounded-xs"
+                      style={{ background: `${item.color}20`, color: item.color }}
+                    >
+                      {item.badge}
+                    </span>
+                  </div>
+                  <p className="text-body-sm-medium text-text-primary">
+                    {item.title}
+                  </p>
+                  <p className="text-body-xs-regular text-text-tertiary tabular-nums">
+                    {item.sub}
+                  </p>
+                </Card.Body>
+              </Card.Root>
             );
           })}
         </div>
@@ -308,20 +318,20 @@ export default function DashboardClient() {
 
       {/* ===== MAGAZINE GRID (2/3 + 1/3) ===== */}
       <section className="flex-1">
-        <div
-          className="grid grid-cols-1 lg:grid-cols-[2fr_1fr]"
-          style={{ borderBottom: '1px solid var(--border)' }}
-        >
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] border-b border-border-tertiary">
           {/* === MAIN COLUMN === */}
-          <div
-            className="px-16 md:px-24 py-32 flex flex-col gap-48 lg:border-r"
-            style={{ minWidth: 0, borderColor: 'var(--border)' }}
-          >
+          <div className="px-16 md:px-24 py-32 flex flex-col gap-48 min-w-0 border-border-tertiary lg:border-r">
             {/* Shorts Carousel */}
             {shortsItems.length > 0 && (
               <div>
-                <SectionHeader title="Shorts" icon="▶" linkText="전체 보기" linkHref="https://www.youtube.com/@naraspace/shorts" external />
-                <div className="flex gap-16 overflow-x-auto pb-4" style={{ scrollbarWidth: 'none' }}>
+                <SectionHeader
+                  title="Shorts"
+                  icon={<IconPlay className="size-16 text-icon-interactive-primary" />}
+                  linkText="전체 보기"
+                  linkHref="https://www.youtube.com/@naraspace/shorts"
+                  external
+                />
+                <div className="flex gap-16 overflow-x-auto pb-4 [scrollbar-width:none]">
                   {shortsItems.map((item) => (
                     <ShortsCard key={item.id} item={item} />
                   ))}
@@ -331,21 +341,21 @@ export default function DashboardClient() {
 
             {/* Platform Navigation */}
             <div>
-              <SectionHeader title="플랫폼" icon="●" />
+              <SectionHeader title="플랫폼" />
               <div className="flex gap-8 flex-wrap">
                 {PLATFORMS.map((p) => (
-                  <Link
+                  <Card.Root
                     key={p.key}
-                    href={p.href}
-                    className="flex items-center gap-8 px-16 py-10 rounded-[6px] transition-colors"
-                    style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = p.color; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; }}
+                    interactive
+                    render={<Link href={p.href} />}
+                    className="w-auto"
                   >
-                    <span className="w-8 h-8 rounded-full flex-shrink-0" style={{ background: p.color }} />
-                    <span className="text-sm font-medium" style={{ color: 'var(--text)' }}>{p.label}</span>
-                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{p.desc}</span>
-                  </Link>
+                    <Card.Body className="flex-row items-center gap-8 px-8 py-2">
+                      <span className="w-8 h-8 rounded-full shrink-0" style={{ background: p.color }} />
+                      <span className="text-body-sm-medium text-text-primary">{p.label}</span>
+                      <span className="text-body-xs-regular text-text-tertiary">{p.desc}</span>
+                    </Card.Body>
+                  </Card.Root>
                 ))}
               </div>
             </div>
@@ -353,7 +363,7 @@ export default function DashboardClient() {
             {/* Platform Feed Grid */}
             {platformItems.length > 0 && (
               <div>
-                <SectionHeader title="플랫폼 리포트" icon="●" linkText="더 보기" linkHref="https://ep.naraspace.com/ko/post" external />
+                <SectionHeader title="플랫폼 리포트" linkText="더 보기" linkHref="https://ep.naraspace.com/ko/post" external />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
                   {platformItems.slice(0, 6).map((item) => (
                     <AnalysisCard key={item.id} item={item} />
@@ -365,7 +375,7 @@ export default function DashboardClient() {
             {/* News List */}
             {newsItems.length > 0 && (
               <div>
-                <SectionHeader title="뉴스" icon="●" />
+                <SectionHeader title="뉴스" />
                 <div className="space-y-px">
                   {newsItems.map((item) => (
                     <NewsRow key={item.id} item={item} />
@@ -375,95 +385,80 @@ export default function DashboardClient() {
             )}
 
             {feedLoading && (
-              <div className="py-32 text-center">
-                <div
-                  className="w-20 h-20 rounded-full border-2 border-t-transparent animate-spin mx-auto"
-                  style={{ borderColor: 'var(--border)', borderTopColor: 'transparent' }}
-                />
+              <div className="py-32 flex justify-center">
+                <Spinner />
               </div>
             )}
           </div>
 
           {/* === SIDEBAR === */}
-          <aside
-            className="px-16 md:px-24 py-32 flex flex-col gap-24 border-t lg:border-t-0"
-            style={{ borderColor: 'var(--border)' }}
-          >
+          <aside className="px-16 md:px-24 py-32 flex flex-col gap-24 border-t lg:border-t-0 border-border-tertiary">
             {/* AI Assistant (moved from full-width) */}
-            <div className="rounded-[12px] p-16" style={{ border: '1px solid var(--border)' }}>
-              <p className="text-sm font-medium tracking-wider mb-12" style={{ color: 'var(--text-muted)' }}>
+            <div className={PANEL_CLASS}>
+              <p className="text-body-sm-medium text-text-tertiary mb-12">
                 EP AGENT
               </p>
               <form onSubmit={handleChatSubmit}>
-                <div className="relative mb-8">
-                  <svg
-                    className="absolute left-12 top-1/2 -translate-y-1/2"
-                    width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-                  >
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                  </svg>
-                  <input
+                <Field.Root name="chat" className="mb-8">
+                  <Field.Label className="sr-only">EP Agent 질문</Field.Label>
+                  <Input
                     type="text"
+                    leftIcon={<IconMessageSquare />}
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
                     placeholder="위성 영상에 대해 물어보세요..."
-                    className="w-full pl-36 pr-12 py-10 text-sm rounded-sm focus:outline-none transition-colors"
-                    style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}
-                    onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; }}
-                    onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; }}
                   />
-                </div>
+                </Field.Root>
                 <div className="flex flex-wrap gap-6">
                   {CHAT_SUGGESTIONS.map((q) => (
-                    <button
+                    <Button
                       key={q}
                       type="button"
+                      variant="outline"
+                      size="sm"
                       onClick={() => {
                         setChatInput(q);
                         trackEvent('chat_from_home', 'suggestion_click', { query: q });
                         router.push('/chat');
                       }}
-                      className="px-10 py-6 text-sm rounded-xs transition-colors"
-                      style={{ background: 'var(--surface)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}
                     >
                       {q}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </form>
               {/* Personalized services (logged-in state) */}
               {summary && (
-                <div className="mt-12 pt-12" style={{ borderTop: '1px solid var(--border)' }}>
+                <div className="mt-12 pt-12 border-t border-border-tertiary">
                   <div className="grid grid-cols-2 gap-8">
-                    <Link href="/portal" className="flex items-center gap-8 p-8 rounded-[6px] transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
-                      <span className="text-sm">📦</span>
+                    <Link href="/portal" className={SERVICE_TILE_CLASS}>
+                      <IconShoppingBag className="size-16 text-icon-secondary shrink-0" />
                       <div>
-                        <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>내 주문</p>
-                        <p className="text-xs" style={{ color: 'var(--accent)' }}>{fmtNum(summary.recentOrders.length)}건</p>
+                        <p className="text-body-xs-regular text-text-primary">내 주문</p>
+                        <p className="text-body-xs-regular text-text-interactive-primary tabular-nums">{fmtNum(summary.recentOrders.length)}건</p>
                       </div>
                     </Link>
-                    <Link href="/tasking" className="flex items-center gap-8 p-8 rounded-[6px] transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
-                      <span className="text-sm">📡</span>
+                    <Link href="/tasking" className={SERVICE_TILE_CLASS}>
+                      <IconSatelliteSignal className="size-16 text-icon-secondary shrink-0" />
                       <div>
-                        <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>촬영 요청</p>
-                        <p className="text-xs" style={{ color: summary.pendingTaskings > 0 ? '#C8923A' : 'var(--text-muted)' }}>
+                        <p className="text-body-xs-regular text-text-primary">촬영 요청</p>
+                        <p className={`text-body-xs-regular tabular-nums ${summary.pendingTaskings > 0 ? 'text-status-warning' : 'text-text-tertiary'}`}>
                           {summary.pendingTaskings > 0 ? `${fmtNum(summary.pendingTaskings)}건 대기` : '없음'}
                         </p>
                       </div>
                     </Link>
-                    <Link href="/core" className="flex items-center gap-8 p-8 rounded-[6px] transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
-                      <span className="text-sm">🗺️</span>
+                    <Link href="/core" className={SERVICE_TILE_CLASS}>
+                      <IconMap className="size-16 text-icon-secondary shrink-0" />
                       <div>
-                        <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>위성 영상</p>
-                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{fmtNum(summary.stats.totalImages)}장</p>
+                        <p className="text-body-xs-regular text-text-primary">위성 영상</p>
+                        <p className="text-body-xs-regular text-text-tertiary tabular-nums">{fmtNum(summary.stats.totalImages)}장</p>
                       </div>
                     </Link>
-                    <Link href="/quiz" className="flex items-center gap-8 p-8 rounded-[6px] transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
-                      <span className="text-sm">🧠</span>
+                    <Link href="/quiz" className={SERVICE_TILE_CLASS}>
+                      <IconHelpCircle className="size-16 text-icon-secondary shrink-0" />
                       <div>
-                        <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>퀴즈</p>
-                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>도전하기</p>
+                        <p className="text-body-xs-regular text-text-primary">퀴즈</p>
+                        <p className="text-body-xs-regular text-text-tertiary">도전하기</p>
                       </div>
                     </Link>
                   </div>
@@ -472,10 +467,18 @@ export default function DashboardClient() {
             </div>
 
             {/* 오늘의 지구 (Compact) */}
-            <div className="rounded-[12px] p-16" style={{ border: '1px solid var(--border)' }}>
+            <div className={PANEL_CLASS}>
               <div className="flex items-center justify-between mb-12">
-                <p className="text-sm font-medium tracking-wider" style={{ color: 'var(--text-muted)' }}>오늘의 지구</p>
-                <Link href="/core" className="text-sm font-mono" style={{ color: 'var(--accent)' }}>Core →</Link>
+                <p className="text-body-sm-medium text-text-tertiary">오늘의 지구</p>
+                <Button
+                  variant="text"
+                  size="sm"
+                  rightIcon={<IconArrowRight />}
+                  render={<Link href="/core" />}
+                  nativeButton={false}
+                >
+                  Core
+                </Button>
               </div>
               <div className="mb-12">
                 <MiniMap />
@@ -489,84 +492,73 @@ export default function DashboardClient() {
             </div>
 
             {/* Quick Actions (1x3, no AI chat) */}
-            <div className="rounded-[12px] p-16" style={{ border: '1px solid var(--border)' }}>
-              <p className="text-sm font-medium tracking-wider mb-12" style={{ color: 'var(--text-muted)' }}>QUICK ACTIONS</p>
+            <div className={PANEL_CLASS}>
+              <p className="text-body-sm-medium text-text-tertiary mb-12">QUICK ACTIONS</p>
               <div className="grid grid-cols-3 gap-8">
-                <QuickActionBtn href="/core" icon="🗺️" label="위성지도" />
-                <QuickActionBtn icon="🎲" label="랜덤 탐험" onClick={randomExplore} />
-                <QuickActionBtn href="/tasking" icon="📡" label="촬영 요청" />
+                <QuickActionBtn href="/core" icon={<IconMap className="size-20 text-icon-secondary" />} label="위성지도" />
+                <QuickActionBtn icon={<IconShuffle className="size-20 text-icon-secondary" />} label="랜덤 탐험" onClick={randomExplore} />
+                <QuickActionBtn href="/tasking" icon={<IconSatelliteSignal className="size-20 text-icon-secondary" />} label="촬영 요청" />
               </div>
             </div>
 
             {/* Trending Subjects (with tabs) */}
-            <div className="rounded-[12px] p-16" style={{ border: '1px solid var(--border)' }}>
-              <div className="flex items-center gap-4 mb-12">
-                <button
-                  onClick={() => setTrendingTab('subjects')}
-                  className="px-12 py-6 text-sm rounded-xs transition-colors"
-                  style={{
-                    background: trendingTab === 'subjects' ? 'var(--surface-elevated)' : 'transparent',
-                    color: trendingTab === 'subjects' ? 'var(--text)' : 'var(--text-muted)',
-                    border: trendingTab === 'subjects' ? '1px solid var(--border)' : '1px solid transparent',
-                  }}
-                >
-                  Trending
-                </button>
-                <button
-                  onClick={() => setTrendingTab('posts')}
-                  className="px-12 py-6 text-sm rounded-xs transition-colors"
-                  style={{
-                    background: trendingTab === 'posts' ? 'var(--surface-elevated)' : 'transparent',
-                    color: trendingTab === 'posts' ? 'var(--text)' : 'var(--text-muted)',
-                    border: trendingTab === 'posts' ? '1px solid var(--border)' : '1px solid transparent',
-                  }}
-                >
-                  인기 글
-                </button>
-              </div>
+            <div className={PANEL_CLASS}>
+              <Tabs.Root
+                value={trendingTab}
+                onValueChange={(v) => {
+                  if (v === 'subjects' || v === 'posts') setTrendingTab(v);
+                }}
+              >
+                <Tabs.List variant="solid" size="sm" className="mb-12">
+                  <Tabs.Tab value="subjects">Trending</Tabs.Tab>
+                  <Tabs.Tab value="posts">인기 글</Tabs.Tab>
+                </Tabs.List>
 
-              {trendingTab === 'subjects' ? (
-                <div className="space-y-6">
-                  {trendingSubjects.map((t) => {
-                    const badgeColor = FEED_BADGE_COLORS[t.badge] ?? 'var(--text-muted)';
-                    return (
-                      <div key={t.rank} className="flex items-center gap-12 p-8 rounded-sm transition-colors hover:bg-[var(--surface)] cursor-pointer">
-                        <span className="text-base font-bold font-mono w-20 text-center" style={{ color: 'var(--text-muted)' }}>{t.rank}</span>
+                <Tabs.Panel value="subjects">
+                  <div className="space-y-6">
+                    {trendingSubjects.map((t) => {
+                      const badgeColor = FEED_BADGE_COLORS[t.badge] ?? 'var(--text-muted)';
+                      return (
+                        <div key={t.rank} className={RANK_ROW_CLASS}>
+                          <span className="text-body-md-medium text-text-tertiary tabular-nums w-20 text-center">{t.rank}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-body-sm-medium text-text-primary truncate">{t.title}</p>
+                            <span className="text-body-xs-regular uppercase" style={{ color: badgeColor }}>
+                              {t.badge}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {trendingSubjects.length === 0 && (
+                      <p className="text-body-xs-regular text-text-tertiary py-16 text-center">{feedLoading ? '트렌딩 데이터 로딩 중...' : '트렌딩 데이터 없음'}</p>
+                    )}
+                  </div>
+                </Tabs.Panel>
+
+                <Tabs.Panel value="posts">
+                  <div className="space-y-6">
+                    {popularPosts.map((p) => (
+                      <div key={p.rank} className={RANK_ROW_CLASS}>
+                        <span className="text-body-md-medium text-text-tertiary tabular-nums w-20 text-center">{p.rank}</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate" style={{ color: 'var(--text)' }}>{t.title}</p>
-                          <span className="text-xs font-mono uppercase" style={{ color: badgeColor }}>
-                            {t.badge}
-                          </span>
+                          <p className="text-body-sm-medium text-text-primary truncate">{p.title}</p>
+                          <span className="text-body-xs-regular text-text-tertiary">{p.author}</span>
                         </div>
                       </div>
-                    );
-                  })}
-                  {trendingSubjects.length === 0 && (
-                    <p className="text-xs py-16 text-center" style={{ color: 'var(--text-muted)' }}>{feedLoading ? '트렌딩 데이터 로딩 중...' : '트렌딩 데이터 없음'}</p>
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {popularPosts.map((p) => (
-                    <div key={p.rank} className="flex items-center gap-12 p-8 rounded-sm transition-colors hover:bg-[var(--surface)] cursor-pointer">
-                      <span className="text-base font-bold font-mono w-20 text-center" style={{ color: 'var(--text-muted)' }}>{p.rank}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate" style={{ color: 'var(--text)' }}>{p.title}</p>
-                        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{p.author}</span>
-                      </div>
-                    </div>
-                  ))}
-                  {popularPosts.length === 0 && (
-                    <p className="text-xs py-16 text-center" style={{ color: 'var(--text-muted)' }}>{feedLoading ? '데이터 로딩 중...' : '데이터 없음'}</p>
-                  )}
-                </div>
-              )}
+                    ))}
+                    {popularPosts.length === 0 && (
+                      <p className="text-body-xs-regular text-text-tertiary py-16 text-center">{feedLoading ? '데이터 로딩 중...' : '데이터 없음'}</p>
+                    )}
+                  </div>
+                </Tabs.Panel>
+              </Tabs.Root>
             </div>
 
             {/* Newsletter */}
-            <div className="rounded-[12px] p-16" style={{ border: '1px solid var(--border)' }}>
-              <p className="text-sm font-medium tracking-wider mb-4" style={{ color: 'var(--text-muted)' }}>뉴스레터</p>
-              <p className="text-sm mb-12" style={{ color: 'var(--text-muted)' }}>매주 위성이 포착한 지구의 변화를 받아보세요.</p>
+            <div className={PANEL_CLASS}>
+              <p className="text-body-sm-medium text-text-tertiary mb-4">뉴스레터</p>
+              <p className="text-body-sm-regular text-text-tertiary mb-12">매주 위성이 포착한 지구의 변화를 받아보세요.</p>
               <NewsletterForm />
             </div>
           </aside>
@@ -574,10 +566,10 @@ export default function DashboardClient() {
       </section>
 
       {/* ===== FOOTER ===== */}
-      <footer className="py-32 px-16 md:px-24" style={{ borderTop: '1px solid var(--border)', color: 'var(--text-muted)' }}>
+      <footer className="py-32 px-16 md:px-24 border-t border-border-tertiary text-text-tertiary">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-16">
-          <p className="text-sm">&copy; {new Date().getFullYear()} EarthPaper by Nara Space</p>
-          <div className="flex gap-24 text-sm">
+          <p className="text-body-sm-regular">&copy; {new Date().getFullYear()} EarthPaper by Nara Space</p>
+          <div className="flex gap-24 text-body-sm-regular">
             <a href="https://ep.naraspace.com/ko/policy/service" target="_blank" rel="noopener noreferrer" className="hover:underline">이용약관</a>
             <a href="https://ep.naraspace.com/ko/policy/privacy" target="_blank" rel="noopener noreferrer" className="hover:underline">개인정보처리방침</a>
             <a href="https://ep.naraspace.com/ko/helpcenter" target="_blank" rel="noopener noreferrer" className="hover:underline">고객센터</a>
@@ -597,21 +589,35 @@ export default function DashboardClient() {
 
 /* ===== SUB-COMPONENTS ===== */
 
+// 사이드바 패널 — NDS Card 와 같은 표면 (안에 상호작용 요소가 섞여 있어 Card 대신 클래스)
+const PANEL_CLASS = 'rounded-lg p-16 bg-bg-tertiary inset-ring-1 inset-ring-border-tertiary';
+// 표면 안의 작은 타일
+const SERVICE_TILE_CLASS = 'flex items-center gap-8 p-8 rounded-md bg-bg-secondary transition-colors hover:bg-bg-primary';
+const RANK_ROW_CLASS = 'flex items-center gap-12 p-8 rounded-sm transition-colors hover:bg-bg-secondary cursor-pointer';
+
 function SectionHeader({ title, icon, linkText, linkHref, external }: {
-  title: string; icon?: string; linkText?: string; linkHref?: string; external?: boolean;
+  title: string; icon?: ReactNode; linkText?: string; linkHref?: string; external?: boolean;
 }) {
   return (
     <div className="flex items-center justify-between mb-16">
-      <h2 className="text-lg font-semibold flex items-center gap-8" style={{ color: 'var(--text)' }}>
-        {icon && <span className="text-sm" style={{ color: 'var(--accent)' }}>{icon}</span>}
+      <h2 className="text-heading-lg text-text-primary flex items-center gap-8">
+        {icon}
         {title}
       </h2>
       {linkText && linkHref && (
-        external ? (
-          <a href={linkHref} target="_blank" rel="noopener noreferrer" className="text-sm py-4 px-8" style={{ color: 'var(--text-muted)' }}>{linkText} →</a>
-        ) : (
-          <Link href={linkHref} className="text-sm py-4 px-8" style={{ color: 'var(--text-muted)' }}>{linkText} →</Link>
-        )
+        <Button
+          variant="text"
+          size="sm"
+          rightIcon={<IconArrowRight />}
+          render={
+            external
+              ? <a href={linkHref} target="_blank" rel="noopener noreferrer" />
+              : <Link href={linkHref} />
+          }
+          nativeButton={false}
+        >
+          {linkText}
+        </Button>
       )}
     </div>
   );
@@ -622,39 +628,38 @@ function ShortsCard({ item }: { item: FeedItem }) {
   const views = Number(item.metadata.views ?? 0);
   const youtubeId = String(item.metadata.youtube_id ?? '');
 
+  // 영상이 카드 전체를 채워 inset-ring 이 가려지므로 테두리는 border 로 둔다
   return (
-    <div className="flex-shrink-0 w-[130px] md:w-[160px] rounded-sm overflow-hidden group" style={{ border: '1px solid var(--border)', aspectRatio: '9/16' }}>
-      <div className="relative w-full h-full" style={{ background: 'var(--surface)' }}>
+    <div className="shrink-0 w-130 md:w-160 aspect-9/16 rounded-md overflow-hidden group border border-border-tertiary">
+      <div className="relative w-full h-full bg-bg-secondary">
         {playing && youtubeId ? (
           <iframe
             src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&loop=1&playlist=${youtubeId}&controls=1&modestbranding=1&rel=0`}
-            className="absolute inset-0 w-full h-full"
+            className="absolute inset-0 w-full h-full border-0"
             allow="autoplay; encrypted-media"
             allowFullScreen
-            style={{ border: 'none' }}
           />
         ) : (
           <>
             <img
               src={`https://img.youtube.com/vi/${youtubeId}/0.jpg`}
               alt={item.title}
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ filter: 'brightness(0.7)' }}
+              className="absolute inset-0 w-full h-full object-cover brightness-70"
             />
+            {/* 썸네일 전체를 덮는 재생 히트 영역 — NDS Button 은 오버레이 형태가 없어 네이티브 유지 */}
             <button
+              type="button"
               onClick={() => setPlaying(true)}
               className="absolute inset-0 flex items-center justify-center cursor-pointer"
               aria-label="재생"
             >
-              <div className="w-48 h-48 rounded-full flex items-center justify-center transition-transform group-hover:scale-110"
-                style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)' }}
-              >
-                <span className="text-white text-lg ml-2">▶</span>
+              <div className="size-48 rounded-full flex items-center justify-center bg-white/20 backdrop-blur-xs transition-transform group-hover:scale-110">
+                <IconPlay className="size-24 text-white" />
               </div>
             </button>
-            <div className="absolute bottom-0 left-0 right-0 p-12 pointer-events-none" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.85))' }}>
-              <p className="text-sm font-medium leading-snug mb-4 line-clamp-2" style={{ color: '#fff' }}>{item.title}</p>
-              <p className="text-xs font-mono" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            <div className="absolute bottom-0 left-0 right-0 p-12 pointer-events-none bg-linear-to-b from-transparent to-black/85">
+              <p className="text-body-sm-medium text-white mb-4 line-clamp-2">{item.title}</p>
+              <p className="text-body-xs-regular text-white/70 tabular-nums">
                 {views >= 1000 ? `${fmtNum(views / 1000, 1)}k` : fmtNum(views)} 조회
               </p>
             </div>
@@ -676,58 +681,55 @@ function AnalysisCard({ item }: { item: FeedItem }) {
   const pl = PLATFORM_LABEL[item.type] ?? { label: item.type.toUpperCase(), color: 'var(--text-muted)' };
   const location = String(item.metadata.location ?? '');
 
-  const inner = (
-    <div className="rounded-sm overflow-hidden group" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
-      <div className="relative" style={{ height: 160 }}>
-        {item.thumbnail_url ? (
-          <>
-            <img
-              src={item.thumbnail_url}
-              alt={item.title}
-              className="absolute inset-0 w-full h-full object-cover"
-              loading="lazy"
-            />
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, var(--surface) 0%, transparent 60%)' }} />
-          </>
-        ) : (
-          <>
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, var(--surface-elevated), var(--surface))' }} />
-            <div className="absolute inset-0 flex items-center justify-center opacity-20">
-              <div style={{ width: 80, height: 80, background: 'var(--accent)', borderRadius: '40%', filter: 'blur(20px)' }} />
-            </div>
-          </>
-        )}
-      </div>
-      <div className="p-16">
-        <p className="text-xs font-mono tracking-wider mb-6" style={{ color: pl.color }}>{pl.label}</p>
-        <p className="text-base font-semibold leading-snug mb-6 group-hover:text-[var(--accent)] transition-colors" style={{ color: 'var(--text)' }}>
+  const content = (
+    <>
+      {item.thumbnail_url ? (
+        <Card.Image src={item.thumbnail_url} alt={item.title} loading="lazy" className="h-160 w-full" />
+      ) : (
+        <div className="relative h-160 rounded-md overflow-hidden bg-linear-135 from-bg-primary to-bg-secondary">
+          <div className="absolute inset-0 flex items-center justify-center opacity-20">
+            <div className="size-80 rounded-full bg-bg-interactive-primary blur-[20px]" />
+          </div>
+        </div>
+      )}
+      <Card.Body className="gap-6">
+        <p className="text-body-xs-regular" style={{ color: pl.color }}>{pl.label}</p>
+        <p className="text-body-md-medium text-text-primary transition-colors group-hover/card:text-text-interactive-primary">
           {item.title}
         </p>
         {item.description && (
-          <p className="text-sm leading-relaxed line-clamp-2 mb-8" style={{ color: 'var(--text-muted)' }}>{item.description}</p>
+          <p className="text-body-sm-regular text-text-tertiary line-clamp-2 mb-2">{item.description}</p>
         )}
-        <div className="flex items-center justify-between text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
+        <div className="flex items-center justify-between text-body-xs-regular text-text-tertiary tabular-nums">
           <span>{location}</span>
           <span>{new Date(item.published_at).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>
         </div>
-      </div>
-    </div>
+      </Card.Body>
+    </>
   );
 
-  if (item.link_url && item.link_action === 'external') return <a href={item.link_url} target="_blank" rel="noopener noreferrer">{inner}</a>;
-  if (item.link_url) return <Link href={item.link_url}>{inner}</Link>;
-  return inner;
+  if (item.link_url && item.link_action === 'external') {
+    return (
+      <Card.Root interactive render={<a href={item.link_url} target="_blank" rel="noopener noreferrer" />}>
+        {content}
+      </Card.Root>
+    );
+  }
+  if (item.link_url) {
+    return <Card.Root interactive render={<Link href={item.link_url} />}>{content}</Card.Root>;
+  }
+  return <Card.Root>{content}</Card.Root>;
 }
 
 function NewsRow({ item }: { item: FeedItem }) {
   const inner = (
-    <div className="flex items-start gap-16 p-16 transition-colors hover:bg-[var(--surface)]" style={{ borderBottom: '1px solid var(--border)' }}>
+    <div className="flex items-start gap-16 p-16 transition-colors hover:bg-bg-secondary border-b border-border-tertiary">
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-mono tracking-wider uppercase mb-4" style={{ color: 'var(--text-muted)' }}>NEWS</p>
-        <p className="text-base font-medium leading-snug" style={{ color: 'var(--text)' }}>{item.title}</p>
-        {item.description && <p className="text-sm mt-4 line-clamp-1" style={{ color: 'var(--text-muted)' }}>{item.description}</p>}
+        <p className="text-body-xs-regular text-text-tertiary mb-4">NEWS</p>
+        <p className="text-body-md-medium text-text-primary">{item.title}</p>
+        {item.description && <p className="text-body-sm-regular text-text-tertiary mt-4 line-clamp-1">{item.description}</p>}
       </div>
-      <span className="text-sm font-mono flex-shrink-0" style={{ color: 'var(--text-muted)' }}>
+      <span className="text-body-sm-regular text-text-tertiary tabular-nums shrink-0">
         {new Date(item.published_at).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })}
       </span>
     </div>
@@ -740,22 +742,30 @@ function NewsRow({ item }: { item: FeedItem }) {
 
 function MetricItem({ label, value, suffix, color }: { label: string; value: string; suffix: string; color: string }) {
   return (
-    <div className="p-8 rounded-[6px]" style={{ background: 'var(--surface)' }}>
-      <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>{label}</p>
-      <p className="text-sm font-bold" style={{ color }}>
-        {value} <span className="text-xs font-normal" style={{ color: 'var(--text-muted)' }}>{suffix}</span>
+    <div className="p-8 rounded-md bg-bg-secondary">
+      <p className="text-body-xs-regular text-text-tertiary mb-2">{label}</p>
+      {/* 지표 색은 호출부가 정하는 데이터 색 */}
+      <p className="text-body-sm-medium tabular-nums" style={{ color }}>
+        {value} <span className="text-body-xs-regular text-text-tertiary">{suffix}</span>
       </p>
     </div>
   );
 }
 
-function QuickActionBtn({ href, icon, label, onClick }: { href?: string; icon: string; label: string; onClick?: () => void }) {
-  const cls = "flex flex-col items-center justify-center gap-6 p-12 rounded-sm transition-colors hover:bg-[var(--surface-elevated)]";
-  const style = { background: 'var(--surface)' };
+// 빠른 실행 타일 — 링크와 버튼이 같은 모양이어야 해서 NDS Card interactive 로 통일
+// (render 없으면 Card 가 button semantics·키보드 활성화를 준다)
+function QuickActionBtn({ href, icon, label, onClick }: { href?: string; icon: ReactNode; label: string; onClick?: () => void }) {
+  const body = (
+    <>
+      {icon}
+      <span className="text-body-sm-regular text-text-tertiary">{label}</span>
+    </>
+  );
+  const cls = 'items-center justify-center gap-6 p-12';
   if (href) {
-    return <Link href={href} className={cls} style={style}><span className="text-lg">{icon}</span><span className="text-sm" style={{ color: 'var(--text-muted)' }}>{label}</span></Link>;
+    return <Card.Root interactive render={<Link href={href} />} className={cls}>{body}</Card.Root>;
   }
-  return <button onClick={onClick} className={cls} style={style}><span className="text-lg">{icon}</span><span className="text-sm" style={{ color: 'var(--text-muted)' }}>{label}</span></button>;
+  return <Card.Root interactive onClick={onClick} className={cls}>{body}</Card.Root>;
 }
 
 const SEVERITY_LABEL: Record<string, { text: string; color: string }> = {
@@ -763,6 +773,9 @@ const SEVERITY_LABEL: Record<string, { text: string; color: string }> = {
   high: { text: 'HIGH', color: '#E07B5F' },
   medium: { text: 'MEDIUM', color: '#C8923A' },
 };
+
+// Citadel 플랫폼 색 틴트 (데이터 색)
+const BREAKING_WRAP_CLASS = 'block bg-[rgba(196,92,74,0.06)] border-b border-[rgba(196,92,74,0.15)]';
 
 function BreakingStrip({ items }: { items: FeedItem[] }) {
   const citadelItems = items
@@ -800,44 +813,34 @@ function BreakingStrip({ items }: { items: FeedItem[] }) {
   const flipOpacity = flipState === 'idle' ? 1 : 0;
 
   const inner = (
-    <div className="max-w-6xl mx-auto px-24 py-8 flex items-center gap-12" style={{ perspective: 600 }}>
-      <span className="inline-flex items-center gap-6 flex-shrink-0" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', color: '#C45C4A' }}>
-        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C45C4A', animation: 'pulse-dot 1.5s ease-in-out infinite' }} />
+    <div className="max-w-6xl mx-auto px-24 py-8 flex items-center gap-12 perspective-[600px]">
+      <span className="inline-flex items-center gap-6 shrink-0 text-body-xs-regular" style={{ color: '#C45C4A' }}>
+        <span className="size-6 rounded-full" style={{ background: '#C45C4A', animation: 'pulse-dot 1.5s ease-in-out infinite' }} />
         CITADEL
       </span>
 
-      <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+      <div className="flex-1 overflow-hidden relative">
         <div
+          className="flex items-center gap-8"
           style={{
             transform: flipTransform,
             opacity: flipOpacity,
             transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease',
             transformOrigin: flipState === 'flip-out' ? 'bottom center' : 'top center',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
           }}
         >
+          {/* 심각도 칩 — SEVERITY_LABEL 데이터 색 */}
           <span
-            className="flex-shrink-0"
-            style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 12,
-              fontWeight: 700,
-              letterSpacing: '0.08em',
-              color: sev.color,
-              padding: '2px 6px',
-              borderRadius: 2,
-              background: `${sev.color}18`,
-            }}
+            className="shrink-0 text-body-xs-regular px-6 py-2 rounded-xs"
+            style={{ color: sev.color, background: `${sev.color}18` }}
           >
             {sev.text}
           </span>
-          <span className="truncate" style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)' }}>
+          <span className="truncate text-body-sm-medium text-text-primary">
             {current.title}
           </span>
           {location && (
-            <span className="flex-shrink-0 hidden sm:inline" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: 'var(--text-muted)' }}>
+            <span className="shrink-0 hidden sm:inline text-body-xs-regular text-text-tertiary">
               {location}
             </span>
           )}
@@ -845,25 +848,18 @@ function BreakingStrip({ items }: { items: FeedItem[] }) {
       </div>
 
       {citadelItems.length > 1 && (
-        <span className="flex-shrink-0" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: 'var(--text-muted)' }}>
+        <span className="shrink-0 text-body-xs-regular text-text-tertiary tabular-nums">
           {(currentIdx % citadelItems.length) + 1}/{citadelItems.length}
         </span>
       )}
     </div>
   );
 
-  const wrapStyle = {
-    background: 'rgba(196, 92, 74, 0.06)',
-    borderBottom: '1px solid rgba(196, 92, 74, 0.15)',
-    textDecoration: 'none' as const,
-    display: 'block' as const,
-  };
-
   if (isExternal && current.link_url) {
-    return <a href={current.link_url} target="_blank" rel="noopener noreferrer" style={wrapStyle}>{inner}</a>;
+    return <a href={current.link_url} target="_blank" rel="noopener noreferrer" className={BREAKING_WRAP_CLASS}>{inner}</a>;
   }
   if (current.link_url) {
-    return <Link href={current.link_url} style={wrapStyle}>{inner}</Link>;
+    return <Link href={current.link_url} className={BREAKING_WRAP_CLASS}>{inner}</Link>;
   }
-  return <div style={wrapStyle}>{inner}</div>;
+  return <div className={BREAKING_WRAP_CLASS}>{inner}</div>;
 }

@@ -1,6 +1,9 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { Badge, Button, Card, StatusChip } from '@naraspace-technology/nds/components';
+import type { StatusChipProps } from '@naraspace-technology/nds/components';
+import { IconArrowRight } from '@naraspace-technology/nds/icons';
 import OtherSolutions from '@/components/landing/OtherSolutions';
 
 const CitadelSimulator = dynamic(
@@ -62,194 +65,63 @@ const CASE_STUDIES = [
   },
 ];
 
-const SEVERITY_COLORS = {
-  critical: '#C45C4A',
-  high: '#E07B5F',
-  moderate: '#C8923A',
+// 심각도 라벨 → NDS StatusChip 상태 (NDS 컴포넌트는 기본 상태 색만 쓴다)
+const SEVERITY_STATUS: Record<'critical' | 'high' | 'moderate', NonNullable<StatusChipProps['status']>> = {
+  critical: 'error',
+  high: 'warning',
+  moderate: 'alert',
 };
 
 export default function CitadelPage() {
   return (
-    <div className="ep-page" style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+    <div className="min-h-screen bg-bg-tertiary">
       {/* Hero */}
-      <section
-        style={{
-          padding: '80px 24px 64px',
-          maxWidth: 960,
-          margin: '0 auto',
-        }}
-      >
+      <section className="mx-auto max-w-960 px-16 pb-32 pt-48 sm:px-24 sm:pb-64 sm:pt-80">
         <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '4px 12px',
-            borderRadius: 4,
-            background: 'rgba(196, 92, 74, 0.12)',
-            marginBottom: 20,
-          }}
+          className="mb-20 inline-flex items-center gap-8 rounded-full px-12 py-4"
+          style={{ background: 'rgba(196, 92, 74, 0.12)' }}
         >
-          <span
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: 2,
-              background: '#C45C4A',
-            }}
-          />
-          <span
-            style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 11,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase' as const,
-              color: 'var(--text-muted)',
-              fontWeight: 400,
-            }}
-          >
-            EarthPaper ·
-          </span>
-          <span
-            style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 11,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase' as const,
-              color: '#C45C4A',
-              fontWeight: 600,
-            }}
-          >
-            Citadel
-          </span>
+          <span className="size-8 rounded-xs" style={{ background: '#C45C4A' }} />
+          <span className="text-body-xs-regular text-text-tertiary">EarthPaper ·</span>
+          <span className="text-body-xs-regular" style={{ color: '#C45C4A' }}>Citadel</span>
         </div>
 
-        <h1
-          style={{
-            fontSize: 'clamp(28px, 4vw, 40px)',
-            fontWeight: 600,
-            lineHeight: 1.3,
-            color: 'var(--text)',
-            marginBottom: 16,
-          }}
-        >
+        <h1 className="mb-16 text-heading-3xl text-text-primary md:text-display-md">
           도시를 관측하고,<br />
           재난에 대응합니다
         </h1>
 
-        <p
-          style={{
-            fontSize: 16,
-            lineHeight: 1.7,
-            color: 'var(--text-muted)',
-            maxWidth: '52ch',
-            marginBottom: 32,
-          }}
-        >
+        <p className="mb-32 max-w-[52ch] text-body-md-regular text-text-tertiary">
           위성 영상 기반 도시 모니터링과 재난 대응 솔루션.
           정기 관측 구독부터 국가 단위 턴키 시스템까지,
           정부와 도시가 필요로 하는 위성 인프라를 제공합니다.
         </p>
 
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' as const }}>
-          <a
-            href="#contact"
-            className="ep-cta"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '10px 20px',
-              borderRadius: 8,
-              background: '#C45C4A',
-              color: '#fff',
-              fontSize: 14,
-              fontWeight: 500,
-              textDecoration: 'none',
-            }}
-          >
+        <div className="flex flex-wrap gap-12">
+          <Button size="lg" render={<a href="#contact" />} nativeButton={false}>
             데모 요청
-          </a>
-          <a
-            href="#verticals"
-            className="ep-cta"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '10px 20px',
-              borderRadius: 8,
-              border: '1px solid var(--border)',
-              color: 'var(--text-muted)',
-              fontSize: 14,
-              textDecoration: 'none',
-            }}
-          >
+          </Button>
+          <Button size="lg" variant="outline" render={<a href="#verticals" />} nativeButton={false}>
             서비스 살펴보기
-          </a>
+          </Button>
         </div>
       </section>
 
       {/* Use Case */}
-      <section
-        style={{
-          padding: '0 24px 64px',
-          maxWidth: 960,
-          margin: '0 auto',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            marginBottom: 8,
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 11,
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase' as const,
-              color: 'var(--text-muted)',
-            }}
-          >
-            Use Case
-          </span>
+      <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
+        <div className="mb-8 flex items-center gap-8">
+          <span className="text-body-xs-regular text-text-tertiary">Use Case</span>
         </div>
 
-        <h2
-          style={{
-            fontSize: 'clamp(20px, 3vw, 26px)',
-            fontWeight: 600,
-            color: 'var(--text)',
-            marginBottom: 8,
-          }}
-        >
+        <h2 className="mb-8 text-heading-xl text-text-primary md:text-heading-3xl">
           2026 광양 산불 — 48시간 재난 리포트
         </h2>
-        <p
-          style={{
-            fontSize: 14,
-            lineHeight: 1.7,
-            color: 'var(--text-muted)',
-            maxWidth: '60ch',
-            marginBottom: 28,
-          }}
-        >
+        <p className="mb-28 max-w-[60ch] text-body-sm-regular text-text-tertiary">
           발생 탐지부터 피해 판정 리포트 전달까지, Citadel이 실제 재난 상황에서
           어떻게 작동하는지 단계별로 살펴봅니다.
         </p>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: 12,
-            marginBottom: 24,
-          }}
-        >
+        <div className="mb-24 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-12">
           {[
             {
               n: '01',
@@ -272,332 +144,98 @@ export default function CitadelPage() {
               desc: '48시간 내 피해 판정 리포트를 생성해 산림청·지자체에 전달합니다.',
             },
           ].map((step) => (
-            <div
-              key={step.n}
-              style={{
-                padding: 20,
-                borderRadius: 8,
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: "'IBM Plex Mono', monospace",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  letterSpacing: '0.06em',
-                  color: '#C45C4A',
-                  display: 'block',
-                  marginBottom: 12,
-                }}
-              >
-                {step.n}
-              </span>
-              <h3
-                style={{
-                  fontSize: 15,
-                  fontWeight: 600,
-                  color: 'var(--text)',
-                  marginBottom: 6,
-                }}
-              >
-                {step.title}
-              </h3>
-              <p
-                style={{
-                  fontSize: 13,
-                  lineHeight: 1.6,
-                  color: 'var(--text-muted)',
-                }}
-              >
-                {step.desc}
-              </p>
-            </div>
+            <Card.Root key={step.n}>
+              <Card.Body className="gap-8">
+                <span className="mb-4 text-body-sm-medium tabular-nums" style={{ color: '#C45C4A' }}>
+                  {step.n}
+                </span>
+                <Card.Title>{step.title}</Card.Title>
+                <p className="text-body-sm-regular text-text-tertiary">{step.desc}</p>
+              </Card.Body>
+            </Card.Root>
           ))}
         </div>
 
-        <a
-          href="https://ep.naraspace.com/ko/post/contents/2026-gwangyang-wildfire-ndmi-dnbr-analysis"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            fontSize: 14,
-            fontWeight: 500,
-            color: '#C45C4A',
-            textDecoration: 'none',
-          }}
+        <Button
+          variant="text"
+          rightIcon={<IconArrowRight />}
+          render={
+            <a
+              href="https://ep.naraspace.com/ko/post/contents/2026-gwangyang-wildfire-ndmi-dnbr-analysis"
+              target="_blank"
+              rel="noopener noreferrer"
+            />
+          }
+          nativeButton={false}
         >
-          이 시나리오의 실제 분석 결과를 확인하세요 →
-        </a>
+          이 시나리오의 실제 분석 결과를 확인하세요
+        </Button>
       </section>
 
       {/* Interactive Simulator */}
       <CitadelSimulator />
 
       {/* Live Events */}
-      <section
-        style={{
-          padding: '0 24px 64px',
-          maxWidth: 960,
-          margin: '0 auto',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            marginBottom: 20,
-          }}
-        >
-          <span
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: '50%',
-              background: '#C45C4A',
-              animation: 'pulse 2s infinite',
-            }}
-          />
-          <span
-            style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 11,
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase' as const,
-              color: 'var(--text-muted)',
-            }}
-          >
-            최근 탐지
-          </span>
+      <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
+        <div className="mb-20 flex items-center gap-8">
+          <Badge type="dot" status="important" />
+          <span className="text-body-xs-regular text-text-tertiary">최근 탐지</span>
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-            gap: 12,
-          }}
-        >
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-12">
           {CASE_STUDIES.map((c) => (
-            <a
+            <Card.Root
               key={c.location}
-              href={c.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                padding: 20,
-                borderRadius: 8,
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                textDecoration: 'none',
-                display: 'block',
-                transition: 'border-color 0.2s ease-out',
-              }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--text-muted)'; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; }}
+              interactive
+              render={<a href={c.href} target="_blank" rel="noopener noreferrer" />}
             >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: 12,
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: 10,
-                    letterSpacing: '0.06em',
-                    textTransform: 'uppercase' as const,
-                    padding: '2px 8px',
-                    borderRadius: 3,
-                    background: `${SEVERITY_COLORS[c.severity]}20`,
-                    color: SEVERITY_COLORS[c.severity],
-                    fontWeight: 600,
-                  }}
-                >
-                  {c.severity}
-                </span>
-                <span
-                  style={{
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: 11,
-                    color: 'var(--text-muted)',
-                  }}
-                >
-                  {c.date}
-                </span>
-              </div>
-              <p
-                style={{
-                  fontSize: 14,
-                  fontWeight: 500,
-                  color: 'var(--text)',
-                  marginBottom: 4,
-                }}
-              >
-                {c.event}
-              </p>
-              <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10 }}>
-                {c.location}
-              </p>
-              <p
-                style={{
-                  fontFamily: "'IBM Plex Mono', monospace",
-                  fontSize: 13,
-                  color: '#C45C4A',
-                  fontWeight: 500,
-                }}
-              >
-                {c.stat}
-              </p>
-            </a>
+              <Card.Body className="gap-4">
+                <div className="mb-8 flex items-center justify-between">
+                  <StatusChip status={SEVERITY_STATUS[c.severity]}>{c.severity}</StatusChip>
+                  <span className="text-body-xs-regular tabular-nums text-text-tertiary">{c.date}</span>
+                </div>
+                <Card.Title render={<p />}>{c.event}</Card.Title>
+                <p className="mb-6 text-body-xs-regular text-text-tertiary">{c.location}</p>
+                <p className="text-body-sm-medium tabular-nums" style={{ color: '#C45C4A' }}>
+                  {c.stat}
+                </p>
+              </Card.Body>
+            </Card.Root>
           ))}
         </div>
       </section>
 
       {/* Verticals */}
-      <section
-        id="verticals"
-        style={{
-          padding: '64px 24px',
-          maxWidth: 960,
-          margin: '0 auto',
-        }}
-      >
-        <h2
-          style={{
-            fontSize: 11,
-            fontFamily: "'IBM Plex Mono', monospace",
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase' as const,
-            color: 'var(--text-muted)',
-            marginBottom: 32,
-            paddingBottom: 12,
-            borderBottom: '1px solid var(--border)',
-          }}
-        >
+      <section id="verticals" className="mx-auto max-w-960 px-16 py-64 sm:px-24">
+        <h2 className="mb-32 border-b border-border-tertiary pb-12 text-body-xs-regular text-text-tertiary">
           서비스 영역
         </h2>
 
-        <div style={{ display: 'grid', gap: 16 }}>
+        <div className="grid gap-16">
           {VERTICALS.map((v) => (
-            <div
-              key={v.id}
-              style={{
-                borderRadius: 8,
-                border: '1px solid var(--border)',
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  padding: '16px 20px',
-                  background: 'var(--surface)',
-                  borderBottom: '1px solid var(--border)',
-                }}
-              >
-                <div style={{ flex: 1 }}>
-                  <h3
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 600,
-                      color: '#C45C4A',
-                    }}
-                  >
+            <Card.Root key={v.id}>
+              <Card.Body className="gap-16">
+                <div className="flex items-center gap-12">
+                  <h3 className="flex-1 text-body-md-medium" style={{ color: '#C45C4A' }}>
                     {v.title}
                   </h3>
+                  <Badge type="letter">{v.label}</Badge>
                 </div>
-                <span
-                  style={{
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: 10,
-                    letterSpacing: '0.06em',
-                    padding: '3px 8px',
-                    borderRadius: 3,
-                    border: '1px solid var(--border)',
-                    color: 'var(--text-muted)',
-                  }}
-                >
-                  {v.label}
-                </span>
-              </div>
 
-              <div style={{ padding: 20, background: 'var(--bg)' }}>
-                <p
-                  style={{
-                    fontSize: 14,
-                    lineHeight: 1.7,
-                    color: 'var(--text-muted)',
-                    marginBottom: 16,
-                    maxWidth: '60ch',
-                  }}
-                >
-                  {v.desc}
-                </p>
+                <p className="max-w-[60ch] text-body-sm-regular text-text-tertiary">{v.desc}</p>
 
-                <div
-                  className="ep-cols-2"
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: 12,
-                    marginBottom: 16,
-                  }}
-                >
+                <div className="grid grid-cols-1 gap-12 sm:grid-cols-2">
                   <div>
-                    <span
-                      style={{
-                        fontFamily: "'IBM Plex Mono', monospace",
-                        fontSize: 10,
-                        letterSpacing: '0.1em',
-                        textTransform: 'uppercase' as const,
-                        color: 'var(--text-muted)',
-                        display: 'block',
-                        marginBottom: 6,
-                      }}
-                    >
-                      고객
-                    </span>
-                    <p style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.5 }}>
-                      {v.customers}
-                    </p>
+                    <span className="mb-6 block text-body-xs-regular text-text-tertiary">고객</span>
+                    <p className="text-body-sm-regular text-text-primary">{v.customers}</p>
                   </div>
                   <div>
-                    <span
-                      style={{
-                        fontFamily: "'IBM Plex Mono', monospace",
-                        fontSize: 10,
-                        letterSpacing: '0.1em',
-                        textTransform: 'uppercase' as const,
-                        color: 'var(--text-muted)',
-                        display: 'block',
-                        marginBottom: 6,
-                      }}
-                    >
-                      산출물
-                    </span>
-                    <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 4 }}>
+                    <span className="mb-6 block text-body-xs-regular text-text-tertiary">산출물</span>
+                    <div className="flex flex-wrap gap-4">
                       {v.outputs.map((o) => (
                         <span
                           key={o}
-                          style={{
-                            fontSize: 12,
-                            padding: '3px 8px',
-                            borderRadius: 3,
-                            background: 'var(--surface)',
-                            border: '1px solid var(--border)',
-                            color: 'var(--text)',
-                          }}
+                          className="rounded-full bg-bg-secondary px-8 py-2 text-body-xs-regular text-text-primary inset-ring-1 inset-ring-border-tertiary"
                         >
                           {o}
                         </span>
@@ -605,87 +243,29 @@ export default function CitadelPage() {
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </Card.Body>
+            </Card.Root>
           ))}
         </div>
       </section>
 
       {/* Contact CTA */}
-      <section
-        id="contact"
-        style={{
-          padding: '64px 24px 80px',
-          maxWidth: 960,
-          margin: '0 auto',
-        }}
-      >
-        <div
-          style={{
-            padding: 40,
-            borderRadius: 8,
-            border: '1px solid var(--border)',
-            background: 'var(--surface)',
-            textAlign: 'center' as const,
-          }}
-        >
-          <h2
-            style={{
-              fontSize: 20,
-              fontWeight: 600,
-              color: 'var(--text)',
-              marginBottom: 8,
-            }}
-          >
-            관심 구역으로 시작하세요
-          </h2>
-          <p
-            style={{
-              fontSize: 14,
-              color: 'var(--text-muted)',
-              marginBottom: 24,
-              maxWidth: '44ch',
-              margin: '0 auto 24px',
-            }}
-          >
-            모니터링할 행정구역이나 관심 지역을 설정하면,
-            정기 관측부터 재난 대응 SLA까지 맞춤 시나리오를 구성합니다.
-          </p>
-          <a
-            href="mailto:support@naraspace.com"
-            className="ep-cta"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '12px 28px',
-              borderRadius: 8,
-              background: '#C45C4A',
-              color: '#fff',
-              fontSize: 14,
-              fontWeight: 500,
-              textDecoration: 'none',
-            }}
-          >
-            문의하기
-          </a>
-        </div>
+      <section id="contact" className="mx-auto max-w-960 px-16 pb-80 pt-64 sm:px-24">
+        <Card.Root>
+          <Card.Body className="items-center gap-8 py-32 text-center">
+            <h2 className="text-heading-xl text-text-primary">관심 구역으로 시작하세요</h2>
+            <p className="mb-16 max-w-[44ch] text-body-sm-regular text-text-tertiary">
+              모니터링할 행정구역이나 관심 지역을 설정하면,
+              정기 관측부터 재난 대응 SLA까지 맞춤 시나리오를 구성합니다.
+            </p>
+            <Button size="lg" render={<a href="mailto:support@naraspace.com" />} nativeButton={false}>
+              문의하기
+            </Button>
+          </Card.Body>
+        </Card.Root>
       </section>
 
       <OtherSolutions current="citadel" />
-
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.4; }
-        }
-        @media (max-width: 640px) {
-          .ep-page > section { padding-left: 16px !important; padding-right: 16px !important; }
-          .ep-page > section:first-of-type { padding-top: 48px !important; padding-bottom: 32px !important; }
-          .ep-cols-2 { grid-template-columns: 1fr !important; }
-          .ep-cta { min-height: 48px !important; }
-        }
-      `}</style>
     </div>
   );
 }

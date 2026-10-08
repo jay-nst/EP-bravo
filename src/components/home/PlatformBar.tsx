@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@naraspace-technology/nds/components';
 import { trackEvent } from '@/lib/analytics';
 
 const PLATFORMS = [
@@ -26,41 +27,30 @@ export default function PlatformBar() {
   }
 
   return (
-    <div
-      className="sticky z-30 border-b overflow-x-auto"
-      style={{
-        top: 'var(--header-height)',
-        background: 'var(--bg)',
-        borderColor: 'var(--border)',
-      }}
-    >
+    <div className="sticky top-(--header-height) z-30 border-b border-border-tertiary bg-bg-tertiary overflow-x-auto">
       <div className="max-w-6xl mx-auto px-16 flex gap-4 py-6">
+        {/* NDS Button text — hover 색은 NDS 기본 (플랫폼 색 덧칠 금지). 플랫폼 점은 데이터 색이라 유지 */}
         {PLATFORMS.map((p) => (
-          <button
+          <Button
             key={p.id}
+            variant="text"
+            size="sm"
+            className="whitespace-nowrap"
+            leftIcon={
+              p.id !== 'all' ? (
+                <span
+                  className="inline-block w-8 h-8 rounded-full shrink-0"
+                  style={{ background: p.color }}
+                />
+              ) : undefined
+            }
             onClick={() => {
               trackEvent('cta_click', 'platform_bar_chip', { platform: p.id });
               scrollToLane(p.id);
             }}
-            className="flex items-center gap-6 px-12 py-8 rounded-[6px] text-xs font-medium whitespace-nowrap transition-colors"
-            style={{ color: 'var(--text-muted)', minHeight: '36px' }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--surface)';
-              e.currentTarget.style.color = p.color;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = 'var(--text-muted)';
-            }}
           >
-            {p.id !== 'all' && (
-              <span
-                className="inline-block w-8 h-8 rounded-full flex-shrink-0"
-                style={{ background: p.color }}
-              />
-            )}
             {p.label}
-          </button>
+          </Button>
         ))}
       </div>
     </div>

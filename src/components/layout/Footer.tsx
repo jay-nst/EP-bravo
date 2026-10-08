@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { IconArrowUpRight } from '@naraspace-technology/nds/icons';
 
 const PLATFORMS = [
   { label: 'Citadel', desc: '재난 · 도시 관제', color: '#C45C4A', href: '/citadel' },
@@ -36,63 +37,30 @@ const LEGAL = [
   { label: '개인정보처리방침', href: 'https://ep.naraspace.com/ko/policy/privacy' },
 ];
 
-const sectionHeader: React.CSSProperties = {
-  fontFamily: "'IBM Plex Mono', monospace",
-  fontSize: 12,
-  letterSpacing: '0.12em',
-  textTransform: 'uppercase',
-  color: 'var(--text-muted)',
-  display: 'block',
-  marginBottom: 14,
-};
+// 대문자 mono eyebrow → NDS body-xs (규칙 1)
+const sectionHeaderClass = 'block mb-14 text-body-xs-regular text-text-tertiary';
+const listClass = 'flex flex-col gap-8';
+const linkClass = 'text-body-sm-regular text-text-tertiary';
+const externalLinkClass = 'inline-flex items-center gap-4 text-body-sm-regular text-text-tertiary';
 
-const listStyle: React.CSSProperties = {
-  listStyle: 'none',
-  padding: 0,
-  margin: 0,
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 8,
-};
-
-const linkStyle: React.CSSProperties = {
-  fontSize: 13,
-  color: 'var(--text-muted)',
-  textDecoration: 'none',
-};
-
-const externalIcon = (
-  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
-    <path d="M7 17L17 7M17 7H7M17 7v10" />
-  </svg>
-);
+const externalIcon = <IconArrowUpRight className="size-16 text-icon-tertiary opacity-50" />;
 
 export default function Footer() {
   return (
-    <footer style={{ borderTop: '1px solid var(--border)', background: 'var(--surface)' }}>
-      <div style={{ maxWidth: 960, margin: '0 auto' }} className="px-16 py-32 md:px-24 md:py-48">
+    <footer className="border-t border-border-tertiary bg-bg-secondary">
+      <div className="max-w-960 mx-auto px-16 py-32 md:px-24 md:py-48">
         {/* Grid */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-            gap: 32,
-            marginBottom: 48,
-          }}
-        >
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-32 mb-48">
           {/* Platforms */}
           <div>
-            <span style={sectionHeader}>플랫폼</span>
-            <ul style={listStyle}>
+            <span className={sectionHeaderClass}>플랫폼</span>
+            <ul className={listClass}>
               {PLATFORMS.map((p) => (
                 <li key={p.label}>
-                  <Link
-                    href={p.href}
-                    style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}
-                  >
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
-                    <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{p.label}</span>
-                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{p.desc}</span>
+                  <Link href={p.href} className="flex items-center gap-8">
+                    <span className="size-6 rounded-full shrink-0" style={{ background: p.color }} />
+                    <span className="text-body-sm-medium text-text-primary">{p.label}</span>
+                    <span className="text-body-xs-regular text-text-tertiary">{p.desc}</span>
                   </Link>
                 </li>
               ))}
@@ -101,11 +69,11 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <span style={sectionHeader}>서비스</span>
-            <ul style={listStyle}>
+            <span className={sectionHeaderClass}>서비스</span>
+            <ul className={listClass}>
               {SERVICES.map((s) => (
                 <li key={s.label}>
-                  <Link href={s.href} style={linkStyle}>
+                  <Link href={s.href} className={linkClass}>
                     {s.label}
                   </Link>
                 </li>
@@ -115,8 +83,8 @@ export default function Footer() {
 
           {/* Support */}
           <div>
-            <span style={sectionHeader}>고객지원</span>
-            <ul style={listStyle}>
+            <span className={sectionHeaderClass}>고객지원</span>
+            <ul className={listClass}>
               {SUPPORT.map((r) => (
                 <li key={r.label}>
                   {r.external ? (
@@ -124,13 +92,13 @@ export default function Footer() {
                       href={r.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ ...linkStyle, display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                      className={externalLinkClass}
                     >
                       {r.label}
                       {externalIcon}
                     </a>
                   ) : (
-                    <Link href={r.href} style={linkStyle}>
+                    <Link href={r.href} className={linkClass}>
                       {r.label}
                     </Link>
                   )}
@@ -141,15 +109,15 @@ export default function Footer() {
 
           {/* Social */}
           <div>
-            <span style={sectionHeader}>소셜</span>
-            <ul style={listStyle}>
+            <span className={sectionHeaderClass}>소셜</span>
+            <ul className={listClass}>
               {SOCIALS.map((s) => (
                 <li key={s.label}>
                   <a
                     href={s.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ ...linkStyle, display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                    className={externalLinkClass}
                   >
                     {s.label}
                     {externalIcon}
@@ -161,46 +129,30 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div
-          style={{
-            borderTop: '1px solid var(--border)',
-            paddingTop: 20,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: 12,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="border-t border-border-tertiary pt-20 flex items-center justify-between flex-wrap gap-12">
+          <div className="flex items-center gap-8">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="6" stroke="var(--text-muted)" strokeWidth="1.5" />
               <ellipse cx="12" cy="12" rx="10" ry="4" stroke="var(--accent)" strokeWidth="1" transform="rotate(-30 12 12)" opacity="0.4" />
             </svg>
-            <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: 'var(--text-muted)' }}>
+            <span className="text-body-xs-regular text-text-tertiary">
               EARTHPAPER
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+          <div className="flex items-center gap-16 flex-wrap">
             {LEGAL.map((l) => (
               <a
                 key={l.label}
                 href={l.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{
-                  fontFamily: "'IBM Plex Mono', monospace",
-                  fontSize: 12,
-                  color: 'var(--text-muted)',
-                  textDecoration: 'none',
-                  opacity: 0.7,
-                }}
+                className="text-body-xs-regular text-text-tertiary opacity-70"
               >
                 {l.label}
               </a>
             ))}
-            <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, color: 'var(--text-muted)', opacity: 0.5 }}>
+            <span className="text-body-xs-regular text-text-tertiary opacity-50">
               © Nara Space Technology Inc.
             </span>
           </div>

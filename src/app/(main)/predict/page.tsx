@@ -1,6 +1,8 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { Badge, Button, Card, Separator } from '@naraspace-technology/nds/components';
+import { IconArrowRight } from '@naraspace-technology/nds/icons';
 import OtherSolutions from '@/components/landing/OtherSolutions';
 
 const PredictSimulator = dynamic(
@@ -61,144 +63,71 @@ const VERTICALS = [
 
 export default function PredictPage() {
   return (
-    <div className="ep-page" style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+    <div className="min-h-screen bg-bg-tertiary">
       {/* Hero */}
-      <section style={{ padding: '80px 24px 48px', maxWidth: 960, margin: '0 auto' }}>
+      <section className="mx-auto max-w-960 px-16 pb-32 pt-48 sm:px-24 sm:pb-48 sm:pt-80">
         <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '4px 12px',
-            borderRadius: 4,
-            background: 'rgba(74, 158, 196, 0.12)',
-            marginBottom: 20,
-          }}
+          className="mb-20 inline-flex items-center gap-8 rounded-full px-12 py-4"
+          style={{ background: 'rgba(74, 158, 196, 0.12)' }}
         >
-          <span style={{ width: 8, height: 8, borderRadius: 2, background: '#4A9EC4' }} />
-          <span
-            style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 11,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase' as const,
-              color: 'var(--text-muted)',
-              fontWeight: 400,
-            }}
-          >
-            EarthPaper ·
-          </span>
-          <span
-            style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 11,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase' as const,
-              color: '#4A9EC4',
-              fontWeight: 600,
-            }}
-          >
-            Predict
-          </span>
+          <span className="size-8 rounded-xs" style={{ background: '#4A9EC4' }} />
+          <span className="text-body-xs-regular text-text-tertiary">EarthPaper ·</span>
+          <span className="text-body-xs-regular" style={{ color: '#4A9EC4' }}>Predict</span>
         </div>
 
-        <h1
-          style={{
-            fontSize: 'clamp(28px, 4vw, 40px)',
-            fontWeight: 600,
-            lineHeight: 1.3,
-            color: 'var(--text)',
-            marginBottom: 16,
-          }}
-        >
+        <h1 className="mb-16 text-heading-3xl text-text-primary md:text-display-md">
           현지 실사 없이,<br />
           자산을 검증합니다
         </h1>
 
-        <p
-          style={{
-            fontSize: 16,
-            lineHeight: 1.7,
-            color: 'var(--text-muted)',
-            maxWidth: '52ch',
-            marginBottom: 32,
-          }}
-        >
+        <p className="mb-32 max-w-[52ch] text-body-md-regular text-text-tertiary">
           해외 태양광 발전소, 광산, 야적장 —
           위성 영상으로 자산의 존재와 상태를 원격 검증합니다.
         </p>
 
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' as const }}>
-          <a
-            href="https://predicthings.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ep-cta"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '10px 20px',
-              borderRadius: 8,
-              background: '#4A9EC4',
-              color: '#fff',
-              fontSize: 14,
-              fontWeight: 500,
-              textDecoration: 'none',
-            }}
+        <div className="flex flex-wrap gap-12">
+          <Button
+            size="lg"
+            rightIcon={<IconArrowRight />}
+            render={<a href="https://predicthings.com" target="_blank" rel="noopener noreferrer" />}
+            nativeButton={false}
           >
-            Predict 서비스 →
-          </a>
-          <a
-            href="#contact"
-            className="ep-cta"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '10px 20px',
-              borderRadius: 8,
-              border: '1px solid var(--border)',
-              color: 'var(--text-muted)',
-              fontSize: 14,
-              textDecoration: 'none',
-            }}
-          >
+            Predict 서비스
+          </Button>
+          <Button size="lg" variant="outline" render={<a href="#contact" />} nativeButton={false}>
             자산 검증 상담
-          </a>
+          </Button>
         </div>
       </section>
 
       {/* Use case */}
-      <section style={{ padding: '0 24px 56px', maxWidth: 960, margin: '0 auto' }}>
-        <h2 style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: 'var(--text-muted)', marginBottom: 8 }}>
+      <section className="mx-auto max-w-960 px-16 pb-56 sm:px-24">
+        <h2 className="mb-8 text-body-xs-regular text-text-tertiary">
           Use Case
         </h2>
-        <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>
+        <h3 className="mb-6 text-heading-lg text-text-primary">
           인도 라자스탄 태양광 발전소 — 원격 자산 검증
         </h3>
-        <p style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--text-muted)', maxWidth: '64ch', marginBottom: 28 }}>
+        <p className="mb-28 max-w-[64ch] text-body-sm-regular text-text-tertiary">
           수출입은행이 인도 라자스탄의 150MW 태양광 발전소에 투자했습니다.
           현지 실사단을 파견하는 대신, 위성 기반 검증으로 자산을 원격 관리합니다.
         </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 1, background: 'var(--border)', border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }}>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-12">
           {USE_CASE_STEPS.map((step) => (
-            <div key={step.n} style={{ background: 'var(--surface)', padding: 20 }}>
-              <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 13, fontWeight: 600, color: '#4A9EC4', display: 'block', marginBottom: 12 }}>
-                {step.n}
-              </span>
-              <h4 style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>
-                {step.title}
-              </h4>
-              <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--text-muted)' }}>
-                {step.desc}
-              </p>
-            </div>
+            <Card.Root key={step.n}>
+              <Card.Body className="gap-8">
+                <span className="mb-4 text-body-sm-medium tabular-nums" style={{ color: '#4A9EC4' }}>
+                  {step.n}
+                </span>
+                <Card.Title render={<h4 />}>{step.title}</Card.Title>
+                <p className="text-body-sm-regular text-text-tertiary">{step.desc}</p>
+              </Card.Body>
+            </Card.Root>
           ))}
         </div>
 
-        <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, letterSpacing: '0.04em', color: 'var(--text-muted)', marginTop: 16 }}>
+        <p className="mt-16 text-body-xs-regular text-text-tertiary">
           현지 실사 비용의 1/10로, 분기마다 반복 검증 가능
         </p>
       </section>
@@ -207,121 +136,98 @@ export default function PredictPage() {
       <PredictSimulator />
 
       {/* Report mockup */}
-      <section style={{ padding: '0 24px 64px', maxWidth: 960, margin: '0 auto' }}>
-        <div
-          style={{
-            border: '1px solid var(--border)',
-            borderRadius: 8,
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '12px 20px',
-              background: 'var(--surface)',
-              borderBottom: '1px solid var(--border)',
-            }}
-          >
-            <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: 'var(--text-muted)' }}>
-              검증 리포트 예시
-            </span>
-          </div>
-          <div style={{ padding: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
-            {[
-              { label: '자산 유형', value: '태양광 발전소' },
-              { label: '위치', value: 'Rajasthan, India' },
-              { label: '용량', value: '150 MW' },
-              { label: '검증 상태', value: '가동 확인', color: '#4A9E6B' },
-              { label: '패널 면적', value: '2.4 km²' },
-              { label: '마지막 관측', value: '2026. 07. 12.' },
-              { label: '식생 침범', value: '2개 구역 탐지', color: '#C8923A' },
-              { label: '건설 진행률', value: '100%' },
-            ].map((item) => (
-              <div key={item.label}>
-                <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>
-                  {item.label}
-                </span>
-                <span style={{ fontSize: 14, fontWeight: 500, color: item.color || 'var(--text)' }}>
-                  {item.value}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+      <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
+        <Card.Root>
+          <Card.Body className="gap-16">
+            <span className="text-body-xs-regular text-text-tertiary">검증 리포트 예시</span>
+            <Separator />
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-16">
+              {[
+                { label: '자산 유형', value: '태양광 발전소' },
+                { label: '위치', value: 'Rajasthan, India' },
+                { label: '용량', value: '150 MW' },
+                { label: '검증 상태', value: '가동 확인', color: '#4A9E6B' },
+                { label: '패널 면적', value: '2.4 km²' },
+                { label: '마지막 관측', value: '2026. 07. 12.' },
+                { label: '식생 침범', value: '2개 구역 탐지', color: '#C8923A' },
+                { label: '건설 진행률', value: '100%' },
+              ].map((item) => (
+                <div key={item.label}>
+                  <span className="mb-4 block text-body-xs-regular text-text-tertiary">
+                    {item.label}
+                  </span>
+                  <span
+                    className="text-body-sm-medium tabular-nums text-text-primary"
+                    style={item.color ? { color: item.color } : undefined}
+                  >
+                    {item.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </Card.Body>
+        </Card.Root>
       </section>
 
       {/* Verticals */}
-      <section style={{ padding: '64px 24px', maxWidth: 960, margin: '0 auto' }}>
-        <h2 style={{ fontSize: 11, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: 'var(--text-muted)', marginBottom: 32, paddingBottom: 12, borderBottom: '1px solid var(--border)' }}>
+      <section className="mx-auto max-w-960 px-16 py-64 sm:px-24">
+        <h2 className="mb-32 border-b border-border-tertiary pb-12 text-body-xs-regular text-text-tertiary">
           서비스 영역
         </h2>
 
-        <div style={{ display: 'grid', gap: 16 }}>
+        <div className="grid gap-16">
           {VERTICALS.map((v) => (
-            <div key={v.id} style={{ borderRadius: 8, border: '1px solid var(--border)', overflow: 'hidden' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px', background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-                <h3 style={{ fontSize: 16, fontWeight: 600, color: '#4A9EC4', flex: 1 }}>{v.title}</h3>
-                {v.badge && (
-                  <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, padding: '3px 8px', borderRadius: 3, background: 'rgba(138, 134, 128, 0.15)', color: 'var(--text-muted)', fontWeight: 600 }}>
-                    {v.badge}
-                  </span>
-                )}
-              </div>
-              <div style={{ padding: 20 }}>
-                <p style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--text-muted)', marginBottom: 16, maxWidth: '60ch' }}>{v.desc}</p>
-                <div className="ep-cols-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <Card.Root key={v.id}>
+              <Card.Body className="gap-16">
+                <div className="flex items-center gap-12">
+                  <h3 className="flex-1 text-body-md-medium" style={{ color: '#4A9EC4' }}>{v.title}</h3>
+                  {v.badge && <Badge type="letter">{v.badge}</Badge>}
+                </div>
+                <p className="max-w-[60ch] text-body-sm-regular text-text-tertiary">{v.desc}</p>
+                <div className="grid grid-cols-1 gap-12 sm:grid-cols-2">
                   <div>
-                    <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: 'var(--text-muted)', display: 'block', marginBottom: 6 }}>고객</span>
-                    <p style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.5 }}>{v.customers}</p>
+                    <span className="mb-6 block text-body-xs-regular text-text-tertiary">고객</span>
+                    <p className="text-body-sm-regular text-text-primary">{v.customers}</p>
                   </div>
                   <div>
-                    <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: 'var(--text-muted)', display: 'block', marginBottom: 6 }}>산출물</span>
-                    <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 4 }}>
+                    <span className="mb-6 block text-body-xs-regular text-text-tertiary">산출물</span>
+                    <div className="flex flex-wrap gap-4">
                       {v.outputs.map((o) => (
-                        <span key={o} style={{ fontSize: 12, padding: '3px 8px', borderRadius: 3, background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}>{o}</span>
+                        <span
+                          key={o}
+                          className="rounded-full bg-bg-secondary px-8 py-2 text-body-xs-regular text-text-primary inset-ring-1 inset-ring-border-tertiary"
+                        >
+                          {o}
+                        </span>
                       ))}
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </Card.Body>
+            </Card.Root>
           ))}
         </div>
       </section>
 
       {/* Contact */}
-      <section id="contact" style={{ padding: '64px 24px 80px', maxWidth: 960, margin: '0 auto' }}>
-        <div style={{ padding: 40, borderRadius: 8, border: '1px solid var(--border)', background: 'var(--surface)', textAlign: 'center' as const }}>
-          <h2 style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>
-            검증할 자산을 등록하세요
-          </h2>
-          <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 24, maxWidth: '44ch', margin: '0 auto 24px' }}>
-            태양광 발전소, 광산, 야적장 — 자산 위치를 등록하면
-            위성 관측 기반 검증 리포트가 자동으로 생성됩니다.
-          </p>
-          <a
-            href="mailto:support@naraspace.com"
-            className="ep-cta"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '12px 28px', borderRadius: 8, background: '#4A9EC4', color: '#fff', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}
-          >
-            자산 등록 상담
-          </a>
-        </div>
+      <section id="contact" className="mx-auto max-w-960 px-16 pb-80 pt-64 sm:px-24">
+        <Card.Root>
+          <Card.Body className="items-center gap-8 py-32 text-center">
+            <h2 className="text-heading-xl text-text-primary">
+              검증할 자산을 등록하세요
+            </h2>
+            <p className="mb-16 max-w-[44ch] text-body-sm-regular text-text-tertiary">
+              태양광 발전소, 광산, 야적장 — 자산 위치를 등록하면
+              위성 관측 기반 검증 리포트가 자동으로 생성됩니다.
+            </p>
+            <Button size="lg" render={<a href="mailto:support@naraspace.com" />} nativeButton={false}>
+              자산 등록 상담
+            </Button>
+          </Card.Body>
+        </Card.Root>
       </section>
 
       <OtherSolutions current="predict" />
-
-      <style>{`
-        @media (max-width: 640px) {
-          .ep-page > section { padding-left: 16px !important; padding-right: 16px !important; }
-          .ep-page > section:first-of-type { padding-top: 48px !important; padding-bottom: 32px !important; }
-          .ep-cols-2 { grid-template-columns: 1fr !important; }
-          .ep-cta { min-height: 48px !important; }
-        }
-      `}</style>
     </div>
   );
 }

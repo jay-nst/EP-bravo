@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Card } from '@naraspace-technology/nds/components';
 
 const SOLUTIONS = [
   { key: 'citadel', label: 'Citadel', desc: '재난 · 도시 관제', color: '#C45C4A', href: '/citadel' },
@@ -19,53 +20,26 @@ export default function OtherSolutions({ current }: OtherSolutionsProps) {
   const others = SOLUTIONS.filter((s) => s.key !== current);
 
   return (
-    <section className="px-16 md:px-24 pb-48 md:pb-80" style={{ maxWidth: 960, margin: '0 auto' }}>
-      <div
-        style={{
-          borderTop: '1px solid var(--border)',
-          paddingTop: 32,
-        }}
-      >
-        <span
-          style={{
-            fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: 11,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase' as const,
-            color: 'var(--text-muted)',
-            display: 'block',
-            marginBottom: 16,
-          }}
-        >
+    <section className="max-w-960 mx-auto px-16 md:px-24 pb-48 md:pb-80">
+      <div className="border-t border-border-tertiary pt-32">
+        <span className="block mb-16 text-body-xs-regular text-text-tertiary">
           EarthPaper의 다른 솔루션
         </span>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-10">
           {others.map((s) => (
-            <Link
-              key={s.key}
-              href={s.href}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '14px 16px',
-                borderRadius: 8,
-                border: '1px solid var(--border)',
-                background: 'var(--surface)',
-                textDecoration: 'none',
-                transition: 'border-color 0.15s',
-              }}
-            >
-              <span className="w-8 h-8 rounded-full flex-shrink-0" style={{ background: s.color }} />
-              <div>
-                <span style={{ fontSize: 14, fontWeight: 600, color: s.color, display: 'block' }}>
-                  {s.label}
-                </span>
-                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                  {s.desc}
-                </span>
-              </div>
-            </Link>
+            <Card.Root key={s.key} interactive render={<Link href={s.href} />}>
+              <Card.Body className="flex-row items-center gap-12 px-8 py-6">
+                <span className="w-8 h-8 rounded-full shrink-0" style={{ background: s.color }} />
+                <div>
+                  <span className="block text-body-sm-medium" style={{ color: s.color }}>
+                    {s.label}
+                  </span>
+                  <span className="text-body-xs-regular text-text-tertiary">
+                    {s.desc}
+                  </span>
+                </div>
+              </Card.Body>
+            </Card.Root>
           ))}
         </div>
       </div>
