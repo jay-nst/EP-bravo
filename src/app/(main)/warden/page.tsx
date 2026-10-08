@@ -149,8 +149,8 @@ export default function WardenPage() {
             메탄 배출원, 재난 피해, EUDR 실사. 관심 있는 지역과 목적을 알려주시면 맞는 위성과 분석을 제안드립니다.
           </p>
           <div className={s.actions}>
-            <a href="mailto:contact@earthpaper.space" className={s.pill}>도입 문의</a>
-            <span className={s.body} style={{ fontSize: 15 }}>contact@earthpaper.space</span>
+            <a href="mailto:support@naraspace.com" className={s.pill}>도입 문의</a>
+            <span className={s.body} style={{ fontSize: 15 }}>support@naraspace.com</span>
           </div>
         </div>
       </section>
