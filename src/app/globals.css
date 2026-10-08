@@ -12,6 +12,7 @@
 @import "../styles/nds/breakpoint.css";
 @import "../styles/nds/radius.css";
 @import "../styles/nds/shadow.css";
+@import "../styles/nds/mapbox-controls.css";
 
 /* ==========================================================
    EarthPaper Design System — "Quiet Observatory"
@@ -163,26 +164,7 @@ body {
   -webkit-backdrop-filter: blur(12px);
 }
 
-/* --- Mapbox Overrides --- */
-.mapboxgl-ctrl-group {
-  background: var(--surface) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-sm) !important; /* EP --radius-md(8px) */
-}
-
-.mapboxgl-ctrl-group button {
-  border-color: var(--border) !important;
-  filter: invert(1) hue-rotate(180deg);
-}
-
-.mapboxgl-ctrl-group button:hover {
-  background: var(--surface-elevated) !important;
-  filter: invert(1) hue-rotate(180deg) brightness(1.2);
-}
-
-.mapboxgl-ctrl-group button + button {
-  border-top-color: var(--border) !important;
-}
+/* --- Mapbox 컨트롤 --- NDS 모양은 src/styles/nds/mapbox-controls.css (자동 생성) */
 
 /* --- Focus Visible --- */
 :focus-visible {

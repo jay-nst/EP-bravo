@@ -144,7 +144,7 @@ export default function CitadelSimulator() {
       </div>
 
       {/* 지도 캔버스가 컨테이너를 꽉 채워 inset-ring 을 가리므로 지도 프레임만 border 로 그린다 */}
-      <div className="relative h-320 overflow-hidden rounded-sm border border-border-tertiary md:h-480">
+      <div className="relative h-320 overflow-hidden rounded-lg border border-border-tertiary md:h-480">
         <EarthMap
           onAoiChange={handleAoiChange}
           onMapReady={handleMapReady}
