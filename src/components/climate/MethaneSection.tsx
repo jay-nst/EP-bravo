@@ -2,6 +2,7 @@ import DeepDive from './DeepDive';
 import {
   METHANE_DEEP_DIVE,
   METHANE_EXAMPLES,
+  FIRST_LIGHT,
   METHANE_ADVANTAGES,
   METHANE_FACTS,
   METHANE_HOW,
@@ -113,11 +114,37 @@ export default function MethaneSection() {
             ))}
           </ol>
 
+          {/* 자체 항공시험 first light */}
+          <div className={s.examples}>
+            <h3 className={s.h3} data-reveal="">{FIRST_LIGHT.title}</h3>
+            <p className={s.body} style={{ marginBottom: 32, maxWidth: 720 }} data-reveal="">{FIRST_LIGHT.intro}</p>
+            <div className={s.firstLight}>
+              {FIRST_LIGHT.frames.map((f, i) => (
+                <figure
+                  key={f.src}
+                  className={`${s.caseFrame} ${'wide' in f && f.wide ? s.firstLightWide : ''}`}
+                  data-reveal=""
+                  style={revealDelay((i % 2) * 120)}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={f.src} alt={f.alt} loading="lazy" className={s.exampleImg} />
+                  <figcaption>
+                    <span className={s.caseTag}>
+                      <strong>{f.date}</strong> · {f.tag}
+                    </span>
+                    <span>{f.caption}</span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+            <p className={s.exampleCredit} style={{ marginTop: 16 }}>{FIRST_LIGHT.credit}</p>
+          </div>
+
           {/* 실제 검출 사례 (해외 위성) */}
           <div className={s.examples}>
-            <h3 className={s.h3} data-reveal="">실제로는 이렇게 보입니다</h3>
+            <h3 className={s.h3} data-reveal="">궤도에서는 이렇게 보입니다</h3>
             <p className={s.body} style={{ marginBottom: 32 }} data-reveal="">
-              해외 위성이 검출한 메탄 플룸입니다. 경기샛-2A도 같은 원리로 관측하며, 25 m 해상도로 시간당 100 kg 수준의 배출원을 찾는 것이 목표입니다.
+              해외 위성이 궤도에서 검출한 메탄 플룸입니다. 경기샛-2A도 같은 원리로 관측하며, 25 m 해상도로 시간당 100 kg 수준의 배출원을 찾는 것이 목표입니다.
             </p>
             {METHANE_EXAMPLES.map((ex, i) => (
               <figure key={ex.src} className={s.caseFrame} style={{ marginBottom: i === 0 ? 48 : 0 }} data-reveal="">

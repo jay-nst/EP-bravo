@@ -10,6 +10,8 @@
 // - 심층 글: 오형직 이사 발표(2026-09, 해외 관측 현황·빌려 쓰는 데이터의 한계·first light), WEF 기고문(아시아 산업단지 해상도),
 //   NarSha 스토리보드(Offshore Glint Mode), 보도자료 2026-10-02(정수종 교수 인용 원문), Scanway 협력(2024.03 공식 SNS)
 //   dNBR·흡수선 원리는 일반 원격탐사 지식
+// - 항공시험 first light: 학회 발표자료 「Development of the Hyperspectral Microsatellite Constellation for Spaceborne
+//   Global Methane Monitoring」(김민식 부사장) p.17–20 — 2025-09-20, 고도 2.5 km, LNG(CH4 95%) 0·50·100 kg/h 통제 방출
 // - 메탄 검출 사례: NASA Image Library PIA25592·PIA26113 (NASA/JPL-Caltech, 공개 이미지). 해외 위성 사례임을 캡션에 명시
 // - 로드맵: 보도자료 2026-10-02(검보정 후 정상 운용), 경기기후위성 리플렛(2B 2027, 경기기후플랫폼 연계)
 // - Transporter-18 / CEOS 등재 / 카자흐스탄 KGS 공급: 웹 보도 (gktoday, venturesquare 1040076·1114931)
@@ -293,6 +295,40 @@ export const METHANE_HOW = [
     desc: '메탄 플룸을 함께 촬영한 12.5 m 가시광 영상에 겹쳐 배출 시설을 특정하고 시간당 배출량을 추정합니다.',
   },
 ] as const;
+
+export const FIRST_LIGHT = {
+  title: '우리 센서가 잡아낸 메탄',
+  intro:
+    '발사 전, 경기샛-2A에 실을 SWIR 카메라를 경비행기에 싣고 실제 메탄을 찍었습니다. 지상에서 내보내는 메탄 양을 정확히 알고 있는 통제 시험이라, 센서가 얼마나 작은 배출까지 잡아내는지 확인할 수 있습니다.',
+  frames: [
+    {
+      src: '/climate/narsha-airborne-aircraft.jpg',
+      alt: '메탄 관측 카메라를 싣고 시험 비행에 나선 경비행기',
+      date: '2025.09.20',
+      tag: '항공시험 · 통제 방출',
+      caption:
+        '고도 2.5 km에서 메탄 방출 지점 위를 반복해서 날았습니다. 지상에서는 LNG(메탄 95%)를 내보내며 방출량을 0, 50, 100 kg/h 세 단계로 바꿨습니다.',
+    },
+    {
+      src: '/climate/narsha-firstlight-panels.jpg',
+      alt: 'SWIR 초분광 영상, 1665.6 nm 메탄 흡수 피크 스펙트럼, 2차 미분 처리 영상 세 패널',
+      date: '2025.09.20',
+      tag: 'First light · 100 kg/h',
+      caption:
+        '(a) SWIR 초분광 영상, (b) 방출 지점 픽셀의 스펙트럼, (c) 메탄 흡수선만 도드라지게 처리한 결과입니다. (b)에서 1665.6 nm 부근 신호가 움푹 꺼진 곳이 메탄 흡수선이고, (a)와 (c)의 노란 점이 시간당 100 kg 방출 지점입니다. 처리 후에는 방출 지점 주변 신호가 더 뚜렷해집니다.',
+      wide: true,
+    },
+    {
+      src: '/climate/narsha-firstlight-rgb.jpg',
+      alt: '항공 RGB 영상 위에 겹친 SWIR 분석 결과와 예상 플룸 방향',
+      date: '2025.09.20',
+      tag: 'RGB 영상 위 플룸',
+      caption:
+        '같은 비행에서 찍은 항공 RGB 영상 위에 SWIR 결과를 겹쳤습니다. 노란 화살표가 바람을 따라 퍼지는 플룸의 예상 방향입니다.',
+    },
+  ],
+  credit: '나라스페이스 항공시험 데이터 · 위성 궤도 관측 아님',
+} as const;
 
 export const METHANE_EXAMPLES = [
   {

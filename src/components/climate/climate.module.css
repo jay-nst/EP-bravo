@@ -1001,3 +1001,24 @@
   font-size: 12px;
   color: #6e6e73;
 }
+
+/* ── First light (항공시험) ─────────────────────────────── */
+.firstLight {
+  display: grid;
+  grid-template-columns: 1fr 1.8fr;
+  gap: 32px 20px;
+  align-items: start;
+}
+.firstLightWide {
+  grid-column: 1 / -1;
+  order: 3;
+}
+.firstLightWide img {
+  background: #fff !important;
+  padding: 12px;
+}
+@media (max-width: 834px) {
+  .firstLight {
+    grid-template-columns: 1fr;
+  }
+}
