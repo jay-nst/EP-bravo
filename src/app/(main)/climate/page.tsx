@@ -33,11 +33,11 @@ export default function ClimatePage() {
           <span className={s.eyebrow} data-reveal="">나라스페이스 기후 인텔리전스</span>
           <h1 className={s.hero} data-reveal="" style={revealDelay(120)}>
             지구의 변화,<br />
-            우주에서 먼저.
+            우주에서 먼저 봅니다.
           </h1>
           <p className={`${s.lead} ${s.narrow}`} data-reveal="" style={revealDelay(240)}>
-            메탄 배출원, 산불 피해 지역, 개발로 바뀌는 땅까지. 나라스페이스 자체 위성과 AI로 관측해
-            <strong>수치로</strong> 제시
+            메탄 배출원과 산불 피해 지역, 개발로 바뀌는 땅을 나라스페이스가 직접 만든 위성과 AI로
+            관측하고 <strong>수치로</strong> 제시합니다.
           </p>
           <div className={s.actions} data-reveal="" style={revealDelay(360)}>
             <a href="#contact" className={s.pill}>도입 문의</a>
@@ -62,7 +62,7 @@ export default function ClimatePage() {
         <div className={s.inner}>
           <div className={s.center} style={{ marginBottom: 56 }}>
             <h2 className={s.h2} data-reveal="">운영 중인 기후 지도.</h2>
-            <p className={`${s.lead} ${s.narrow}`}>공공데이터와 위성 분석을 결합한 지자체 실무용 지도</p>
+            <p className={`${s.lead} ${s.narrow}`}>공공데이터와 위성 분석을 결합해 지자체가 바로 쓸 수 있는 지도로 구성했습니다.</p>
           </div>
           <div className={s.grid2}>
             {CLIMATE_DASHBOARDS.map((d, i) => (
@@ -81,9 +81,9 @@ export default function ClimatePage() {
       {/* Contact */}
       <section id="contact" className={`${s.tile} ${s.tileAlt}`}>
         <div className={`${s.inner} ${s.center}`}>
-          <h2 className={s.hero} data-reveal="">관측이 필요한 곳,<br />어디든.</h2>
+          <h2 className={s.hero} data-reveal="">관측이 필요한 곳을<br />알려주세요.</h2>
           <p className={`${s.lead} ${s.narrow}`} data-reveal="" style={revealDelay(120)}>
-            메탄 배출원부터 재난 피해, 토지 변화까지. 관심 지역과 목적에 맞는 위성·분석 제안
+            메탄 배출원부터 재난 피해, 토지 변화까지, 관심 있는 지역과 목적을 알려주시면 알맞은 위성과 분석을 제안드립니다.
           </p>
           <div className={s.actions}>
             <a href="mailto:support@naraspace.com" className={s.pill}>도입 문의</a>

@@ -9,7 +9,7 @@ export default function SolutionMap() {
         <div className={s.center} style={{ marginBottom: 56 }} data-reveal="">
           <h2 className={s.h2}>관측부터 의사결정까지.</h2>
           <p className={`${s.lead} ${s.narrow}`}>
-            이 위성들의 활용 분야, 아래 순서대로 소개
+            이 위성들이 하는 일을 아래 순서대로 하나씩 소개합니다.
           </p>
         </div>
         <div className={s.grid2}>

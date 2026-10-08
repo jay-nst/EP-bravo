@@ -27,8 +27,8 @@ export default function GyeonggisatSection({ alt = false }: GyeonggisatSectionPr
             메탄 배출원을 찾는 위성.
           </h2>
           <p className={`${s.lead} ${s.narrow}`} data-reveal="" style={revealDelay(200)}>
-            국내 최초 메탄 관측 위성. 초분광 센서로 지표면 반사광을 파장별로 나눠 관측하고
-            메탄 흡수 파장을 분석해 <strong>배출 위치</strong>까지 탐지
+            국내 최초의 메탄 관측 위성입니다. 초분광 센서로 지표면 반사광을 파장별로 나눠 관측하고
+            메탄이 흡수하는 파장을 분석해 <strong>배출 위치</strong>를 찾아냅니다.
           </p>
 
           {/* eslint-disable-next-line @next/next/no-img-element */}

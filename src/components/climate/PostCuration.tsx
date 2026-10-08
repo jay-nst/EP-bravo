@@ -22,7 +22,7 @@ export default function PostCuration() {
         <div className={s.center} data-reveal="">
           <h2 className={s.h2}>위성으로 분석한 기후 사례.</h2>
           <p className={`${s.lead} ${s.narrow}`}>
-            EarthPaper가 직접 분석한 산불·홍수·산림·식량 사례
+            EarthPaper가 직접 분석한 산불, 홍수, 산림, 식량 사례입니다.
           </p>
         </div>
 

@@ -17,7 +17,7 @@ export default function SatelliteSection() {
           <span className={s.eyebrow}>우리 위성</span>
           <h2 className={s.h2}>위성 개발부터 운용까지,<br />모두 자체 기술로.</h2>
           <p className={`${s.lead} ${s.narrow}`}>
-            외부 위성에 의존하면 원하는 날짜·지역의 데이터 확보 불가. 16U 초소형 위성 설계부터 관제까지 자체 수행
+            외부 위성에 의존하면 원하는 날짜와 지역의 기후 데이터를 얻을 수 없습니다. 나라스페이스는 16U 초소형 위성의 설계부터 관제까지 직접 수행합니다.
           </p>
         </div>
 

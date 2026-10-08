@@ -9,9 +9,9 @@ export default function LandSection() {
       <div className={s.inner}>
         <div className={s.center} data-reveal="">
           <span className={s.eyebrow}>경기샛-1 · Observer-1A</span>
-          <h2 className={s.h2}>1.5 m 해상도로<br />기록하는 경기도의 변화.</h2>
+          <h2 className={s.h2}>경기도의 변화를<br />1.5 m 해상도로 기록합니다.</h2>
           <p className={`${s.lead} ${s.narrow}`}>
-            같은 지역 반복 촬영으로 토지 변화 기록. 경기샛-1 영상은 2026년 3월부터 경기도에 제공 중
+            광학 위성은 같은 지역을 반복 촬영해 땅의 변화를 기록합니다. 경기샛-1 영상은 2026년 3월부터 경기도에 제공되고 있습니다.
           </p>
         </div>
 
