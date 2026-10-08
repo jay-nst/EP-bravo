@@ -86,10 +86,10 @@ export default function DailyEarthPage() {
               />
 
               {/* Content wrapper with entrance animation */}
-              <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
+              <div className="relative z-10 max-w-2xl mx-auto px-24 text-center">
                 {/* Category + Date */}
                 <div
-                  className="flex items-center justify-center gap-3 mb-6"
+                  className="flex items-center justify-center gap-12 mb-24"
                   style={{
                     opacity: isVisible ? 1 : 0,
                     transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
@@ -97,7 +97,7 @@ export default function DailyEarthPage() {
                   }}
                 >
                   <span
-                    className="text-xs font-mono tracking-[0.3em] uppercase px-3 py-1 rounded-full"
+                    className="text-xs font-mono tracking-[0.3em] uppercase px-12 py-4 rounded-full"
                     style={{ background: 'rgba(27,191,168,0.08)', color: 'var(--accent)' }}
                   >
                     {item.category}
@@ -109,7 +109,7 @@ export default function DailyEarthPage() {
 
                 {/* Image placeholder */}
                 <div
-                  className="mx-auto rounded-2xl overflow-hidden mb-8 relative"
+                  className="mx-auto rounded-md overflow-hidden mb-32 relative"
                   style={{
                     width: '100%',
                     maxWidth: '520px',
@@ -134,7 +134,7 @@ export default function DailyEarthPage() {
                     }}
                   />
                   <div
-                    className="w-16 h-16 rounded-full flex items-center justify-center text-3xl relative z-10"
+                    className="w-64 h-64 rounded-full flex items-center justify-center text-3xl relative z-10"
                     style={{ background: 'rgba(27,191,168,0.08)' }}
                   >
                     <span style={{ color: 'var(--accent)' }}>&#127758;</span>
@@ -146,7 +146,7 @@ export default function DailyEarthPage() {
 
                 {/* Title */}
                 <h1
-                  className="text-3xl md:text-5xl font-semibold leading-tight mb-5"
+                  className="text-3xl md:text-5xl font-semibold leading-tight mb-20"
                   style={{
                     color: 'var(--text)',
                     opacity: isVisible ? 1 : 0,
@@ -159,7 +159,7 @@ export default function DailyEarthPage() {
 
                 {/* Description */}
                 <p
-                  className="text-base md:text-lg leading-relaxed max-w-lg mx-auto mb-5"
+                  className="text-base md:text-lg leading-relaxed max-w-lg mx-auto mb-20"
                   style={{
                     color: 'var(--text-muted)',
                     opacity: isVisible ? 1 : 0,
@@ -172,7 +172,7 @@ export default function DailyEarthPage() {
 
                 {/* Meta */}
                 <div
-                  className="flex items-center justify-center gap-4 text-xs font-mono mb-6"
+                  className="flex items-center justify-center gap-16 text-xs font-mono mb-24"
                   style={{
                     color: 'var(--text-muted)',
                     opacity: isVisible ? 1 : 0,
@@ -194,7 +194,7 @@ export default function DailyEarthPage() {
                 >
                   <Link
                     href="/map"
-                    className="inline-block px-6 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                    className="inline-block px-24 py-10 rounded-sm text-sm font-medium transition-colors"
                     style={{ background: 'var(--accent)', color: '#0E0E10' }}
                   >
                     이 지역 지도에서 보기
@@ -205,7 +205,7 @@ export default function DailyEarthPage() {
               {/* Scroll indicator - first section only */}
               {i === 0 && (
                 <div
-                  className="absolute bottom-8 left-1/2 flex flex-col items-center gap-2"
+                  className="absolute bottom-32 left-1/2 flex flex-col items-center gap-8"
                   style={{
                     transform: 'translateX(-50%)',
                     opacity: activeIndex === 0 ? 1 : 0,
@@ -216,11 +216,11 @@ export default function DailyEarthPage() {
                     scroll
                   </span>
                   <div
-                    className="w-5 h-8 rounded-full flex items-start justify-center pt-1.5"
+                    className="w-20 h-32 rounded-full flex items-start justify-center pt-6"
                     style={{ border: '1px solid var(--border)' }}
                   >
                     <div
-                      className="w-1 h-2 rounded-full"
+                      className="w-4 h-8 rounded-full"
                       style={{
                         background: 'var(--accent)',
                         animation: 'ep-float 2s ease-in-out infinite',
@@ -236,7 +236,7 @@ export default function DailyEarthPage() {
 
       {/* Side navigation dots */}
       <div
-        className="absolute right-4 top-1/2 flex flex-col gap-2.5 z-20"
+        className="absolute right-16 top-1/2 flex flex-col gap-10 z-20"
         style={{ transform: 'translateY(-50%)' }}
       >
         {DAILY_EARTH.map((item, i) => (
@@ -247,7 +247,7 @@ export default function DailyEarthPage() {
             aria-label={item.title}
           >
             <span
-              className="absolute right-6 text-xs whitespace-nowrap px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+              className="absolute right-24 text-xs whitespace-nowrap px-10 py-4 rounded-[6px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
               style={{ background: 'var(--surface-elevated)', color: 'var(--text)', border: '1px solid var(--border)' }}
             >
               {item.title}
@@ -266,16 +266,16 @@ export default function DailyEarthPage() {
       </div>
 
       {/* Back + Counter bar */}
-      <div className="absolute top-4 left-4 right-16 z-20 flex items-center justify-between">
+      <div className="absolute top-16 left-16 right-64 z-20 flex items-center justify-between">
         <Link
           href="/"
-          className="text-xs font-mono px-3 py-1.5 rounded-lg transition-colors"
+          className="text-xs font-mono px-12 py-6 rounded-sm transition-colors"
           style={{ background: 'rgba(14,14,16,0.7)', color: 'var(--text-muted)', border: '1px solid var(--border)', backdropFilter: 'blur(8px)' }}
         >
           &larr; 홈
         </Link>
         <span
-          className="text-sm font-mono px-3 py-1.5 rounded-lg"
+          className="text-sm font-mono px-12 py-6 rounded-sm"
           style={{ background: 'rgba(14,14,16,0.7)', color: 'var(--text-muted)', border: '1px solid var(--border)', backdropFilter: 'blur(8px)' }}
         >
           <span style={{ color: 'var(--accent)' }}>{String(activeIndex + 1).padStart(2, '0')}</span>

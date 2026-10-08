@@ -40,8 +40,8 @@ export default function SignupPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--bg)' }}>
-        <div className="w-full max-w-sm text-center space-y-4">
+      <div className="min-h-screen flex items-center justify-center px-16" style={{ background: 'var(--bg)' }}>
+        <div className="w-full max-w-sm text-center space-y-16">
           <h2 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>
             이메일을 확인해주세요
           </h2>
@@ -66,7 +66,7 @@ export default function SignupPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4 relative"
+      className="min-h-screen flex items-center justify-center px-16 relative"
       style={{ background: 'var(--bg)' }}
     >
       {/* Subtle grid background */}
@@ -77,9 +77,9 @@ export default function SignupPage() {
           backgroundSize: '40px 40px',
         }}
       />
-      <div className="w-full max-w-sm space-y-8 relative z-10">
+      <div className="w-full max-w-sm space-y-32 relative z-10">
         <div className="text-center">
-          <Link href="/" className="text-2xl font-semibold tracking-tight inline-flex items-center gap-2.5 justify-center" style={{ color: 'var(--text)' }}>
+          <Link href="/" className="text-2xl font-semibold tracking-tight inline-flex items-center gap-10 justify-center" style={{ color: 'var(--text)' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="1.5" />
               <ellipse cx="12" cy="12" rx="10" ry="4" stroke="var(--accent)" strokeWidth="1" transform="rotate(-30 12 12)" opacity="0.6" />
@@ -87,11 +87,11 @@ export default function SignupPage() {
             </svg>
             EARTHPAPER
           </Link>
-          <p className="mt-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+          <p className="mt-8 text-sm" style={{ color: 'var(--text-muted)' }}>
             새 계정 만들기
           </p>
           <div
-            className="mt-3 mx-auto"
+            className="mt-12 mx-auto"
             style={{
               width: '32px',
               height: '2px',
@@ -102,9 +102,9 @@ export default function SignupPage() {
           />
         </div>
 
-        <form onSubmit={handleSignup} className="space-y-4">
+        <form onSubmit={handleSignup} className="space-y-16">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium mb-1" style={{ color: 'var(--text)' }}>
+            <label htmlFor="name" className="block text-sm font-medium mb-4" style={{ color: 'var(--text)' }}>
               이름
             </label>
             <input
@@ -113,14 +113,14 @@ export default function SignupPage() {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 transition-colors"
+              className="w-full px-12 py-8 rounded-sm text-sm focus:outline-none focus:ring-2 transition-colors"
               style={inputStyle}
               placeholder="홍길동"
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-1" style={{ color: 'var(--text)' }}>
+            <label htmlFor="email" className="block text-sm font-medium mb-4" style={{ color: 'var(--text)' }}>
               이메일
             </label>
             <input
@@ -129,14 +129,14 @@ export default function SignupPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 transition-colors"
+              className="w-full px-12 py-8 rounded-sm text-sm focus:outline-none focus:ring-2 transition-colors"
               style={inputStyle}
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-1" style={{ color: 'var(--text)' }}>
+            <label htmlFor="password" className="block text-sm font-medium mb-4" style={{ color: 'var(--text)' }}>
               비밀번호
             </label>
             <input
@@ -146,7 +146,7 @@ export default function SignupPage() {
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 transition-colors"
+              className="w-full px-12 py-8 rounded-sm text-sm focus:outline-none focus:ring-2 transition-colors"
               style={inputStyle}
               placeholder="6자 이상"
             />
@@ -157,7 +157,7 @@ export default function SignupPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-8 rounded-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ background: 'var(--accent)', color: '#0E0E10' }}
           >
             {loading ? '가입 중...' : '회원가입'}

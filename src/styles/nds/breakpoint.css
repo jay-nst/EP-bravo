@@ -1,0 +1,11 @@
+/* NDS 기본(sm 768 / md 992 / lg 1200) 대신 Tailwind 기본 브레이크포인트 유지.
+   EarthPaper 의 md:/lg: 반응형 ~120곳이 768/1024 기준으로 작성돼 있다.
+   (customizable 파일 — NDS 컴포넌트는 브레이크포인트를 거의 쓰지 않음) */
+@theme {
+  --breakpoint-*: initial;
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+}

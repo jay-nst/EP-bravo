@@ -18,7 +18,7 @@ export default function OtherSolutions({ current }: OtherSolutionsProps) {
   const others = SOLUTIONS.filter((s) => s.key !== current);
 
   return (
-    <section className="px-4 md:px-6 pb-12 md:pb-20" style={{ maxWidth: 960, margin: '0 auto' }}>
+    <section className="px-16 md:px-24 pb-48 md:pb-80" style={{ maxWidth: 960, margin: '0 auto' }}>
       <div
         style={{
           borderTop: '1px solid var(--border)',
@@ -55,7 +55,7 @@ export default function OtherSolutions({ current }: OtherSolutionsProps) {
                 transition: 'border-color 0.15s',
               }}
             >
-              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: s.color }} />
+              <span className="w-8 h-8 rounded-full flex-shrink-0" style={{ background: s.color }} />
               <div>
                 <span style={{ fontSize: 14, fontWeight: 600, color: s.color, display: 'block' }}>
                   {s.label}

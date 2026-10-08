@@ -1,0 +1,19 @@
+/* NDS radius 원본 그대로. EarthPaper 기존 rounded-* 는 코드모드로 같은 px 의
+   NDS 이름/임의값으로 변환했다 (docs/NDS_MIGRATION.md). */
+:root {
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+}
+
+@theme inline {
+  --radius-*: initial;
+
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+}

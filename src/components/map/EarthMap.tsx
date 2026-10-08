@@ -337,7 +337,7 @@ export default function EarthMap({
       )}
       {isLoaded && catalogItems.length > 0 && (
         <div
-          className="absolute bottom-4 left-4 glass-panel text-xs px-3 py-1.5 rounded-full"
+          className="absolute bottom-16 left-16 glass-panel text-xs px-12 py-6 rounded-full"
           style={{ color: 'var(--text)' }}
         >
           <span style={{ color: 'var(--accent)' }}>{catalogItems.length}</span>

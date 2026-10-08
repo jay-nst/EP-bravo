@@ -23,24 +23,24 @@ export default function SignupConversionModal({
 
   return (
     <div
-      className="absolute inset-0 z-30 flex items-center justify-center p-6"
+      className="absolute inset-0 z-30 flex items-center justify-center p-24"
       style={{ background: 'rgba(14,14,16,0.75)', backdropFilter: 'blur(4px)' }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="signup-modal-title"
     >
       <div
-        className="relative w-full max-w-md p-8 text-center"
+        className="relative w-full max-w-md p-32 text-center"
         style={{
           background: 'var(--surface)',
           border: '1px solid var(--border)',
-          borderRadius: 'var(--radius-lg)',
+          borderRadius: '12px',
         }}
       >
         {/* 투어 팝오버의 X 와 동일한 룩 — 흰 글리프, 배경 없음, hover 시만 배경 */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 w-8 h-8 rounded-md flex items-center justify-center transition-colors hover:bg-[var(--surface-elevated)]"
+          className="absolute top-12 right-12 w-32 h-32 rounded-[6px] flex items-center justify-center transition-colors hover:bg-[var(--surface-elevated)]"
           style={{ color: 'var(--text)', fontSize: 18 }}
           aria-label="닫기"
         >
@@ -48,7 +48,7 @@ export default function SignupConversionModal({
         </button>
 
         <p
-          className="text-xs font-mono tracking-wider uppercase mb-3"
+          className="text-xs font-mono tracking-wider uppercase mb-12"
           style={{ color: 'var(--text-muted)' }}
         >
           Step 5 / 5 — 가입 전환
@@ -56,27 +56,27 @@ export default function SignupConversionModal({
 
         <h3
           id="signup-modal-title"
-          className="text-xl font-semibold mb-3"
+          className="text-xl font-semibold mb-12"
           style={{ color: 'var(--text)' }}
         >
           {MODAL_STEP.title}
         </h3>
 
-        <p className="text-[15px] leading-relaxed mb-6" style={{ color: 'var(--text-muted)' }}>
+        <p className="text-[15px] leading-relaxed mb-24" style={{ color: 'var(--text-muted)' }}>
           {MODAL_STEP.body}
         </p>
 
         <div className="relative">
           <button
             onClick={() => setCtaHint(true)}
-            className="w-full py-3 rounded-md text-sm font-semibold transition-opacity hover:opacity-85"
+            className="w-full py-12 rounded-[6px] text-sm font-semibold transition-opacity hover:opacity-85"
             style={{ background: 'var(--accent)', color: '#0E0E10' }}
           >
             회원가입하고 시작하기
           </button>
           {ctaHint && (
             <div
-              className="absolute left-1/2 -translate-x-1/2 -top-11 px-3 py-2 rounded-md text-xs whitespace-nowrap"
+              className="absolute left-1/2 -translate-x-1/2 -top-44 px-12 py-8 rounded-[6px] text-xs whitespace-nowrap"
               style={{
                 background: 'var(--surface-elevated)',
                 border: '1px solid var(--border)',
@@ -91,7 +91,7 @@ export default function SignupConversionModal({
 
         <button
           onClick={onReplay}
-          className="mt-4 text-xs underline underline-offset-2 transition-colors hover:text-[var(--text)]"
+          className="mt-16 text-xs underline underline-offset-2 transition-colors hover:text-[var(--text)]"
           style={{ color: 'var(--text-muted)' }}
         >
           데모 다시 보기

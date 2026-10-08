@@ -12,27 +12,27 @@ export default function PostsPage() {
       : POSTS.filter((p) => p.category === activeCategory);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 w-full">
-      <div className="flex items-center justify-between mb-6">
+    <div className="max-w-6xl mx-auto px-16 py-32 w-full">
+      <div className="flex items-center justify-between mb-24">
         <div>
           <h1 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
             위성으로 보는 오늘
           </h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-sm mt-4" style={{ color: 'var(--text-muted)' }}>
             오늘의 이슈를 궤도 위에서 바라봅니다
           </p>
         </div>
       </div>
 
       {/* Category Filter */}
-      <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
+      <div className="flex gap-8 mb-32 overflow-x-auto pb-8">
         {CATEGORIES.map((cat) => {
           const isActive = activeCategory === cat.id;
           return (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className="px-3 py-1.5 text-sm rounded-lg whitespace-nowrap transition-colors"
+              className="px-12 py-6 text-sm rounded-sm whitespace-nowrap transition-colors"
               style={{
                 background: isActive ? 'var(--accent)' : 'var(--surface)',
                 color: isActive ? '#0E0E10' : 'var(--text-muted)',
@@ -48,7 +48,7 @@ export default function PostsPage() {
       {/* Featured Post (first) */}
       {filtered.length > 0 && (
         <div
-          className="block rounded-xl overflow-hidden mb-8 transition-colors"
+          className="block rounded-[12px] overflow-hidden mb-32 transition-colors"
           style={{ border: '1px solid var(--border)' }}
         >
           <div className="grid grid-cols-1 lg:grid-cols-2">
@@ -64,14 +64,14 @@ export default function PostsPage() {
                 }}
               />
               <span
-                className="text-sm font-medium px-3 py-1.5 rounded relative z-10"
+                className="text-sm font-medium px-12 py-6 rounded-xs relative z-10"
                 style={{ background: 'rgba(36,36,41,0.8)', color: 'var(--text-muted)' }}
               >
                 {filtered[0].category}
               </span>
             </div>
-            <div className="p-6 flex flex-col justify-center space-y-3">
-              <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-muted)' }}>
+            <div className="p-24 flex flex-col justify-center space-y-12">
+              <div className="flex items-center gap-8 text-xs" style={{ color: 'var(--text-muted)' }}>
                 <span>{filtered[0].date}</span>
                 <span style={{ color: 'var(--border)' }}>·</span>
                 <span>{filtered[0].readTime} 읽기</span>
@@ -87,7 +87,7 @@ export default function PostsPage() {
               </p>
               {filtered[0].newsHeadline && (
                 <div
-                  className="flex items-center gap-2 text-xs px-3 py-2 rounded-lg mt-1"
+                  className="flex items-center gap-8 text-xs px-12 py-8 rounded-sm mt-4"
                   style={{ background: 'var(--surface)', color: 'var(--text-muted)' }}
                 >
                   <span style={{ color: 'var(--accent)', fontSize: '10px', fontWeight: 600 }}>관련</span>
@@ -100,11 +100,11 @@ export default function PostsPage() {
       )}
 
       {/* Post Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
         {filtered.slice(1).map((post) => (
           <div
             key={post.id}
-            className="rounded-xl overflow-hidden transition-colors"
+            className="rounded-[12px] overflow-hidden transition-colors"
             style={{ border: '1px solid var(--border)' }}
           >
             <div
@@ -119,13 +119,13 @@ export default function PostsPage() {
                 }}
               />
               <span
-                className="text-xs font-medium px-2 py-1 rounded relative z-10"
+                className="text-xs font-medium px-8 py-4 rounded-xs relative z-10"
                 style={{ background: 'rgba(36,36,41,0.8)', color: 'var(--text-muted)' }}
               >
                 {post.category}
               </span>
             </div>
-            <div className="p-4 space-y-2">
+            <div className="p-16 space-y-8">
               <h3 className="text-base font-semibold leading-snug" style={{ color: 'var(--text)' }}>
                 {post.title}
               </h3>
@@ -134,7 +134,7 @@ export default function PostsPage() {
               </p>
               <div className="flex items-center justify-between text-xs" style={{ color: 'var(--text-muted)' }}>
                 <span>{post.author}</span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-8">
                   <span>{post.date}</span>
                   <span style={{ color: 'var(--border)' }}>·</span>
                   <span>{post.readTime}</span>
@@ -146,9 +146,9 @@ export default function PostsPage() {
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center py-16 space-y-3">
+        <div className="text-center py-64 space-y-12">
           <div
-            className="w-14 h-14 rounded-full mx-auto flex items-center justify-center text-2xl"
+            className="w-56 h-56 rounded-full mx-auto flex items-center justify-center text-2xl"
             style={{ background: 'var(--surface)' }}
           >
             &#128752;
@@ -156,7 +156,7 @@ export default function PostsPage() {
           <p className="text-sm" style={{ color: 'var(--text-muted)' }}>이 카테고리에 아직 게시물이 없습니다</p>
           <button
             onClick={() => setActiveCategory('all')}
-            className="text-sm px-4 py-2 rounded-lg transition-colors"
+            className="text-sm px-16 py-8 rounded-sm transition-colors"
             style={{ background: 'var(--surface)', color: 'var(--accent)', border: '1px solid var(--border)' }}
           >
             전체 보기

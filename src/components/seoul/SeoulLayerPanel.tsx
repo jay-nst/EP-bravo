@@ -48,15 +48,15 @@ interface SeoulLayerPanelProps {
 
 export default function SeoulLayerPanel({ layers, onToggle }: SeoulLayerPanelProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-16">
       {GROUP_ORDER.map((group) => {
         const groupLayers = layers.filter((l) => l.group === group);
         if (groupLayers.length === 0) return null;
 
         return (
-          <div key={group} className="space-y-1">
+          <div key={group} className="space-y-4">
             <h3
-              className="text-xs font-mono tracking-wider uppercase mb-2"
+              className="text-xs font-mono tracking-wider uppercase mb-8"
               style={{ color: 'var(--text-muted)' }}
             >
               {group}
@@ -70,11 +70,11 @@ export default function SeoulLayerPanel({ layers, onToggle }: SeoulLayerPanelPro
                   key={layer.id}
                   onClick={() => onToggle(layer.id)}
                   aria-pressed={layer.enabled}
-                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md text-left transition-colors"
+                  className="w-full flex items-center gap-10 px-10 py-8 rounded-[6px] text-left transition-colors"
                   style={{ background: layer.enabled ? 'var(--surface)' : 'transparent' }}
                 >
                   <span
-                    className="w-2.5 h-2.5 rounded-sm flex-shrink-0"
+                    className="w-10 h-10 rounded-xs flex-shrink-0"
                     style={{
                       background: layer.enabled ? layer.color : 'var(--border)',
                       transition: 'background 200ms',
@@ -96,9 +96,9 @@ export default function SeoulLayerPanel({ layers, onToggle }: SeoulLayerPanelPro
                     </span>
                   </span>
 
-                  <span className="flex flex-col items-end gap-1 flex-shrink-0">
+                  <span className="flex flex-col items-end gap-4 flex-shrink-0">
                     <span
-                      className="text-xs font-mono px-1.5 py-0.5 rounded"
+                      className="text-xs font-mono px-6 py-2 rounded-xs"
                       style={{
                         background: 'var(--surface-elevated)',
                         color: badge.color,

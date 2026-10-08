@@ -9,9 +9,9 @@ export default function PaymentFailPage() {
   const message = searchParams.get('message');
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center gap-4">
+    <div className="flex-1 flex flex-col items-center justify-center gap-16">
       <div
-        className="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
+        className="w-48 h-48 rounded-full flex items-center justify-center text-2xl"
         style={{ background: 'rgba(196, 92, 74, 0.1)', color: 'var(--error)' }}
       >
         ✕
@@ -29,7 +29,7 @@ export default function PaymentFailPage() {
       )}
       <Link
         href="/map"
-        className="mt-4 px-5 py-2 rounded-lg text-sm font-medium transition-colors"
+        className="mt-16 px-20 py-8 rounded-sm text-sm font-medium transition-colors"
         style={{ background: 'var(--accent)', color: '#0E0E10' }}
       >
         다시 시도하기

@@ -30,21 +30,21 @@ export default function NewsletterForm() {
 
   if (status === 'done') {
     return (
-      <p className="text-sm py-2" style={{ color: 'var(--accent)' }}>
+      <p className="text-sm py-8" style={{ color: 'var(--accent)' }}>
         구독 완료! 매주 위성 뉴스를 보내드릴게요.
       </p>
     );
   }
 
   return (
-    <form className="flex gap-2 w-full sm:w-auto" onSubmit={handleSubmit}>
+    <form className="flex gap-8 w-full sm:w-auto" onSubmit={handleSubmit}>
       <input
         type="email"
         required
         placeholder="이메일 주소"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="flex-1 sm:w-56 px-3 py-2 rounded-md text-sm"
+        className="flex-1 sm:w-224 px-12 py-8 rounded-[6px] text-sm"
         style={{
           background: 'var(--surface)',
           border: '1px solid var(--border)',
@@ -54,7 +54,7 @@ export default function NewsletterForm() {
       <button
         type="submit"
         disabled={status === 'submitting'}
-        className="px-4 py-2 rounded-md text-sm font-medium"
+        className="px-16 py-8 rounded-[6px] text-sm font-medium"
         style={{
           background: status === 'submitting' ? 'var(--surface)' : 'var(--accent)',
           color: status === 'submitting' ? 'var(--text-muted)' : '#0E0E10',

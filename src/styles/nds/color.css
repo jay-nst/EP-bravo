@@ -1,0 +1,274 @@
+/* ==========================================================
+   NDS color tokens — EarthPaper "Quiet Observatory" 팔레트
+   구조는 @naraspace-technology/nds dist/theme/color.css 와 동일하고
+   값만 EarthPaper 색으로 채웠다. 매핑 근거: docs/NDS_MIGRATION.md
+   - (EP) 표시 = 기존 DESIGN.md 토큰 그대로
+   - (파생) 표시 = EP 에 대응 토큰이 없어 인접 EP 색 사이에서 보간한 값
+   - 표시 없음 = NDS 기본값 유지 (status bold/subtle 등)
+   html 에 .dark 가 항상 붙어 있으므로 실제 화면은 .dark 블록이다.
+   ========================================================== */
+
+:root {
+  --white: #fafafa;
+  --black: #000000;
+
+  /* ── Text ── (EP light 모드) */
+  --text-primary: #1a1a1f; /* (EP) --text */
+  --text-secondary: #43403c; /* (파생) */
+  --text-tertiary: #6b6660; /* (EP) --text-muted */
+  --text-disabled: #9a958f; /* (파생) */
+  --text-inverse: #e8e4df;
+
+  --text-interactive-primary: #138f7e; /* (파생) accent 를 밝은 배경 대비용으로 어둡게 */
+  --text-interactive-primary-hover: #1bbfa8;
+  --text-interactive-secondary: #6b6660;
+  --text-interactive-secondary-hover: #43403c;
+  --text-interactive-selected: #138f7e;
+
+  /* ── Background ── */
+  --bg-primary: #edeae5; /* (EP) --surface-elevated */
+  --bg-secondary: #ffffff; /* (EP) --surface */
+  --bg-tertiary: #f5f3ef; /* (EP) --bg */
+  --bg-disabled: #e2ded8;
+  --bg-disabled-subtle: #9a958f;
+  --bg-inverse: #1a1a1f;
+
+  --bg-interactive-primary: #1bbfa8; /* (EP) --accent */
+  --bg-interactive-primary-hover: #35d9c0; /* (EP) --accent-hover */
+  --bg-interactive-secondary: #ffffff;
+  --bg-interactive-secondary-hover: #edeae5;
+  --bg-interactive-selected: #cbf7f1;
+  --bg-interactive-selected-hover: #e8fcf9;
+
+  /* ── Border ── */
+  --border-primary: #9a958f;
+  --border-secondary: #bdb8b1;
+  --border-tertiary: #d9d5cf; /* (EP) --border */
+  --border-focus-ring: #1bbfa8; /* (EP) :focus-visible outline = accent */
+  --border-disabled: #bdb8b1;
+  --border-inverse: #2a2a2f;
+
+  --border-interactive-primary: #1bbfa8;
+  --border-interactive-primary-hover: #35d9c0;
+  --border-interactive-secondary: #6b6660;
+  --border-interactive-secondary-hover: #43403c;
+
+  /* ── Icon ── */
+  --icon-primary: #1a1a1f;
+  --icon-secondary: #43403c;
+  --icon-tertiary: #6b6660;
+  --icon-brand: #1bbfa8;
+  --icon-disabled: #9a958f;
+  --icon-inverse: #e8e4df;
+
+  --icon-interactive-primary: #138f7e;
+  --icon-interactive-primary-hover: #1bbfa8;
+  --icon-interactive-selected: #138f7e;
+  --icon-interactive-secondary: #6b6660;
+  --icon-interactive-secondary-hover: #43403c;
+
+  /* ── Status ── base 는 EP semantic, bold/subtle 은 NDS 기본 */
+  --status-info: #4a9ec4; /* (EP) --color-predict */
+  --status-info-bold: #0d336e;
+  --status-info-subtle: #cce4fe;
+  --status-success: #4a9e6b; /* (EP) --success */
+  --status-success-bold: #0a4d30;
+  --status-success-subtle: #ccffec;
+  --status-danger: #c45c4a; /* (EP) --error */
+  --status-danger-bold: #791716;
+  --status-danger-subtle: #f8d8d8;
+  --status-warning: #c8923a; /* (EP) --warning */
+  --status-warning-bold: #4d3700;
+  --status-warning-subtle: #ffe5a3;
+  --status-alert: #ff8718;
+  --status-alert-bold: #8f4300;
+  --status-alert-subtle: #ffe7d1;
+  --status-brand: #1bbfa8;
+  --status-brand-bold: #cbf7f1;
+  --status-brand-subtle: #0b4a41;
+
+  /* ── Chart ── accent 민트 스케일 */
+  --chart-100: #e8fcf9;
+  --chart-200: #cbf7f1;
+  --chart-300: #87edde;
+  --chart-400: #35d9c0;
+  --chart-500: #1bbfa8;
+  --chart-600: #138f7e;
+  --chart-700: #d9d5cf;
+}
+
+/* ── Dark mode (EarthPaper 기본) ── */
+.dark {
+  /* ── Text ── */
+  --text-primary: #e8e4df; /* (EP) --text */
+  --text-secondary: #b8b3ad; /* (파생) */
+  --text-tertiary: #8a8680; /* (EP) --text-muted */
+  --text-disabled: #5f5c58; /* (파생) */
+  --text-inverse: #1a1a1f;
+
+  --text-interactive-primary: #1bbfa8; /* (EP) --accent */
+  --text-interactive-primary-hover: #35d9c0; /* (EP) --accent-hover */
+  --text-interactive-secondary: #5f5c58;
+  --text-interactive-secondary-hover: #8a8680;
+  --text-interactive-selected: #35d9c0;
+
+  /* ── Background ── */
+  --bg-primary: #242429; /* (EP) --surface-elevated */
+  --bg-secondary: #1a1a1f; /* (EP) --surface */
+  --bg-tertiary: #0e0e10; /* (EP) --bg */
+  --bg-disabled: #242429;
+  --bg-disabled-subtle: #5f5c58;
+  --bg-inverse: #e8e4df;
+
+  --bg-interactive-primary: #1bbfa8; /* (EP) --accent */
+  --bg-interactive-primary-hover: #35d9c0; /* (EP) --accent-hover */
+  --bg-interactive-secondary: #1a1a1f;
+  --bg-interactive-secondary-hover: #242429;
+  --bg-interactive-selected: #87edde;
+  --bg-interactive-selected-hover: #b0f3e9;
+
+  /* ── Border ── */
+  --border-primary: #5f5c58; /* (파생) */
+  --border-secondary: #3a3a40; /* (파생) */
+  --border-tertiary: #2a2a2f; /* (EP) --border */
+  --border-focus-ring: #1bbfa8; /* (EP) :focus-visible outline = accent */
+  --border-disabled: #3a3a40;
+  --border-inverse: #e8e4df;
+
+  --border-interactive-primary: #1bbfa8;
+  --border-interactive-primary-hover: #35d9c0;
+  --border-interactive-secondary: #3a3a40;
+  --border-interactive-secondary-hover: #5f5c58;
+
+  /* ── Icon ── */
+  --icon-primary: #e8e4df;
+  --icon-secondary: #b8b3ad;
+  --icon-tertiary: #8a8680;
+  --icon-brand: #1bbfa8;
+  --icon-disabled: #5f5c58;
+  --icon-inverse: #1a1a1f;
+
+  --icon-interactive-primary: #1bbfa8;
+  --icon-interactive-primary-hover: #35d9c0;
+  --icon-interactive-selected: #35d9c0;
+  --icon-interactive-secondary: #5f5c58;
+  --icon-interactive-secondary-hover: #8a8680;
+
+  /* ── Status ── base 는 EP semantic, bold/subtle 은 NDS 기본 */
+  --status-info: #4a9ec4; /* (EP) --color-predict */
+  --status-info-bold: #cce4fe;
+  --status-info-subtle: #0d336e;
+  --status-success: #4a9e6b; /* (EP) --success */
+  --status-success-bold: #ccffec;
+  --status-success-subtle: #0a4d30;
+  --status-danger: #c45c4a; /* (EP) --error */
+  --status-danger-bold: #f8d8d8;
+  --status-danger-subtle: #791716;
+  --status-warning: #c8923a; /* (EP) --warning */
+  --status-warning-bold: #ffe5a3;
+  --status-warning-subtle: #4d3700;
+  --status-alert: #ff8718;
+  --status-alert-bold: #ffe7d1;
+  --status-alert-subtle: #8f4300;
+  --status-brand: #1bbfa8;
+  --status-brand-bold: #cbf7f1;
+  --status-brand-subtle: #0b4a41;
+
+  /* ── Chart ── */
+  --chart-100: #e8fcf9;
+  --chart-200: #cbf7f1;
+  --chart-300: #87edde;
+  --chart-400: #35d9c0;
+  --chart-500: #1bbfa8;
+  --chart-600: #138f7e;
+  --chart-700: #242429;
+}
+
+/* NDS 원본의 `--color-*: initial` 은 의도적으로 뺐다 — Tailwind 기본 팔레트
+   (text-white, bg-black/50 …) 와 EarthPaper 커스텀 색 클래스를 유지하기 위함.
+   같은 이유로 --color-white/black 재정의도 생략 (Tailwind #fff/#000 유지). */
+@theme inline {
+  /* ── Text ── */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-disabled: var(--text-disabled);
+  --color-text-inverse: var(--text-inverse);
+
+  --color-text-interactive-primary: var(--text-interactive-primary);
+  --color-text-interactive-primary-hover: var(--text-interactive-primary-hover);
+  --color-text-interactive-secondary: var(--text-interactive-secondary);
+  --color-text-interactive-secondary-hover: var(--text-interactive-secondary-hover);
+  --color-text-interactive-selected: var(--text-interactive-selected);
+
+  /* ── Background ── */
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-tertiary: var(--bg-tertiary);
+  --color-bg-inverse: var(--bg-inverse);
+  --color-bg-disabled: var(--bg-disabled);
+  --color-bg-disabled-subtle: var(--bg-disabled-subtle);
+
+  --color-bg-interactive-primary: var(--bg-interactive-primary);
+  --color-bg-interactive-primary-hover: var(--bg-interactive-primary-hover);
+  --color-bg-interactive-secondary: var(--bg-interactive-secondary);
+  --color-bg-interactive-secondary-hover: var(--bg-interactive-secondary-hover);
+  --color-bg-interactive-selected: var(--bg-interactive-selected);
+  --color-bg-interactive-selected-hover: var(--bg-interactive-selected-hover);
+
+  /* ── Border ── */
+  --color-border-primary: var(--border-primary);
+  --color-border-secondary: var(--border-secondary);
+  --color-border-tertiary: var(--border-tertiary);
+  --color-border-focus-ring: var(--border-focus-ring);
+  --color-border-disabled: var(--border-disabled);
+  --color-border-inverse: var(--border-inverse);
+
+  --color-border-interactive-primary: var(--border-interactive-primary);
+  --color-border-interactive-primary-hover: var(--border-interactive-primary-hover);
+  --color-border-interactive-secondary: var(--border-interactive-secondary);
+  --color-border-interactive-secondary-hover: var(--border-interactive-secondary-hover);
+
+  /* ── Icon ── */
+  --color-icon-primary: var(--icon-primary);
+  --color-icon-secondary: var(--icon-secondary);
+  --color-icon-tertiary: var(--icon-tertiary);
+  --color-icon-brand: var(--icon-brand);
+  --color-icon-disabled: var(--icon-disabled);
+  --color-icon-inverse: var(--icon-inverse);
+
+  --color-icon-interactive-primary: var(--icon-interactive-primary);
+  --color-icon-interactive-primary-hover: var(--icon-interactive-primary-hover);
+  --color-icon-interactive-secondary: var(--icon-interactive-secondary);
+  --color-icon-interactive-secondary-hover: var(--icon-interactive-secondary-hover);
+  --color-icon-interactive-selected: var(--icon-interactive-selected);
+
+  /* ── Status ── */
+  --color-status-info: var(--status-info);
+  --color-status-info-bold: var(--status-info-bold);
+  --color-status-info-subtle: var(--status-info-subtle);
+  --color-status-success: var(--status-success);
+  --color-status-success-bold: var(--status-success-bold);
+  --color-status-success-subtle: var(--status-success-subtle);
+  --color-status-danger: var(--status-danger);
+  --color-status-danger-bold: var(--status-danger-bold);
+  --color-status-danger-subtle: var(--status-danger-subtle);
+  --color-status-warning: var(--status-warning);
+  --color-status-warning-bold: var(--status-warning-bold);
+  --color-status-warning-subtle: var(--status-warning-subtle);
+  --color-status-alert: var(--status-alert);
+  --color-status-alert-bold: var(--status-alert-bold);
+  --color-status-alert-subtle: var(--status-alert-subtle);
+  --color-status-brand: var(--status-brand);
+  --color-status-brand-bold: var(--status-brand-bold);
+  --color-status-brand-subtle: var(--status-brand-subtle);
+
+  /* ── Chart ── */
+  --color-chart-100: var(--chart-100);
+  --color-chart-200: var(--chart-200);
+  --color-chart-300: var(--chart-300);
+  --color-chart-400: var(--chart-400);
+  --color-chart-500: var(--chart-500);
+  --color-chart-600: var(--chart-600);
+  --color-chart-700: var(--chart-700);
+}

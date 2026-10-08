@@ -84,15 +84,15 @@ export default function PortalPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 w-full">
-      <h1 className="text-2xl font-semibold mb-6" style={{ color: 'var(--text)' }}>
+    <div className="max-w-4xl mx-auto px-16 py-32 w-full">
+      <h1 className="text-2xl font-semibold mb-24" style={{ color: 'var(--text)' }}>
         내 주문
       </h1>
 
       {orders.length === 0 ? (
-        <div className="text-center py-16 space-y-3">
+        <div className="text-center py-64 space-y-12">
           <div
-            className="w-14 h-14 rounded-full mx-auto flex items-center justify-center text-2xl"
+            className="w-56 h-56 rounded-full mx-auto flex items-center justify-center text-2xl"
             style={{ background: 'var(--surface)' }}
           >
             &#127758;
@@ -100,14 +100,14 @@ export default function PortalPage() {
           <p className="text-sm" style={{ color: 'var(--text-muted)' }}>아직 주문 내역이 없습니다</p>
           <a
             href="/map"
-            className="inline-block text-sm px-5 py-2.5 rounded-lg font-medium transition-colors"
+            className="inline-block text-sm px-20 py-10 rounded-sm font-medium transition-colors"
             style={{ background: 'var(--accent)', color: '#0E0E10' }}
           >
             지도에서 영상 구매하기
           </a>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-16">
           {orders.map((order) => {
             const status = STATUS_LABELS[order.status] ?? {
               text: order.status,
@@ -122,11 +122,11 @@ export default function PortalPage() {
             return (
               <div
                 key={order.id}
-                className="rounded-xl p-5 space-y-3"
+                className="rounded-[12px] p-20 space-y-12"
                 style={{ border: '1px solid var(--border)' }}
               >
                 <div className="flex items-start justify-between">
-                  <div className="space-y-1">
+                  <div className="space-y-4">
                     <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                       주문번호:{' '}
                       <span className="font-mono text-xs" style={{ color: 'var(--text)' }}>
@@ -148,7 +148,7 @@ export default function PortalPage() {
 
                 {order.error_message && (
                   <p
-                    className="text-xs px-3 py-2 rounded"
+                    className="text-xs px-12 py-8 rounded-xs"
                     style={{
                       background: 'rgba(196, 92, 74, 0.1)',
                       color: 'var(--error)',
@@ -161,7 +161,7 @@ export default function PortalPage() {
                 {hasDownload && !isExpired && (
                   <button
                     onClick={() => handleDownload(order.id)}
-                    className="text-sm px-4 py-2 rounded-lg transition-colors"
+                    className="text-sm px-16 py-8 rounded-sm transition-colors"
                     style={{ background: 'var(--accent)', color: '#0E0E10' }}
                   >
                     다운로드

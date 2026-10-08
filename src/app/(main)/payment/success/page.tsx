@@ -63,9 +63,9 @@ export default function PaymentSuccessPage() {
 
   if (result.status === 'loading') {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center gap-4">
+      <div className="flex-1 flex flex-col items-center justify-center gap-16">
         <div
-          className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
+          className="w-32 h-32 border-2 border-t-transparent rounded-full animate-spin"
           style={{ borderColor: 'var(--accent)', borderTopColor: 'transparent' }}
         />
         <p style={{ color: 'var(--text-muted)' }}>결제 확인 및 영상 클리핑 처리 중...</p>
@@ -76,9 +76,9 @@ export default function PaymentSuccessPage() {
 
   if (result.status === 'completed') {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center gap-4">
+      <div className="flex-1 flex flex-col items-center justify-center gap-16">
         <div
-          className="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
+          className="w-48 h-48 rounded-full flex items-center justify-center text-2xl"
           style={{ background: 'rgba(74, 158, 107, 0.1)', color: 'var(--success)' }}
         >
           ✓
@@ -89,17 +89,17 @@ export default function PaymentSuccessPage() {
         <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
           영상이 준비되었습니다
         </p>
-        <div className="flex gap-3 mt-4">
+        <div className="flex gap-12 mt-16">
           <Link
             href="/portal"
-            className="px-5 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="px-20 py-8 rounded-sm text-sm font-medium transition-colors"
             style={{ background: 'var(--accent)', color: '#0E0E10' }}
           >
             내 주문에서 다운로드
           </Link>
           <Link
             href="/map"
-            className="px-5 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="px-20 py-8 rounded-sm text-sm font-medium transition-colors"
             style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
           >
             지도로 돌아가기
@@ -111,9 +111,9 @@ export default function PaymentSuccessPage() {
 
   if (result.status === 'refunded') {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center gap-4">
+      <div className="flex-1 flex flex-col items-center justify-center gap-16">
         <div
-          className="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
+          className="w-48 h-48 rounded-full flex items-center justify-center text-2xl"
           style={{ background: 'rgba(200, 146, 58, 0.1)', color: 'var(--warning)' }}
         >
           !
@@ -124,7 +124,7 @@ export default function PaymentSuccessPage() {
         <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{result.message}</p>
         <Link
           href="/map"
-          className="mt-4 px-5 py-2 rounded-lg text-sm font-medium transition-colors"
+          className="mt-16 px-20 py-8 rounded-sm text-sm font-medium transition-colors"
           style={{ background: 'var(--accent)', color: '#0E0E10' }}
         >
           다시 시도하기
@@ -134,9 +134,9 @@ export default function PaymentSuccessPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center gap-4">
+    <div className="flex-1 flex flex-col items-center justify-center gap-16">
       <div
-        className="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
+        className="w-48 h-48 rounded-full flex items-center justify-center text-2xl"
         style={{ background: 'rgba(196, 92, 74, 0.1)', color: 'var(--error)' }}
       >
         ✕
@@ -147,7 +147,7 @@ export default function PaymentSuccessPage() {
       <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{result.message}</p>
       <Link
         href="/map"
-        className="mt-4 px-5 py-2 rounded-lg text-sm font-medium transition-colors"
+        className="mt-16 px-20 py-8 rounded-sm text-sm font-medium transition-colors"
         style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
       >
         지도로 돌아가기

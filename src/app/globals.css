@@ -1,28 +1,42 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
+@import "tw-animate-css";
+
+/* --- NDS (Naraspace Design System) ---
+   tailwind.css 는 --spacing(1px)·z-index·NDS 컴포넌트 @source 를 포함한다.
+   테마 5종은 NDS 의 커스터마이즈 대상 파일을 복사해 EarthPaper 값으로 채운 것.
+   `nds init` 은 이 파일을 통째로 덮어쓰므로 쓰지 않는다 (docs/NDS_MIGRATION.md). */
+@import "@naraspace-technology/nds/tailwind.css";
+@import "../styles/nds/color.css";
+@import "../styles/nds/typography.css";
+@import "../styles/nds/breakpoint.css";
+@import "../styles/nds/radius.css";
+@import "../styles/nds/shadow.css";
 
 /* ==========================================================
    EarthPaper Design System — "Quiet Observatory"
    Source of truth: DESIGN.md + Figma 2026 UI Design System
    ========================================================== */
 
-/* --- Dark Mode (Default) --- */
+/* --- Dark Mode (Default) ---
+   색 정본은 NDS 토큰(src/styles/nds/color.css, html.dark). 아래 EP 이름은
+   기존 코드 ~1,200곳 호환용 별칭이다. 신규 코드는 NDS 토큰/클래스를 쓴다. */
 :root {
-  --bg: #0E0E10;
-  --surface: #1A1A1F;
-  --surface-elevated: #242429;
-  --text: #E8E4DF;
-  --text-muted: #8A8680;
-  --accent: #1bbfa8;
-  --accent-hover: #35d9c0;
+  --bg: var(--bg-tertiary);
+  --surface: var(--bg-secondary);
+  --surface-elevated: var(--bg-primary);
+  --text: var(--text-primary);
+  --text-muted: var(--text-tertiary);
+  --accent: var(--bg-interactive-primary);
+  --accent-hover: var(--bg-interactive-primary-hover);
   --secondary: #5B8C6F;
-  --border: #2A2A2F;
+  --border: var(--border-tertiary);
 
   /* Semantic */
-  --success: #4A9E6B;
-  --warning: #C8923A;
-  --error: #C45C4A;
+  --success: var(--status-success);
+  --warning: var(--status-warning);
+  --error: var(--status-danger);
 
   /* Platform Colors */
   --color-citadel: #C45C4A;
@@ -48,10 +62,8 @@
   --space-2xl: 48px;
   --space-3xl: 64px;
 
-  /* Radii */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  /* Radii — NDS radius.css 가 같은 이름(--radius-sm 등)을 다른 값으로 쓰므로
+     EP 정의는 제거했다. EP 4px=--radius-xs, 8px=--radius-sm, 12px=리터럴 */
 
   /* Motion */
   --ease-enter: ease-out;
@@ -162,7 +174,7 @@ body {
 .mapboxgl-ctrl-group {
   background: var(--surface) !important;
   border: 1px solid var(--border) !important;
-  border-radius: var(--radius-md) !important;
+  border-radius: var(--radius-sm) !important; /* EP --radius-md(8px) */
 }
 
 .mapboxgl-ctrl-group button {
@@ -187,13 +199,14 @@ body {
 }
 
 /* --- Interactive Card Hover --- */
-a[class*="rounded-xl"],
-a[class*="rounded-lg"] {
+/* 코드모드 후 클래스명: EP rounded-xl → rounded-[12px], rounded-lg → rounded-sm */
+a[class*="rounded-[12px]"],
+a[class*="rounded-sm"] {
   transition: border-color 0.2s ease-out, background-color 0.2s ease-out;
 }
 
-a[class*="rounded-xl"]:hover,
-a[class*="rounded-lg"]:hover {
+a[class*="rounded-[12px]"]:hover,
+a[class*="rounded-sm"]:hover {
   border-color: var(--text-muted) !important;
 }
 

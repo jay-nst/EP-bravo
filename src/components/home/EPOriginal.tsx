@@ -7,7 +7,7 @@ export default function EPOriginal() {
   const quiz = DAILY_QUIZZES[dayIndex];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-16">
       <h3
         className="text-xs font-mono tracking-wider uppercase"
         style={{ color: 'var(--text-muted)' }}
@@ -18,15 +18,15 @@ export default function EPOriginal() {
       {/* Daily Earth */}
       <Link
         href="/daily"
-        className="block rounded-lg overflow-hidden transition-colors"
+        className="block rounded-sm overflow-hidden transition-colors"
         style={{ border: '1px solid var(--border)' }}
       >
         <div
-          className="p-3 flex items-center gap-3"
+          className="p-12 flex items-center gap-12"
           style={{ background: 'var(--surface)' }}
         >
           <div
-            className="w-10 h-10 rounded-md flex items-center justify-center flex-shrink-0 relative overflow-hidden"
+            className="w-40 h-40 rounded-[6px] flex items-center justify-center flex-shrink-0 relative overflow-hidden"
             style={{
               background:
                 'linear-gradient(135deg, #0a1a15 0%, #0d2818 50%, #0a1612 100%)',
@@ -64,15 +64,15 @@ export default function EPOriginal() {
       {/* Quiz */}
       <Link
         href="/quiz"
-        className="block rounded-lg overflow-hidden transition-colors"
+        className="block rounded-sm overflow-hidden transition-colors"
         style={{ border: '1px solid var(--border)' }}
       >
         <div
-          className="p-3 flex items-center gap-3"
+          className="p-12 flex items-center gap-12"
           style={{ background: 'var(--surface)' }}
         >
           <div
-            className="w-10 h-10 rounded-md flex items-center justify-center flex-shrink-0"
+            className="w-40 h-40 rounded-[6px] flex items-center justify-center flex-shrink-0"
             style={{ background: 'rgba(27,191,168,0.08)' }}
           >
             <span className="text-lg" style={{ color: 'var(--accent)' }}>

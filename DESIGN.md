@@ -1,6 +1,9 @@
 # EarthPaper Design System — "Quiet Observatory"
 
-Source of truth: `src/app/globals.css` (CSS custom properties)
+Source of truth: `src/styles/nds/*.css` (NDS 토큰, EarthPaper 값) + `src/app/globals.css`
+Foundation: [NDS — Naraspace Design System](https://github.com/Naraspace-Technology/nds) (`@naraspace-technology/nds`).
+색은 Quiet Observatory 팔레트를 그대로 유지하고, 토큰 이름·간격·radius·컴포넌트는 NDS 를 따른다.
+마이그레이션 규칙·색 매핑: `docs/NDS_MIGRATION.md`
 Aesthetic: dark-first observatory — data-dense but calm, professional but not sterile.
 
 ## Color
@@ -61,6 +64,9 @@ Opt-in via `class="light"` on `:root`. Not used in MVP.
 
 4px base grid. Use CSS custom properties, not magic numbers.
 
+> **NDS: Tailwind 간격 단위가 1px 이다** (`--spacing: 0.0625rem`). `p-16` = 16px, `gap-8` = 8px.
+> 기존 Tailwind 습관(`p-4` = 16px)으로 쓰면 1/4 크기가 된다.
+
 | Token | Value | Usage |
 |-------|-------|-------|
 | `--space-2xs` | 2px | Tight internal padding |
@@ -74,11 +80,16 @@ Opt-in via `class="light"` on `:root`. Not used in MVP.
 
 ## Radii
 
-| Token | Value | Usage |
+NDS radius 스케일 (`rounded-xs` ~ `rounded-xl`). Tailwind 기본과 이름이 같고 값이 다르니 주의.
+
+| Token / class | Value | Usage |
 |-------|-------|-------|
-| `--radius-sm` | 4px | Chips, small badges |
-| `--radius-md` | 8px | Cards, buttons, inputs |
-| `--radius-lg` | 12px | Hero sections, modals |
+| `--radius-xs` / `rounded-xs` | 4px | Chips, small badges |
+| `--radius-sm` / `rounded-sm` | 8px | Cards, buttons, inputs |
+| `rounded-[12px]` | 12px | Hero sections, modals (NDS 스케일 밖 — EP 유지값) |
+| `--radius-md` / `rounded-md` | 16px | NDS 컴포넌트 |
+| `--radius-lg` / `rounded-lg` | 24px | NDS 컴포넌트 (Input 등) |
+| `--radius-xl` / `rounded-xl` | 32px | NDS 컴포넌트 |
 
 ## Motion
 
@@ -143,7 +154,7 @@ Key decisions:
 
 - Background: `--surface`
 - Border: 1px solid `--border`
-- Radius: `--radius-md` (8px)
+- Radius: `--radius-sm` (8px)
 - Hover: border-color transitions to `--text-muted` over `--duration-short`
 - No colored borders, no shadows. Platform identity via lane header, not card chrome.
 
@@ -185,7 +196,7 @@ Used for header, floating panels, sidebar on scroll, simulator overlays.
 
 Interactive map + floating glass overlay. 3-phase state machine (draw → analyzing → result).
 
-- Map container: `height: 480px`, `border-radius: var(--radius-md)`, `border: 1px solid var(--border)`
+- Map container: `height: 480px`, `border-radius: var(--radius-sm)` (8px), `border: 1px solid var(--border)`
 - Overlay panel: `position: absolute`, `top: 12px`, `right: 12px`, `width: 280px`
 - Panel background: `var(--panel-bg)` + `backdrop-filter: blur(12px)`
 - Section title: IBM Plex Mono, 13px, uppercase, `--text-muted`
@@ -205,9 +216,25 @@ Interactive map + floating glass overlay. 3-phase state machine (draw → analyz
 
 ## Tailwind v4 Integration
 
-CSS custom properties map to Tailwind tokens via `@theme inline` in globals.css.
-Use Tailwind classes (`bg-surface`, `text-accent`, `border-border`) instead of
-raw CSS variables in components.
+**신규 코드는 NDS 토큰 클래스를 쓴다** (`bg-bg-secondary`, `text-text-tertiary`, `border-border-tertiary`,
+`bg-bg-interactive-primary`, `text-body-sm-medium`, `shadow-6` …). 공통 UI 는 NDS 컴포넌트
+(`@naraspace-technology/nds/components`) 를 먼저 찾는다.
+
+| EP (레거시 별칭) | NDS 토큰 |
+|---|---|
+| `--bg` / `bg-bg` | `--bg-tertiary` |
+| `--surface` / `bg-surface` | `--bg-secondary` |
+| `--surface-elevated` | `--bg-primary` |
+| `--text` / `text-text-primary` | `--text-primary` |
+| `--text-muted` / `text-text-muted` | `--text-tertiary` |
+| `--accent` / `--accent-hover` | `--bg-interactive-primary` / `-hover` |
+| `--border` / `border-border` | `--border-tertiary` |
+| `--success` / `--warning` / `--error` | `--status-success` / `--status-warning` / `--status-danger` |
+
+기존 EP 클래스/변수는 위 NDS 토큰을 가리키는 별칭으로 계속 동작한다 (2·3단계에서 점진 교체).
+Tailwind 기본 글자 크기(`text-sm` 등)·그림자(`shadow-lg` 등)·브레이크포인트(md 768)는 호환을 위해 유지.
+
+레거시 클래스 목록:
 
 ```
 bg-bg, bg-surface, bg-surface-elevated

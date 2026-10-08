@@ -25,9 +25,9 @@ interface LayerPanelProps {
 
 export default function LayerPanel({ layers, onToggle }: LayerPanelProps) {
   return (
-    <div className="space-y-1">
+    <div className="space-y-4">
       <h3
-        className="text-xs font-mono tracking-wider uppercase mb-2"
+        className="text-xs font-mono tracking-wider uppercase mb-8"
         style={{ color: 'var(--text-muted)' }}
       >
         Data Overlay
@@ -36,7 +36,7 @@ export default function LayerPanel({ layers, onToggle }: LayerPanelProps) {
         <button
           key={layer.id}
           onClick={() => !layer.comingSoon && onToggle(layer.id)}
-          className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md text-left transition-colors"
+          className="w-full flex items-center gap-10 px-10 py-8 rounded-[6px] text-left transition-colors"
           style={{
             background: layer.enabled ? 'var(--surface)' : 'transparent',
             cursor: layer.comingSoon ? 'default' : 'pointer',
@@ -44,7 +44,7 @@ export default function LayerPanel({ layers, onToggle }: LayerPanelProps) {
           }}
         >
           <span
-            className="w-2.5 h-2.5 rounded-sm flex-shrink-0"
+            className="w-10 h-10 rounded-xs flex-shrink-0"
             style={{
               background: layer.enabled ? layer.color : 'var(--border)',
               transition: 'background 200ms',
@@ -58,7 +58,7 @@ export default function LayerPanel({ layers, onToggle }: LayerPanelProps) {
           </span>
           {layer.comingSoon ? (
             <span
-              className="text-xs px-1.5 py-0.5 rounded"
+              className="text-xs px-6 py-2 rounded-xs"
               style={{ background: 'var(--surface-elevated)', color: 'var(--text-muted)' }}
             >
               Soon

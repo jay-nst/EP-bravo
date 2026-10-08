@@ -48,12 +48,12 @@ export default function NotificationBell() {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="relative p-2 transition-colors"
+        className="relative p-8 transition-colors"
         style={{ color: 'var(--text-muted)' }}
         aria-label="알림"
       >
         <svg
-          className="w-5 h-5"
+          className="w-20 h-20"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -67,7 +67,7 @@ export default function NotificationBell() {
         </svg>
         {unreadCount > 0 && (
           <span
-            className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-medium"
+            className="absolute -top-2 -right-2 w-16 h-16 rounded-full text-[10px] flex items-center justify-center font-medium"
             style={{ background: 'var(--error)', color: '#fff' }}
           >
             {unreadCount > 9 ? '9+' : unreadCount}
@@ -79,22 +79,22 @@ export default function NotificationBell() {
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false); }} />
           <div
-            className="absolute right-0 top-full mt-2 w-80 glass-panel rounded-xl shadow-xl z-50 overflow-hidden"
+            className="absolute right-0 top-full mt-8 w-320 glass-panel rounded-[12px] shadow-xl z-50 overflow-hidden"
             style={{ border: '1px solid var(--border)' }}
           >
-            <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--border)' }}>
+            <div className="px-16 py-12" style={{ borderBottom: '1px solid var(--border)' }}>
               <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>알림</p>
             </div>
-            <div className="max-h-80 overflow-y-auto">
+            <div className="max-h-320 overflow-y-auto">
               {notifications.length === 0 ? (
-                <p className="text-sm text-center py-8" style={{ color: 'var(--text-muted)' }}>
+                <p className="text-sm text-center py-32" style={{ color: 'var(--text-muted)' }}>
                   알림이 없습니다
                 </p>
               ) : (
                 notifications.slice(0, 20).map((n) => (
                   <div
                     key={n.id}
-                    className="px-4 py-3 transition-colors cursor-pointer"
+                    className="px-16 py-12 transition-colors cursor-pointer"
                     style={{
                       borderBottom: '1px solid rgba(42, 42, 47, 0.5)',
                       background: !n.read ? 'rgba(27, 191, 168, 0.05)' : 'transparent',
@@ -107,16 +107,16 @@ export default function NotificationBell() {
                     {n.link ? (
                       <Link href={n.link} className="block">
                         <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>{n.title}</p>
-                        <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{n.message}</p>
-                        <p className="text-xs mt-1" style={{ color: 'var(--border)' }}>
+                        <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>{n.message}</p>
+                        <p className="text-xs mt-4" style={{ color: 'var(--border)' }}>
                           {new Date(n.created_at).toLocaleString('ko-KR')}
                         </p>
                       </Link>
                     ) : (
                       <>
                         <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>{n.title}</p>
-                        <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{n.message}</p>
-                        <p className="text-xs mt-1" style={{ color: 'var(--border)' }}>
+                        <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>{n.message}</p>
+                        <p className="text-xs mt-4" style={{ color: 'var(--border)' }}>
                           {new Date(n.created_at).toLocaleString('ko-KR')}
                         </p>
                       </>

@@ -1,0 +1,40 @@
+/* NDS shadow 원본 그대로 + Tailwind 기본 그림자(shadow-sm ~ 2xl, shadow) 재등록.
+   NDS 원본의 `--shadow-*: initial` 이 기존 shadow-lg 등을 지우기 때문.
+   NDS 이름(shadow-2/4/6/8/16)과 겹치지 않는다. */
+:root {
+  --elevation-2: 0 1px 2px 0 rgba(0, 0, 0, 0.08), 0 0 1px 0 rgba(0, 0, 0, 0.16);
+  --elevation-4: 0 2px 4px 0 rgba(0, 0, 0, 0.08), 0 0 2px 0 rgba(0, 0, 0, 0.16);
+  --elevation-6: 0 4px 10px 0 rgba(0, 0, 0, 0.08), 0 0 2px 0 rgba(0, 0, 0, 0.16);
+  --elevation-8: 0 8px 16px 0 rgba(0, 0, 0, 0.08), 0 0 8px 0 rgba(0, 0, 0, 0.16);
+  --elevation-16: 0 16px 20px 0 rgba(0, 0, 0, 0.08), 0 0 16px 0 rgba(0, 0, 0, 0.16);
+}
+
+.dark {
+  --elevation-2: 0 1px 2px 0 rgba(0, 0, 0, 0.36), 0 0 1px 0 rgba(0, 0, 0, 0.4);
+  --elevation-4: 0 2px 4px 0 rgba(0, 0, 0, 0.32), 0 0 2px 0 rgba(0, 0, 0, 0.36);
+  --elevation-6: 0 4px 10px 0 rgba(0, 0, 0, 0.32), 0 0 2px 0 rgba(0, 0, 0, 0.36);
+  --elevation-8: 0 8px 16px 0 rgba(0, 0, 0, 0.32), 0 0 8px 0 rgba(0, 0, 0, 0.36);
+  --elevation-16: 0 16px 20px 0 rgba(0, 0, 0, 0.32), 0 0 16px 0 rgba(0, 0, 0, 0.36);
+}
+
+@theme inline {
+  --shadow-*: initial;
+
+  --shadow-2: var(--elevation-2);
+  --shadow-4: var(--elevation-4);
+  --shadow-6: var(--elevation-6);
+  --shadow-8: var(--elevation-8);
+  --shadow-16: var(--elevation-16);
+}
+
+/* ── Tailwind v4 기본 그림자 (EarthPaper 기존 코드 호환) ── */
+@theme {
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-2xs: 0 1px rgb(0 0 0 / 0.05);
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+}

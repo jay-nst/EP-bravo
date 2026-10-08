@@ -178,24 +178,24 @@ export default function ShipyardsInteractive() {
   return (
     <div ref={progressRef} style={{ background: 'var(--bg)', color: 'var(--text)' }}>
       {/* Progress bar */}
-      <div className="fixed top-[var(--header-height)] left-0 right-0 z-40 h-0.5" style={{ background: 'var(--border)' }}>
+      <div className="fixed top-[var(--header-height)] left-0 right-0 z-40 h-2" style={{ background: 'var(--border)' }}>
         <div className="h-full transition-all duration-150" style={{ background: 'var(--accent)', width: `${scrollProgress * 100}%` }} />
       </div>
 
       {/* Floating site indicator */}
-      <div className="fixed top-[calc(var(--header-height)+16px)] right-6 z-40 hidden lg:flex flex-col gap-1.5">
+      <div className="fixed top-[calc(var(--header-height)+16px)] right-24 z-40 hidden lg:flex flex-col gap-6">
         {SITES.map((site) => (
           <a
             key={site.id}
             href={`#${site.id}`}
-            className="flex items-center gap-2 px-2.5 py-1 rounded-md transition-all text-right"
+            className="flex items-center gap-8 px-10 py-4 rounded-[6px] transition-all text-right"
             style={{
               background: activeSite === site.id ? 'var(--surface-elevated)' : 'transparent',
               border: activeSite === site.id ? '1px solid var(--accent)' : '1px solid transparent',
             }}
           >
             <span
-              className="w-2 h-2 rounded-full flex-shrink-0"
+              className="w-8 h-8 rounded-full flex-shrink-0"
               style={{ background: activeSite === site.id ? 'var(--accent)' : 'var(--border)' }}
             />
             <span className="text-[10px] font-mono" style={{ color: activeSite === site.id ? 'var(--accent)' : 'var(--text-muted)' }}>
@@ -214,27 +214,27 @@ export default function ShipyardsInteractive() {
           background: 'radial-gradient(ellipse at 65% 30%, rgba(27,191,168,0.08), transparent 60%)',
         }} />
 
-        <div className="max-w-3xl mx-auto px-6 py-24 relative z-10">
+        <div className="max-w-3xl mx-auto px-24 py-96 relative z-10">
           <div
             ref={setRef(sectionIdx++)}
             className="transition-all duration-700"
             style={{ opacity: visible[0] !== false ? 1 : 0, transform: visible[0] !== false ? 'translateY(0)' : 'translateY(30px)' }}
           >
-            <div className="flex items-center gap-2 mb-6">
-              <span className="inline-block w-8 h-px" style={{ background: '#3D5A80' }} />
+            <div className="flex items-center gap-8 mb-24">
+              <span className="inline-block w-32 h-px" style={{ background: '#3D5A80' }} />
               <span className="text-xs font-mono tracking-[0.15em] uppercase font-semibold" style={{ color: '#3D5A80' }}>
                 Northpaper Original · 방위 분석
               </span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold leading-[1.15] mb-6" style={{ color: 'var(--text)' }}>
+            <h1 className="text-4xl md:text-5xl font-bold leading-[1.15] mb-24" style={{ color: 'var(--text)' }}>
               위성이 포착한<br />
               북한 5대 조선소
             </h1>
-            <p className="text-lg md:text-xl leading-relaxed mb-8" style={{ color: 'var(--text-muted)' }}>
+            <p className="text-lg md:text-xl leading-relaxed mb-32" style={{ color: 'var(--text-muted)' }}>
               사라진 선박의 행방 — 남포, 신포, 마양도, 청진, 라진<br />
               5개 핵심 거점의 구조 변화를 위성영상으로 추적합니다.
             </p>
-            <div className="flex items-center gap-4 text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
+            <div className="flex items-center gap-16 text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
               <span>2026.05.26</span>
               <span>·</span>
               <span>6분 읽기</span>
@@ -244,7 +244,7 @@ export default function ShipyardsInteractive() {
           </div>
         </div>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 animate-bounce">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round">
             <path d="M12 5v14M19 12l-7 7-7-7" />
           </svg>
@@ -252,14 +252,14 @@ export default function ShipyardsInteractive() {
       </section>
 
       {/* ===== EXECUTIVE SUMMARY ===== */}
-      <section className="py-20" style={{ borderTop: '1px solid var(--border)' }}>
-        <div className="max-w-3xl mx-auto px-6">
+      <section className="py-80" style={{ borderTop: '1px solid var(--border)' }}>
+        <div className="max-w-3xl mx-auto px-24">
           <div
             ref={setRef(sectionIdx++)}
             className="transition-all duration-700 delay-100"
             style={{ opacity: visible[1] ? 1 : 0, transform: visible[1] ? 'translateY(0)' : 'translateY(30px)' }}
           >
-            <p className="text-xs font-mono tracking-wider mb-4 uppercase" style={{ color: 'var(--accent)' }}>Executive Summary</p>
+            <p className="text-xs font-mono tracking-wider mb-16 uppercase" style={{ color: 'var(--accent)' }}>Executive Summary</p>
             <p className="text-base md:text-lg leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               위성영상 분석 결과, 북한 5개 핵심 조선소·항만에서 <span style={{ color: 'var(--text)' }}>조직적인 해군 활동 징후</span>가 식별되었습니다.
               남포와 청진에서는 신형 수상함(최현함, 강건함)이, 신포와 마양도에서는 잠수함 지원 활동이 관측되었습니다.
@@ -270,7 +270,7 @@ export default function ShipyardsInteractive() {
           {/* Overview stats */}
           <div
             ref={setRef(sectionIdx++)}
-            className="grid grid-cols-3 gap-6 mt-12 transition-all duration-700 delay-200"
+            className="grid grid-cols-3 gap-24 mt-48 transition-all duration-700 delay-200"
             style={{ opacity: visible[2] ? 1 : 0, transform: visible[2] ? 'translateY(0)' : 'translateY(30px)' }}
           >
             {[
@@ -278,9 +278,9 @@ export default function ShipyardsInteractive() {
               { label: '분석 기간', value: '2023–2026', unit: '' },
               { label: '주요 변화', value: '12', unit: '건' },
             ].map((stat) => (
-              <div key={stat.label} className="text-center p-4 rounded-lg" style={{ border: '1px solid var(--border)' }}>
+              <div key={stat.label} className="text-center p-16 rounded-sm" style={{ border: '1px solid var(--border)' }}>
                 <p className="text-2xl font-bold font-mono" style={{ color: 'var(--accent)' }}>{stat.value}</p>
-                <p className="text-[10px] font-mono mt-1" style={{ color: 'var(--text-muted)' }}>{stat.label} {stat.unit}</p>
+                <p className="text-[10px] font-mono mt-4" style={{ color: 'var(--text-muted)' }}>{stat.label} {stat.unit}</p>
               </div>
             ))}
           </div>
@@ -296,27 +296,27 @@ export default function ShipyardsInteractive() {
             key={site.id}
             id={site.id}
             data-site={site.id}
-            className="py-20"
+            className="py-80"
             style={{ borderTop: '1px solid var(--border)' }}
           >
-            <div className="max-w-3xl mx-auto px-6">
+            <div className="max-w-3xl mx-auto px-24">
               {/* Site header */}
               <div
                 ref={setRef(refIdx)}
                 className="transition-all duration-700"
                 style={{ opacity: visible[refIdx] ? 1 : 0, transform: visible[refIdx] ? 'translateY(0)' : 'translateY(30px)' }}
               >
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex items-center gap-12 mb-8">
                   <span className="text-sm font-bold font-mono" style={{ color: 'var(--accent)' }}>
                     {String(siteIndex + 1).padStart(2, '0')}
                   </span>
-                  <span className="w-8 h-px" style={{ background: 'var(--accent)' }} />
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded" style={{ background: 'rgba(27,191,168,0.15)', color: 'var(--accent)' }}>
+                  <span className="w-32 h-px" style={{ background: 'var(--accent)' }} />
+                  <span className="text-[10px] font-mono px-8 py-2 rounded-xs" style={{ background: 'rgba(27,191,168,0.15)', color: 'var(--accent)' }}>
                     {site.badge}
                   </span>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-bold mb-1">{site.name}</h2>
-                <p className="text-sm font-mono mb-6" style={{ color: 'var(--text-muted)' }}>
+                <h2 className="text-2xl md:text-3xl font-bold mb-4">{site.name}</h2>
+                <p className="text-sm font-mono mb-24" style={{ color: 'var(--text-muted)' }}>
                   {site.nameEn} · {site.coord.lat}°N {site.coord.lng}°E
                 </p>
               </div>
@@ -327,29 +327,29 @@ export default function ShipyardsInteractive() {
                 className="transition-all duration-700 delay-150"
                 style={{ opacity: visible[contentRefIdx] ? 1 : 0, transform: visible[contentRefIdx] ? 'translateY(0)' : 'translateY(30px)' }}
               >
-                <div className="grid grid-cols-2 gap-4 mb-8">
-                  <div className="rounded-lg overflow-hidden relative" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                <div className="grid grid-cols-2 gap-16 mb-32">
+                  <div className="rounded-sm overflow-hidden relative" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                     <img
                       src={site.images.before}
                       alt={`${site.name} — ${site.dates.before}`}
                       className="w-full h-auto block"
                       loading="lazy"
                     />
-                    <div className="absolute top-3 left-3">
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded" style={{ background: 'rgba(14,14,16,0.8)', color: 'var(--text-muted)', backdropFilter: 'blur(4px)' }}>
+                    <div className="absolute top-12 left-12">
+                      <span className="text-[10px] font-mono px-8 py-2 rounded-xs" style={{ background: 'rgba(14,14,16,0.8)', color: 'var(--text-muted)', backdropFilter: 'blur(4px)' }}>
                         BEFORE · {site.dates.before}
                       </span>
                     </div>
                   </div>
-                  <div className="rounded-lg overflow-hidden relative" style={{ background: 'var(--surface)', border: '1px solid var(--accent)' }}>
+                  <div className="rounded-sm overflow-hidden relative" style={{ background: 'var(--surface)', border: '1px solid var(--accent)' }}>
                     <img
                       src={site.images.after}
                       alt={`${site.name} — ${site.dates.after}`}
                       className="w-full h-auto block"
                       loading="lazy"
                     />
-                    <div className="absolute top-3 left-3">
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded" style={{ background: 'rgba(14,14,16,0.8)', color: 'var(--accent)', backdropFilter: 'blur(4px)' }}>
+                    <div className="absolute top-12 left-12">
+                      <span className="text-[10px] font-mono px-8 py-2 rounded-xs" style={{ background: 'rgba(14,14,16,0.8)', color: 'var(--accent)', backdropFilter: 'blur(4px)' }}>
                         AFTER · {site.dates.after}
                       </span>
                     </div>
@@ -364,13 +364,13 @@ export default function ShipyardsInteractive() {
                 </div>
 
                 {/* Key change callout */}
-                <div className="p-4 rounded-lg mb-8" style={{ background: 'rgba(27,191,168,0.06)', border: '1px solid rgba(27,191,168,0.2)' }}>
-                  <p className="text-[10px] font-mono tracking-wider mb-1 uppercase" style={{ color: 'var(--accent)' }}>Key Change</p>
+                <div className="p-16 rounded-sm mb-32" style={{ background: 'rgba(27,191,168,0.06)', border: '1px solid rgba(27,191,168,0.2)' }}>
+                  <p className="text-[10px] font-mono tracking-wider mb-4 uppercase" style={{ color: 'var(--accent)' }}>Key Change</p>
                   <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>{site.keyChange}</p>
                 </div>
 
                 {/* Paragraphs */}
-                <div className="space-y-4">
+                <div className="space-y-16">
                   {site.paragraphs.map((p, i) => (
                     <p key={i} className="text-sm leading-[1.8]" style={{ color: 'var(--text-muted)' }}>
                       {p}
@@ -384,15 +384,15 @@ export default function ShipyardsInteractive() {
       })}
 
       {/* ===== CONCLUSION ===== */}
-      <section className="py-20" style={{ borderTop: '1px solid var(--border)' }}>
-        <div className="max-w-3xl mx-auto px-6">
+      <section className="py-80" style={{ borderTop: '1px solid var(--border)' }}>
+        <div className="max-w-3xl mx-auto px-24">
           <div
             ref={setRef(sectionIdx++)}
             className="transition-all duration-700"
             style={{ opacity: visible[sectionIdx - 1] ? 1 : 0, transform: visible[sectionIdx - 1] ? 'translateY(0)' : 'translateY(30px)' }}
           >
-            <p className="text-xs font-mono tracking-wider mb-4 uppercase" style={{ color: 'var(--accent)' }}>Conclusion</p>
-            <p className="text-base md:text-lg leading-relaxed mb-6" style={{ color: 'var(--text-muted)' }}>
+            <p className="text-xs font-mono tracking-wider mb-16 uppercase" style={{ color: 'var(--accent)' }}>Conclusion</p>
+            <p className="text-base md:text-lg leading-relaxed mb-24" style={{ color: 'var(--text-muted)' }}>
               위성영상만으로 함정의 내부 능력이나 구체적 용도를 완전히 평가하는 데는 한계가 있습니다.
               그러나 <span style={{ color: 'var(--text)' }}>지속적인 위성영상 분석</span>은 함정 위치 변화, 시설 및 지형 변화, 재고 야적장 상태를 객관적으로 추적하는 데 상당한 가치를 지닙니다.
               이러한 데이터의 축적은 <span style={{ color: 'var(--text)' }}>북한 내부 변화를 분석하는 보다 정밀하고 과학적인 근거</span>가 됩니다.
@@ -400,23 +400,23 @@ export default function ShipyardsInteractive() {
           </div>
 
           {/* CTA */}
-          <div className="flex flex-col sm:flex-row items-start gap-4 mt-12 p-6 rounded-xl" style={{ border: '1px solid var(--border)' }}>
+          <div className="flex flex-col sm:flex-row items-start gap-16 mt-48 p-24 rounded-[12px]" style={{ border: '1px solid var(--border)' }}>
             <div className="flex-1">
-              <p className="text-sm font-semibold mb-1">방위·보안 분야 위성영상 분석이 필요하신가요?</p>
+              <p className="text-sm font-semibold mb-4">방위·보안 분야 위성영상 분석이 필요하신가요?</p>
               <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Nara Space의 위성영상 분석 솔루션에 대해 알아보세요.</p>
             </div>
             <a
               href="https://ep.naraspace.com/post/contents/satellite-imagery-changes-five-major-north-korean-shipyards-ports"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-5 py-2.5 rounded-md text-sm font-medium flex-shrink-0"
+              className="px-20 py-10 rounded-[6px] text-sm font-medium flex-shrink-0"
               style={{ background: 'var(--accent)', color: '#0E0E10' }}
             >
               원문 보기 →
             </a>
           </div>
 
-          <div className="mt-8">
+          <div className="mt-32">
             <Link href="/" className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
               ← EarthPaper 홈으로
             </Link>

@@ -29,10 +29,10 @@ export default function ComingSoonLane({ platform }: { platform: PlatformKey }) 
   const meta = PLATFORM_META[platform];
 
   return (
-    <section id={`lane-${platform}`} className="scroll-mt-24">
-      <div className="flex items-center gap-2 mb-3">
+    <section id={`lane-${platform}`} className="scroll-mt-96">
+      <div className="flex items-center gap-8 mb-12">
         <span
-          className="inline-block w-2 h-2 rounded-full"
+          className="inline-block w-8 h-8 rounded-full"
           style={{ background: meta.color }}
         />
         <h2
@@ -42,7 +42,7 @@ export default function ComingSoonLane({ platform }: { platform: PlatformKey }) 
           {meta.name}
         </h2>
         <span
-          className="text-xs px-2 py-0.5 rounded-full"
+          className="text-xs px-8 py-2 rounded-full"
           style={{
             background: 'var(--surface-elevated)',
             color: 'var(--text-muted)',
@@ -52,21 +52,21 @@ export default function ComingSoonLane({ platform }: { platform: PlatformKey }) 
         </span>
       </div>
       <div
-        className="rounded-lg p-6 text-center"
+        className="rounded-sm p-24 text-center"
         style={{
           background: `color-mix(in srgb, ${meta.hex} 5%, var(--surface))`,
           border: '1px solid var(--border)',
         }}
       >
-        <p className="text-sm font-medium mb-1" style={{ color: meta.color }}>
+        <p className="text-sm font-medium mb-4" style={{ color: meta.color }}>
           {meta.name}
         </p>
-        <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
+        <p className="text-xs mb-16" style={{ color: 'var(--text-muted)' }}>
           {meta.description}
         </p>
         <button
           onClick={() => trackEvent('cta_click', 'coming_soon_notify', { platform })}
-          className="text-xs px-4 py-2 rounded-md transition-colors"
+          className="text-xs px-16 py-8 rounded-[6px] transition-colors"
           style={{
             border: '1px solid var(--accent)',
             color: 'var(--accent)',

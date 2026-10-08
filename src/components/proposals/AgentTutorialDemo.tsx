@@ -249,21 +249,21 @@ export default function AgentTutorialDemo() {
       <div
         className={
           fullscreen
-            ? 'fixed inset-0 z-[100] flex flex-col px-6 py-4'
+            ? 'fixed inset-0 z-[100] flex flex-col px-24 py-16'
             : ''
         }
         style={fullscreen ? { background: 'rgba(10, 10, 12, 0.98)' } : undefined}
       >
       {/* 스텝 인디케이터 — 진행 가시화 (완주율 모범사례) */}
-      <div className="flex items-center justify-between mb-3">
-        <ol className="flex items-center gap-2" aria-label="튜토리얼 진행 단계">
+      <div className="flex items-center justify-between mb-12">
+        <ol className="flex items-center gap-8" aria-label="튜토리얼 진행 단계">
           {TUTORIAL_STEPS.map((s, i) => {
             const active = phase !== 'idle' && i === stepIndex;
             const passed = phase !== 'idle' && i < stepIndex;
             return (
-              <li key={s.id} className="flex items-center gap-2">
+              <li key={s.id} className="flex items-center gap-8">
                 <span
-                  className="flex items-center justify-center w-7 h-7 rounded-full text-sm font-mono transition-colors"
+                  className="flex items-center justify-center w-28 h-28 rounded-full text-sm font-mono transition-colors"
                   style={{
                     background: active ? 'var(--accent)' : passed ? 'var(--surface-elevated)' : 'transparent',
                     color: active ? '#0E0E10' : passed ? 'var(--text)' : 'var(--text-muted)',
@@ -274,7 +274,7 @@ export default function AgentTutorialDemo() {
                   {i + 1}
                 </span>
                 {i < TUTORIAL_STEPS.length - 1 && (
-                  <span className="w-4 h-px" style={{ background: 'var(--border)' }} aria-hidden />
+                  <span className="w-16 h-px" style={{ background: 'var(--border)' }} aria-hidden />
                 )}
               </li>
             );
@@ -284,7 +284,7 @@ export default function AgentTutorialDemo() {
         {phase === 'running' && (
           <button
             onClick={() => openModal('skipped')}
-            className="text-sm px-3.5 py-2 rounded-md transition-colors hover:bg-[var(--surface)]"
+            className="text-sm px-14 py-8 rounded-[6px] transition-colors hover:bg-[var(--surface)]"
             style={{ color: 'var(--text-muted)', border: '1px solid var(--border)' }}
           >
             건너뛰기
@@ -301,7 +301,7 @@ export default function AgentTutorialDemo() {
         style={{
           aspectRatio: `${CAPTURE_WIDTH} / ${CAPTURE_HEIGHT}`,
           border: '1px solid var(--border)',
-          borderRadius: 'var(--radius-md)',
+          borderRadius: 'var(--radius-sm)',
           background: 'var(--bg)',
           // 채팅 시뮬레이션의 폰트가 스테이지 폭에 비례(cqw)해 캡쳐와 같은 배율로 보이게
           containerType: 'inline-size',
@@ -324,7 +324,7 @@ export default function AgentTutorialDemo() {
             // 펄스로 통일 — 액션 유도 효과가 스텝마다 다르지 않게
             className={
               phase === 'running' && i === stepIndex && s.action === 'click' && !s.advanceHotspot
-                ? 'absolute ep-advance-pulse rounded-lg'
+                ? 'absolute ep-advance-pulse rounded-sm'
                 : 'absolute'
             }
             style={{
@@ -398,7 +398,7 @@ export default function AgentTutorialDemo() {
         {/* 시작/재시작 오버레이 */}
         {(phase === 'idle' || phase === 'done') && (
           <div
-            className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4"
+            className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-16"
             style={{ background: 'rgba(14,14,16,0.65)', backdropFilter: 'blur(2px)' }}
           >
             <p className="text-base" style={{ color: 'var(--text-muted)' }}>
@@ -406,7 +406,7 @@ export default function AgentTutorialDemo() {
             </p>
             <button
               onClick={startTour}
-              className="px-7 py-3.5 rounded-md text-base font-semibold transition-opacity hover:opacity-85"
+              className="px-28 py-14 rounded-[6px] text-base font-semibold transition-opacity hover:opacity-85"
               style={{ background: 'var(--accent)', color: '#0E0E10' }}
             >
               {phase === 'idle' ? '데모 시작하기' : '데모 다시 보기'}
@@ -419,7 +419,7 @@ export default function AgentTutorialDemo() {
       </div>
       </div>
 
-      <p className="mt-2 text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
+      <p className="mt-8 text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
         캡쳐: agent.ep.naraspace.com 실화면 (2026-09-28, 산타로사섬 산불 분석) · 대화
         목록·계정 정보는 블러 처리
       </p>

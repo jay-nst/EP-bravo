@@ -43,17 +43,17 @@ export default function AoiPanel({
       {/* Satellite selector */}
       <div>
         <label
-          className="block text-sm font-medium mb-1"
+          className="block text-sm font-medium mb-4"
           style={{ color: 'var(--text-muted)' }}
         >
           위성 선택
         </label>
-        <div className="flex gap-2">
+        <div className="flex gap-8">
           {(Object.keys(SATELLITE_CONFIG) as SatelliteType[]).map((key) => (
             <button
               key={key}
               onClick={() => onSatelliteChange(key)}
-              className="flex-1 px-3 py-2 text-sm rounded-md border transition-colors"
+              className="flex-1 px-12 py-8 text-sm rounded-[6px] border transition-colors"
               style={{
                 background: satellite === key ? 'var(--accent)' : 'var(--surface)',
                 color: satellite === key ? '#0E0E10' : 'var(--text)',
@@ -68,7 +68,7 @@ export default function AoiPanel({
 
       {/* Satellite info */}
       <div
-        className="rounded-md p-3 text-sm"
+        className="rounded-[6px] p-12 text-sm"
         style={{ background: 'var(--surface)', color: 'var(--text-muted)' }}
       >
         <div className="flex justify-between">
@@ -77,19 +77,19 @@ export default function AoiPanel({
             {config.resolution}
           </span>
         </div>
-        <div className="flex justify-between mt-1">
+        <div className="flex justify-between mt-4">
           <span>초해상도</span>
           <span className="font-medium" style={{ color: 'var(--text)' }}>
             {config.supersolution}
           </span>
         </div>
-        <div className="flex justify-between mt-1">
+        <div className="flex justify-between mt-4">
           <span>가격</span>
           <span className="font-medium font-mono" style={{ color: 'var(--text)' }}>
             ${config.pricePerKm2}/km²
           </span>
         </div>
-        <div className="flex justify-between mt-1">
+        <div className="flex justify-between mt-4">
           <span>최소 면적</span>
           <span className="font-medium font-mono" style={{ color: 'var(--text)' }}>
             {config.minAreaKm2}km²
@@ -100,7 +100,7 @@ export default function AoiPanel({
       {/* AOI info */}
       {!aoi ? (
         <div
-          className="text-sm text-center py-6"
+          className="text-sm text-center py-24"
           style={{ color: 'var(--text-muted)' }}
         >
           지도에서 다각형 도구로
@@ -110,7 +110,7 @@ export default function AoiPanel({
       ) : (
         <>
           <div
-            className="rounded-md p-3 text-sm"
+            className="rounded-[6px] p-12 text-sm"
             style={{ background: 'var(--surface)' }}
           >
             <div className="flex justify-between" style={{ color: 'var(--text-muted)' }}>
@@ -120,7 +120,7 @@ export default function AoiPanel({
               </span>
             </div>
             <div
-              className="flex justify-between mt-2 text-base font-semibold"
+              className="flex justify-between mt-8 text-base font-semibold"
               style={{ color: 'var(--text)' }}
             >
               <span>예상 가격</span>
@@ -132,7 +132,7 @@ export default function AoiPanel({
 
           {aoi.validationError && (
             <div
-              className="rounded-md p-3 text-sm"
+              className="rounded-[6px] p-12 text-sm"
               style={{
                 background: 'rgba(196, 92, 74, 0.1)',
                 border: '1px solid rgba(196, 92, 74, 0.2)',
@@ -145,7 +145,7 @@ export default function AoiPanel({
 
           {!hasCatalogItem && !aoi.validationError && (
             <div
-              className="rounded-md p-3 text-sm"
+              className="rounded-[6px] p-12 text-sm"
               style={{
                 background: 'rgba(200, 146, 58, 0.1)',
                 border: '1px solid rgba(200, 146, 58, 0.2)',
@@ -160,7 +160,7 @@ export default function AoiPanel({
           <button
             onClick={onPurchase}
             disabled={!canPurchase}
-            className="w-full py-3 rounded-md text-sm font-medium transition-colors"
+            className="w-full py-12 rounded-[6px] text-sm font-medium transition-colors"
             style={{
               background: canPurchase ? 'var(--accent)' : 'var(--surface)',
               color: canPurchase ? '#0E0E10' : 'var(--text-muted)',
@@ -184,7 +184,7 @@ export default function AoiPanel({
 
   return (
     <div
-      className="w-80 glass-panel border-l flex flex-col gap-4 overflow-y-auto p-4"
+      className="w-320 glass-panel border-l flex flex-col gap-16 overflow-y-auto p-16"
       style={{ borderColor: 'var(--border)' }}
     >
       {content}

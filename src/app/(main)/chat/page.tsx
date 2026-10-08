@@ -109,19 +109,19 @@ export default function ChatPage() {
   return (
     <div className="flex" style={{ height: 'calc(100vh - var(--header-height))' }}>
       <aside
-        className="w-60 flex flex-col"
+        className="w-240 flex flex-col"
         style={{ borderRight: '1px solid var(--border)', background: 'var(--surface)' }}
       >
-        <div className="p-3">
+        <div className="p-12">
           <button
             onClick={createSession}
-            className="w-full px-3 py-2 text-sm rounded-md transition-colors"
+            className="w-full px-12 py-8 text-sm rounded-[6px] transition-colors"
             style={{ background: 'var(--surface-elevated)', color: 'var(--text)' }}
           >
             + 새 대화
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto px-2">
+        <div className="flex-1 overflow-y-auto px-8">
           {sessions.map((s) => (
             <button
               key={s.id}
@@ -129,7 +129,7 @@ export default function ChatPage() {
                 setSessionId(s.id);
                 setMessages([]);
               }}
-              className="w-full text-left px-3 py-2 text-sm rounded-md mb-0.5 truncate transition-colors"
+              className="w-full text-left px-12 py-8 text-sm rounded-[6px] mb-2 truncate transition-colors"
               style={{
                 color: sessionId === s.id ? 'var(--accent)' : 'var(--text-muted)',
                 background: sessionId === s.id ? 'var(--surface-elevated)' : 'transparent',
@@ -142,22 +142,22 @@ export default function ChatPage() {
       </aside>
 
       <main className="flex-1 flex flex-col">
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-16 space-y-16">
           {messages.length === 0 && (
             <div className="flex items-center justify-center h-full">
-              <div className="text-center space-y-3">
+              <div className="text-center space-y-12">
                 <p className="text-lg font-medium" style={{ color: 'var(--text-muted)' }}>
                   위성 영상 전문 어시스턴트
                 </p>
                 <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                   위성 영상 촬영, 가격, 해상도 등에 대해 질문하세요
                 </p>
-                <div className="flex flex-wrap gap-2 justify-center pt-2">
+                <div className="flex flex-wrap gap-8 justify-center pt-8">
                   {['해상도 비교', '가격 안내', '촬영 요청 방법'].map((q) => (
                     <button
                       key={q}
                       onClick={() => sendMessage(q)}
-                      className="px-3 py-1.5 text-xs rounded-lg transition-colors"
+                      className="px-12 py-6 text-xs rounded-sm transition-colors"
                       style={{
                         background: 'var(--surface)',
                         color: 'var(--text-muted)',
@@ -177,7 +177,7 @@ export default function ChatPage() {
               className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className="max-w-[70%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap"
+                className="max-w-[70%] px-16 py-10 rounded-md text-sm leading-relaxed whitespace-pre-wrap"
                 style={{
                   background: msg.role === 'user' ? 'var(--accent)' : 'var(--surface)',
                   color: msg.role === 'user' ? '#0E0E10' : 'var(--text)',
@@ -186,7 +186,7 @@ export default function ChatPage() {
                 {msg.content}
                 {msg.role === 'assistant' && !msg.content && streaming && (
                   <span
-                    className="inline-block w-2 h-4 animate-pulse"
+                    className="inline-block w-8 h-16 animate-pulse"
                     style={{ background: 'var(--accent)' }}
                   />
                 )}
@@ -196,15 +196,15 @@ export default function ChatPage() {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="p-4" style={{ borderTop: '1px solid var(--border)' }}>
-          <div className="max-w-3xl mx-auto flex gap-2">
+        <div className="p-16" style={{ borderTop: '1px solid var(--border)' }}>
+          <div className="max-w-3xl mx-auto flex gap-8">
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="메시지를 입력하세요..."
               rows={1}
-              className="flex-1 px-4 py-3 text-sm resize-none rounded-xl focus:outline-none"
+              className="flex-1 px-16 py-12 text-sm resize-none rounded-[12px] focus:outline-none"
               style={{
                 background: 'var(--surface)',
                 border: '1px solid var(--border)',
@@ -215,7 +215,7 @@ export default function ChatPage() {
             <button
               onClick={() => sendMessage()}
               disabled={streaming || !input.trim()}
-              className="px-4 py-3 rounded-xl text-sm font-medium transition-colors disabled:opacity-40"
+              className="px-16 py-12 rounded-[12px] text-sm font-medium transition-colors disabled:opacity-40"
               style={{
                 background: 'var(--accent)',
                 color: '#0E0E10',

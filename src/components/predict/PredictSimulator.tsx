@@ -149,7 +149,7 @@ export default function PredictSimulator() {
         />
 
         <div
-          className="absolute bottom-0 left-0 right-0 max-h-[75%] overflow-y-auto rounded-t-lg md:bottom-auto md:left-auto md:right-3 md:top-3 md:w-[280px] md:max-h-[calc(100%-24px)] md:overflow-y-auto md:rounded-lg"
+          className="absolute bottom-0 left-0 right-0 max-h-[75%] overflow-y-auto rounded-t-sm md:bottom-auto md:left-auto md:right-12 md:top-12 md:w-[280px] md:max-h-[calc(100%-24px)] md:overflow-y-auto md:rounded-sm"
           style={{
             background: 'var(--panel-bg)',
             backdropFilter: 'blur(12px)',
@@ -158,7 +158,7 @@ export default function PredictSimulator() {
           }}
         >
           {phase === 'draw' && (
-            <div className="p-4 md:p-5">
+            <div className="p-16 md:p-20">
               <h3
                 style={{
                   fontSize: 16,
@@ -196,7 +196,7 @@ export default function PredictSimulator() {
           )}
 
           {phase === 'analyzing' && (
-            <div className="p-4 md:p-5" style={{ textAlign: 'center' }}>
+            <div className="p-16 md:p-20" style={{ textAlign: 'center' }}>
               <div
                 style={{
                   width: 32,

@@ -49,11 +49,11 @@ export default function Header() {
         backdropFilter: 'blur(12px)',
       }}
     >
-      <div className="h-full px-4 md:px-6 flex items-center justify-between">
-        <div className="flex items-center gap-6">
+      <div className="h-full px-16 md:px-24 flex items-center justify-between">
+        <div className="flex items-center gap-24">
           <Link
             href="/"
-            className="text-base font-semibold tracking-tight flex items-center gap-2"
+            className="text-base font-semibold tracking-tight flex items-center gap-8"
             style={{ color: 'var(--text)' }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -65,10 +65,10 @@ export default function Header() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-4">
             <Link
               href="/daily"
-              className="px-3 py-2.5 text-sm rounded-md transition-colors"
+              className="px-12 py-10 text-sm rounded-[6px] transition-colors"
               style={{
                 color: pathname.startsWith('/daily') ? 'var(--accent)' : 'var(--text-muted)',
                 background: pathname.startsWith('/daily') ? 'var(--surface-elevated)' : 'transparent',
@@ -84,7 +84,7 @@ export default function Header() {
               onMouseLeave={handleLeave}
             >
               <button
-                className="px-3 py-2.5 text-sm rounded-md transition-colors flex items-center gap-1"
+                className="px-12 py-10 text-sm rounded-[6px] transition-colors flex items-center gap-4"
                 style={{ color: 'var(--text-muted)' }}
               >
                 서비스
@@ -95,7 +95,7 @@ export default function Header() {
 
               {dropdownOpen && (
                 <div
-                  className="absolute top-full left-0 mt-1 py-2 rounded-lg"
+                  className="absolute top-full left-0 mt-4 py-8 rounded-sm"
                   style={{
                     background: 'var(--surface)',
                     border: '1px solid var(--border)',
@@ -107,11 +107,11 @@ export default function Header() {
                     <Link
                       key={s.key}
                       href={s.href}
-                      className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-[var(--surface-elevated)]"
+                      className="flex items-center gap-12 px-16 py-10 transition-colors hover:bg-[var(--surface-elevated)]"
                       onClick={() => setDropdownOpen(false)}
                     >
                       <span
-                        className="w-2 h-2 rounded-full flex-shrink-0"
+                        className="w-8 h-8 rounded-full flex-shrink-0"
                         style={{ background: s.color }}
                       />
                       <div>
@@ -126,7 +126,7 @@ export default function Header() {
 
             <Link
               href="/proposals/agent-tutorial"
-              className="px-3 py-2.5 text-sm rounded-md transition-colors"
+              className="px-12 py-10 text-sm rounded-[6px] transition-colors"
               style={{
                 color: pathname.startsWith('/proposals/agent-tutorial')
                   ? 'var(--accent)'
@@ -141,10 +141,10 @@ export default function Header() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-12">
           <Link
             href="/login"
-            className="hidden md:inline-flex text-sm px-3 py-2.5 rounded-md transition-colors"
+            className="hidden md:inline-flex text-sm px-12 py-10 rounded-[6px] transition-colors"
             style={{ color: 'var(--text-muted)' }}
           >
             로그인
@@ -152,7 +152,7 @@ export default function Header() {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden p-2 -mr-2 rounded-md"
+            className="md:hidden p-8 -mr-8 rounded-[6px]"
             style={{ color: 'var(--text-muted)' }}
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? '메뉴 닫기' : '메뉴 열기'}
@@ -189,7 +189,7 @@ export default function Header() {
           <div style={{ padding: '8px 0' }}>
             <Link
               href="/daily"
-              className="flex items-center px-6 py-3 text-sm transition-colors"
+              className="flex items-center px-24 py-12 text-sm transition-colors"
               style={{
                 color: pathname.startsWith('/daily') ? 'var(--accent)' : 'var(--text)',
               }}
@@ -199,7 +199,7 @@ export default function Header() {
 
             <Link
               href="/proposals/agent-tutorial"
-              className="flex items-center px-6 py-3 text-sm transition-colors"
+              className="flex items-center px-24 py-12 text-sm transition-colors"
               style={{
                 color: pathname.startsWith('/proposals/agent-tutorial')
                   ? 'var(--accent)'
@@ -224,10 +224,10 @@ export default function Header() {
               <Link
                 key={s.key}
                 href={s.href}
-                className="flex items-center gap-3 px-6 py-3 transition-colors"
+                className="flex items-center gap-12 px-24 py-12 transition-colors"
               >
                 <span
-                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  className="w-8 h-8 rounded-full flex-shrink-0"
                   style={{ background: s.color }}
                 />
                 <span className="text-sm font-medium" style={{ color: s.color }}>{s.label}</span>
@@ -238,7 +238,7 @@ export default function Header() {
             <div style={{ borderTop: '1px solid var(--border)', marginTop: 8, paddingTop: 8 }}>
               <Link
                 href="/login"
-                className="flex items-center px-6 py-3 text-sm"
+                className="flex items-center px-24 py-12 text-sm"
                 style={{ color: 'var(--text-muted)' }}
               >
                 로그인

@@ -64,7 +64,7 @@ export default function MiniMap() {
         .minimap-container .mapboxgl-canvas { border-radius: 8px; }
       `}</style>
       <div
-        className="minimap-container rounded-lg overflow-hidden relative"
+        className="minimap-container rounded-sm overflow-hidden relative"
         style={{ height: 120, background: 'var(--surface)' }}
       >
         <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
@@ -76,7 +76,7 @@ export default function MiniMap() {
           </div>
         )}
         <div
-          className="absolute top-2 left-2 text-[10px] font-mono"
+          className="absolute top-8 left-8 text-[10px] font-mono"
           style={{ color: 'var(--text-muted)', textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}
         >
           36.5°N 127.5°E

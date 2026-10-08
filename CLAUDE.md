@@ -18,6 +18,7 @@
 
 - **Stack:** Next.js 16 + React 19 + Supabase + Mapbox + Tailwind v4
 - **Design:** DESIGN.md 참조 (Quiet Observatory 미학, Pretendard Variable, dark-first)
+- **Design System:** NDS (`@naraspace-technology/nds`) 기반, EP 색 유지. **Tailwind 간격 단위 1px** (`p-16`=16px). 규칙: docs/NDS_MIGRATION.md
 - **Dev server:** `npm run dev` (localhost:3000)
 
 ## Design Review History

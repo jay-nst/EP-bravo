@@ -227,21 +227,21 @@ export default function DashboardClient() {
         />
         {editorPick ? (
           <Link href="/interactive/north-korean-shipyards" className="block relative z-10">
-            <div className="max-w-6xl mx-auto px-4 md:px-6 py-10 md:py-16">
-              <div className="flex items-center gap-2 mb-4 md:mb-5">
-                <span className="inline-block w-6 h-px" style={{ background: 'var(--accent)' }} />
+            <div className="max-w-6xl mx-auto px-16 md:px-24 py-40 md:py-64">
+              <div className="flex items-center gap-8 mb-16 md:mb-20">
+                <span className="inline-block w-24 h-px" style={{ background: 'var(--accent)' }} />
                 <span className="text-xs font-mono tracking-[0.15em] uppercase font-semibold" style={{ color: '#3D5A80' }}>
                   Northpaper Original · 방위 분석
                 </span>
               </div>
-              <h1 className="text-2xl md:text-4xl font-bold leading-tight mb-3 md:mb-4 max-w-2xl" style={{ color: 'var(--text)' }}>
+              <h1 className="text-2xl md:text-4xl font-bold leading-tight mb-12 md:mb-16 max-w-2xl" style={{ color: 'var(--text)' }}>
                 {editorPick.title}
               </h1>
-              <p className="text-sm md:text-base leading-relaxed max-w-xl mb-5 md:mb-6" style={{ color: 'var(--text-muted)' }}>
+              <p className="text-sm md:text-base leading-relaxed max-w-xl mb-20 md:mb-24" style={{ color: 'var(--text-muted)' }}>
                 {editorPick.description}
               </p>
-              <div className="flex items-center gap-3 md:gap-4 flex-wrap">
-                <span className="text-xs font-medium px-3 py-1.5 rounded" style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }}>
+              <div className="flex items-center gap-12 md:gap-16 flex-wrap">
+                <span className="text-xs font-medium px-12 py-6 rounded-xs" style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }}>
                   인터랙티브
                 </span>
                 <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>6분 읽기</span>
@@ -253,25 +253,25 @@ export default function DashboardClient() {
             </div>
           </Link>
         ) : (
-          <div className="max-w-6xl mx-auto px-4 md:px-6 py-10 md:py-16 relative z-10 animate-pulse space-y-4">
-            <div className="h-4 w-40 rounded" style={{ background: 'var(--surface-elevated)' }} />
-            <div className="h-10 w-full max-w-96 rounded" style={{ background: 'var(--surface-elevated)' }} />
-            <div className="h-5 w-full max-w-80 rounded" style={{ background: 'var(--surface-elevated)' }} />
+          <div className="max-w-6xl mx-auto px-16 md:px-24 py-40 md:py-64 relative z-10 animate-pulse space-y-16">
+            <div className="h-16 w-160 rounded-xs" style={{ background: 'var(--surface-elevated)' }} />
+            <div className="h-40 w-full max-w-384 rounded-xs" style={{ background: 'var(--surface-elevated)' }} />
+            <div className="h-20 w-full max-w-320 rounded-xs" style={{ background: 'var(--surface-elevated)' }} />
           </div>
         )}
       </section>
 
       {/* ===== CURATED FEED STRIP (auto-scroll, multi-platform) ===== */}
-      <section className="py-4" style={{ borderBottom: '1px solid var(--border)' }}>
-        <div className="flex items-center gap-2 px-4 md:px-6 mb-3">
-          <span className="w-2 h-2 rounded-full" style={{ background: 'var(--accent)', animation: 'pulse-dot 1.5s ease-in-out infinite' }} />
+      <section className="py-16" style={{ borderBottom: '1px solid var(--border)' }}>
+        <div className="flex items-center gap-8 px-16 md:px-24 mb-12">
+          <span className="w-8 h-8 rounded-full" style={{ background: 'var(--accent)', animation: 'pulse-dot 1.5s ease-in-out infinite' }} />
           <span className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
             Live Feed
           </span>
         </div>
         <div
           ref={curatedRef}
-          className="flex gap-3 md:gap-4 px-4 md:px-6 overflow-x-auto"
+          className="flex gap-12 md:gap-16 px-16 md:px-24 overflow-x-auto"
           style={{ scrollbarWidth: 'none' }}
         >
           {curatedItems.map((item) => {
@@ -284,17 +284,17 @@ export default function DashboardClient() {
               <CardTag
                 key={item.id}
                 {...linkProps}
-                className="flex-shrink-0 w-[240px] md:w-[280px] p-3 md:p-4 rounded-lg cursor-pointer transition-colors hover:bg-[var(--surface-elevated)] no-underline"
+                className="flex-shrink-0 w-[240px] md:w-[280px] p-12 md:p-16 rounded-sm cursor-pointer transition-colors hover:bg-[var(--surface-elevated)] no-underline"
                 style={{ border: `1px solid ${item.color}30`, background: `${item.color}08`, textDecoration: 'none' }}
               >
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-mono font-semibold px-1.5 py-0.5 rounded uppercase"
+                <div className="flex items-center gap-8 mb-8">
+                  <span className="text-xs font-mono font-semibold px-6 py-2 rounded-xs uppercase"
                     style={{ background: `${item.color}20`, color: item.color }}
                   >
                     {item.badge}
                   </span>
                 </div>
-                <p className="text-sm font-medium leading-snug mb-2" style={{ color: 'var(--text)' }}>
+                <p className="text-sm font-medium leading-snug mb-8" style={{ color: 'var(--text)' }}>
                   {item.title}
                 </p>
                 <p className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
@@ -314,14 +314,14 @@ export default function DashboardClient() {
         >
           {/* === MAIN COLUMN === */}
           <div
-            className="px-4 md:px-6 py-8 flex flex-col gap-12 lg:border-r"
+            className="px-16 md:px-24 py-32 flex flex-col gap-48 lg:border-r"
             style={{ minWidth: 0, borderColor: 'var(--border)' }}
           >
             {/* Shorts Carousel */}
             {shortsItems.length > 0 && (
               <div>
                 <SectionHeader title="Shorts" icon="▶" linkText="전체 보기" linkHref="https://www.youtube.com/@naraspace/shorts" external />
-                <div className="flex gap-4 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+                <div className="flex gap-16 overflow-x-auto pb-4" style={{ scrollbarWidth: 'none' }}>
                   {shortsItems.map((item) => (
                     <ShortsCard key={item.id} item={item} />
                   ))}
@@ -332,17 +332,17 @@ export default function DashboardClient() {
             {/* Platform Navigation */}
             <div>
               <SectionHeader title="플랫폼" icon="●" />
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-8 flex-wrap">
                 {PLATFORMS.map((p) => (
                   <Link
                     key={p.key}
                     href={p.href}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-colors"
+                    className="flex items-center gap-8 px-16 py-10 rounded-[6px] transition-colors"
                     style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = p.color; }}
                     onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; }}
                   >
-                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: p.color }} />
+                    <span className="w-8 h-8 rounded-full flex-shrink-0" style={{ background: p.color }} />
                     <span className="text-sm font-medium" style={{ color: 'var(--text)' }}>{p.label}</span>
                     <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{p.desc}</span>
                   </Link>
@@ -354,7 +354,7 @@ export default function DashboardClient() {
             {platformItems.length > 0 && (
               <div>
                 <SectionHeader title="플랫폼 리포트" icon="●" linkText="더 보기" linkHref="https://ep.naraspace.com/ko/post" external />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
                   {platformItems.slice(0, 6).map((item) => (
                     <AnalysisCard key={item.id} item={item} />
                   ))}
@@ -375,9 +375,9 @@ export default function DashboardClient() {
             )}
 
             {feedLoading && (
-              <div className="py-8 text-center">
+              <div className="py-32 text-center">
                 <div
-                  className="w-5 h-5 rounded-full border-2 border-t-transparent animate-spin mx-auto"
+                  className="w-20 h-20 rounded-full border-2 border-t-transparent animate-spin mx-auto"
                   style={{ borderColor: 'var(--border)', borderTopColor: 'transparent' }}
                 />
               </div>
@@ -386,18 +386,18 @@ export default function DashboardClient() {
 
           {/* === SIDEBAR === */}
           <aside
-            className="px-4 md:px-6 py-8 flex flex-col gap-6 border-t lg:border-t-0"
+            className="px-16 md:px-24 py-32 flex flex-col gap-24 border-t lg:border-t-0"
             style={{ borderColor: 'var(--border)' }}
           >
             {/* AI Assistant (moved from full-width) */}
-            <div className="rounded-xl p-4" style={{ border: '1px solid var(--border)' }}>
-              <p className="text-sm font-medium tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>
+            <div className="rounded-[12px] p-16" style={{ border: '1px solid var(--border)' }}>
+              <p className="text-sm font-medium tracking-wider mb-12" style={{ color: 'var(--text-muted)' }}>
                 EP AGENT
               </p>
               <form onSubmit={handleChatSubmit}>
-                <div className="relative mb-2">
+                <div className="relative mb-8">
                   <svg
-                    className="absolute left-3 top-1/2 -translate-y-1/2"
+                    className="absolute left-12 top-1/2 -translate-y-1/2"
                     width="14" height="14" viewBox="0 0 24 24" fill="none"
                     stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
                   >
@@ -408,13 +408,13 @@ export default function DashboardClient() {
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
                     placeholder="위성 영상에 대해 물어보세요..."
-                    className="w-full pl-9 pr-3 py-2.5 text-sm rounded-lg focus:outline-none transition-colors"
+                    className="w-full pl-36 pr-12 py-10 text-sm rounded-sm focus:outline-none transition-colors"
                     style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}
                     onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; }}
                     onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; }}
                   />
                 </div>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-6">
                   {CHAT_SUGGESTIONS.map((q) => (
                     <button
                       key={q}
@@ -424,7 +424,7 @@ export default function DashboardClient() {
                         trackEvent('chat_from_home', 'suggestion_click', { query: q });
                         router.push('/chat');
                       }}
-                      className="px-2.5 py-1.5 text-sm rounded transition-colors"
+                      className="px-10 py-6 text-sm rounded-xs transition-colors"
                       style={{ background: 'var(--surface)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}
                     >
                       {q}
@@ -434,16 +434,16 @@ export default function DashboardClient() {
               </form>
               {/* Personalized services (logged-in state) */}
               {summary && (
-                <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Link href="/portal" className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
+                <div className="mt-12 pt-12" style={{ borderTop: '1px solid var(--border)' }}>
+                  <div className="grid grid-cols-2 gap-8">
+                    <Link href="/portal" className="flex items-center gap-8 p-8 rounded-[6px] transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
                       <span className="text-sm">📦</span>
                       <div>
                         <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>내 주문</p>
                         <p className="text-xs" style={{ color: 'var(--accent)' }}>{fmtNum(summary.recentOrders.length)}건</p>
                       </div>
                     </Link>
-                    <Link href="/tasking" className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
+                    <Link href="/tasking" className="flex items-center gap-8 p-8 rounded-[6px] transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
                       <span className="text-sm">📡</span>
                       <div>
                         <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>촬영 요청</p>
@@ -452,14 +452,14 @@ export default function DashboardClient() {
                         </p>
                       </div>
                     </Link>
-                    <Link href="/core" className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
+                    <Link href="/core" className="flex items-center gap-8 p-8 rounded-[6px] transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
                       <span className="text-sm">🗺️</span>
                       <div>
                         <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>위성 영상</p>
                         <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{fmtNum(summary.stats.totalImages)}장</p>
                       </div>
                     </Link>
-                    <Link href="/quiz" className="flex items-center gap-2 p-2 rounded-md transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
+                    <Link href="/quiz" className="flex items-center gap-8 p-8 rounded-[6px] transition-colors hover:bg-[var(--surface-elevated)]" style={{ background: 'var(--surface)' }}>
                       <span className="text-sm">🧠</span>
                       <div>
                         <p className="text-xs font-medium" style={{ color: 'var(--text)' }}>퀴즈</p>
@@ -472,15 +472,15 @@ export default function DashboardClient() {
             </div>
 
             {/* 오늘의 지구 (Compact) */}
-            <div className="rounded-xl p-4" style={{ border: '1px solid var(--border)' }}>
-              <div className="flex items-center justify-between mb-3">
+            <div className="rounded-[12px] p-16" style={{ border: '1px solid var(--border)' }}>
+              <div className="flex items-center justify-between mb-12">
                 <p className="text-sm font-medium tracking-wider" style={{ color: 'var(--text-muted)' }}>오늘의 지구</p>
                 <Link href="/core" className="text-sm font-mono" style={{ color: 'var(--accent)' }}>Core →</Link>
               </div>
-              <div className="mb-3">
+              <div className="mb-12">
                 <MiniMap />
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-8">
                 <MetricItem label="활성 재난" value="2" suffix="건" color="#C45C4A" />
                 <MetricItem label="대기질" value="보통" suffix="" color="var(--accent)" />
                 <MetricItem label="신규 영상" value="+47" suffix="장" color="var(--accent)" />
@@ -489,9 +489,9 @@ export default function DashboardClient() {
             </div>
 
             {/* Quick Actions (1x3, no AI chat) */}
-            <div className="rounded-xl p-4" style={{ border: '1px solid var(--border)' }}>
-              <p className="text-sm font-medium tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>QUICK ACTIONS</p>
-              <div className="grid grid-cols-3 gap-2">
+            <div className="rounded-[12px] p-16" style={{ border: '1px solid var(--border)' }}>
+              <p className="text-sm font-medium tracking-wider mb-12" style={{ color: 'var(--text-muted)' }}>QUICK ACTIONS</p>
+              <div className="grid grid-cols-3 gap-8">
                 <QuickActionBtn href="/core" icon="🗺️" label="위성지도" />
                 <QuickActionBtn icon="🎲" label="랜덤 탐험" onClick={randomExplore} />
                 <QuickActionBtn href="/tasking" icon="📡" label="촬영 요청" />
@@ -499,11 +499,11 @@ export default function DashboardClient() {
             </div>
 
             {/* Trending Subjects (with tabs) */}
-            <div className="rounded-xl p-4" style={{ border: '1px solid var(--border)' }}>
-              <div className="flex items-center gap-1 mb-3">
+            <div className="rounded-[12px] p-16" style={{ border: '1px solid var(--border)' }}>
+              <div className="flex items-center gap-4 mb-12">
                 <button
                   onClick={() => setTrendingTab('subjects')}
-                  className="px-3 py-1.5 text-sm rounded transition-colors"
+                  className="px-12 py-6 text-sm rounded-xs transition-colors"
                   style={{
                     background: trendingTab === 'subjects' ? 'var(--surface-elevated)' : 'transparent',
                     color: trendingTab === 'subjects' ? 'var(--text)' : 'var(--text-muted)',
@@ -514,7 +514,7 @@ export default function DashboardClient() {
                 </button>
                 <button
                   onClick={() => setTrendingTab('posts')}
-                  className="px-3 py-1.5 text-sm rounded transition-colors"
+                  className="px-12 py-6 text-sm rounded-xs transition-colors"
                   style={{
                     background: trendingTab === 'posts' ? 'var(--surface-elevated)' : 'transparent',
                     color: trendingTab === 'posts' ? 'var(--text)' : 'var(--text-muted)',
@@ -526,12 +526,12 @@ export default function DashboardClient() {
               </div>
 
               {trendingTab === 'subjects' ? (
-                <div className="space-y-1.5">
+                <div className="space-y-6">
                   {trendingSubjects.map((t) => {
                     const badgeColor = FEED_BADGE_COLORS[t.badge] ?? 'var(--text-muted)';
                     return (
-                      <div key={t.rank} className="flex items-center gap-3 p-2 rounded-lg transition-colors hover:bg-[var(--surface)] cursor-pointer">
-                        <span className="text-base font-bold font-mono w-5 text-center" style={{ color: 'var(--text-muted)' }}>{t.rank}</span>
+                      <div key={t.rank} className="flex items-center gap-12 p-8 rounded-sm transition-colors hover:bg-[var(--surface)] cursor-pointer">
+                        <span className="text-base font-bold font-mono w-20 text-center" style={{ color: 'var(--text-muted)' }}>{t.rank}</span>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate" style={{ color: 'var(--text)' }}>{t.title}</p>
                           <span className="text-xs font-mono uppercase" style={{ color: badgeColor }}>
@@ -542,14 +542,14 @@ export default function DashboardClient() {
                     );
                   })}
                   {trendingSubjects.length === 0 && (
-                    <p className="text-xs py-4 text-center" style={{ color: 'var(--text-muted)' }}>{feedLoading ? '트렌딩 데이터 로딩 중...' : '트렌딩 데이터 없음'}</p>
+                    <p className="text-xs py-16 text-center" style={{ color: 'var(--text-muted)' }}>{feedLoading ? '트렌딩 데이터 로딩 중...' : '트렌딩 데이터 없음'}</p>
                   )}
                 </div>
               ) : (
-                <div className="space-y-1.5">
+                <div className="space-y-6">
                   {popularPosts.map((p) => (
-                    <div key={p.rank} className="flex items-center gap-3 p-2 rounded-lg transition-colors hover:bg-[var(--surface)] cursor-pointer">
-                      <span className="text-base font-bold font-mono w-5 text-center" style={{ color: 'var(--text-muted)' }}>{p.rank}</span>
+                    <div key={p.rank} className="flex items-center gap-12 p-8 rounded-sm transition-colors hover:bg-[var(--surface)] cursor-pointer">
+                      <span className="text-base font-bold font-mono w-20 text-center" style={{ color: 'var(--text-muted)' }}>{p.rank}</span>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate" style={{ color: 'var(--text)' }}>{p.title}</p>
                         <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{p.author}</span>
@@ -557,16 +557,16 @@ export default function DashboardClient() {
                     </div>
                   ))}
                   {popularPosts.length === 0 && (
-                    <p className="text-xs py-4 text-center" style={{ color: 'var(--text-muted)' }}>{feedLoading ? '데이터 로딩 중...' : '데이터 없음'}</p>
+                    <p className="text-xs py-16 text-center" style={{ color: 'var(--text-muted)' }}>{feedLoading ? '데이터 로딩 중...' : '데이터 없음'}</p>
                   )}
                 </div>
               )}
             </div>
 
             {/* Newsletter */}
-            <div className="rounded-xl p-4" style={{ border: '1px solid var(--border)' }}>
-              <p className="text-sm font-medium tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>뉴스레터</p>
-              <p className="text-sm mb-3" style={{ color: 'var(--text-muted)' }}>매주 위성이 포착한 지구의 변화를 받아보세요.</p>
+            <div className="rounded-[12px] p-16" style={{ border: '1px solid var(--border)' }}>
+              <p className="text-sm font-medium tracking-wider mb-4" style={{ color: 'var(--text-muted)' }}>뉴스레터</p>
+              <p className="text-sm mb-12" style={{ color: 'var(--text-muted)' }}>매주 위성이 포착한 지구의 변화를 받아보세요.</p>
               <NewsletterForm />
             </div>
           </aside>
@@ -574,10 +574,10 @@ export default function DashboardClient() {
       </section>
 
       {/* ===== FOOTER ===== */}
-      <footer className="py-8 px-4 md:px-6" style={{ borderTop: '1px solid var(--border)', color: 'var(--text-muted)' }}>
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <footer className="py-32 px-16 md:px-24" style={{ borderTop: '1px solid var(--border)', color: 'var(--text-muted)' }}>
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-16">
           <p className="text-sm">&copy; {new Date().getFullYear()} EarthPaper by Nara Space</p>
-          <div className="flex gap-6 text-sm">
+          <div className="flex gap-24 text-sm">
             <a href="https://ep.naraspace.com/ko/policy/service" target="_blank" rel="noopener noreferrer" className="hover:underline">이용약관</a>
             <a href="https://ep.naraspace.com/ko/policy/privacy" target="_blank" rel="noopener noreferrer" className="hover:underline">개인정보처리방침</a>
             <a href="https://ep.naraspace.com/ko/helpcenter" target="_blank" rel="noopener noreferrer" className="hover:underline">고객센터</a>
@@ -601,16 +601,16 @@ function SectionHeader({ title, icon, linkText, linkHref, external }: {
   title: string; icon?: string; linkText?: string; linkHref?: string; external?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between mb-4">
-      <h2 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--text)' }}>
+    <div className="flex items-center justify-between mb-16">
+      <h2 className="text-lg font-semibold flex items-center gap-8" style={{ color: 'var(--text)' }}>
         {icon && <span className="text-sm" style={{ color: 'var(--accent)' }}>{icon}</span>}
         {title}
       </h2>
       {linkText && linkHref && (
         external ? (
-          <a href={linkHref} target="_blank" rel="noopener noreferrer" className="text-sm py-1 px-2" style={{ color: 'var(--text-muted)' }}>{linkText} →</a>
+          <a href={linkHref} target="_blank" rel="noopener noreferrer" className="text-sm py-4 px-8" style={{ color: 'var(--text-muted)' }}>{linkText} →</a>
         ) : (
-          <Link href={linkHref} className="text-sm py-1 px-2" style={{ color: 'var(--text-muted)' }}>{linkText} →</Link>
+          <Link href={linkHref} className="text-sm py-4 px-8" style={{ color: 'var(--text-muted)' }}>{linkText} →</Link>
         )
       )}
     </div>
@@ -623,7 +623,7 @@ function ShortsCard({ item }: { item: FeedItem }) {
   const youtubeId = String(item.metadata.youtube_id ?? '');
 
   return (
-    <div className="flex-shrink-0 w-[130px] md:w-[160px] rounded-lg overflow-hidden group" style={{ border: '1px solid var(--border)', aspectRatio: '9/16' }}>
+    <div className="flex-shrink-0 w-[130px] md:w-[160px] rounded-sm overflow-hidden group" style={{ border: '1px solid var(--border)', aspectRatio: '9/16' }}>
       <div className="relative w-full h-full" style={{ background: 'var(--surface)' }}>
         {playing && youtubeId ? (
           <iframe
@@ -646,14 +646,14 @@ function ShortsCard({ item }: { item: FeedItem }) {
               className="absolute inset-0 flex items-center justify-center cursor-pointer"
               aria-label="재생"
             >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center transition-transform group-hover:scale-110"
+              <div className="w-48 h-48 rounded-full flex items-center justify-center transition-transform group-hover:scale-110"
                 style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)' }}
               >
-                <span className="text-white text-lg ml-0.5">▶</span>
+                <span className="text-white text-lg ml-2">▶</span>
               </div>
             </button>
-            <div className="absolute bottom-0 left-0 right-0 p-3 pointer-events-none" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.85))' }}>
-              <p className="text-sm font-medium leading-snug mb-1 line-clamp-2" style={{ color: '#fff' }}>{item.title}</p>
+            <div className="absolute bottom-0 left-0 right-0 p-12 pointer-events-none" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.85))' }}>
+              <p className="text-sm font-medium leading-snug mb-4 line-clamp-2" style={{ color: '#fff' }}>{item.title}</p>
               <p className="text-xs font-mono" style={{ color: 'rgba(255,255,255,0.7)' }}>
                 {views >= 1000 ? `${fmtNum(views / 1000, 1)}k` : fmtNum(views)} 조회
               </p>
@@ -677,7 +677,7 @@ function AnalysisCard({ item }: { item: FeedItem }) {
   const location = String(item.metadata.location ?? '');
 
   const inner = (
-    <div className="rounded-lg overflow-hidden group" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
+    <div className="rounded-sm overflow-hidden group" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
       <div className="relative" style={{ height: 160 }}>
         {item.thumbnail_url ? (
           <>
@@ -698,13 +698,13 @@ function AnalysisCard({ item }: { item: FeedItem }) {
           </>
         )}
       </div>
-      <div className="p-4">
-        <p className="text-xs font-mono tracking-wider mb-1.5" style={{ color: pl.color }}>{pl.label}</p>
-        <p className="text-base font-semibold leading-snug mb-1.5 group-hover:text-[var(--accent)] transition-colors" style={{ color: 'var(--text)' }}>
+      <div className="p-16">
+        <p className="text-xs font-mono tracking-wider mb-6" style={{ color: pl.color }}>{pl.label}</p>
+        <p className="text-base font-semibold leading-snug mb-6 group-hover:text-[var(--accent)] transition-colors" style={{ color: 'var(--text)' }}>
           {item.title}
         </p>
         {item.description && (
-          <p className="text-sm leading-relaxed line-clamp-2 mb-2" style={{ color: 'var(--text-muted)' }}>{item.description}</p>
+          <p className="text-sm leading-relaxed line-clamp-2 mb-8" style={{ color: 'var(--text-muted)' }}>{item.description}</p>
         )}
         <div className="flex items-center justify-between text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
           <span>{location}</span>
@@ -721,11 +721,11 @@ function AnalysisCard({ item }: { item: FeedItem }) {
 
 function NewsRow({ item }: { item: FeedItem }) {
   const inner = (
-    <div className="flex items-start gap-4 p-4 transition-colors hover:bg-[var(--surface)]" style={{ borderBottom: '1px solid var(--border)' }}>
+    <div className="flex items-start gap-16 p-16 transition-colors hover:bg-[var(--surface)]" style={{ borderBottom: '1px solid var(--border)' }}>
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-mono tracking-wider uppercase mb-1" style={{ color: 'var(--text-muted)' }}>NEWS</p>
+        <p className="text-xs font-mono tracking-wider uppercase mb-4" style={{ color: 'var(--text-muted)' }}>NEWS</p>
         <p className="text-base font-medium leading-snug" style={{ color: 'var(--text)' }}>{item.title}</p>
-        {item.description && <p className="text-sm mt-1 line-clamp-1" style={{ color: 'var(--text-muted)' }}>{item.description}</p>}
+        {item.description && <p className="text-sm mt-4 line-clamp-1" style={{ color: 'var(--text-muted)' }}>{item.description}</p>}
       </div>
       <span className="text-sm font-mono flex-shrink-0" style={{ color: 'var(--text-muted)' }}>
         {new Date(item.published_at).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })}
@@ -740,8 +740,8 @@ function NewsRow({ item }: { item: FeedItem }) {
 
 function MetricItem({ label, value, suffix, color }: { label: string; value: string; suffix: string; color: string }) {
   return (
-    <div className="p-2 rounded-md" style={{ background: 'var(--surface)' }}>
-      <p className="text-xs mb-0.5" style={{ color: 'var(--text-muted)' }}>{label}</p>
+    <div className="p-8 rounded-[6px]" style={{ background: 'var(--surface)' }}>
+      <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>{label}</p>
       <p className="text-sm font-bold" style={{ color }}>
         {value} <span className="text-xs font-normal" style={{ color: 'var(--text-muted)' }}>{suffix}</span>
       </p>
@@ -750,7 +750,7 @@ function MetricItem({ label, value, suffix, color }: { label: string; value: str
 }
 
 function QuickActionBtn({ href, icon, label, onClick }: { href?: string; icon: string; label: string; onClick?: () => void }) {
-  const cls = "flex flex-col items-center justify-center gap-1.5 p-3 rounded-lg transition-colors hover:bg-[var(--surface-elevated)]";
+  const cls = "flex flex-col items-center justify-center gap-6 p-12 rounded-sm transition-colors hover:bg-[var(--surface-elevated)]";
   const style = { background: 'var(--surface)' };
   if (href) {
     return <Link href={href} className={cls} style={style}><span className="text-lg">{icon}</span><span className="text-sm" style={{ color: 'var(--text-muted)' }}>{label}</span></Link>;
@@ -800,8 +800,8 @@ function BreakingStrip({ items }: { items: FeedItem[] }) {
   const flipOpacity = flipState === 'idle' ? 1 : 0;
 
   const inner = (
-    <div className="max-w-6xl mx-auto px-6 py-2 flex items-center gap-3" style={{ perspective: 600 }}>
-      <span className="inline-flex items-center gap-1.5 flex-shrink-0" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', color: '#C45C4A' }}>
+    <div className="max-w-6xl mx-auto px-24 py-8 flex items-center gap-12" style={{ perspective: 600 }}>
+      <span className="inline-flex items-center gap-6 flex-shrink-0" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', color: '#C45C4A' }}>
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C45C4A', animation: 'pulse-dot 1.5s ease-in-out infinite' }} />
         CITADEL
       </span>

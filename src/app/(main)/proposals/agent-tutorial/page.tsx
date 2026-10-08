@@ -13,12 +13,12 @@ export default function AgentTutorialProposalPage() {
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10">
+    <div className="max-w-6xl mx-auto px-24 py-40">
       <div className="hidden xl:block">
         <AgentTutorialDemo />
       </div>
       <div
-        className="xl:hidden p-8 text-center text-sm rounded-md"
+        className="xl:hidden p-32 text-center text-sm rounded-[6px]"
         style={{
           background: 'var(--surface)',
           border: '1px solid var(--border)',

@@ -13,12 +13,12 @@ interface GyeonggiSourcePanelProps {
 export default function GyeonggiSourcePanel({ defaultOpen = false }: GyeonggiSourcePanelProps) {
   return (
     <details
-      className="ep-src-details pt-4"
+      className="ep-src-details pt-16"
       style={{ borderTop: '1px solid var(--border)' }}
       open={defaultOpen}
     >
       <summary
-        className="text-xs font-mono tracking-wider uppercase cursor-pointer list-none flex items-center gap-1.5 py-1"
+        className="text-xs font-mono tracking-wider uppercase cursor-pointer list-none flex items-center gap-6 py-4"
         style={{ color: 'var(--text-muted)' }}
       >
         <span className="ep-src-caret" aria-hidden>
@@ -27,13 +27,13 @@ export default function GyeonggiSourcePanel({ defaultOpen = false }: GyeonggiSou
         데이터 출처 ({GYEONGGI_DATA_SOURCES.length})
       </summary>
 
-      <ul className="mt-2 space-y-2.5">
+      <ul className="mt-8 space-y-10">
         {GYEONGGI_DATA_SOURCES.map((s) => (
           <SourceRow key={s.id} source={s} />
         ))}
       </ul>
 
-      <p className="text-xs leading-relaxed mt-3" style={{ color: 'var(--text-muted)' }}>
+      <p className="text-xs leading-relaxed mt-12" style={{ color: 'var(--text-muted)' }}>
         접근성 등고선은 공식 평가가 아니라 EarthPaper 자체 분석이다. 정책 판단 근거로 쓰지 않는다.
       </p>
 
@@ -57,9 +57,9 @@ function SourceRow({ source }: { source: GyeonggiDataSource }) {
 
   return (
     <li className="text-xs leading-relaxed">
-      <div className="flex items-baseline gap-1.5">
+      <div className="flex items-baseline gap-6">
         <span
-          className="font-mono px-1 rounded flex-shrink-0"
+          className="font-mono px-4 rounded-xs flex-shrink-0"
           style={{
             background: 'var(--surface-elevated)',
             color: badge.color,
@@ -71,7 +71,7 @@ function SourceRow({ source }: { source: GyeonggiDataSource }) {
         <span style={{ color: 'var(--text)' }}>{source.layer}</span>
       </div>
 
-      <div className="mt-0.5" style={{ color: 'var(--text-muted)' }}>
+      <div className="mt-2" style={{ color: 'var(--text-muted)' }}>
         {source.url ? (
           <a
             href={source.url}
@@ -91,7 +91,7 @@ function SourceRow({ source }: { source: GyeonggiDataSource }) {
         {source.dataset}
       </div>
 
-      <p className="mt-0.5" style={{ color: 'var(--text-muted)', opacity: 0.75 }}>
+      <p className="mt-2" style={{ color: 'var(--text-muted)', opacity: 0.75 }}>
         {source.note}
       </p>
     </li>

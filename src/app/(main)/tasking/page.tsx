@@ -110,14 +110,14 @@ export default function TaskingPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 w-full">
-      <div className="flex items-center justify-between mb-6">
+    <div className="max-w-4xl mx-auto px-16 py-32 w-full">
+      <div className="flex items-center justify-between mb-24">
         <h1 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
           촬영 요청
         </h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 text-sm rounded-lg transition-colors"
+          className="px-16 py-8 text-sm rounded-sm transition-colors"
           style={{ background: 'var(--accent)', color: '#0E0E10' }}
         >
           {showForm ? '취소' : '+ 새 요청'}
@@ -126,7 +126,7 @@ export default function TaskingPage() {
 
       {success && (
         <div
-          className="mb-4 px-4 py-3 rounded-lg text-sm"
+          className="mb-16 px-16 py-12 rounded-sm text-sm"
           style={{
             background: 'rgba(74, 158, 107, 0.15)',
             border: '1px solid rgba(74, 158, 107, 0.3)',
@@ -139,7 +139,7 @@ export default function TaskingPage() {
 
       {error && (
         <div
-          className="mb-4 px-4 py-3 rounded-lg text-sm"
+          className="mb-16 px-16 py-12 rounded-sm text-sm"
           style={{
             background: 'rgba(196, 92, 74, 0.15)',
             border: '1px solid rgba(196, 92, 74, 0.3)',
@@ -153,15 +153,15 @@ export default function TaskingPage() {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="mb-8 rounded-xl p-6 space-y-4"
+          className="mb-32 rounded-[12px] p-24 space-y-16"
           style={{ border: '1px solid var(--border)' }}
         >
-          <p className="text-sm mb-2" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-sm mb-8" style={{ color: 'var(--text-muted)' }}>
             지도에서 촬영할 영역을 그려주세요. 왼쪽 상단의 폴리곤 도구를 사용하세요.
           </p>
 
           <div
-            className="rounded-lg overflow-hidden"
+            className="rounded-sm overflow-hidden"
             style={{ height: '400px', border: '1px solid var(--border)' }}
           >
             <EarthMap
@@ -172,10 +172,10 @@ export default function TaskingPage() {
 
           {aoi && (
             <div
-              className="flex items-center justify-between px-4 py-3 rounded-lg"
+              className="flex items-center justify-between px-16 py-12 rounded-sm"
               style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-16">
                 <div>
                   <span className="text-xs" style={{ color: 'var(--text-muted)' }}>면적</span>
                   <p className="text-sm font-mono font-medium" style={{ color: 'var(--text)' }}>
@@ -183,7 +183,7 @@ export default function TaskingPage() {
                   </p>
                 </div>
                 <div
-                  className="w-px h-8"
+                  className="w-px h-32"
                   style={{ background: 'var(--border)' }}
                 />
                 <div>
@@ -201,35 +201,35 @@ export default function TaskingPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-16">
             <div>
-              <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
+              <label className="block text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
                 희망 촬영 시작일
               </label>
               <input
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
-                className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none"
+                className="w-full rounded-sm px-12 py-8 text-sm focus:outline-none"
                 style={inputStyle}
               />
             </div>
             <div>
-              <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
+              <label className="block text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
                 희망 촬영 종료일
               </label>
               <input
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
-                className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none"
+                className="w-full rounded-sm px-12 py-8 text-sm focus:outline-none"
                 style={inputStyle}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
+            <label className="block text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
               연락처 이메일 *
             </label>
             <input
@@ -237,13 +237,13 @@ export default function TaskingPage() {
               value={contactEmail}
               onChange={(e) => setContactEmail(e.target.value)}
               required
-              className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none"
+              className="w-full rounded-sm px-12 py-8 text-sm focus:outline-none"
               style={inputStyle}
             />
           </div>
 
           <div>
-            <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
+            <label className="block text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
               연락처 전화번호
             </label>
             <input
@@ -251,13 +251,13 @@ export default function TaskingPage() {
               value={contactPhone}
               onChange={(e) => setContactPhone(e.target.value)}
               placeholder="010-0000-0000"
-              className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none"
+              className="w-full rounded-sm px-12 py-8 text-sm focus:outline-none"
               style={inputStyle}
             />
           </div>
 
           <div>
-            <label className="block text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
+            <label className="block text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
               요청 사항
             </label>
             <textarea
@@ -266,7 +266,7 @@ export default function TaskingPage() {
               rows={3}
               maxLength={1000}
               placeholder="촬영 목적, 해상도 요구사항 등"
-              className="w-full rounded-lg px-3 py-2 text-sm resize-none focus:outline-none"
+              className="w-full rounded-sm px-12 py-8 text-sm resize-none focus:outline-none"
               style={inputStyle}
             />
           </div>
@@ -274,7 +274,7 @@ export default function TaskingPage() {
           <button
             type="submit"
             disabled={submitting || !contactEmail || !aoi || !!aoi.validationError}
-            className="w-full py-2.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-40"
+            className="w-full py-10 rounded-sm text-sm font-medium transition-colors disabled:opacity-40"
             style={{ background: 'var(--accent)', color: '#0E0E10' }}
           >
             {submitting ? '제출 중...' : !aoi ? '영역을 먼저 그려주세요' : '촬영 요청 제출'}
@@ -283,16 +283,16 @@ export default function TaskingPage() {
       )}
 
       {loading ? (
-        <p className="text-center py-8" style={{ color: 'var(--text-muted)' }}>로딩 중...</p>
+        <p className="text-center py-32" style={{ color: 'var(--text-muted)' }}>로딩 중...</p>
       ) : requests.length === 0 ? (
-        <div className="text-center py-16">
-          <p className="mb-2" style={{ color: 'var(--text-muted)' }}>촬영 요청 내역이 없습니다</p>
+        <div className="text-center py-64">
+          <p className="mb-8" style={{ color: 'var(--text-muted)' }}>촬영 요청 내역이 없습니다</p>
           <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
             새 요청을 만들어 원하는 지역의 위성 촬영을 신청하세요
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-12">
           {requests.map((req) => {
             const status = STATUS_LABELS[req.status] ?? {
               text: req.status,
@@ -301,11 +301,11 @@ export default function TaskingPage() {
             return (
               <div
                 key={req.id}
-                className="rounded-xl p-5 space-y-2"
+                className="rounded-[12px] p-20 space-y-8"
                 style={{ border: '1px solid var(--border)' }}
               >
                 <div className="flex items-start justify-between">
-                  <div className="space-y-1">
+                  <div className="space-y-4">
                     <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                       요청번호:{' '}
                       <span className="font-mono text-xs" style={{ color: 'var(--text)' }}>
@@ -328,7 +328,7 @@ export default function TaskingPage() {
                 </div>
                 {req.notes && (
                   <p
-                    className="text-xs px-3 py-2 rounded"
+                    className="text-xs px-12 py-8 rounded-xs"
                     style={{ background: 'var(--surface)', color: 'var(--text-muted)' }}
                   >
                     {req.notes}

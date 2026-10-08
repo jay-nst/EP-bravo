@@ -148,7 +148,7 @@ export default function BeforeAfterSlider({
         aria-hidden
       >
         <div
-          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 left-1/2 w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shadow-lg${
+          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 left-1/2 w-36 h-36 rounded-full flex items-center justify-center text-sm font-semibold shadow-lg${
             handleHinted && hintsEnabled ? ' ep-hint-blink' : ''
           }`}
           style={{ background: '#1bbfa8', color: '#0E0E10' }}

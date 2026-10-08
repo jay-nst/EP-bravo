@@ -27,7 +27,7 @@ const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
     >
       <div className="text-center">
         <div
-          className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin mx-auto mb-3"
+          className="w-32 h-32 rounded-full border-2 border-t-transparent animate-spin mx-auto mb-12"
           style={{ borderColor: 'var(--border)', borderTopColor: 'transparent' }}
         />
         <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -1104,7 +1104,7 @@ export default function CorePage() {
 
         {/* Mobile sidebar toggle */}
         <button
-          className="md:hidden absolute top-3 right-3 z-20 p-2.5 rounded-lg"
+          className="md:hidden absolute top-12 right-12 z-20 p-10 rounded-sm"
           style={{
             background: 'rgba(14,14,16,0.85)',
             backdropFilter: 'blur(8px)',
@@ -1121,7 +1121,7 @@ export default function CorePage() {
 
         {/* Map style switcher */}
         <div
-          className="absolute bottom-4 left-4 md:left-auto md:right-4 flex gap-1 p-1 rounded-lg z-10"
+          className="absolute bottom-16 left-16 md:left-auto md:right-16 flex gap-4 p-4 rounded-sm z-10"
           style={{
             background: 'rgba(14,14,16,0.85)',
             backdropFilter: 'blur(8px)',
@@ -1137,7 +1137,7 @@ export default function CorePage() {
                 setMapStyleId(id);
                 trackEvent('map_style_change', id, {});
               }}
-              className="px-2 md:px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
+              className="px-8 md:px-10 py-6 rounded-[6px] text-xs font-medium transition-colors"
               style={{
                 background: mapStyleId === id ? 'var(--surface-elevated)' : 'transparent',
                 color: mapStyleId === id ? 'var(--text)' : 'var(--text-muted)',
@@ -1145,7 +1145,7 @@ export default function CorePage() {
               }}
               title={style.label}
             >
-              <span className="mr-1 hidden sm:inline">{style.icon}</span>
+              <span className="mr-4 hidden sm:inline">{style.icon}</span>
               {style.label}
             </button>
             );
@@ -1154,7 +1154,7 @@ export default function CorePage() {
 
         {/* Active layers indicator */}
         <div
-          className="absolute top-3 left-14 flex gap-1.5 z-10 max-w-[calc(100%-120px)] md:max-w-none overflow-x-auto"
+          className="absolute top-12 left-56 flex gap-6 z-10 max-w-[calc(100%-120px)] md:max-w-none overflow-x-auto"
           style={{ scrollbarWidth: 'none' }}
         >
           {layers
@@ -1162,7 +1162,7 @@ export default function CorePage() {
             .map((l) => (
               <div
                 key={l.id}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs"
+                className="flex items-center gap-6 px-10 py-6 rounded-full text-xs"
                 style={{
                   background: 'rgba(14,14,16,0.85)',
                   backdropFilter: 'blur(8px)',
@@ -1171,7 +1171,7 @@ export default function CorePage() {
                 }}
               >
                 <span
-                  className="w-1.5 h-1.5 rounded-full"
+                  className="w-6 h-6 rounded-full"
                   style={{ background: l.color }}
                 />
                 {l.label}
@@ -1196,7 +1196,7 @@ export default function CorePage() {
       <div
         className={`
           fixed md:relative inset-y-0 right-0 z-40 md:z-auto
-          w-[300px] md:w-80 flex flex-col border-l
+          w-[300px] md:w-320 flex flex-col border-l
           transition-transform duration-200 ease-out
           ${sidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
         `}
@@ -1214,7 +1214,7 @@ export default function CorePage() {
         >
           <button
             onClick={() => setSidebarTab('layers')}
-            className="flex-1 py-3 text-sm font-medium transition-colors"
+            className="flex-1 py-12 text-sm font-medium transition-colors"
             style={{
               color: sidebarTab === 'layers' ? 'var(--text)' : 'var(--text-muted)',
               borderBottom: sidebarTab === 'layers' ? '2px solid var(--accent)' : '2px solid transparent',
@@ -1224,7 +1224,7 @@ export default function CorePage() {
           </button>
           <button
             onClick={() => setSidebarTab('purchase')}
-            className="flex-1 py-3 text-sm font-medium transition-colors"
+            className="flex-1 py-12 text-sm font-medium transition-colors"
             style={{
               color: sidebarTab === 'purchase' ? 'var(--text)' : 'var(--text-muted)',
               borderBottom: sidebarTab === 'purchase' ? '2px solid var(--accent)' : '2px solid transparent',
@@ -1235,24 +1235,24 @@ export default function CorePage() {
         </div>
 
         {/* Tab content */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-16">
           {sidebarTab === 'layers' ? (
-            <div className="space-y-6">
+            <div className="space-y-24">
               <LayerPanel layers={layers} onToggle={handleLayerToggle} />
 
               {/* Legend */}
               <div>
                 <h3
-                  className="text-xs font-mono tracking-wider uppercase mb-2"
+                  className="text-xs font-mono tracking-wider uppercase mb-8"
                   style={{ color: 'var(--text-muted)' }}
                 >
                   Severity
                 </h3>
-                <div className="space-y-1">
+                <div className="space-y-4">
                   {(['critical', 'high', 'moderate', 'low'] as const).map((sev) => (
-                    <div key={sev} className="flex items-center gap-2 px-2.5 py-1">
+                    <div key={sev} className="flex items-center gap-8 px-10 py-4">
                       <span
-                        className="w-2 h-2 rounded-sm"
+                        className="w-8 h-8 rounded-xs"
                         style={{ background: SEVERITY_COLORS[sev] }}
                       />
                       <span
@@ -1270,12 +1270,12 @@ export default function CorePage() {
               {layers.find((l) => l.id === 'air-quality')?.enabled && (
                 <div>
                   <h3
-                    className="text-xs font-mono tracking-wider uppercase mb-2"
+                    className="text-xs font-mono tracking-wider uppercase mb-8"
                     style={{ color: 'var(--text-muted)' }}
                   >
                     대기질 등급
                   </h3>
-                  <div className="space-y-1">
+                  <div className="space-y-4">
                     {([
                       ['good', '좋음'],
                       ['moderate', '보통'],
@@ -1283,9 +1283,9 @@ export default function CorePage() {
                       ['very_unhealthy', '매우나쁨'],
                       ['hazardous', '위험'],
                     ] as const).map(([key, label]) => (
-                      <div key={key} className="flex items-center gap-2 px-2.5 py-1">
+                      <div key={key} className="flex items-center gap-8 px-10 py-4">
                         <span
-                          className="w-2 h-2 rounded-full"
+                          className="w-8 h-8 rounded-full"
                           style={{ background: AIR_QUALITY_COLORS[key] }}
                         />
                         <span
@@ -1304,21 +1304,21 @@ export default function CorePage() {
               {layers.find((l) => l.id === 'weather-forecast')?.enabled && (
                 <div>
                   <h3
-                    className="text-xs font-mono tracking-wider uppercase mb-2"
+                    className="text-xs font-mono tracking-wider uppercase mb-8"
                     style={{ color: 'var(--text-muted)' }}
                   >
                     하늘 상태
                   </h3>
-                  <div className="space-y-1">
+                  <div className="space-y-4">
                     {([
                       ['clear', '맑음'],
                       ['partly_cloudy', '구름조금'],
                       ['cloudy', '구름많음'],
                       ['overcast', '흐림'],
                     ] as const).map(([key, label]) => (
-                      <div key={key} className="flex items-center gap-2 px-2.5 py-1">
+                      <div key={key} className="flex items-center gap-8 px-10 py-4">
                         <span
-                          className="w-2 h-2 rounded-full"
+                          className="w-8 h-8 rounded-full"
                           style={{ background: SKY_COLORS[key] }}
                         />
                         <span
@@ -1337,20 +1337,20 @@ export default function CorePage() {
               {layers.find((l) => l.id === 'wildfire')?.enabled && (
                 <div>
                   <h3
-                    className="text-xs font-mono tracking-wider uppercase mb-2"
+                    className="text-xs font-mono tracking-wider uppercase mb-8"
                     style={{ color: 'var(--text-muted)' }}
                   >
                     산불 상태
                   </h3>
-                  <div className="space-y-1">
+                  <div className="space-y-4">
                     {([
                       ['active', '진화중'],
                       ['contained', '진화거의완료'],
                       ['extinguished', '진화완료'],
                     ] as const).map(([key, label]) => (
-                      <div key={key} className="flex items-center gap-2 px-2.5 py-1">
+                      <div key={key} className="flex items-center gap-8 px-10 py-4">
                         <span
-                          className="w-2 h-2 rounded-sm"
+                          className="w-8 h-8 rounded-xs"
                           style={{ background: WILDFIRE_STATUS_COLORS[key] }}
                         />
                         <span
@@ -1369,21 +1369,21 @@ export default function CorePage() {
               {layers.find((l) => l.id === 'earthquake')?.enabled && (
                 <div>
                   <h3
-                    className="text-xs font-mono tracking-wider uppercase mb-2"
+                    className="text-xs font-mono tracking-wider uppercase mb-8"
                     style={{ color: 'var(--text-muted)' }}
                   >
                     지진 규모
                   </h3>
-                  <div className="space-y-1">
+                  <div className="space-y-4">
                     {([
                       [2.0, '#FFD54F', '2.0+'],
                       [3.0, '#FF9800', '3.0+'],
                       [4.0, '#F44336', '4.0+'],
                       [5.0, '#B71C1C', '5.0+'],
                     ] as const).map(([mag, color, label]) => (
-                      <div key={mag} className="flex items-center gap-2 px-2.5 py-1">
+                      <div key={mag} className="flex items-center gap-8 px-10 py-4">
                         <span
-                          className="w-2 h-2 rounded-full"
+                          className="w-8 h-8 rounded-full"
                           style={{ background: color }}
                         />
                         <span
@@ -1402,12 +1402,12 @@ export default function CorePage() {
               {layers.find((l) => l.id === 'citadel')?.enabled && (
                 <div>
                   <h3
-                    className="text-xs font-mono tracking-wider uppercase mb-2"
+                    className="text-xs font-mono tracking-wider uppercase mb-8"
                     style={{ color: 'var(--text-muted)' }}
                   >
                     Active Events
                   </h3>
-                  <div className="space-y-2">
+                  <div className="space-y-8">
                     {CITADEL_GEOJSON.features.map((f) => {
                       const sev = f.properties.severity as CitadelSeverity;
                       return (
@@ -1433,7 +1433,7 @@ export default function CorePage() {
                               });
                             }
                           }}
-                          className="w-full text-left p-2.5 rounded-md transition-colors"
+                          className="w-full text-left p-10 rounded-[6px] transition-colors"
                           style={{ background: 'var(--surface)' }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.background = 'var(--surface-elevated)';
@@ -1442,9 +1442,9 @@ export default function CorePage() {
                             e.currentTarget.style.background = 'var(--surface)';
                           }}
                         >
-                          <div className="flex items-center gap-1.5 mb-1">
+                          <div className="flex items-center gap-6 mb-4">
                             <span
-                              className="w-1.5 h-1.5 rounded-full"
+                              className="w-6 h-6 rounded-full"
                               style={{ background: SEVERITY_COLORS[sev] }}
                             />
                             <span
@@ -1461,7 +1461,7 @@ export default function CorePage() {
                             {f.properties.title}
                           </p>
                           <p
-                            className="text-xs mt-0.5"
+                            className="text-xs mt-2"
                             style={{ color: 'var(--text-muted)' }}
                           >
                             {f.properties.location_name}
@@ -1474,7 +1474,7 @@ export default function CorePage() {
               )}
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-16">
               <AoiPanel
                 aoi={aoi}
                 satellite={satellite}
