@@ -50,3 +50,4 @@ next-env.d.ts
 # 공공데이터 수집 원본 캐시 (재생성: scripts/fetch-*.js)
 scripts/.cache/
 _workspace/
+_assets/
