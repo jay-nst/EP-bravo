@@ -1,0 +1,344 @@
+/* 구매 튜토리얼 — 팝오버·진행 버튼·크로스페이드는 Agent 튜토리얼 스타일을 그대로 쓴다 */
+@import '../agent-tutorial/tutorial.css';
+
+/* 실서비스(map.ep.naraspace.com) 라이트 테마 토큰 — 재현 레이어 안에서만 NDS 변수를
+   실서비스 값으로 다시 선언한다. EarthPaper 앱은 .dark 고정이지만 주문 화면은 라이트다.
+   값: 실서비스 CSS(1f5k9wpax9bp8.css) :root 블록, 2026-10-08 */
+.ep-live-light {
+  --text-primary: #17181a;
+  --text-secondary: #303236;
+  --text-tertiary: #484b51;
+  --text-disabled: #5f636b;
+  --text-inverse: #fafafa;
+  --text-interactive-primary: #35d9c0;
+  --text-interactive-primary-hover: #60e7d3;
+  --text-interactive-secondary: #5f636b;
+  --text-interactive-secondary-hover: #9ca0a6;
+  --text-interactive-selected: #1bbfa8;
+  --bg-primary: #eff0f1;
+  --bg-secondary: #fafafa;
+  --bg-tertiary: #fff;
+  --bg-disabled: #dddee1;
+  --bg-disabled-subtle: #7d828a;
+  --bg-inverse: #17181a;
+  --bg-interactive-primary: #35d9c0;
+  --bg-interactive-primary-hover: #87edde;
+  --bg-interactive-secondary: #fafafa;
+  --bg-interactive-secondary-hover: #eff0f1;
+  --bg-interactive-selected: #cbf7f1;
+  --bg-interactive-selected-hover: #e8fcf9;
+  --border-primary: #9ca0a6;
+  --border-secondary: #bcbec3;
+  --border-tertiary: #dddee1;
+  --border-focus-ring: #87edde;
+  --border-disabled: #9ca0a6;
+  --border-inverse: #1f2124;
+  --border-interactive-primary: #35d9c0;
+  --border-interactive-primary-hover: #60e7d3;
+  --border-interactive-secondary: #5f636b;
+  --border-interactive-secondary-hover: #7d828a;
+  --icon-primary: #17181a;
+  --icon-secondary: #303236;
+  --icon-tertiary: #484b51;
+  --icon-brand: #35d9c0;
+  --icon-disabled: #5f636b;
+  --icon-inverse: #fafafa;
+  --icon-interactive-primary: #35d9c0;
+  --icon-interactive-primary-hover: #60e7d3;
+  --icon-interactive-selected: #1bbfa8;
+  --icon-interactive-secondary: #5f636b;
+  --icon-interactive-secondary-hover: #9ca0a6;
+  --status-info: #287efd;
+  --status-success: #17b26b;
+  --status-danger: #dc4646;
+  --status-warning: #ffbe18;
+  --elevation-2: 0 1px 2px 0 #00000014, 0 0 1px 0 #00000029;
+  --elevation-4: 0 2px 4px 0 #00000014, 0 0 2px 0 #00000029;
+  --elevation-6: 0 4px 10px 0 #00000014, 0 0 2px 0 #00000029;
+  --elevation-8: 0 8px 16px 0 #00000014, 0 0 8px 0 #00000029;
+  --elevation-16: 0 16px 20px 0 #00000014, 0 0 16px 0 #00000029;
+  /* EarthPaper globals.css 의 별칭 — @theme 의 --color-text-primary 등이 이 별칭을 가리키고,
+     별칭은 :root 에서 다크 값으로 계산돼 상속된다. 여기서 다시 계산시켜야 라이트 값이 된다 */
+  --bg: var(--bg-tertiary);
+  --surface: var(--bg-secondary);
+  --surface-elevated: var(--bg-primary);
+  --text: var(--text-primary);
+  --text-muted: var(--text-tertiary);
+  --accent: var(--bg-interactive-primary);
+  --accent-hover: var(--bg-interactive-primary-hover);
+  --border: var(--border-tertiary);
+  --success: var(--status-success);
+  --warning: var(--status-warning);
+  --error: var(--status-danger);
+  color: var(--text-primary);
+}
+
+/* 5분 타이머 테두리 — 실서비스 .timerStroke 그대로 (300초 동안 시계 방향으로 줄어든다) */
+.ep-timer-stroke {
+  animation: ep-timer-stroke 300s linear both;
+}
+
+@keyframes ep-timer-stroke {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -100px;
+  }
+}
+
+/* 사각형 영역 그리기 — 좌상단에서 우하단으로 드래그하듯 펼쳐진다.
+   색은 실캡쳐 속 AOI(민트 테두리 + 반투명 채움)에 맞췄다 */
+.ep-draw-aoi {
+  border: 2px solid #35d9c0;
+  background: rgba(53, 217, 192, 0.35);
+  animation: ep-draw-aoi var(--ease-move) both;
+}
+
+@keyframes ep-draw-aoi {
+  from {
+    clip-path: inset(0 100% 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* 드래그 중인 모서리 */
+.ep-draw-corner {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border: 2px solid #35d9c0;
+  background: #fff;
+  border-radius: 2px;
+  animation: ep-draw-corner var(--ease-move) both;
+}
+
+@keyframes ep-draw-corner {
+  from {
+    left: 0;
+    top: 0;
+  }
+  to {
+    left: 100%;
+    top: 100%;
+  }
+}
+
+/* 지점 선택 핑 — 마커 자리에서 퍼지는 링 2회 */
+.ep-drop-pin {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 3px solid #35d9c0;
+  animation: ep-drop-pin ease-out both;
+}
+
+@keyframes ep-drop-pin {
+  0% {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+  51% {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* 펼쳐지는 동작은 생략하고 결과 상태만 보여 준다 */
+  .ep-draw-aoi {
+    animation: none;
+  }
+  .ep-draw-corner,
+  .ep-drop-pin {
+    animation: none;
+    display: none;
+  }
+}
+
+/* ==========================================================
+   말풍선 — NDS 규칙으로 (2026-10-08 사용자 요청 "NDS 적용")
+   driver.js 팝오버는 React 밖의 DOM 이라 NDS 컴포넌트를 직접 쓸 수 없어,
+   NDS Dialog / Button 의 클래스 값을 토큰 변수로 옮겼다.
+   - 컨테이너 = Dialog popup: rounded-lg, bg-bg-tertiary, inset-ring border-tertiary, p-20 gap-16
+   - 제목 text-heading-lg, 본문 text-body-md-regular (Dialog Title/Description)
+   - 다음 = Button solid sm, 이전 = Button outline sm (min-h-32 px-8 py-4, rounded-xl, text-body-sm-medium)
+   - 닫기 = Button text iconOnly sm
+   driver.css 가 레이어 밖 `all: unset` 이라 Tailwind 유틸리티 대신 클래스 2단 셀렉터로 덮는다.
+   ========================================================== */
+.driver-popover.ot-popover {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 400px;
+  min-width: 0;
+  max-width: calc(100vw - 25px);
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  box-shadow:
+    inset 0 0 0 1px var(--border-tertiary),
+    var(--elevation-8);
+  font-family: inherit;
+}
+
+.ot-popover .driver-popover-title {
+  margin: 0;
+  padding-right: 40px; /* 닫기 버튼 자리 */
+  font-family: inherit;
+  font-size: var(--text-heading-lg);
+  line-height: var(--text-heading-lg--line-height);
+  font-weight: var(--text-heading-lg--font-weight);
+  color: var(--text-primary);
+}
+
+.ot-popover .driver-popover-title[style*='block'] + .driver-popover-description {
+  margin-top: 0;
+}
+
+.ot-popover .driver-popover-description {
+  margin: 0;
+  font-family: inherit;
+  font-size: var(--text-body-md-regular);
+  line-height: var(--text-body-md-regular--line-height);
+  font-weight: var(--text-body-md-regular--font-weight);
+  color: var(--text-secondary);
+}
+
+/* 무엇을 누를지 — Field 안내문 톤 (text-body-sm-medium, 선택 색) */
+.ot-popover .ot-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: var(--text-body-sm-medium);
+  line-height: var(--text-body-sm-medium--line-height);
+  font-weight: var(--text-body-sm-medium--font-weight);
+  color: var(--text-interactive-selected);
+}
+
+.ot-popover .ot-hint::before {
+  content: '';
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: currentColor;
+}
+
+/* Dialog footer: flex items-center justify-end gap-6 */
+.ot-popover .driver-popover-footer {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.ot-popover .driver-popover-navigation-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.ot-popover .driver-popover-navigation-btns button + button {
+  margin-left: 0;
+}
+
+/* Button sm — solid / outline */
+.ot-popover .driver-popover-footer-btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 4px 8px; /* min-h-32 px-8 py-4 */
+  border: none;
+  border-radius: var(--radius-xl);
+  font-family: inherit;
+  font-size: var(--text-body-sm-medium);
+  line-height: var(--text-body-sm-medium--line-height);
+  font-weight: var(--text-body-sm-medium--font-weight);
+  text-shadow: none;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-short) var(--ease-enter),
+    box-shadow var(--duration-short) var(--ease-enter),
+    color var(--duration-short) var(--ease-enter);
+}
+
+.ot-popover .driver-popover-next-btn {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.ot-popover .driver-popover-prev-btn {
+  background: transparent;
+  color: var(--text-primary);
+  box-shadow: inset 0 0 0 1px var(--border-secondary);
+}
+
+.ot-popover .driver-popover-next-btn:hover,
+.ot-popover .driver-popover-prev-btn:hover {
+  background: var(--bg-interactive-primary-hover);
+  box-shadow: inset 0 0 0 1px var(--bg-interactive-primary-hover);
+  color: var(--text-inverse);
+}
+
+.ot-popover .driver-popover-footer-btn:focus-visible,
+.ot-popover .driver-popover-close-btn:focus-visible {
+  outline: 2px solid var(--border-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Button text iconOnly sm — 닫기 */
+.ot-popover .driver-popover-close-btn {
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xl);
+  font-size: 20px;
+  line-height: 1;
+  color: var(--icon-primary);
+  background: transparent;
+  transition: color var(--duration-short) var(--ease-enter);
+}
+
+/* driver.css 가 :focus 에 라이트용 #2d2d2d 를 칠한다 — 투어 시작 시 초기 포커스로 X 가 어두워지는 함정 */
+.ot-popover .driver-popover-close-btn:focus {
+  color: var(--icon-primary);
+  background: transparent;
+}
+
+.ot-popover .driver-popover-close-btn:hover {
+  color: var(--icon-interactive-primary-hover);
+}
+
+.ot-popover .driver-popover-arrow-side-left.driver-popover-arrow {
+  border-left-color: var(--bg-tertiary);
+}
+.ot-popover .driver-popover-arrow-side-right.driver-popover-arrow {
+  border-right-color: var(--bg-tertiary);
+}
+.ot-popover .driver-popover-arrow-side-top.driver-popover-arrow {
+  border-top-color: var(--bg-tertiary);
+}
+.ot-popover .driver-popover-arrow-side-bottom.driver-popover-arrow {
+  border-bottom-color: var(--bg-tertiary);
+}
