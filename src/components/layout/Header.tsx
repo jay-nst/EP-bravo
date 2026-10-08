@@ -7,7 +7,7 @@ import { useState, useRef, useEffect } from 'react';
 const SERVICES = [
   { key: 'citadel', label: 'Citadel', desc: '재난 · 도시 관제', color: '#C45C4A', href: '/citadel' },
   { key: 'predict', label: 'Predict', desc: '자산 검증 · 금융', color: '#4A9EC4', href: '/predict' },
-  { key: 'warden', label: 'Warden', desc: '기후 인텔리전스', color: '#6B8A5E', href: '/warden' },
+  { key: 'warden', label: 'Warden', desc: '기후 · 컴플라이언스', color: '#6B8A5E', href: '/warden' },
   { key: 'northpaper', label: 'Northpaper', desc: '국방 · 안보', color: '#3D5A80', href: '/northpaper' },
   { key: 'nexus', label: 'Nexus', desc: '데이터 마켓', color: '#C8923A', href: '/nexus' },
   { key: 'core', label: 'Core', desc: '위성 지도', color: '#8A8680', href: '/core' },
@@ -138,6 +138,21 @@ export default function Header() {
             >
               EP Agent
             </Link>
+
+            <Link
+              href="/climate"
+              className="px-12 py-10 text-sm rounded-[6px] transition-colors"
+              style={{
+                color: pathname.startsWith('/climate')
+                  ? 'var(--accent)'
+                  : 'var(--text-muted)',
+                background: pathname.startsWith('/climate')
+                  ? 'var(--surface-elevated)'
+                  : 'transparent',
+              }}
+            >
+              기후 인텔리전스
+            </Link>
           </nav>
         </div>
 
@@ -207,6 +222,18 @@ export default function Header() {
               }}
             >
               EP Agent
+            </Link>
+
+            <Link
+              href="/climate"
+              className="flex items-center px-24 py-12 text-sm transition-colors"
+              style={{
+                color: pathname.startsWith('/climate')
+                  ? 'var(--accent)'
+                  : 'var(--text)',
+              }}
+            >
+              기후 인텔리전스
             </Link>
 
             <div style={{ padding: '8px 24px 4px', marginTop: 4, borderTop: '1px solid var(--border)' }}>

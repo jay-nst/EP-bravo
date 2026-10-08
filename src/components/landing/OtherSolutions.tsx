@@ -5,13 +5,14 @@ import Link from 'next/link';
 const SOLUTIONS = [
   { key: 'citadel', label: 'Citadel', desc: '재난 · 도시 관제', color: '#C45C4A', href: '/citadel' },
   { key: 'predict', label: 'Predict', desc: '자산 검증 · 금융', color: '#4A9EC4', href: '/predict' },
-  { key: 'warden', label: 'Warden', desc: '기후 인텔리전스', color: '#6B8A5E', href: '/warden' },
+  { key: 'warden', label: 'Warden', desc: '기후 · 컴플라이언스', color: '#6B8A5E', href: '/warden' },
   { key: 'northpaper', label: 'Northpaper', desc: '국방 · 안보', color: '#3D5A80', href: '/northpaper' },
   { key: 'nexus', label: 'Nexus', desc: '데이터 마켓', color: '#C8923A', href: '/nexus' },
 ] as const;
 
 interface OtherSolutionsProps {
-  current: typeof SOLUTIONS[number]['key'];
+  /** 현재 페이지의 솔루션 — 목록에서 제외. 솔루션 페이지가 아니면 생략 */
+  current?: typeof SOLUTIONS[number]['key'];
 }
 
 export default function OtherSolutions({ current }: OtherSolutionsProps) {
