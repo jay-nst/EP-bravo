@@ -28,7 +28,7 @@ interface LayerPanelProps {
 export default function LayerPanel({ layers, onToggle }: LayerPanelProps) {
   return (
     <div className="space-y-4">
-      <h3 className="mb-8 text-body-sm-medium text-text-secondary">Data Overlay</h3>
+      <h3 className="mb-8 text-body-sm-medium text-text-tertiary">Data Overlay</h3>
       {layers.map((layer) => (
         <label
           key={layer.id}
@@ -51,7 +51,7 @@ export default function LayerPanel({ layers, onToggle }: LayerPanelProps) {
             {layer.label}
           </span>
           {layer.comingSoon ? (
-            <StatusChip status="neutral" showIcon={false}>
+            <StatusChip status="neutral" showIcon={false} className="bg-bg-primary text-text-tertiary">
               Soon
             </StatusChip>
           ) : (

@@ -29,20 +29,32 @@ const CAPABILITIES = [
   },
 ];
 
+// 운영 색 복원 (NDS_FULL_ADOPTION_RULES §8) — 색만 덮고 크기·모서리·패딩은 NDS 그대로
+const CTA_SOLID_CLASS =
+  'bg-[#3D5A80] text-white [&_svg]:text-white not-data-disabled:not-aria-invalid:hover:bg-[#3D5A80] hover:opacity-85';
+const CTA_TEXT_CLASS =
+  'text-[#3D5A80] [&_svg]:text-[#3D5A80] not-data-disabled:not-aria-invalid:hover:text-[#3D5A80] not-data-disabled:not-aria-invalid:hover:[&_svg]:text-[#3D5A80] hover:opacity-85';
+
 export default function NorthpaperPage() {
   return (
     <div className="min-h-screen bg-bg-tertiary">
       {/* Hero */}
       <section className="mx-auto max-w-960 px-16 pb-48 pt-48 sm:px-24 sm:pb-64 sm:pt-80">
         <div className="mb-20">
-          <StatusChip status="neutral" showIcon={false}>EarthPaper · Northpaper</StatusChip>
+          <StatusChip
+            status="neutral"
+            className="bg-[rgba(61,90,128,0.12)] text-text-tertiary"
+            icon={<span aria-hidden className="size-8 shrink-0 rounded-[2px] bg-[#3D5A80]" />}
+          >
+            EarthPaper · <span className="text-[#3D5A80]">Northpaper</span>
+          </StatusChip>
         </div>
 
         <h1 className="mb-16 text-heading-3xl text-text-primary md:text-display-md">
           국방 · 안보
         </h1>
 
-        <p className="max-w-[52ch] text-body-md-regular text-text-secondary">
+        <p className="max-w-[52ch] text-body-md-regular text-text-tertiary">
           보안 요건에 따라 본 페이지에서는 역량 개요만 안내합니다.
           상세 사항은 별도 채널을 통해 문의해 주시기 바랍니다.
         </p>
@@ -50,12 +62,12 @@ export default function NorthpaperPage() {
 
       {/* Use Case */}
       <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
-        <div className="mb-24 flex flex-col items-start gap-8">
-          <StatusChip status="neutral" showIcon={false}>Use Case</StatusChip>
+        <div className="mb-24 flex flex-col items-start gap-8 border-t border-border-tertiary pt-32">
+          <StatusChip status="neutral" showIcon={false} className="text-text-tertiary">Use Case</StatusChip>
           <h2 className="text-heading-2xl text-text-primary">
             개성공단 무단 가동 탐지
           </h2>
-          <p className="max-w-[60ch] text-body-md-regular text-text-secondary">
+          <p className="max-w-[60ch] text-body-md-regular text-text-tertiary">
             2016년 공식 폐쇄된 개성공단. 북한의 무단 사용 정황을 다중 위성 분석으로 포착한
             실제 분석 시나리오입니다.
           </p>
@@ -84,11 +96,11 @@ export default function NorthpaperPage() {
               desc: '무단 가동 정황 종합 판정, 정책 의사결정 근거 제공',
             },
           ].map((step) => (
-            <Card.Root key={step.no}>
+            <Card.Root key={step.no} className="bg-bg-secondary">
               <Card.Body className="gap-8">
-                <span className="text-body-xs-regular tabular-nums text-text-tertiary">{step.no}</span>
+                <span className="text-body-xs-regular tabular-nums text-[#3D5A80]">{step.no}</span>
                 <Card.Title>{step.title}</Card.Title>
-                <p className="text-body-sm-regular text-text-secondary">{step.desc}</p>
+                <p className="text-body-sm-regular text-text-tertiary">{step.desc}</p>
               </Card.Body>
             </Card.Root>
           ))}
@@ -96,7 +108,7 @@ export default function NorthpaperPage() {
 
         <Button
           variant="text"
-          className="mt-16"
+          className={`mt-16 ${CTA_TEXT_CLASS}`}
           rightIcon={<IconArrowRight />}
           render={
             <a
@@ -110,7 +122,7 @@ export default function NorthpaperPage() {
           이 분석의 상세 내용을 확인하세요
         </Button>
 
-        <p className="mt-16 text-body-xs-regular text-text-tertiary">
+        <p className="mt-16 rounded-sm bg-[rgba(61,90,128,0.08)] px-16 py-14 text-body-xs-regular text-text-tertiary">
           북한 지역 상시 모니터링 데이터셋 — 글로벌 경쟁사가 복제할 수 없는 차별점
         </p>
       </section>
@@ -120,16 +132,16 @@ export default function NorthpaperPage() {
 
       {/* Capabilities */}
       <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
-        <div className="mb-24 flex flex-col items-start gap-8">
-          <h2 className="text-heading-2xl text-text-primary">역량</h2>
+        <div className="mb-24 flex flex-col items-start gap-8 border-t border-border-tertiary pt-32">
+          <h2 className="text-heading-2xl text-text-tertiary">역량</h2>
         </div>
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-12">
           {CAPABILITIES.map((c) => (
-            <Card.Root key={c.title}>
+            <Card.Root key={c.title} className="bg-bg-secondary">
               <Card.Body className="gap-8">
-                <Card.Title>{c.title}</Card.Title>
-                <p className="text-body-sm-regular text-text-secondary">{c.desc}</p>
+                <Card.Title className="text-[#3D5A80]">{c.title}</Card.Title>
+                <p className="text-body-sm-regular text-text-tertiary">{c.desc}</p>
               </Card.Body>
             </Card.Root>
           ))}
@@ -138,8 +150,8 @@ export default function NorthpaperPage() {
 
       {/* Public Analysis */}
       <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
-        <div className="mb-24 flex flex-col items-start gap-8">
-          <h2 className="text-heading-2xl text-text-primary">공개 분석</h2>
+        <div className="mb-24 flex flex-col items-start gap-8 border-t border-border-tertiary pt-32">
+          <h2 className="text-heading-2xl text-text-tertiary">공개 분석</h2>
         </div>
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-12">
@@ -151,10 +163,11 @@ export default function NorthpaperPage() {
             <Card.Root
               key={post.href}
               interactive
+              className="bg-bg-secondary hover:inset-ring-text-tertiary"
               render={<a href={post.href} target="_blank" rel="noopener noreferrer" />}
             >
               <Card.Body className="gap-8">
-                <Card.Title render={<p />}>{post.title}</Card.Title>
+                <Card.Title render={<p />} className="text-[#3D5A80]">{post.title}</Card.Title>
                 <span className="text-body-xs-regular text-text-tertiary">{post.location} · ep.naraspace.com</span>
               </Card.Body>
             </Card.Root>
@@ -164,12 +177,12 @@ export default function NorthpaperPage() {
 
       {/* Contact */}
       <section className="mx-auto max-w-960 px-16 pb-80 sm:px-24">
-        <Card.Root>
+        <Card.Root className="bg-bg-secondary">
           <Card.Body className="items-center gap-8 py-32 text-center">
-            <p className="mb-16 max-w-[44ch] text-body-md-regular text-text-secondary">
+            <p className="mb-16 max-w-[44ch] text-body-md-regular text-text-tertiary">
               국방·안보 관련 문의는 별도 채널로 안내합니다.
             </p>
-            <Button size="lg" render={<a href="mailto:defense@naraspace.com" />} nativeButton={false}>
+            <Button size="lg" className={CTA_SOLID_CLASS} render={<a href="mailto:defense@naraspace.com" />} nativeButton={false}>
               문의하기
             </Button>
           </Card.Body>

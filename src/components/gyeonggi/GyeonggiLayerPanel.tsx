@@ -23,18 +23,17 @@ export interface GyeonggiLayer {
 
 const GROUP_ORDER: GyeonggiLayer['group'][] = ['접근성 분석', '평가 데이터', '위성·배경'];
 
-// 데이터 성격 배지 — NDS StatusChip. status 는 의미대로 (docs/NDS_FULL_ADOPTION_RULES.md §4):
-// LIVE→success, DEMO→neutral, 분석·통계→information. 영상은 규칙에 없어 brand 로 구분한다.
-// loading 은 칩 대신 Spinner 로 표시한다.
+// 데이터 성격 배지 — NDS StatusChip. 색은 운영 배지 색 그대로 (§8):
+// surface-elevated 배경 + 배지별 글자색. loading 은 칩 대신 Spinner(원래 ··· 회색) 로 표시한다.
 const SOURCE_BADGE: Record<
   Exclude<DataSourceKind, 'loading'>,
-  { label: string; status: StatusChipProps['status'] }
+  { label: string; status: StatusChipProps['status']; colorClass: string }
 > = {
-  live: { label: 'LIVE', status: 'success' },
-  stat: { label: '통계', status: 'information' },
-  demo: { label: 'DEMO', status: 'neutral' },
-  analysis: { label: '분석', status: 'information' },
-  imagery: { label: '영상', status: 'brand' },
+  live: { label: 'LIVE', status: 'success', colorClass: 'bg-bg-primary text-[#1bbfa8]' },
+  stat: { label: '통계', status: 'information', colorClass: 'bg-bg-primary text-[#4A9E6B]' },
+  demo: { label: 'DEMO', status: 'neutral', colorClass: 'bg-bg-primary text-[#C8923A]' },
+  analysis: { label: '분석', status: 'information', colorClass: 'bg-bg-primary text-[#C45C4A]' },
+  imagery: { label: '영상', status: 'brand', colorClass: 'bg-bg-primary text-[#4A9EC4]' },
 };
 
 interface GyeonggiLayerPanelProps {
@@ -52,7 +51,7 @@ export default function GyeonggiLayerPanel({ layers, onToggle }: GyeonggiLayerPa
         return (
           <div key={group} className="space-y-4">
             {/* 패널 내부 그룹 라벨 (§7-1) — 제목이 아니라 묶음 이름 */}
-            <h3 className="mb-8 text-body-sm-medium text-text-secondary">{group}</h3>
+            <h3 className="mb-8 text-body-sm-medium text-text-tertiary">{group}</h3>
 
             {groupLayers.map((layer) => (
               // 행 전체가 label 이라 어디를 눌러도 Switch 가 토글된다.
@@ -85,9 +84,13 @@ export default function GyeonggiLayerPanel({ layers, onToggle }: GyeonggiLayerPa
 
                 <span className="flex shrink-0 flex-col items-end gap-4">
                   {layer.source === 'loading' ? (
-                    <Spinner size="sm" aria-label="불러오는 중" />
+                    <Spinner size="sm" aria-label="불러오는 중" className="text-[#8A8680]" />
                   ) : (
-                    <StatusChip status={SOURCE_BADGE[layer.source].status} showIcon={false}>
+                    <StatusChip
+                      status={SOURCE_BADGE[layer.source].status}
+                      showIcon={false}
+                      className={SOURCE_BADGE[layer.source].colorClass}
+                    >
                       {SOURCE_BADGE[layer.source].label}
                     </StatusChip>
                   )}

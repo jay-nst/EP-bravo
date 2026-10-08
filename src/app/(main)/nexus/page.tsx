@@ -37,13 +37,25 @@ const DATA_STATS = [
   { label: 'API 응답 시간', value: '<200ms', sub: 'p95 기준' },
 ];
 
+// 운영 색 복원 (NDS_FULL_ADOPTION_RULES §8) — 색만 덮고 크기·모서리·패딩은 NDS 그대로
+const CTA_SOLID_CLASS =
+  'bg-[#C8923A] text-white [&_svg]:text-white not-data-disabled:not-aria-invalid:hover:bg-[#C8923A] hover:opacity-85';
+const CTA_OUTLINE_CLASS =
+  'text-text-tertiary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-transparent not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary hover:opacity-85';
+
 export default function NexusPage() {
   return (
     <div className="min-h-screen bg-bg-tertiary">
       {/* Hero */}
       <section className="mx-auto max-w-960 px-16 pb-48 pt-48 sm:px-24 sm:pb-64 sm:pt-80">
         <div className="mb-20">
-          <StatusChip status="neutral" showIcon={false}>EarthPaper · Nexus</StatusChip>
+          <StatusChip
+            status="neutral"
+            className="bg-[#C8923A1A] text-text-tertiary"
+            icon={<span aria-hidden className="size-8 shrink-0 rounded-[2px] bg-[#C8923A]" />}
+          >
+            EarthPaper · <span className="text-[#C8923A]">Nexus</span>
+          </StatusChip>
         </div>
 
         <h1 className="mb-16 text-heading-3xl text-text-primary md:text-display-md">
@@ -51,16 +63,16 @@ export default function NexusPage() {
           바로 연결합니다
         </h1>
 
-        <p className="mb-32 max-w-[52ch] text-body-md-regular text-text-secondary">
+        <p className="mb-32 max-w-[52ch] text-body-md-regular text-text-tertiary">
           검색에서 다운로드까지 한 곳에서. API 자동화, 아카이브 탐색,
           산업별 맞춤 패키지로 위성 데이터를 가장 빠르게 확보하세요.
         </p>
 
         <div className="flex flex-wrap gap-12">
-          <Button size="lg" render={<a href="#contact" />} nativeButton={false}>
+          <Button size="lg" className={CTA_SOLID_CLASS} render={<a href="#contact" />} nativeButton={false}>
             API 키 신청
           </Button>
-          <Button size="lg" variant="outline" render={<a href="#verticals" />} nativeButton={false}>
+          <Button size="lg" variant="outline" className={CTA_OUTLINE_CLASS} render={<a href="#verticals" />} nativeButton={false}>
             데이터 살펴보기
           </Button>
         </div>
@@ -70,10 +82,10 @@ export default function NexusPage() {
       <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
         <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-12">
           {DATA_STATS.map((s) => (
-            <Card.Root key={s.label}>
+            <Card.Root key={s.label} className="bg-bg-secondary">
               <Card.Body className="gap-8">
                 <span className="text-body-xs-regular text-text-tertiary">{s.label}</span>
-                <span className="text-heading-xl tabular-nums text-text-primary">{s.value}</span>
+                <span className="text-heading-xl tabular-nums text-[#C8923A]">{s.value}</span>
                 <span className="text-body-xs-regular text-text-tertiary">{s.sub}</span>
               </Card.Body>
             </Card.Root>
@@ -83,8 +95,8 @@ export default function NexusPage() {
 
       {/* Verticals */}
       <section id="verticals" className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
-        <div className="mb-24 flex flex-col items-start gap-8">
-          <h2 className="text-heading-2xl text-text-primary">데이터 접근 방식</h2>
+        <div className="mb-24 flex flex-col items-start gap-8 border-b border-border-tertiary pb-12">
+          <h2 className="text-heading-2xl text-text-tertiary">데이터 접근 방식</h2>
         </div>
 
         <div className="grid gap-12">
@@ -92,11 +104,13 @@ export default function NexusPage() {
             <Card.Root key={v.id}>
               <Card.Body className="gap-16">
                 <div className="flex items-center gap-12">
-                  <Card.Title className="flex-1">{v.title}</Card.Title>
-                  <Badge type="letter">{v.label}</Badge>
+                  <Card.Title className="flex-1 text-[#C8923A]">{v.title}</Card.Title>
+                  <Badge type="letter" className="bg-transparent text-text-tertiary inset-ring-1 inset-ring-border-tertiary">
+                    {v.label}
+                  </Badge>
                 </div>
 
-                <p className="max-w-[60ch] text-body-sm-regular text-text-secondary">{v.desc}</p>
+                <p className="max-w-[60ch] text-body-sm-regular text-text-tertiary">{v.desc}</p>
 
                 <div className="grid grid-cols-1 gap-12 sm:grid-cols-2">
                   <div className="flex flex-col gap-4">
@@ -107,7 +121,13 @@ export default function NexusPage() {
                     <span className="text-body-xs-regular text-text-tertiary">제공 항목</span>
                     <div className="flex flex-wrap gap-4">
                       {v.outputs.map((o) => (
-                        <Badge key={o} type="letter">{o}</Badge>
+                        <Badge
+                          key={o}
+                          type="letter"
+                          className="bg-bg-secondary text-text-primary inset-ring-1 inset-ring-border-tertiary"
+                        >
+                          {o}
+                        </Badge>
                       ))}
                     </div>
                   </div>
@@ -120,16 +140,16 @@ export default function NexusPage() {
 
       {/* Contact CTA */}
       <section id="contact" className="mx-auto max-w-960 px-16 pb-80 sm:px-24">
-        <Card.Root>
+        <Card.Root className="bg-bg-secondary">
           <Card.Body className="items-center gap-8 py-32 text-center">
             <h2 className="text-heading-2xl text-text-primary">
               데이터에 바로 연결하세요
             </h2>
-            <p className="mb-16 max-w-[44ch] text-body-md-regular text-text-secondary">
+            <p className="mb-16 max-w-[44ch] text-body-md-regular text-text-tertiary">
               API 키를 발급받고 위성 영상 카탈로그에 즉시 접근하거나,
               맞춤 데이터 패키지를 상담하세요.
             </p>
-            <Button size="lg" render={<a href="mailto:support@naraspace.com" />} nativeButton={false}>
+            <Button size="lg" className={CTA_SOLID_CLASS} render={<a href="mailto:support@naraspace.com" />} nativeButton={false}>
               문의하기
             </Button>
           </Card.Body>

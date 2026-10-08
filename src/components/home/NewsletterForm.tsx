@@ -40,7 +40,7 @@ export default function NewsletterForm() {
 
   if (status === 'done') {
     return (
-      <p className="text-body-sm-regular text-status-success py-8">
+      <p className="text-body-sm-regular text-text-interactive-primary py-8">
         구독 완료! 매주 위성 뉴스를 보내드릴게요.
       </p>
     );
@@ -56,10 +56,16 @@ export default function NewsletterForm() {
           placeholder="이메일 주소"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          className="bg-bg-secondary has-not-aria-invalid:not-data-disabled:hover:inset-ring-border-tertiary"
         />
         <Field.Error />
       </Field.Root>
-      <Button type="submit" loading={status === 'submitting'}>
+      {/* 민트 CTA (운영 색, §8) — 전송 중에는 surface 배경 + muted 글자 */}
+      <Button
+        type="submit"
+        loading={status === 'submitting'}
+        className="bg-bg-interactive-primary text-[#0E0E10] not-data-disabled:not-aria-invalid:hover:bg-bg-interactive-primary aria-busy:bg-bg-secondary aria-busy:text-text-tertiary"
+      >
         {status === 'error' ? '재시도' : '구독'}
       </Button>
     </Form>

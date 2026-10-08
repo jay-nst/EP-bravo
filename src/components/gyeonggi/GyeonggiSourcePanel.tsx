@@ -5,8 +5,8 @@ import type { StatusChipProps } from '@naraspace-technology/nds/components';
 import { SOURCE_KIND_BADGE, type SeoulSourceKind } from '@/lib/seoul-data-sources';
 import { GYEONGGI_DATA_SOURCES, type GyeonggiDataSource } from '@/lib/gyeonggi-data-sources';
 
-// SOURCE_KIND_BADGE 의 라벨은 그대로 쓰고, 표시는 NDS StatusChip status 로 한다
-// (LIVE→success, DEMO→neutral, 분석·통계→information, 영상→brand, 배경·경계→neutral).
+// SOURCE_KIND_BADGE 의 라벨은 그대로 쓰고, 표시는 NDS StatusChip 으로 한다.
+// 색은 운영 배지 색 그대로 (§8): surface-elevated 배경 + SOURCE_KIND_BADGE.color 와 같은 글자색.
 const KIND_STATUS: Record<SeoulSourceKind, StatusChipProps['status']> = {
   live: 'success',
   stat: 'information',
@@ -15,6 +15,16 @@ const KIND_STATUS: Record<SeoulSourceKind, StatusChipProps['status']> = {
   imagery: 'brand',
   basemap: 'neutral',
   boundary: 'neutral',
+};
+
+const KIND_COLOR: Record<SeoulSourceKind, string> = {
+  live: 'bg-bg-primary text-[#1bbfa8]',
+  stat: 'bg-bg-primary text-[#4A9E6B]',
+  demo: 'bg-bg-primary text-[#C8923A]',
+  analysis: 'bg-bg-primary text-[#C45C4A]',
+  imagery: 'bg-bg-primary text-[#4A9EC4]',
+  basemap: 'bg-bg-primary text-[#8A8680]',
+  boundary: 'bg-bg-primary text-[#8A8680]',
 };
 
 // 사이드바 하단의 '데이터 출처' 섹션. 접힌 상태가 기본.
@@ -27,8 +37,12 @@ interface GyeonggiSourcePanelProps {
 export default function GyeonggiSourcePanel({ defaultOpen = false }: GyeonggiSourcePanelProps) {
   return (
     // 접기/펼치기 — NDS Collapsible (Root → Trigger → Panel). 기본은 접힘.
-    <Collapsible.Root variant="outline" defaultOpen={defaultOpen}>
-      <Collapsible.Trigger>데이터 출처 ({GYEONGGI_DATA_SOURCES.length})</Collapsible.Trigger>
+    <Collapsible.Root
+      variant="outline"
+      defaultOpen={defaultOpen}
+      className="inset-ring-border-tertiary"
+    >
+      <Collapsible.Trigger className="text-text-tertiary">데이터 출처 ({GYEONGGI_DATA_SOURCES.length})</Collapsible.Trigger>
       <Collapsible.Panel>
         <ul className="space-y-10">
           {GYEONGGI_DATA_SOURCES.map((s) => (
@@ -52,7 +66,11 @@ function SourceRow({ source }: { source: GyeonggiDataSource }) {
     // opacity 로 만든 회색 단계 대신 NDS 텍스트 토큰을 쓴다.
     <li className="text-body-xs-regular">
       <div className="flex items-center gap-6">
-        <StatusChip status={KIND_STATUS[source.kind]} showIcon={false} className="shrink-0">
+        <StatusChip
+          status={KIND_STATUS[source.kind]}
+          showIcon={false}
+          className={`shrink-0 ${KIND_COLOR[source.kind]}`}
+        >
           {badge.label}
         </StatusChip>
         <span className="text-body-sm-medium text-text-primary">{source.layer}</span>
@@ -64,18 +82,18 @@ function SourceRow({ source }: { source: GyeonggiDataSource }) {
             href={source.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-text-interactive-primary underline hover:text-text-interactive-primary-hover"
+            className="text-text-tertiary underline decoration-border-tertiary"
           >
             {source.provider}
           </a>
         ) : (
-          <span className="text-text-secondary">{source.provider}</span>
+          <span className="text-text-tertiary">{source.provider}</span>
         )}
       </div>
 
-      <div className="break-words text-text-secondary">{source.dataset}</div>
+      <div className="break-words text-text-tertiary/85">{source.dataset}</div>
 
-      <p className="mt-2 text-text-tertiary">{source.note}</p>
+      <p className="mt-2 text-text-tertiary/75">{source.note}</p>
     </li>
   );
 }

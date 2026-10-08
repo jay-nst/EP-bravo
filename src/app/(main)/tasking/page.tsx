@@ -39,13 +39,22 @@ interface TaskingRequest {
 }
 
 // 요청 상태 → NDS StatusChip status (기존 색 의미: warning·accent·secondary·success·error)
-const STATUS_LABELS: Record<string, { text: string; status: StatusChipProps['status'] }> = {
-  received: { text: '접수됨', status: 'warning' },
-  reviewing: { text: '검토중', status: 'brand' },
-  quoted: { text: '견적 발송', status: 'information' },
-  accepted: { text: '수락됨', status: 'success' },
-  rejected: { text: '거절됨', status: 'error' },
+// cls: 색 기준 78e9433 — 배경 없이 상태 색 글자
+const STATUS_LABELS: Record<string, { text: string; status: StatusChipProps['status']; cls: string }> = {
+  received: { text: '접수됨', status: 'warning', cls: 'bg-transparent text-status-warning [&>svg]:text-status-warning' },
+  reviewing: { text: '검토중', status: 'brand', cls: 'bg-transparent text-text-interactive-primary [&>svg]:text-text-interactive-primary' },
+  quoted: { text: '견적 발송', status: 'information', cls: 'bg-transparent text-[#5B8C6F] [&>svg]:text-[#5B8C6F]' },
+  accepted: { text: '수락됨', status: 'success', cls: 'bg-transparent text-status-success [&>svg]:text-status-success' },
+  rejected: { text: '거절됨', status: 'error', cls: 'bg-transparent text-status-danger [&>svg]:text-status-danger' },
 };
+
+/** 민트 CTA (accent 배경 + 어두운 글자, 테두리 없음), disabled 는 accent 40% */
+const MINT_CTA =
+  'bg-bg-interactive-primary text-[#0E0E10] [&_svg]:text-[#0E0E10] inset-ring-transparent not-data-disabled:data-active:not-hover:text-[#0E0E10] not-data-disabled:data-active:not-hover:[&_svg]:text-[#0E0E10] data-disabled:bg-bg-interactive-primary data-disabled:text-[#0E0E10] data-disabled:opacity-40';
+/** 폼 라벨: muted 글자 */
+const LABEL_CLS = 'text-text-tertiary';
+/** 입력칸: surface 배경 + border 테두리 */
+const FIELD_CLS = 'bg-bg-secondary';
 
 export default function TaskingPage() {
   const [requests, setRequests] = useState<TaskingRequest[]>([]);
@@ -127,6 +136,7 @@ export default function TaskingPage() {
           variant={showForm ? 'outline' : 'solid'}
           leftIcon={showForm ? undefined : <IconPlus />}
           onClick={() => setShowForm(!showForm)}
+          className={MINT_CTA}
         >
           {showForm ? '취소' : '새 요청'}
         </Button>
@@ -135,7 +145,7 @@ export default function TaskingPage() {
       {success && (
         <div
           role="status"
-          className="mb-16 rounded-md bg-status-success-subtle px-16 py-12 text-body-sm-regular text-status-success-bold"
+          className="mb-16 rounded-md bg-[rgba(74,158,107,0.15)] px-16 py-12 text-body-sm-regular text-status-success inset-ring-1 inset-ring-[rgba(74,158,107,0.3)]"
         >
           촬영 요청이 접수되었습니다. 검토 후 연락드리겠습니다.
         </div>
@@ -144,7 +154,7 @@ export default function TaskingPage() {
       {error && (
         <div
           role="alert"
-          className="mb-16 rounded-md bg-status-danger-subtle px-16 py-12 text-body-sm-regular text-status-danger-bold"
+          className="mb-16 rounded-md bg-[rgba(196,92,74,0.15)] px-16 py-12 text-body-sm-regular text-status-danger inset-ring-1 inset-ring-[rgba(196,92,74,0.3)]"
         >
           {error}
         </div>
@@ -155,7 +165,7 @@ export default function TaskingPage() {
           onFormSubmit={handleSubmit}
           className="mb-32 flex flex-col gap-16 rounded-lg bg-bg-tertiary p-24 inset-ring-1 inset-ring-border-tertiary"
         >
-          <p className="mb-8 text-body-md-regular text-text-secondary">
+          <p className="mb-8 text-body-md-regular text-text-tertiary">
             지도에서 촬영할 영역을 그려주세요. 왼쪽 상단의 폴리곤 도구를 사용하세요.
           </p>
 
@@ -176,10 +186,10 @@ export default function TaskingPage() {
                     {fmtNum(aoi.areaKm2, 1)} km²
                   </p>
                 </div>
-                <Separator orientation="vertical" className="h-32" />
+                <Separator orientation="vertical" className="h-32 bg-border-tertiary" />
                 <div>
                   <span className="text-body-xs-regular text-text-tertiary">예상 가격</span>
-                  <p className="text-body-sm-medium tabular-nums text-text-primary">
+                  <p className="text-body-sm-medium tabular-nums text-text-interactive-primary">
                     ${fmtNum(aoi.price, 2)}
                   </p>
                 </div>
@@ -194,53 +204,58 @@ export default function TaskingPage() {
 
           <div className="grid grid-cols-2 gap-16">
             <Field.Root name="preferred_date_from">
-              <Field.Label>희망 촬영 시작일</Field.Label>
+              <Field.Label className={LABEL_CLS}>희망 촬영 시작일</Field.Label>
               <Input
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
+                className={FIELD_CLS}
               />
             </Field.Root>
             <Field.Root name="preferred_date_to">
-              <Field.Label>희망 촬영 종료일</Field.Label>
+              <Field.Label className={LABEL_CLS}>희망 촬영 종료일</Field.Label>
               <Input
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
+                className={FIELD_CLS}
               />
             </Field.Root>
           </div>
 
           {/* 선택 항목이 대부분이라 필수 항목(이메일)에만 Field.Required */}
           <Field.Root name="contact_email">
-            <Field.Label>연락처 이메일<Field.Required /></Field.Label>
+            <Field.Label className={LABEL_CLS}>연락처 이메일<Field.Required className="text-text-tertiary" /></Field.Label>
             <Input
               type="email"
               value={contactEmail}
               onChange={(e) => setContactEmail(e.target.value)}
               required
+              className={FIELD_CLS}
             />
             <Field.Error />
           </Field.Root>
 
           <Field.Root name="contact_phone">
-            <Field.Label>연락처 전화번호</Field.Label>
+            <Field.Label className={LABEL_CLS}>연락처 전화번호</Field.Label>
             <Input
               type="tel"
               value={contactPhone}
               onChange={(e) => setContactPhone(e.target.value)}
               placeholder="010-0000-0000"
+              className={FIELD_CLS}
             />
           </Field.Root>
 
           <Field.Root name="notes">
-            <Field.Label>요청 사항</Field.Label>
+            <Field.Label className={LABEL_CLS}>요청 사항</Field.Label>
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
               maxLength={1000}
               placeholder="촬영 목적, 해상도 요구사항 등"
+              className={FIELD_CLS}
             />
           </Field.Root>
 
@@ -249,6 +264,7 @@ export default function TaskingPage() {
             display="block"
             loading={submitting}
             disabled={submitting || !contactEmail || !aoi || !!aoi.validationError}
+            className={MINT_CTA}
           >
             {submitting ? '제출 중...' : !aoi ? '영역을 먼저 그려주세요' : '촬영 요청 제출'}
           </Button>
@@ -257,13 +273,13 @@ export default function TaskingPage() {
 
       {loading ? (
         <div className="flex items-center justify-center gap-8 py-32">
-          <Spinner size="sm" aria-label="로딩 중" />
-          <p className="text-body-md-regular text-text-secondary">로딩 중...</p>
+          <Spinner size="sm" aria-label="로딩 중" className="text-text-interactive-primary" />
+          <p className="text-body-md-regular text-text-tertiary">로딩 중...</p>
         </div>
       ) : requests.length === 0 ? (
         <div className="py-64 text-center">
-          <p className="mb-8 text-heading-lg text-text-primary">촬영 요청 내역이 없습니다</p>
-          <p className="text-body-md-regular text-text-secondary">
+          <p className="mb-8 text-heading-lg text-text-tertiary">촬영 요청 내역이 없습니다</p>
+          <p className="text-body-md-regular text-text-tertiary">
             새 요청을 만들어 원하는 지역의 위성 촬영을 신청하세요
           </p>
         </div>
@@ -273,13 +289,14 @@ export default function TaskingPage() {
             const status = STATUS_LABELS[req.status] ?? {
               text: req.status,
               status: 'neutral',
+              cls: 'bg-transparent text-text-tertiary [&>svg]:text-text-tertiary',
             };
             return (
               <Card.Root key={req.id}>
                 <Card.Body className="gap-8">
                   <div className="flex items-start justify-between">
                     <div className="space-y-4">
-                      <p className="text-body-sm-regular text-text-secondary">
+                      <p className="text-body-sm-regular text-text-tertiary">
                         요청번호:{' '}
                         <span className="text-body-sm-medium tabular-nums text-text-primary">
                           {req.id.slice(0, 8)}
@@ -295,12 +312,12 @@ export default function TaskingPage() {
                         {new Date(req.created_at).toLocaleString('ko-KR')}
                       </p>
                     </div>
-                    <StatusChip status={status.status}>
+                    <StatusChip status={status.status} className={status.cls}>
                       {status.text}
                     </StatusChip>
                   </div>
                   {req.notes && (
-                    <p className="rounded-md bg-bg-secondary px-12 py-8 text-body-sm-regular text-text-secondary">
+                    <p className="rounded-md bg-bg-secondary px-12 py-8 text-body-sm-regular text-text-tertiary">
                       {req.notes}
                     </p>
                   )}

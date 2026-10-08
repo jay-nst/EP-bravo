@@ -18,10 +18,10 @@ export default function AgentTutorialProposalPage() {
       <div className="hidden xl:block">
         <AgentTutorialDemo />
       </div>
-      {/* 모바일 안내 — NDS Card 표면 (Root/Body/Content) */}
-      <Card.Root className="xl:hidden">
+      {/* 모바일 안내 — NDS Card 표면 (Root/Body/Content), 색은 운영 값(§8): surface 배경 + muted 글자 */}
+      <Card.Root className="xl:hidden bg-bg-secondary">
         <Card.Body className="w-full text-center">
-          <Card.Content>
+          <Card.Content className="text-text-tertiary">
             이 데모는 데스크톱 전용입니다 (최소 1280px). 더 넓은 화면에서 열어 주세요.
           </Card.Content>
         </Card.Body>

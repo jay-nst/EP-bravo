@@ -341,9 +341,9 @@ export default function EarthMap({
           type="letter"
           status="information"
           variant="transparent"
-          className="absolute bottom-16 left-16"
+          className="absolute bottom-16 left-16 bg-[var(--panel-bg)] text-text-primary backdrop-blur-[12px]"
         >
-          {catalogItems.length}개 영상 검색됨
+          <span className="text-accent">{catalogItems.length}</span>개 영상 검색됨
         </Badge>
       )}
     </div>

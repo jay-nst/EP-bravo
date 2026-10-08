@@ -6,6 +6,14 @@ import Link from 'next/link';
 import { Button, Spinner } from '@naraspace-technology/nds/components';
 import { IconAlertCircle, IconCheck, IconX } from '@naraspace-technology/nds/icons';
 
+// 색 기준 78e9433 — NDS Button 색만 원래 값으로 덮는다
+/** 민트 CTA (accent 배경 + 어두운 글자) */
+const MINT_CTA =
+  'bg-bg-interactive-primary text-[#0E0E10] [&_svg]:text-[#0E0E10] not-data-disabled:data-active:not-hover:text-[#0E0E10] not-data-disabled:data-active:not-hover:[&_svg]:text-[#0E0E10]';
+/** 보조 링크: border 테두리 + muted 글자 (hover 색 변화 없음) */
+const GHOST_LINK_CLS =
+  'text-text-tertiary [&_svg]:text-text-tertiary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-transparent not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary';
+
 type ResultState =
   | { status: 'loading' }
   | { status: 'completed'; orderId: string }
@@ -66,8 +74,8 @@ export default function PaymentSuccessPage() {
   if (result.status === 'loading') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-16">
-        <Spinner aria-label="결제 확인 중" />
-        <p className="text-body-md-regular text-text-secondary">결제 확인 및 영상 클리핑 처리 중...</p>
+        <Spinner aria-label="결제 확인 중" className="text-text-interactive-primary" />
+        <p className="text-body-md-regular text-text-tertiary">결제 확인 및 영상 클리핑 처리 중...</p>
         <p className="text-body-xs-regular text-text-tertiary">잠시만 기다려주세요</p>
       </div>
     );
@@ -76,20 +84,20 @@ export default function PaymentSuccessPage() {
   if (result.status === 'completed') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-16">
-        <div className="flex size-48 items-center justify-center rounded-full bg-status-success-subtle text-status-success-bold">
+        <div className="flex size-48 items-center justify-center rounded-full bg-[rgba(74,158,107,0.1)] text-status-success">
           <IconCheck className="size-24" />
         </div>
         <h2 className="text-heading-3xl text-text-primary">
           결제 및 클리핑 완료
         </h2>
-        <p className="text-body-md-regular text-text-secondary">
+        <p className="text-body-md-regular text-text-tertiary">
           영상이 준비되었습니다
         </p>
         <div className="mt-16 flex gap-12">
-          <Button render={<Link href="/portal" />} nativeButton={false}>
+          <Button render={<Link href="/portal" />} nativeButton={false} className={MINT_CTA}>
             내 주문에서 다운로드
           </Button>
-          <Button variant="outline" render={<Link href="/map" />} nativeButton={false}>
+          <Button variant="outline" render={<Link href="/map" />} nativeButton={false} className={GHOST_LINK_CLS}>
             지도로 돌아가기
           </Button>
         </div>
@@ -100,14 +108,14 @@ export default function PaymentSuccessPage() {
   if (result.status === 'refunded') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-16">
-        <div className="flex size-48 items-center justify-center rounded-full bg-status-warning-subtle text-status-warning-bold">
+        <div className="flex size-48 items-center justify-center rounded-full bg-[rgba(200,146,58,0.1)] text-status-warning">
           <IconAlertCircle className="size-24" />
         </div>
         <h2 className="text-heading-3xl text-text-primary">
           클리핑 실패 - 자동 환불
         </h2>
-        <p className="text-body-md-regular text-text-secondary">{result.message}</p>
-        <Button className="mt-16" render={<Link href="/map" />} nativeButton={false}>
+        <p className="text-body-md-regular text-text-tertiary">{result.message}</p>
+        <Button className={`mt-16 ${MINT_CTA}`} render={<Link href="/map" />} nativeButton={false}>
           다시 시도하기
         </Button>
       </div>
@@ -116,14 +124,14 @@ export default function PaymentSuccessPage() {
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center gap-16">
-      <div className="flex size-48 items-center justify-center rounded-full bg-status-danger-subtle text-status-danger-bold">
+      <div className="flex size-48 items-center justify-center rounded-full bg-[rgba(196,92,74,0.1)] text-status-danger">
         <IconX className="size-24" />
       </div>
       <h2 className="text-heading-3xl text-text-primary">
         결제 처리 실패
       </h2>
-      <p className="text-body-md-regular text-text-secondary">{result.message}</p>
-      <Button className="mt-16" variant="outline" render={<Link href="/map" />} nativeButton={false}>
+      <p className="text-body-md-regular text-text-tertiary">{result.message}</p>
+      <Button className={`mt-16 ${GHOST_LINK_CLS}`} variant="outline" render={<Link href="/map" />} nativeButton={false}>
         지도로 돌아가기
       </Button>
     </div>

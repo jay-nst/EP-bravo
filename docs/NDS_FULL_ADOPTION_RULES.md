@@ -139,6 +139,26 @@ NDS 에 없는 것은 기존 유지 + 위 1~3 규칙만 적용: 범위 슬라이
 작업 후 각 파일에서 다음이 0 이어야 한다 (데이터 시각화 예외만 허용):
 `grep -nE "color: ?'#|style=\{\{[^}]*color|text-\[#|bg-\[#|rgba\(" <file>` — 남는 줄은 데이터 시각화임을 주석으로 표시.
 
+## 8. 색 복원 (3차 패스, 2026-10-08) — §0-2·§0-3(색 부분)·§7-2 를 대체
+
+사용자 결정: "3000 포트(운영)에 있던 색은 전부 복원" — 버튼·글자·배지·박스·틴트·장식 포함.
+**모양(타이포 스케일·위계, 간격, 모서리, 아이콘, NDS 컴포넌트 구조)은 NDS 그대로 두고, 색만 운영 버전과 같게.**
+
+- **색 기준 커밋:** `78e9433` (NDS 전면 적용 직전, 운영과 같은 EP 색). 단 `src/components/shared/LeadCaptureModal.tsx`·
+  `src/components/proposals/SignupConversionModal.tsx` 는 `597a0fd` (NDS 모달로 바꾸기 전 원본).
+  `git show <commit>:<path>` 로 원본을 보고 **요소마다** 원래 색을 찾아 옮긴다.
+- 대상: 글자색, 배경(채움·틴트·`${color}15` 같은 hex+alpha), 테두리 색, hover/active 때 바뀌던 색(JS onMouseEnter
+  로 바꾸던 것 포함 → CSS `hover:` 로), 그라데이션·글로우·그리드 오버레이·스캔라인 같은 색 장식(2차에서 지운 것 포함),
+  플랫폼 색 eyebrow/칩/수치/제목, 민트 CTA(배경 accent + 어두운 글자) 등.
+- **NDS 컴포넌트도 원래 색으로 덮는다** (이번에 한해 §0-3 의 색 금지 해제): 예) 플랫폼 색 CTA →
+  `<Button className="bg-[#C45C4A] text-white hover:bg-[#C45C4A] hover:opacity-85">`, 민트 CTA →
+  `bg-bg-interactive-primary text-[#0E0E10]`, 원래 surface 박스였던 Card → `bg-bg-secondary`. 크기·모서리·패딩은 덮지 않는다.
+- 상태 칩(StatusChip/Badge)도 원래 배지 색(LIVE 민트, DEMO 주황 등 원본 그대로)으로 className 덮기.
+- 같은 값이면 토큰 클래스 사용 권장 (`var(--accent)` = `bg-bg-interactive-primary`, `var(--surface)` = `bg-bg-secondary`,
+  `var(--text-muted)` = `text-text-tertiary` …), 값이 없으면 임의값 `[#hex]`/`[rgba()]`.
+- 원본에 없던 요소(새로 생긴 칩·구분선 등)는 원본에서 같은 역할을 하던 요소의 색을 따른다.
+- 지도 컨트롤(`src/styles/nds/mapbox-controls.css`)도 원래 색(surface 배경, border 테두리, surface-elevated hover).
+
 ## 6. 검증
 
 - `npx tsc --noEmit`, 관련 vitest, `npx eslint <파일>` (기존 오류 7건 외 증가 없음)

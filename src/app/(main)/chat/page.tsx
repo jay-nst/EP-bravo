@@ -5,6 +5,19 @@ import { Form } from '@base-ui/react/form';
 import { Button, Textarea } from '@naraspace-technology/nds/components';
 import { IconPlus } from '@naraspace-technology/nds/icons';
 
+// 색 기준 78e9433 — NDS Button 의 색만 원래 값으로 덮는다 (hover 때 바뀌던 색이 없던 것은 hover 도 고정)
+const HOVER_KEEP = 'not-data-disabled:not-aria-invalid:hover:';
+/** + 새 대화: surface-elevated 배경, text 글자, 테두리 없음 */
+const NEW_SESSION_CLS = `bg-bg-primary text-text-primary inset-ring-transparent ${HOVER_KEEP}bg-bg-primary ${HOVER_KEEP}inset-ring-transparent`;
+/** 세션 목록: 선택 = accent 글자 + surface-elevated 배경, 나머지 = muted 글자 */
+const SESSION_ACTIVE_CLS = `bg-bg-primary text-text-interactive-primary [&_svg]:text-text-interactive-primary not-data-disabled:data-active:not-hover:text-text-interactive-primary ${HOVER_KEEP}text-text-interactive-primary`;
+const SESSION_IDLE_CLS = `text-text-tertiary [&_svg]:text-text-tertiary ${HOVER_KEEP}text-text-tertiary`;
+/** 추천 질문 칩: surface 배경, muted 글자, border 테두리 */
+const SUGGEST_CLS = `bg-bg-secondary text-text-tertiary inset-ring-border-tertiary ${HOVER_KEEP}bg-bg-secondary ${HOVER_KEEP}inset-ring-border-tertiary`;
+/** 전송: 민트 CTA (accent 배경 + 어두운 글자), disabled 는 accent 40% */
+const SEND_CLS =
+  'bg-bg-interactive-primary text-[#0E0E10] not-data-disabled:data-active:not-hover:text-[#0E0E10] data-disabled:bg-bg-interactive-primary data-disabled:text-[#0E0E10] data-disabled:opacity-40';
+
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -113,7 +126,7 @@ export default function ChatPage() {
     <div className="flex" style={{ height: 'calc(100vh - var(--header-height))' }}>
       <aside className="flex w-240 flex-col border-r border-border-tertiary bg-bg-secondary">
         <div className="p-12">
-          <Button variant="outline" display="block" leftIcon={<IconPlus />} onClick={createSession}>
+          <Button variant="outline" display="block" leftIcon={<IconPlus />} onClick={createSession} className={NEW_SESSION_CLS}>
             새 대화
           </Button>
         </div>
@@ -128,7 +141,7 @@ export default function ChatPage() {
                 setSessionId(s.id);
                 setMessages([]);
               }}
-              className="justify-start"
+              className={`justify-start ${sessionId === s.id ? SESSION_ACTIVE_CLS : SESSION_IDLE_CLS}`}
             >
               <span className="truncate">{s.title}</span>
             </Button>
@@ -141,15 +154,15 @@ export default function ChatPage() {
           {messages.length === 0 && (
             <div className="flex h-full items-center justify-center">
               <div className="space-y-12 text-center">
-                <p className="text-heading-lg text-text-primary">
+                <p className="text-heading-lg text-text-tertiary">
                   위성 영상 전문 어시스턴트
                 </p>
-                <p className="text-body-md-regular text-text-secondary">
+                <p className="text-body-md-regular text-text-tertiary">
                   위성 영상 촬영, 가격, 해상도 등에 대해 질문하세요
                 </p>
                 <div className="flex flex-wrap justify-center gap-8 pt-8">
                   {['해상도 비교', '가격 안내', '촬영 요청 방법'].map((q) => (
-                    <Button key={q} variant="outline" size="sm" onClick={() => sendMessage(q)}>
+                    <Button key={q} variant="outline" size="sm" onClick={() => sendMessage(q)} className={SUGGEST_CLS}>
                       {q}
                     </Button>
                   ))}
@@ -165,7 +178,7 @@ export default function ChatPage() {
               <div
                 className={`max-w-[70%] whitespace-pre-wrap rounded-md px-16 py-10 text-body-sm-regular ${
                   msg.role === 'user'
-                    ? 'bg-bg-interactive-selected text-text-interactive-selected'
+                    ? 'bg-bg-interactive-primary text-[#0E0E10]'
                     : 'bg-bg-secondary text-text-primary'
                 }`}
               >
@@ -188,10 +201,10 @@ export default function ChatPage() {
               placeholder="메시지를 입력하세요..."
               aria-label="메시지"
               rows={1}
-              className="flex-1"
+              className="flex-1 bg-bg-secondary data-disabled:bg-bg-secondary data-disabled:inset-ring-border-tertiary"
               disabled={streaming}
             />
-            <Button type="submit" disabled={streaming || !input.trim()}>
+            <Button type="submit" disabled={streaming || !input.trim()} className={SEND_CLS}>
               전송
             </Button>
           </Form>

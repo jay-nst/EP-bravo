@@ -49,8 +49,8 @@ export default function NotificationBell() {
   const renderBody = (n: Notification) => (
     <>
       <p className="text-body-sm-medium text-text-primary">{n.title}</p>
-      <p className="text-body-sm-regular text-text-secondary mt-2">{n.message}</p>
-      <p className="text-body-xs-regular text-text-tertiary tabular-nums mt-4">
+      <p className="text-body-sm-regular text-text-tertiary mt-2">{n.message}</p>
+      <p className="text-body-xs-regular text-(--border) tabular-nums mt-4">
         {new Date(n.created_at).toLocaleString('ko-KR')}
       </p>
     </>
@@ -58,14 +58,14 @@ export default function NotificationBell() {
 
   return (
     <div className="relative">
-      <Button variant="text" iconOnly onClick={() => setOpen(!open)} aria-label="알림">
+      <Button variant="text" iconOnly className="text-text-tertiary! [&_svg]:text-text-tertiary!" onClick={() => setOpen(!open)} aria-label="알림">
         <IconAlertOn />
       </Button>
       {unreadCount > 0 && (
         <Badge
           type="letter"
           status="important"
-          className="absolute -top-2 -right-2 pointer-events-none"
+          className="absolute -top-2 -right-2 pointer-events-none bg-status-danger text-white"
         >
           {unreadCount > 9 ? '9+' : unreadCount}
         </Badge>
@@ -88,8 +88,8 @@ export default function NotificationBell() {
                 notifications.slice(0, 20).map((n) => (
                   <div
                     key={n.id}
-                    className={`px-16 py-12 transition-colors cursor-pointer border-b border-border-tertiary/50 ${
-                      !n.read ? 'bg-bg-interactive-selected' : 'bg-transparent'
+                    className={`px-16 py-12 transition-colors cursor-pointer border-b border-[rgba(42,42,47,0.5)] ${
+                      !n.read ? 'bg-[rgba(27,191,168,0.05)]' : 'bg-transparent'
                     }`}
                     onClick={() => {
                       if (!n.read) markAsRead(n.id);

@@ -22,6 +22,8 @@ interface SignupConversionModalProps {
 //    그래서 Base UI 의 닫기 핸들러를 막고(preventBaseUIHandler) onReplay 만 부른다 —
 //    부모가 phase 를 바꾸면 open=false 로 닫힌다
 //  - Action = '회원가입하고 시작하기' → 닫지 않고 안내 문구만 표시
+// 색은 NDS 기본이 아니라 원본(597a0fd) 값 그대로 (NDS_FULL_ADOPTION_RULES §8): 스크림 rgba(14,14,16,0.75)+blur,
+// surface 팝업, muted 설명·스텝 라벨, 민트 CTA + 어두운 글자, 다시 보기 = muted 글자 → hover 시 text.
 export default function SignupConversionModal({
   open,
   onReplay,
@@ -38,19 +40,23 @@ export default function SignupConversionModal({
         if (!next) onClose();
       }}
     >
-      <Dialog.Popup>
+      <Dialog.Popup
+        className="bg-bg-secondary"
+        slotProps={{ backdrop: { className: 'bg-[rgba(14,14,16,0.75)] backdrop-blur-[4px]' } }}
+      >
         <Dialog.Title>{MODAL_STEP.title}</Dialog.Title>
-        <Dialog.Description>{MODAL_STEP.body}</Dialog.Description>
+        <Dialog.Description className="text-text-tertiary">{MODAL_STEP.body}</Dialog.Description>
 
         {ctaHint && (
-          <p role="status" className="text-body-sm-regular text-text-interactive-primary">
+          <p role="status" className="text-body-sm-regular text-text-primary">
             실서비스에서는 여기서 가입 플로우로 연결됩니다
           </p>
         )}
 
-        <Dialog.SubDescription>Step 5 / 5 — 가입 전환</Dialog.SubDescription>
+        <Dialog.SubDescription className="text-text-tertiary">Step 5 / 5 — 가입 전환</Dialog.SubDescription>
         <Dialog.Footer>
           <Dialog.Cancel
+            className="text-text-tertiary inset-ring-transparent not-data-disabled:not-aria-invalid:hover:bg-transparent not-data-disabled:not-aria-invalid:hover:inset-ring-transparent not-data-disabled:not-aria-invalid:hover:text-text-primary not-data-disabled:data-active:not-hover:bg-transparent not-data-disabled:data-active:not-hover:text-text-tertiary"
             onClick={(event) => {
               event.preventBaseUIHandler();
               onReplay();
@@ -58,7 +64,12 @@ export default function SignupConversionModal({
           >
             데모 다시 보기
           </Dialog.Cancel>
-          <Dialog.Action onClick={() => setCtaHint(true)}>회원가입하고 시작하기</Dialog.Action>
+          <Dialog.Action
+            className="bg-bg-interactive-primary text-[#0E0E10] transition-opacity hover:opacity-85 not-data-disabled:not-aria-invalid:hover:bg-bg-interactive-primary not-data-disabled:data-active:not-hover:text-[#0E0E10]"
+            onClick={() => setCtaHint(true)}
+          >
+            회원가입하고 시작하기
+          </Dialog.Action>
         </Dialog.Footer>
       </Dialog.Popup>
     </Dialog.Root>

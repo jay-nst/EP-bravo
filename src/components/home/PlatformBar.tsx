@@ -29,13 +29,14 @@ export default function PlatformBar() {
   return (
     <div className="sticky top-(--header-height) z-30 border-b border-border-tertiary bg-bg-tertiary overflow-x-auto">
       <div className="max-w-6xl mx-auto px-16 flex gap-4 py-6">
-        {/* NDS Button text — hover 색은 NDS 기본 (플랫폼 색 덧칠 금지). 플랫폼 점은 데이터 색이라 유지 */}
+        {/* NDS Button text — 운영 색 (§8): 기본 muted, hover 시 surface 배경 + 플랫폼 색 글자 (--c) */}
         {PLATFORMS.map((p) => (
           <Button
             key={p.id}
             variant="text"
             size="sm"
-            className="whitespace-nowrap"
+            className="whitespace-nowrap text-text-tertiary hover:bg-bg-secondary not-data-disabled:not-aria-invalid:hover:text-(--c)"
+            style={{ '--c': p.color } as React.CSSProperties}
             leftIcon={
               p.id !== 'all' ? (
                 <span

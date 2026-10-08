@@ -13,7 +13,7 @@ const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
   loading: () => (
     <div className="flex size-full items-center justify-center bg-bg-tertiary">
-      <p className="text-body-sm-regular text-text-secondary">지도 로딩 중...</p>
+      <p className="text-body-sm-regular text-text-tertiary">지도 로딩 중...</p>
     </div>
   ),
 });
@@ -54,14 +54,20 @@ function generateDisaster(areaKm2: number): DisasterResult {
 
 type Phase = 'draw' | 'analyzing' | 'result';
 
-// 결과 값의 의미 색 → NDS 상태 텍스트 토큰 (플랫폼 hex 를 글자색으로 쓰지 않는다)
+// 결과 값의 의미 색 — 운영 버전(78e9433) 색 그대로 (NDS_FULL_ADOPTION_RULES §8)
 type Tone = 'danger' | 'warning' | 'success';
 
 const TONE_CLASS: Record<Tone, string> = {
-  danger: 'text-status-danger',
-  warning: 'text-status-warning',
-  success: 'text-status-success',
+  danger: 'text-[#C45C4A]',
+  warning: 'text-[#C8923A]',
+  success: 'text-[#4A9E6B]',
 };
+
+// 운영 색 복원 — 색만 덮고 크기·모서리·패딩은 NDS 그대로
+const CTA_SOLID_CLASS =
+  'bg-[#C45C4A] text-white [&_svg]:text-white not-data-disabled:not-aria-invalid:hover:bg-[#C45C4A] hover:opacity-85';
+const RESET_TEXT_CLASS =
+  'text-text-tertiary not-data-disabled:not-aria-invalid:hover:text-text-tertiary hover:opacity-85';
 
 interface ResultRow {
   label: string;
@@ -140,7 +146,7 @@ export default function CitadelSimulator() {
   return (
     <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
       <div className="mb-24 flex flex-col items-start gap-8">
-        <h2 className="text-heading-2xl text-text-primary">재난 피해 분석 체험</h2>
+        <h2 className="text-heading-2xl text-text-tertiary">재난 피해 분석 체험</h2>
       </div>
 
       {/* 지도 캔버스가 컨테이너를 꽉 채워 inset-ring 을 가리므로 지도 프레임만 border 로 그린다 */}
@@ -157,11 +163,11 @@ export default function CitadelSimulator() {
           {phase === 'draw' && (
             <div className="p-16 md:p-20">
               <h3 className="mb-8 text-heading-lg text-text-primary">재난 피해 분석</h3>
-              <p className="mb-16 text-body-sm-regular text-text-secondary">
+              <p className="mb-16 text-body-sm-regular text-text-tertiary">
                 피해 지역을 그려보세요. NDVI/dNBR 기반 피해 범위와 심각도가
                 시뮬레이션됩니다.
               </p>
-              <div className="rounded-md bg-bg-secondary px-12 py-8 text-body-sm-regular text-text-secondary">
+              <div className="rounded-md bg-[rgba(196,92,74,0.12)] px-12 py-8 text-body-sm-regular text-[#C45C4A]">
                 왼쪽 상단 도구로 피해 지역을 그리세요
               </div>
             </div>
@@ -169,20 +175,20 @@ export default function CitadelSimulator() {
 
           {phase === 'analyzing' && (
             <div className="flex flex-col items-center gap-12 p-16 text-center md:p-20">
-              <Spinner />
-              <p className="text-body-sm-regular text-text-secondary">NDVI / dNBR 분석 중...</p>
+              <Spinner className="text-[#C45C4A]" />
+              <p className="text-body-sm-regular text-text-tertiary">NDVI / dNBR 분석 중...</p>
             </div>
           )}
 
           {phase === 'result' && result && (
             <div>
               <div className="flex items-center justify-between py-8 pl-16 pr-8">
-                <h3 className="text-heading-lg text-text-primary">피해 분석 결과</h3>
-                <Button variant="text" size="sm" onClick={handleReset}>
+                <h3 className="text-heading-lg text-[#C45C4A]">피해 분석 결과</h3>
+                <Button variant="text" size="sm" className={RESET_TEXT_CLASS} onClick={handleReset}>
                   초기화
                 </Button>
               </div>
-              <Separator />
+              <Separator className="bg-border-tertiary" />
 
               <div className="relative h-100 overflow-hidden">
                 <img
@@ -206,7 +212,7 @@ export default function CitadelSimulator() {
                 ] satisfies ResultRow[]).map((item) => (
                   <div
                     key={item.label}
-                    className="flex items-center justify-between border-b border-border-tertiary py-6"
+                    className="flex items-center justify-between border-b border-[rgba(255,255,255,0.05)] py-6"
                   >
                     <span className="text-body-xs-regular text-text-tertiary">{item.label}</span>
                     <span className={`text-body-sm-medium tabular-nums ${item.tone ? TONE_CLASS[item.tone] : 'text-text-primary'}`}>
@@ -217,7 +223,7 @@ export default function CitadelSimulator() {
 
                 <Button
                   display="block"
-                  className="mt-16"
+                  className={`mt-16 ${CTA_SOLID_CLASS}`}
                   onClick={() => { trackEvent('simulator_event', 'lead_form_opened', { vertical: 'citadel' }); setShowLeadForm(true); }}
                 >
                   SLA 리포트 요청

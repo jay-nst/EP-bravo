@@ -1,15 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+import type { CSSProperties } from 'react';
 import { Form } from '@base-ui/react/form';
 import { Dialog, Field, Input, Select, Textarea } from '@naraspace-technology/nds/components';
+import { IconCheck } from '@naraspace-technology/nds/icons';
 import { trackEvent } from '@/lib/analytics';
 
 interface LeadCaptureModalProps {
   open: boolean;
   onClose: () => void;
   vertical: 'citadel' | 'predict' | 'warden' | 'northpaper';
-  /** NDS 전환 후 미사용 — 모달은 NDS 표준 색만 쓴다. 호출부 호환을 위해 유지 */
+  /**
+   * 플랫폼 색 (운영 색 복원, NDS_FULL_ADOPTION_RULES §8). 설명(eyebrow) 글자색, 제출 버튼 채움,
+   * 입력 포커스 테두리, 완료 체크 원에 쓴다. `--lead-accent` CSS 변수로 Popup 하위에 전달
+   */
   accentColor: string;
 }
 
@@ -45,11 +50,34 @@ const VERTICAL_LABELS: Record<string, string> = {
 //    Footer 의 Action 은 form 밖에 있으므로 form 속성으로 연결
 //  - 표기: 필수가 대부분이라 선택 항목에만 Field.Optional ("한 폼 안에서 하나로 통일")
 //  - Select: '' (미선택) ↔ null. "선택 안 함" 같은 해제 항목은 value null 인 item
-//  - 색·크기 커스텀 없음 (플랫폼 색 포함) — NDS 기본값만
+//  - 색: 운영 버전(597a0fd) 색으로 덮는다 (§8) — 크기·모서리·패딩·타이포는 NDS 그대로
 const FORM_ID = 'lead-capture-form';
 const ROLE_ITEMS = ROLE_OPTIONS.filter((o) => o.value);
 const BUDGET_ITEMS = BUDGET_OPTIONS.map((o) => ({ value: o.value || null, label: o.label }));
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// 운영 색 복원 — accentColor 는 Popup 의 `--lead-accent` 로 받는다
+// 입력: surface 배경, border 테두리, 포커스 시 accentColor 테두리 (hover 색 변화 없음)
+const INPUT_COLOR_CLASS = [
+  'bg-bg-secondary',
+  'has-not-aria-invalid:not-data-disabled:hover:inset-ring-border-tertiary',
+  'has-not-aria-invalid:not-data-disabled:data-active:inset-ring-(color:--lead-accent)',
+  'has-not-aria-invalid:focus-within:inset-ring-(color:--lead-accent)!',
+].join(' ');
+const SELECT_TRIGGER_COLOR_CLASS = [
+  'bg-bg-secondary',
+  'not-data-invalid:not-data-disabled:hover:inset-ring-border-tertiary',
+  'not-data-invalid:data-popup-open:inset-ring-(color:--lead-accent)!',
+  'not-data-invalid:focus-visible:inset-ring-(color:--lead-accent)!',
+].join(' ');
+// 제출: accentColor 채움 + 흰 글자, hover 는 opacity
+const ACTION_COLOR_CLASS =
+  'bg-(color:--lead-accent) text-white [&_svg]:text-white not-data-disabled:not-aria-invalid:hover:bg-(color:--lead-accent) hover:opacity-85';
+// 취소(원래 × 닫기): surface 배경 + border + muted 글자 / 닫기(완료): surface 배경 + border + 본문 글자
+const CANCEL_COLOR_CLASS =
+  'bg-bg-secondary text-text-tertiary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-bg-secondary not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary hover:opacity-85';
+const CLOSE_COLOR_CLASS =
+  'bg-bg-secondary text-text-primary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-bg-secondary not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary hover:opacity-85';
 
 const required = (message: string) => (value: unknown) => (String(value ?? '').trim() ? null : message);
 const validateEmail = (value: unknown) => {
@@ -58,7 +86,7 @@ const validateEmail = (value: unknown) => {
   return EMAIL_RE.test(v) ? null : '이메일 형식을 확인해주세요.';
 };
 
-export default function LeadCaptureModal({ open, onClose, vertical }: LeadCaptureModalProps) {
+export default function LeadCaptureModal({ open, onClose, vertical, accentColor }: LeadCaptureModalProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
@@ -104,49 +132,58 @@ export default function LeadCaptureModal({ open, onClose, vertical }: LeadCaptur
 
   return (
     <Dialog.Root open={open} onOpenChange={(next) => { if (!next) onClose(); }}>
-      <Dialog.Popup className="max-h-[calc(100vh-32px)] overflow-y-auto">
+      <Dialog.Popup
+        className="max-h-[calc(100vh-32px)] overflow-y-auto"
+        style={{ '--lead-accent': accentColor } as CSSProperties}
+      >
         {submitted ? (
           <>
+            <span
+              aria-hidden
+              className="flex size-48 items-center justify-center rounded-full bg-(color:--lead-accent) text-text-primary"
+            >
+              <IconCheck className="size-24" />
+            </span>
             <Dialog.Title>등록 완료</Dialog.Title>
-            <Dialog.Description>
+            <Dialog.Description className="text-text-tertiary">
               관심을 가져주셔서 감사합니다. 담당자가 빠르게 연락드리겠습니다.
             </Dialog.Description>
             <Dialog.Footer>
-              <Dialog.Cancel>닫기</Dialog.Cancel>
+              <Dialog.Cancel className={CLOSE_COLOR_CLASS}>닫기</Dialog.Cancel>
             </Dialog.Footer>
           </>
         ) : (
           <>
             <Dialog.Title>상세 리포트 요청</Dialog.Title>
-            <Dialog.Description>{VERTICAL_LABELS[vertical]}</Dialog.Description>
+            <Dialog.Description className="text-(color:--lead-accent)">{VERTICAL_LABELS[vertical]}</Dialog.Description>
 
             <Form id={FORM_ID} onFormSubmit={handleSubmit} className="flex flex-col gap-16">
               <Field.Root name="name" validate={required('이름을 입력해주세요.')}>
-                <Field.Label>이름</Field.Label>
-                <Input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="홍길동" />
+                <Field.Label className="text-text-tertiary">이름</Field.Label>
+                <Input className={INPUT_COLOR_CLASS} type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="홍길동" />
                 <Field.Error />
               </Field.Root>
 
               <Field.Root name="email" validate={validateEmail}>
-                <Field.Label>이메일</Field.Label>
-                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="hong@company.com" />
+                <Field.Label className="text-text-tertiary">이메일</Field.Label>
+                <Input className={INPUT_COLOR_CLASS} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="hong@company.com" />
                 <Field.Error />
               </Field.Root>
 
               <Field.Root name="company" validate={required('소속을 입력해주세요.')}>
-                <Field.Label>소속</Field.Label>
-                <Input type="text" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="회사 또는 기관명" />
+                <Field.Label className="text-text-tertiary">소속</Field.Label>
+                <Input className={INPUT_COLOR_CLASS} type="text" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="회사 또는 기관명" />
                 <Field.Error />
               </Field.Root>
 
               <Field.Root name="role" validate={required('담당 분야를 선택해주세요.')}>
-                <Field.Label>담당 분야</Field.Label>
+                <Field.Label className="text-text-tertiary">담당 분야</Field.Label>
                 <Select.Root<string | null>
                   items={ROLE_ITEMS}
                   value={role || null}
                   onValueChange={(v) => setRole(v ?? '')}
                 >
-                  <Select.Trigger>
+                  <Select.Trigger className={SELECT_TRIGGER_COLOR_CLASS}>
                     <Select.Value placeholder={ROLE_OPTIONS[0].label} />
                   </Select.Trigger>
                   <Select.Popup>
@@ -159,8 +196,9 @@ export default function LeadCaptureModal({ open, onClose, vertical }: LeadCaptur
               </Field.Root>
 
               <Field.Root name="use_case">
-                <Field.Label>활용 목적<Field.Optional>(선택)</Field.Optional></Field.Label>
+                <Field.Label className="text-text-tertiary">활용 목적<Field.Optional>(선택)</Field.Optional></Field.Label>
                 <Textarea
+                  className={INPUT_COLOR_CLASS}
                   value={useCase}
                   onChange={(e) => setUseCase(e.target.value)}
                   placeholder="어떤 업무에 위성 데이터를 활용하고 싶으신가요?"
@@ -169,13 +207,13 @@ export default function LeadCaptureModal({ open, onClose, vertical }: LeadCaptur
               </Field.Root>
 
               <Field.Root name="budget">
-                <Field.Label>예상 연간 예산<Field.Optional>(선택)</Field.Optional></Field.Label>
+                <Field.Label className="text-text-tertiary">예상 연간 예산<Field.Optional>(선택)</Field.Optional></Field.Label>
                 <Select.Root<string | null>
                   items={BUDGET_ITEMS}
                   value={budget || null}
                   onValueChange={(v) => setBudget(v ?? '')}
                 >
-                  <Select.Trigger>
+                  <Select.Trigger className={SELECT_TRIGGER_COLOR_CLASS}>
                     <Select.Value placeholder={BUDGET_OPTIONS[0].label} />
                   </Select.Trigger>
                   <Select.Popup>
@@ -194,10 +232,10 @@ export default function LeadCaptureModal({ open, onClose, vertical }: LeadCaptur
               </p>
             )}
 
-            <Dialog.SubDescription>입력하신 정보는 서비스 안내 목적으로만 사용됩니다.</Dialog.SubDescription>
+            <Dialog.SubDescription className="text-text-tertiary">입력하신 정보는 서비스 안내 목적으로만 사용됩니다.</Dialog.SubDescription>
             <Dialog.Footer>
-              <Dialog.Cancel>취소</Dialog.Cancel>
-              <Dialog.Action type="submit" form={FORM_ID} loading={submitting}>
+              <Dialog.Cancel className={CANCEL_COLOR_CLASS}>취소</Dialog.Cancel>
+              <Dialog.Action className={ACTION_COLOR_CLASS} type="submit" form={FORM_ID} loading={submitting}>
                 리포트 요청하기
               </Dialog.Action>
             </Dialog.Footer>

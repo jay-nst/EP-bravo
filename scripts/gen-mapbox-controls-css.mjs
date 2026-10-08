@@ -30,12 +30,12 @@ const uri = Object.fromEntries(Object.entries(ICONS).map(([k, n]) => [k, svgData
 
 const css = `/* 자동 생성 — scripts/gen-mapbox-controls-css.mjs. 직접 수정하지 말 것.
    Mapbox NavigationControl(확대/축소/나침반) + MapboxDraw(폴리곤/삭제)를 NDS 모양으로:
-   - 그룹 = NDS 표면 (bg-tertiary, inset-ring border-tertiary, radius-md, elevation-6)
+   - 그룹 = NDS 모양(radius-md, inset-ring, elevation-6) + 운영 색(surface 배경, border 테두리, surface-elevated hover)
    - 버튼 = NDS Button text sm iconOnly 크기(32px), hover/선택 토큰
    - 아이콘 = NDS 아이콘(${Object.values(ICONS).join(', ')}) SVG 를 mask 로 */
 
 .mapboxgl-ctrl-group {
-  background: var(--bg-tertiary) !important;
+  background: var(--bg-secondary) !important; /* 운영 색: EP --surface */
   border: 0 !important;
   border-radius: var(--radius-md) !important;
   box-shadow: inset 0 0 0 1px var(--border-tertiary), var(--elevation-6) !important;
@@ -56,7 +56,7 @@ const css = `/* 자동 생성 — scripts/gen-mapbox-controls-css.mjs. 직접 �
 }
 
 .mapboxgl-ctrl-group button:not(:disabled):hover {
-  background: var(--bg-interactive-secondary-hover) !important;
+  background: var(--bg-primary) !important; /* 운영 색: EP --surface-elevated */
 }
 
 .mapboxgl-ctrl-group button:focus-visible {

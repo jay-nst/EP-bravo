@@ -61,11 +61,17 @@ const VERTICALS = [
   },
 ];
 
-// 검증 리포트 예시 값의 의미 색 → NDS 상태 텍스트 토큰
+// 검증 리포트 예시 값의 의미 색 — 운영 버전(78e9433) 색 그대로 (NDS_FULL_ADOPTION_RULES §8)
 const REPORT_TONE_CLASS = {
-  success: 'text-status-success',
-  warning: 'text-status-warning',
+  success: 'text-[#4A9E6B]',
+  warning: 'text-[#C8923A]',
 } as const;
+
+// 운영 색 복원 — 색만 덮고 크기·모서리·패딩은 NDS 그대로
+const CTA_SOLID_CLASS =
+  'bg-[#4A9EC4] text-white [&_svg]:text-white not-data-disabled:not-aria-invalid:hover:bg-[#4A9EC4] hover:opacity-85';
+const CTA_OUTLINE_CLASS =
+  'text-text-tertiary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-transparent not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary hover:opacity-85';
 
 export default function PredictPage() {
   return (
@@ -73,7 +79,13 @@ export default function PredictPage() {
       {/* Hero */}
       <section className="mx-auto max-w-960 px-16 pb-48 pt-48 sm:px-24 sm:pb-64 sm:pt-80">
         <div className="mb-20">
-          <StatusChip status="neutral" showIcon={false}>EarthPaper · Predict</StatusChip>
+          <StatusChip
+            status="neutral"
+            className="bg-[rgba(74,158,196,0.12)] text-text-tertiary"
+            icon={<span aria-hidden className="size-8 shrink-0 rounded-[2px] bg-[#4A9EC4]" />}
+          >
+            EarthPaper · <span className="text-[#4A9EC4]">Predict</span>
+          </StatusChip>
         </div>
 
         <h1 className="mb-16 text-heading-3xl text-text-primary md:text-display-md">
@@ -81,7 +93,7 @@ export default function PredictPage() {
           자산을 검증합니다
         </h1>
 
-        <p className="mb-32 max-w-[52ch] text-body-md-regular text-text-secondary">
+        <p className="mb-32 max-w-[52ch] text-body-md-regular text-text-tertiary">
           해외 태양광 발전소, 광산, 야적장 —
           위성 영상으로 자산의 존재와 상태를 원격 검증합니다.
         </p>
@@ -89,13 +101,14 @@ export default function PredictPage() {
         <div className="flex flex-wrap gap-12">
           <Button
             size="lg"
+            className={CTA_SOLID_CLASS}
             rightIcon={<IconArrowRight />}
             render={<a href="https://predicthings.com" target="_blank" rel="noopener noreferrer" />}
             nativeButton={false}
           >
             Predict 서비스
           </Button>
-          <Button size="lg" variant="outline" render={<a href="#contact" />} nativeButton={false}>
+          <Button size="lg" variant="outline" className={CTA_OUTLINE_CLASS} render={<a href="#contact" />} nativeButton={false}>
             자산 검증 상담
           </Button>
         </div>
@@ -104,11 +117,11 @@ export default function PredictPage() {
       {/* Use case */}
       <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
         <div className="mb-24 flex flex-col items-start gap-8">
-          <StatusChip status="neutral" showIcon={false}>Use Case</StatusChip>
+          <StatusChip status="neutral" showIcon={false} className="text-text-tertiary">Use Case</StatusChip>
           <h2 className="text-heading-2xl text-text-primary">
             인도 라자스탄 태양광 발전소 — 원격 자산 검증
           </h2>
-          <p className="max-w-[60ch] text-body-md-regular text-text-secondary">
+          <p className="max-w-[60ch] text-body-md-regular text-text-tertiary">
             수출입은행이 인도 라자스탄의 150MW 태양광 발전소에 투자했습니다.
             현지 실사단을 파견하는 대신, 위성 기반 검증으로 자산을 원격 관리합니다.
           </p>
@@ -116,11 +129,11 @@ export default function PredictPage() {
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-12">
           {USE_CASE_STEPS.map((step) => (
-            <Card.Root key={step.n}>
+            <Card.Root key={step.n} className="bg-bg-secondary">
               <Card.Body className="gap-8">
-                <span className="text-body-xs-regular tabular-nums text-text-tertiary">{step.n}</span>
+                <span className="text-body-xs-regular tabular-nums text-[#4A9EC4]">{step.n}</span>
                 <Card.Title>{step.title}</Card.Title>
-                <p className="text-body-sm-regular text-text-secondary">{step.desc}</p>
+                <p className="text-body-sm-regular text-text-tertiary">{step.desc}</p>
               </Card.Body>
             </Card.Root>
           ))}
@@ -138,8 +151,8 @@ export default function PredictPage() {
       <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
         <Card.Root>
           <Card.Body className="gap-16">
-            <Card.Title>검증 리포트 예시</Card.Title>
-            <Separator />
+            <Card.Title className="text-text-tertiary">검증 리포트 예시</Card.Title>
+            <Separator className="bg-border-tertiary" />
             <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-16">
               {[
                 { label: '자산 유형', value: '태양광 발전소' },
@@ -167,8 +180,8 @@ export default function PredictPage() {
 
       {/* Verticals */}
       <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
-        <div className="mb-24 flex flex-col items-start gap-8">
-          <h2 className="text-heading-2xl text-text-primary">서비스 영역</h2>
+        <div className="mb-24 flex flex-col items-start gap-8 border-b border-border-tertiary pb-12">
+          <h2 className="text-heading-2xl text-text-tertiary">서비스 영역</h2>
         </div>
 
         <div className="grid gap-12">
@@ -176,11 +189,15 @@ export default function PredictPage() {
             <Card.Root key={v.id}>
               <Card.Body className="gap-16">
                 <div className="flex items-center gap-12">
-                  <Card.Title className="flex-1">{v.title}</Card.Title>
-                  {v.badge && <Badge type="letter">{v.badge}</Badge>}
+                  <Card.Title className="flex-1 text-[#4A9EC4]">{v.title}</Card.Title>
+                  {v.badge && (
+                    <Badge type="letter" className="bg-[rgba(138,134,128,0.15)] text-text-tertiary">
+                      {v.badge}
+                    </Badge>
+                  )}
                 </div>
 
-                <p className="max-w-[60ch] text-body-sm-regular text-text-secondary">{v.desc}</p>
+                <p className="max-w-[60ch] text-body-sm-regular text-text-tertiary">{v.desc}</p>
 
                 <div className="grid grid-cols-1 gap-12 sm:grid-cols-2">
                   <div className="flex flex-col gap-4">
@@ -191,7 +208,13 @@ export default function PredictPage() {
                     <span className="text-body-xs-regular text-text-tertiary">산출물</span>
                     <div className="flex flex-wrap gap-4">
                       {v.outputs.map((o) => (
-                        <Badge key={o} type="letter">{o}</Badge>
+                        <Badge
+                          key={o}
+                          type="letter"
+                          className="bg-bg-secondary text-text-primary inset-ring-1 inset-ring-border-tertiary"
+                        >
+                          {o}
+                        </Badge>
                       ))}
                     </div>
                   </div>
@@ -204,16 +227,16 @@ export default function PredictPage() {
 
       {/* Contact */}
       <section id="contact" className="mx-auto max-w-960 px-16 pb-80 sm:px-24">
-        <Card.Root>
+        <Card.Root className="bg-bg-secondary">
           <Card.Body className="items-center gap-8 py-32 text-center">
             <h2 className="text-heading-2xl text-text-primary">
               검증할 자산을 등록하세요
             </h2>
-            <p className="mb-16 max-w-[44ch] text-body-md-regular text-text-secondary">
+            <p className="mb-16 max-w-[44ch] text-body-md-regular text-text-tertiary">
               태양광 발전소, 광산, 야적장 — 자산 위치를 등록하면
               위성 관측 기반 검증 리포트가 자동으로 생성됩니다.
             </p>
-            <Button size="lg" render={<a href="mailto:support@naraspace.com" />} nativeButton={false}>
+            <Button size="lg" className={CTA_SOLID_CLASS} render={<a href="mailto:support@naraspace.com" />} nativeButton={false}>
               자산 등록 상담
             </Button>
           </Card.Body>

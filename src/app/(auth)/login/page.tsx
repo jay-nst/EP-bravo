@@ -7,6 +7,10 @@ import { Form } from '@base-ui/react/form';
 import { Button, Field, Input } from '@naraspace-technology/nds/components';
 import { createClient } from '@/lib/supabase/client';
 
+// 색 기준 78e9433: 민트 CTA(accent 배경 + 어두운 글자), disabled 는 accent 50%
+const MINT_CTA =
+  'bg-bg-interactive-primary text-[#0E0E10] [&_svg]:text-[#0E0E10] not-data-disabled:data-active:not-hover:text-[#0E0E10] not-data-disabled:data-active:not-hover:[&_svg]:text-[#0E0E10] data-disabled:bg-bg-interactive-primary data-disabled:text-[#0E0E10] data-disabled:opacity-50';
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -36,8 +40,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-bg-tertiary px-16">
-      <div className="w-full max-w-sm space-y-32">
+    <div className="relative flex min-h-screen items-center justify-center bg-bg-tertiary px-16">
+      {/* Subtle grid background */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: 'radial-gradient(rgba(27,191,168,0.04) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+        }}
+      />
+      <div className="relative z-10 w-full max-w-sm space-y-32">
         <div className="text-center">
           <Link href="/" className="inline-flex items-center justify-center gap-10 text-heading-3xl text-text-primary">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -47,9 +59,10 @@ export default function LoginPage() {
             </svg>
             EARTHPAPER
           </Link>
-          <p className="mt-8 text-body-md-regular text-text-secondary">
+          <p className="mt-8 text-body-md-regular text-text-tertiary">
             위성 영상 셀프서비스 포털
           </p>
+          <div className="mx-auto mt-12 h-2 w-32 rounded-[1px] bg-bg-interactive-primary opacity-60" />
         </div>
 
         <Form onFormSubmit={handleLogin} className="flex flex-col gap-16">
@@ -61,6 +74,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
+              className="bg-bg-secondary"
             />
             <Field.Error />
           </Field.Root>
@@ -73,6 +87,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
+              className="bg-bg-secondary"
             />
             <Field.Error />
           </Field.Root>
@@ -81,12 +96,12 @@ export default function LoginPage() {
             <p role="alert" className="text-body-sm-regular text-status-danger">{error}</p>
           )}
 
-          <Button type="submit" display="block" loading={loading}>
+          <Button type="submit" display="block" loading={loading} className={MINT_CTA}>
             {loading ? '로그인 중...' : '로그인'}
           </Button>
         </Form>
 
-        <p className="text-center text-body-sm-regular text-text-secondary">
+        <p className="text-center text-body-sm-regular text-text-tertiary">
           계정이 없으신가요?{' '}
           <Link href="/signup" className="text-text-interactive-primary">
             회원가입

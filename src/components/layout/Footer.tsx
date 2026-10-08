@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { IconArrowUpRight } from '@naraspace-technology/nds/icons';
 
-// color = 플랫폼 마크(점) 전용 데이터 색 — 글자 색으로 쓰지 않는다 (§7-2)
+// color = 플랫폼 마크(점) 색 (운영 색, §8)
 const PLATFORMS = [
   { label: 'Citadel', desc: '재난 · 도시 관제', color: '#C45C4A', href: '/citadel' },
   { label: 'Predict', desc: '자산 검증 · 금융', color: '#4A9EC4', href: '/predict' },
@@ -39,12 +39,12 @@ const LEGAL = [
 ];
 
 // 푸터 컬럼 라벨 = 패널 내부 그룹 라벨 역할 (§7-1), 링크 = 본문, 하단 바 = 메타
-const sectionHeaderClass = 'block mb-14 text-body-sm-medium text-text-secondary';
+const sectionHeaderClass = 'block mb-14 text-body-sm-medium text-text-tertiary';
 const listClass = 'flex flex-col gap-8';
-const linkClass = 'text-body-sm-regular text-text-secondary';
-const externalLinkClass = 'inline-flex items-center gap-4 text-body-sm-regular text-text-secondary';
+const linkClass = 'text-body-sm-regular text-text-tertiary';
+const externalLinkClass = 'inline-flex items-center gap-4 text-body-sm-regular text-text-tertiary';
 
-const externalIcon = <IconArrowUpRight className="size-16 text-icon-tertiary" />;
+const externalIcon = <IconArrowUpRight className="size-16 text-text-tertiary/50" />;
 
 export default function Footer() {
   return (
@@ -149,12 +149,12 @@ export default function Footer() {
                 href={l.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-body-xs-regular text-text-tertiary"
+                className="text-body-xs-regular text-text-tertiary/70"
               >
                 {l.label}
               </a>
             ))}
-            <span className="text-body-xs-regular text-text-tertiary">
+            <span className="text-body-xs-regular text-text-tertiary/50">
               © Nara Space Technology Inc.
             </span>
           </div>

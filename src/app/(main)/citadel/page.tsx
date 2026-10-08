@@ -65,12 +65,27 @@ const CASE_STUDIES = [
   },
 ];
 
-// 심각도 라벨 → NDS StatusChip 상태 (NDS 컴포넌트는 기본 상태 색만 쓴다)
+// 심각도 라벨 → NDS StatusChip 상태 (아이콘 선택용)
 const SEVERITY_STATUS: Record<'critical' | 'high' | 'moderate', NonNullable<StatusChipProps['status']>> = {
   critical: 'error',
   high: 'warning',
   moderate: 'alert',
 };
+
+// 심각도 칩 색 — 운영 버전(78e9433) SEVERITY_COLORS: `${color}20` 틴트 + 원색 글자
+const SEVERITY_CHIP_CLASS: Record<'critical' | 'high' | 'moderate', string> = {
+  critical: 'bg-[#C45C4A20] text-[#C45C4A] [&>svg]:text-[#C45C4A]',
+  high: 'bg-[#E07B5F20] text-[#E07B5F] [&>svg]:text-[#E07B5F]',
+  moderate: 'bg-[#C8923A20] text-[#C8923A] [&>svg]:text-[#C8923A]',
+};
+
+// 운영 색 복원 (NDS_FULL_ADOPTION_RULES §8) — 색만 덮고 크기·모서리·패딩은 NDS 그대로
+const CTA_SOLID_CLASS =
+  'bg-[#C45C4A] text-white [&_svg]:text-white not-data-disabled:not-aria-invalid:hover:bg-[#C45C4A] hover:opacity-85';
+const CTA_OUTLINE_CLASS =
+  'text-text-tertiary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-transparent not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary hover:opacity-85';
+const CTA_TEXT_CLASS =
+  'text-[#C45C4A] [&_svg]:text-[#C45C4A] not-data-disabled:not-aria-invalid:hover:text-[#C45C4A] not-data-disabled:not-aria-invalid:hover:[&_svg]:text-[#C45C4A] hover:opacity-85';
 
 export default function CitadelPage() {
   return (
@@ -78,7 +93,13 @@ export default function CitadelPage() {
       {/* Hero */}
       <section className="mx-auto max-w-960 px-16 pb-48 pt-48 sm:px-24 sm:pb-64 sm:pt-80">
         <div className="mb-20">
-          <StatusChip status="neutral" showIcon={false}>EarthPaper · Citadel</StatusChip>
+          <StatusChip
+            status="neutral"
+            className="bg-[rgba(196,92,74,0.12)] text-text-tertiary"
+            icon={<span aria-hidden className="size-8 shrink-0 rounded-[2px] bg-[#C45C4A]" />}
+          >
+            EarthPaper · <span className="text-[#C45C4A]">Citadel</span>
+          </StatusChip>
         </div>
 
         <h1 className="mb-16 text-heading-3xl text-text-primary md:text-display-md">
@@ -86,17 +107,17 @@ export default function CitadelPage() {
           재난에 대응합니다
         </h1>
 
-        <p className="mb-32 max-w-[52ch] text-body-md-regular text-text-secondary">
+        <p className="mb-32 max-w-[52ch] text-body-md-regular text-text-tertiary">
           위성 영상 기반 도시 모니터링과 재난 대응 솔루션.
           정기 관측 구독부터 국가 단위 턴키 시스템까지,
           정부와 도시가 필요로 하는 위성 인프라를 제공합니다.
         </p>
 
         <div className="flex flex-wrap gap-12">
-          <Button size="lg" render={<a href="#contact" />} nativeButton={false}>
+          <Button size="lg" className={CTA_SOLID_CLASS} render={<a href="#contact" />} nativeButton={false}>
             데모 요청
           </Button>
-          <Button size="lg" variant="outline" render={<a href="#verticals" />} nativeButton={false}>
+          <Button size="lg" variant="outline" className={CTA_OUTLINE_CLASS} render={<a href="#verticals" />} nativeButton={false}>
             서비스 살펴보기
           </Button>
         </div>
@@ -105,11 +126,11 @@ export default function CitadelPage() {
       {/* Use Case */}
       <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
         <div className="mb-24 flex flex-col items-start gap-8">
-          <StatusChip status="neutral" showIcon={false}>Use Case</StatusChip>
+          <StatusChip status="neutral" showIcon={false} className="text-text-tertiary">Use Case</StatusChip>
           <h2 className="text-heading-2xl text-text-primary">
             2026 광양 산불 — 48시간 재난 리포트
           </h2>
-          <p className="max-w-[60ch] text-body-md-regular text-text-secondary">
+          <p className="max-w-[60ch] text-body-md-regular text-text-tertiary">
             발생 탐지부터 피해 판정 리포트 전달까지, Citadel이 실제 재난 상황에서
             어떻게 작동하는지 단계별로 살펴봅니다.
           </p>
@@ -138,11 +159,11 @@ export default function CitadelPage() {
               desc: '48시간 내 피해 판정 리포트를 생성해 산림청·지자체에 전달합니다.',
             },
           ].map((step) => (
-            <Card.Root key={step.n}>
+            <Card.Root key={step.n} className="bg-bg-secondary">
               <Card.Body className="gap-8">
-                <span className="text-body-xs-regular tabular-nums text-text-tertiary">{step.n}</span>
+                <span className="text-body-xs-regular tabular-nums text-[#C45C4A]">{step.n}</span>
                 <Card.Title>{step.title}</Card.Title>
-                <p className="text-body-sm-regular text-text-secondary">{step.desc}</p>
+                <p className="text-body-sm-regular text-text-tertiary">{step.desc}</p>
               </Card.Body>
             </Card.Root>
           ))}
@@ -150,7 +171,7 @@ export default function CitadelPage() {
 
         <Button
           variant="text"
-          className="mt-16"
+          className={`mt-16 ${CTA_TEXT_CLASS}`}
           rightIcon={<IconArrowRight />}
           render={
             <a
@@ -170,8 +191,9 @@ export default function CitadelPage() {
 
       {/* Live Events */}
       <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
-        <div className="mb-24 flex flex-col items-start gap-8">
-          <h2 className="text-heading-2xl text-text-primary">최근 탐지</h2>
+        <div className="mb-24 flex items-center gap-8">
+          <span aria-hidden className="size-6 shrink-0 animate-pulse rounded-full bg-[#C45C4A]" />
+          <h2 className="text-heading-2xl text-text-tertiary">최근 탐지</h2>
         </div>
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-12">
@@ -179,16 +201,19 @@ export default function CitadelPage() {
             <Card.Root
               key={c.location}
               interactive
+              className="bg-bg-secondary hover:inset-ring-text-tertiary"
               render={<a href={c.href} target="_blank" rel="noopener noreferrer" />}
             >
               <Card.Body className="gap-8">
                 <div className="flex items-center justify-between">
-                  <StatusChip status={SEVERITY_STATUS[c.severity]}>{c.severity}</StatusChip>
+                  <StatusChip status={SEVERITY_STATUS[c.severity]} className={SEVERITY_CHIP_CLASS[c.severity]}>
+                    {c.severity}
+                  </StatusChip>
                   <span className="text-body-xs-regular tabular-nums text-text-tertiary">{c.date}</span>
                 </div>
                 <Card.Title render={<p />}>{c.event}</Card.Title>
                 <span className="text-body-xs-regular text-text-tertiary">{c.location}</span>
-                <span className="text-body-sm-medium tabular-nums text-text-primary">{c.stat}</span>
+                <span className="text-body-sm-medium tabular-nums text-[#C45C4A]">{c.stat}</span>
               </Card.Body>
             </Card.Root>
           ))}
@@ -197,8 +222,8 @@ export default function CitadelPage() {
 
       {/* Verticals */}
       <section id="verticals" className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
-        <div className="mb-24 flex flex-col items-start gap-8">
-          <h2 className="text-heading-2xl text-text-primary">서비스 영역</h2>
+        <div className="mb-24 flex flex-col items-start gap-8 border-b border-border-tertiary pb-12">
+          <h2 className="text-heading-2xl text-text-tertiary">서비스 영역</h2>
         </div>
 
         <div className="grid gap-12">
@@ -206,11 +231,13 @@ export default function CitadelPage() {
             <Card.Root key={v.id}>
               <Card.Body className="gap-16">
                 <div className="flex items-center gap-12">
-                  <Card.Title className="flex-1">{v.title}</Card.Title>
-                  <Badge type="letter">{v.label}</Badge>
+                  <Card.Title className="flex-1 text-[#C45C4A]">{v.title}</Card.Title>
+                  <Badge type="letter" className="bg-transparent text-text-tertiary inset-ring-1 inset-ring-border-tertiary">
+                    {v.label}
+                  </Badge>
                 </div>
 
-                <p className="max-w-[60ch] text-body-sm-regular text-text-secondary">{v.desc}</p>
+                <p className="max-w-[60ch] text-body-sm-regular text-text-tertiary">{v.desc}</p>
 
                 <div className="grid grid-cols-1 gap-12 sm:grid-cols-2">
                   <div className="flex flex-col gap-4">
@@ -221,7 +248,13 @@ export default function CitadelPage() {
                     <span className="text-body-xs-regular text-text-tertiary">산출물</span>
                     <div className="flex flex-wrap gap-4">
                       {v.outputs.map((o) => (
-                        <Badge key={o} type="letter">{o}</Badge>
+                        <Badge
+                          key={o}
+                          type="letter"
+                          className="bg-bg-secondary text-text-primary inset-ring-1 inset-ring-border-tertiary"
+                        >
+                          {o}
+                        </Badge>
                       ))}
                     </div>
                   </div>
@@ -234,14 +267,14 @@ export default function CitadelPage() {
 
       {/* Contact CTA */}
       <section id="contact" className="mx-auto max-w-960 px-16 pb-80 sm:px-24">
-        <Card.Root>
+        <Card.Root className="bg-bg-secondary">
           <Card.Body className="items-center gap-8 py-32 text-center">
             <h2 className="text-heading-2xl text-text-primary">관심 구역으로 시작하세요</h2>
-            <p className="mb-16 max-w-[44ch] text-body-md-regular text-text-secondary">
+            <p className="mb-16 max-w-[44ch] text-body-md-regular text-text-tertiary">
               모니터링할 행정구역이나 관심 지역을 설정하면,
               정기 관측부터 재난 대응 SLA까지 맞춤 시나리오를 구성합니다.
             </p>
-            <Button size="lg" render={<a href="mailto:support@naraspace.com" />} nativeButton={false}>
+            <Button size="lg" className={CTA_SOLID_CLASS} render={<a href="mailto:support@naraspace.com" />} nativeButton={false}>
               문의하기
             </Button>
           </Card.Body>

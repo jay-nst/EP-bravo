@@ -250,7 +250,7 @@ export default function AgentTutorialDemo() {
       <div
         className={
           fullscreen
-            ? 'fixed inset-0 z-[100] flex flex-col px-24 py-16 bg-bg-tertiary'
+            ? 'fixed inset-0 z-[100] flex flex-col px-24 py-16 bg-[rgba(10,10,12,0.98)]'
             : ''
         }
       >
@@ -265,7 +265,7 @@ export default function AgentTutorialDemo() {
                 <span
                   className={`flex items-center justify-center size-28 rounded-full text-body-sm-regular tabular-nums transition-colors ${
                     active
-                      ? 'bg-bg-interactive-primary text-text-inverse'
+                      ? 'bg-bg-interactive-primary text-[#0E0E10]'
                       : passed
                         ? 'bg-bg-primary text-text-primary inset-ring-1 inset-ring-border-tertiary'
                         : 'text-text-tertiary inset-ring-1 inset-ring-border-tertiary'
@@ -283,7 +283,13 @@ export default function AgentTutorialDemo() {
         </ol>
 
         {phase === 'running' && (
-          <Button variant="outline" size="sm" onClick={() => openModal('skipped')}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => openModal('skipped')}
+            // 색만 운영 값(§8): muted 글자 + border 테두리, hover 시 surface 채움
+            className="text-text-tertiary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-bg-secondary not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary not-data-disabled:data-active:not-hover:bg-transparent not-data-disabled:data-active:not-hover:inset-ring-border-tertiary not-data-disabled:data-active:not-hover:text-text-tertiary"
+          >
             건너뛰기
           </Button>
         )}
@@ -392,12 +398,18 @@ export default function AgentTutorialDemo() {
 
         {/* 시작/재시작 오버레이 */}
         {(phase === 'idle' || phase === 'done') && (
-          // 스크림 = NDS Dialog backdrop 과 같은 bg-black/60
-          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-16 bg-black/60 backdrop-blur-[2px]">
-            <p className="text-body-md-regular text-text-secondary">
+          // 스크림 색 = 운영 값 rgba(14,14,16,0.65) (§8)
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-16 bg-[rgba(14,14,16,0.65)] backdrop-blur-[2px]">
+            <p className="text-body-md-regular text-text-tertiary">
               승인자가 직접 클릭하며 체험하는 6스텝 데모입니다
             </p>
-            <Button variant="solid" size="lg" onClick={startTour}>
+            <Button
+              variant="solid"
+              size="lg"
+              onClick={startTour}
+              // 색만 운영 값(§8): 민트 CTA(accent) + 어두운 글자, hover opacity 0.85
+              className="bg-bg-interactive-primary text-[#0E0E10] transition-opacity hover:opacity-85 not-data-disabled:not-aria-invalid:hover:bg-bg-interactive-primary not-data-disabled:data-active:not-hover:text-[#0E0E10]"
+            >
               {phase === 'idle' ? '데모 시작하기' : '데모 다시 보기'}
             </Button>
           </div>

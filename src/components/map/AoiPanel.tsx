@@ -41,7 +41,7 @@ export default function AoiPanel({
 
       {/* Satellite selector */}
       <div>
-        <label className="mb-8 block text-body-sm-medium text-text-secondary">위성 선택</label>
+        <label className="mb-8 block text-body-sm-medium text-text-tertiary">위성 선택</label>
         <div className="flex gap-8">
           {(Object.keys(SATELLITE_CONFIG) as SatelliteType[]).map((key) => (
             <Button
@@ -50,7 +50,11 @@ export default function AoiPanel({
               active={satellite === key}
               aria-pressed={satellite === key}
               onClick={() => onSatelliteChange(key)}
-              className="flex-1"
+              className={`flex-1 ${
+                satellite === key
+                  ? 'bg-bg-interactive-primary text-[#0E0E10] inset-ring-bg-interactive-primary not-data-disabled:not-aria-invalid:hover:bg-bg-interactive-primary not-data-disabled:not-aria-invalid:hover:inset-ring-bg-interactive-primary not-data-disabled:data-active:not-hover:text-[#0E0E10] not-data-disabled:data-active:not-hover:inset-ring-bg-interactive-primary'
+                  : 'bg-bg-secondary text-text-primary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-bg-secondary not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary'
+              }`}
             >
               {SATELLITE_CONFIG[key].name}
             </Button>
@@ -59,7 +63,7 @@ export default function AoiPanel({
       </div>
 
       {/* Satellite info */}
-      <div className="rounded-md bg-bg-secondary p-12 text-body-sm-regular text-text-secondary">
+      <div className="rounded-md bg-bg-secondary p-12 text-body-sm-regular text-text-tertiary">
         <div className="flex justify-between">
           <span>해상도</span>
           <span className="text-body-sm-medium text-text-primary">{config.resolution}</span>
@@ -84,7 +88,7 @@ export default function AoiPanel({
 
       {/* AOI info */}
       {!aoi ? (
-        <div className="py-24 text-center text-body-sm-regular text-text-secondary">
+        <div className="py-24 text-center text-body-sm-regular text-text-tertiary">
           지도에서 다각형 도구로
           <br />
           관심 영역(AOI)을 그려주세요
@@ -92,7 +96,7 @@ export default function AoiPanel({
       ) : (
         <>
           <div className="rounded-md bg-bg-secondary p-12 text-body-sm-regular">
-            <div className="flex justify-between text-text-secondary">
+            <div className="flex justify-between text-text-tertiary">
               <span>선택 면적</span>
               <span className="text-body-sm-medium text-text-primary tabular-nums">
                 {fmtNum(aoi.areaKm2, 1)} km²
@@ -100,20 +104,20 @@ export default function AoiPanel({
             </div>
             <div className="mt-8 flex justify-between text-body-md-medium text-text-primary">
               <span>예상 가격</span>
-              <span className="tabular-nums">
+              <span className="text-accent tabular-nums">
                 ${fmtNum(aoi.price, 2)}
               </span>
             </div>
           </div>
 
           {aoi.validationError && (
-            <div className="rounded-md bg-status-danger-subtle p-12 text-body-sm-regular text-status-danger">
+            <div className="rounded-md bg-[rgba(196,92,74,0.1)] p-12 text-body-sm-regular text-status-danger inset-ring-1 inset-ring-[rgba(196,92,74,0.2)]">
               {aoi.validationError}
             </div>
           )}
 
           {!hasCatalogItem && !aoi.validationError && (
-            <div className="rounded-md bg-status-warning-subtle p-12 text-body-sm-regular text-status-warning">
+            <div className="rounded-md bg-[rgba(200,146,58,0.1)] p-12 text-body-sm-regular text-status-warning inset-ring-1 inset-ring-[rgba(200,146,58,0.2)]">
               이 영역에 사용 가능한 영상이 없습니다. 지도를 이동하여 영상이 있는
               영역을 선택해주세요.
             </div>
@@ -124,6 +128,7 @@ export default function AoiPanel({
             onClick={onPurchase}
             disabled={!canPurchase}
             loading={purchasing}
+            className="bg-bg-interactive-primary text-[#0E0E10] not-data-disabled:not-aria-invalid:hover:bg-bg-interactive-primary data-disabled:bg-bg-secondary data-disabled:text-text-tertiary"
           >
             {purchasing
               ? '결제 진행 중...'

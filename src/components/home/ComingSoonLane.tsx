@@ -29,27 +29,30 @@ export default function ComingSoonLane({ platform }: { platform: PlatformKey }) 
   return (
     <section id={`lane-${platform}`} className="scroll-mt-96">
       <div className="flex items-center gap-8 mb-16">
-        {/* 플랫폼 마크(점) — 데이터 색. 제목 글자는 NDS 텍스트 토큰 (§7-2) */}
+        {/* 플랫폼 마크(점)·제목 — 플랫폼 색 (운영 색, §8) */}
         <span
           className="inline-block w-8 h-8 rounded-full"
           style={{ background: meta.color }}
         />
-        <h2 className="text-heading-2xl text-text-primary">
+        <h2 className="text-heading-2xl" style={{ color: meta.color }}>
           {meta.name}
         </h2>
-        <StatusChip status="neutral" showIcon={false}>
+        <StatusChip status="neutral" showIcon={false} className="bg-bg-primary text-text-tertiary">
           Coming Soon
         </StatusChip>
       </div>
-      {/* 플랫폼 틴트 박스 → NDS Card 표면 (§7-2) */}
-      <Card.Root>
+      {/* 플랫폼 틴트 박스 (운영 색, §8) */}
+      <Card.Root
+        className="inset-ring-border-tertiary"
+        style={{ background: `color-mix(in srgb, ${meta.color} 5%, var(--surface))` }}
+      >
         <Card.Body className="gap-8 items-center text-center">
-          <Card.Title>{meta.name}</Card.Title>
-          <Card.Content>{meta.description}</Card.Content>
+          <Card.Title style={{ color: meta.color }}>{meta.name}</Card.Title>
+          <Card.Content className="text-text-tertiary">{meta.description}</Card.Content>
           <Button
             variant="outline"
             size="sm"
-            className="mt-8"
+            className="mt-8 text-text-interactive-primary inset-ring-border-interactive-primary! hover:bg-transparent!"
             onClick={() => trackEvent('cta_click', 'coming_soon_notify', { platform })}
           >
             출시 알림 받기

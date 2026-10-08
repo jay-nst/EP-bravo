@@ -24,14 +24,19 @@ interface OrderWithRelations {
 }
 
 // 주문 상태 → NDS StatusChip status (기존 색 의미: warning·accent·success·error·muted)
-const STATUS_LABELS: Record<string, { text: string; status: StatusChipProps['status'] }> = {
-  pending: { text: '대기중', status: 'warning' },
-  payment_held: { text: '결제 확인', status: 'brand' },
-  processing: { text: '처리중', status: 'brand' },
-  completed: { text: '완료', status: 'success' },
-  failed: { text: '실패', status: 'error' },
-  refunded: { text: '환불됨', status: 'neutral' },
+// cls: 색 기준 78e9433 — 배경 없이 상태 색 글자 (warning·accent·success·error·muted)
+const STATUS_LABELS: Record<string, { text: string; status: StatusChipProps['status']; cls: string }> = {
+  pending: { text: '대기중', status: 'warning', cls: 'bg-transparent text-status-warning [&>svg]:text-status-warning' },
+  payment_held: { text: '결제 확인', status: 'brand', cls: 'bg-transparent text-text-interactive-primary [&>svg]:text-text-interactive-primary' },
+  processing: { text: '처리중', status: 'brand', cls: 'bg-transparent text-text-interactive-primary [&>svg]:text-text-interactive-primary' },
+  completed: { text: '완료', status: 'success', cls: 'bg-transparent text-status-success [&>svg]:text-status-success' },
+  failed: { text: '실패', status: 'error', cls: 'bg-transparent text-status-danger [&>svg]:text-status-danger' },
+  refunded: { text: '환불됨', status: 'neutral', cls: 'bg-transparent text-text-tertiary [&>svg]:text-text-tertiary' },
 };
+
+/** 민트 CTA (accent 배경 + 어두운 글자) */
+const MINT_CTA =
+  'bg-bg-interactive-primary text-[#0E0E10] [&_svg]:text-[#0E0E10] not-data-disabled:data-active:not-hover:text-[#0E0E10] not-data-disabled:data-active:not-hover:[&_svg]:text-[#0E0E10]';
 
 export default function PortalPage() {
   const [orders, setOrders] = useState<OrderWithRelations[]>([]);
@@ -73,8 +78,8 @@ export default function PortalPage() {
   if (loading) {
     return (
       <div className="flex flex-1 items-center justify-center gap-8">
-        <Spinner size="sm" aria-label="주문 내역 로딩 중" />
-        <p className="text-body-md-regular text-text-secondary">주문 내역 로딩 중...</p>
+        <Spinner size="sm" aria-label="주문 내역 로딩 중" className="text-text-interactive-primary" />
+        <p className="text-body-md-regular text-text-tertiary">주문 내역 로딩 중...</p>
       </div>
     );
   }
@@ -98,8 +103,8 @@ export default function PortalPage() {
           <div className="mx-auto flex size-56 items-center justify-center rounded-full bg-bg-secondary">
             <IconGlobe className="size-24 text-icon-tertiary" />
           </div>
-          <p className="text-body-md-regular text-text-secondary">아직 주문 내역이 없습니다</p>
-          <Button render={<a href="/map" />} nativeButton={false}>
+          <p className="text-body-md-regular text-text-tertiary">아직 주문 내역이 없습니다</p>
+          <Button render={<a href="/map" />} nativeButton={false} className={MINT_CTA}>
             지도에서 영상 구매하기
           </Button>
         </div>
@@ -109,6 +114,7 @@ export default function PortalPage() {
             const status = STATUS_LABELS[order.status] ?? {
               text: order.status,
               status: 'neutral',
+              cls: 'bg-transparent text-text-tertiary [&>svg]:text-text-tertiary',
             };
             const hasDownload =
               order.status === 'completed' && order.downloads.length > 0;
@@ -121,7 +127,7 @@ export default function PortalPage() {
                 <Card.Body className="gap-12">
                   <div className="flex items-start justify-between">
                     <div className="space-y-4">
-                      <p className="text-body-sm-regular text-text-secondary">
+                      <p className="text-body-sm-regular text-text-tertiary">
                         주문번호:{' '}
                         <span className="text-body-sm-medium tabular-nums text-text-primary">
                           {order.id.slice(0, 8)}
@@ -135,19 +141,19 @@ export default function PortalPage() {
                         {new Date(order.created_at).toLocaleString('ko-KR')}
                       </p>
                     </div>
-                    <StatusChip status={status.status}>
+                    <StatusChip status={status.status} className={status.cls}>
                       {status.text}
                     </StatusChip>
                   </div>
 
                   {order.error_message && (
-                    <p className="rounded-md bg-status-danger-subtle px-12 py-8 text-body-sm-regular text-status-danger-bold">
+                    <p className="rounded-md bg-[rgba(196,92,74,0.1)] px-12 py-8 text-body-sm-regular text-status-danger">
                       {order.error_message}
                     </p>
                   )}
 
                   {hasDownload && !isExpired && (
-                    <Button className="self-start" onClick={() => handleDownload(order.id)}>
+                    <Button className={`self-start ${MINT_CTA}`} onClick={() => handleDownload(order.id)}>
                       다운로드
                     </Button>
                   )}

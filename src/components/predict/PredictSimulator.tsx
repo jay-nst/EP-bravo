@@ -13,7 +13,7 @@ const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
   loading: () => (
     <div className="flex size-full items-center justify-center bg-bg-tertiary">
-      <p className="text-body-sm-regular text-text-secondary">지도 로딩 중...</p>
+      <p className="text-body-sm-regular text-text-tertiary">지도 로딩 중...</p>
     </div>
   ),
 });
@@ -51,14 +51,20 @@ function generateVerification(areaKm2: number): VerificationResult {
 
 type Phase = 'draw' | 'analyzing' | 'result';
 
-// 결과 값의 의미 색 → NDS 상태 텍스트 토큰 (플랫폼 hex 를 글자색으로 쓰지 않는다)
 type Tone = 'danger' | 'warning' | 'success';
 
+// 결과 값의 의미 색 — 운영 버전(78e9433) 색 그대로 (NDS_FULL_ADOPTION_RULES §8)
 const TONE_CLASS: Record<Tone, string> = {
-  danger: 'text-status-danger',
-  warning: 'text-status-warning',
-  success: 'text-status-success',
+  danger: 'text-[#C45C4A]',
+  warning: 'text-[#C8923A]',
+  success: 'text-[#4A9E6B]',
 };
+
+// 운영 색 복원 — 색만 덮고 크기·모서리·패딩은 NDS 그대로
+const CTA_SOLID_CLASS =
+  'bg-[#4A9EC4] text-white [&_svg]:text-white not-data-disabled:not-aria-invalid:hover:bg-[#4A9EC4] hover:opacity-85';
+const RESET_TEXT_CLASS =
+  'text-text-tertiary not-data-disabled:not-aria-invalid:hover:text-text-tertiary hover:opacity-85';
 
 interface ResultRow {
   label: string;
@@ -125,7 +131,7 @@ export default function PredictSimulator() {
   return (
     <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
       <div className="mb-24 flex flex-col items-start gap-8">
-        <h2 className="text-heading-2xl text-text-primary">자산 검증 체험</h2>
+        <h2 className="text-heading-2xl text-text-tertiary">자산 검증 체험</h2>
       </div>
 
       {/* 지도 캔버스가 컨테이너를 꽉 채워 inset-ring 을 가리므로 지도 프레임만 border 로 그린다 */}
@@ -142,11 +148,11 @@ export default function PredictSimulator() {
           {phase === 'draw' && (
             <div className="p-16 md:p-20">
               <h3 className="mb-8 text-heading-lg text-text-primary">자산 검증</h3>
-              <p className="mb-16 text-body-sm-regular text-text-secondary">
+              <p className="mb-16 text-body-sm-regular text-text-tertiary">
                 태양광 발전소 경계를 그려보세요. 위성영상 기반 자산 존재·상태
                 검증이 시뮬레이션됩니다.
               </p>
-              <div className="rounded-md bg-bg-secondary px-12 py-8 text-body-sm-regular text-text-secondary">
+              <div className="rounded-md bg-[rgba(74,158,196,0.12)] px-12 py-8 text-body-sm-regular text-[#4A9EC4]">
                 왼쪽 상단 도구로 발전소 경계를 그리세요
               </div>
             </div>
@@ -154,20 +160,20 @@ export default function PredictSimulator() {
 
           {phase === 'analyzing' && (
             <div className="flex flex-col items-center gap-12 p-16 text-center md:p-20">
-              <Spinner />
-              <p className="text-body-sm-regular text-text-secondary">위성영상 분석 중...</p>
+              <Spinner className="text-[#4A9EC4]" />
+              <p className="text-body-sm-regular text-text-tertiary">위성영상 분석 중...</p>
             </div>
           )}
 
           {phase === 'result' && result && (
             <div>
               <div className="flex items-center justify-between py-8 pl-16 pr-8">
-                <h3 className="text-heading-lg text-text-primary">검증 결과</h3>
-                <Button variant="text" size="sm" onClick={handleReset}>
+                <h3 className="text-heading-lg text-[#4A9EC4]">검증 결과</h3>
+                <Button variant="text" size="sm" className={RESET_TEXT_CLASS} onClick={handleReset}>
                   초기화
                 </Button>
               </div>
-              <Separator />
+              <Separator className="bg-border-tertiary" />
 
               <div className="relative h-100 overflow-hidden">
                 <img
@@ -201,7 +207,7 @@ export default function PredictSimulator() {
                 ] satisfies ResultRow[]).map((item) => (
                   <div
                     key={item.label}
-                    className="flex items-center justify-between border-b border-border-tertiary py-6"
+                    className="flex items-center justify-between border-b border-[rgba(255,255,255,0.05)] py-6"
                   >
                     <span className="text-body-xs-regular text-text-tertiary">{item.label}</span>
                     <span className={`text-body-sm-medium tabular-nums ${item.tone ? TONE_CLASS[item.tone] : 'text-text-primary'}`}>
@@ -212,7 +218,7 @@ export default function PredictSimulator() {
 
                 <Button
                   display="block"
-                  className="mt-16"
+                  className={`mt-16 ${CTA_SOLID_CLASS}`}
                   onClick={() => { trackEvent('simulator_event', 'lead_form_opened', { vertical: 'predict' }); setShowLeadForm(true); }}
                 >
                   검증 리포트 요청

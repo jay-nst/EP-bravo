@@ -23,7 +23,7 @@ import {
 
 const MiniMap = dynamic(() => import('./MiniMap'), { ssr: false });
 
-// color = 플랫폼 마크(점) 전용 데이터 색 — 글자 색·틴트 박스로 쓰지 않는다 (§7-2)
+// color = 플랫폼 색 — 마크(점)·hover 테두리 (운영 색, §8)
 const PLATFORMS = [
   { key: 'citadel', label: 'Citadel', desc: '재난 · 도시 관제', color: '#C45C4A', href: '/citadel' },
   { key: 'predict', label: 'Predict', desc: '자산 검증 · 금융', color: '#4A9EC4', href: '/predict' },
@@ -215,35 +215,46 @@ export default function DashboardClient() {
             opacity: 0.45,
           }}
         />
-        {/* Left-side gradient overlay for text readability — NDS 배경 토큰 (테마 따라감) */}
-        <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-bg-tertiary/97 via-bg-tertiary/80 via-45% to-bg-tertiary/25" />
-        {/* Subtle scanline texture — 일러스트. 액센트 임의 rgba 대신 NDS 토큰을 섞어 쓴다 (§7-2) */}
+        {/* Left-side gradient overlay for text readability (운영 색, §8) */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              'repeating-linear-gradient(0deg, transparent, transparent 3px, color-mix(in srgb, var(--bg-interactive-primary) 1.5%, transparent) 3px, color-mix(in srgb, var(--bg-interactive-primary) 1.5%, transparent) 4px)',
+              'linear-gradient(to right, rgba(14,14,16,0.97) 0%, rgba(14,14,16,0.82) 45%, rgba(14,14,16,0.4) 75%, rgba(14,14,16,0.25) 100%)',
+          }}
+        />
+        {/* Subtle scanline texture (운영 색, §8) */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(27,191,168,0.015) 3px, rgba(27,191,168,0.015) 4px)',
           }}
         />
         {editorPick ? (
           <Link href="/interactive/north-korean-shipyards" className="block relative z-10">
             <div className="max-w-6xl mx-auto px-16 md:px-24 py-40 md:py-64">
-              {/* kicker → NDS StatusChip neutral + 플랫폼 마크(점) (§7-1·§7-2) */}
+              {/* kicker → NDS StatusChip neutral (§7-1). 운영 색: 배경 없음, accent 마크 + Northpaper 색 글자 (§8) */}
               <StatusChip
                 status="neutral"
-                icon={<PlatformDot color="var(--color-northpaper)" />}
-                className="mb-16 md:mb-20"
+                icon={<PlatformDot color="var(--accent)" />}
+                className="mb-16 md:mb-20 bg-transparent text-[#3D5A80]"
               >
                 Northpaper Original · 방위 분석
               </StatusChip>
               <h1 className="text-heading-3xl md:text-display-md text-text-primary mb-12 md:mb-16 max-w-2xl">
                 {editorPick.title}
               </h1>
-              <p className="text-body-md-regular text-text-secondary max-w-xl mb-20 md:mb-24">
+              <p className="text-body-md-regular text-text-tertiary max-w-xl mb-20 md:mb-24">
                 {editorPick.description}
               </p>
               <div className="flex items-center gap-12 md:gap-16 flex-wrap">
-                <StatusChip status="brand" variant="outline" showIcon={false}>
+                <StatusChip
+                  status="brand"
+                  variant="outline"
+                  showIcon={false}
+                  className="text-text-interactive-primary inset-ring-border-interactive-primary"
+                >
                   인터랙티브
                 </StatusChip>
                 <span className="text-body-xs-regular text-text-tertiary tabular-nums">6분 읽기</span>
@@ -270,7 +281,7 @@ export default function DashboardClient() {
         {/* eyebrow 라벨 → h2 섹션 제목 (다른 섹션 제목과 같은 클래스, §7-1) */}
         <div className="flex items-center gap-8 px-16 md:px-24 mb-16">
           <span className="w-8 h-8 rounded-full bg-bg-interactive-primary" style={{ animation: 'pulse-dot 1.5s ease-in-out infinite' }} />
-          <h2 className="text-heading-2xl text-text-primary">
+          <h2 className="text-heading-2xl text-text-tertiary">
             Live Feed
           </h2>
         </div>
@@ -289,14 +300,17 @@ export default function DashboardClient() {
                     ? <a href={item.href} target="_blank" rel="noopener noreferrer" />
                     : <Link href={item.href} />
                 }
-                className="shrink-0 w-240 md:w-280"
+                // 운영 색: 플랫폼 틴트 박스(color+08) + 테두리(color+30), hover 시 surface-elevated (§8)
+                className="shrink-0 w-240 md:w-280 bg-(--tint) inset-ring-(--edge) hover:bg-bg-primary hover:inset-ring-(--edge)"
+                style={{ '--tint': `${item.color}08`, '--edge': `${item.color}30` } as React.CSSProperties}
               >
                 <Card.Body className="gap-8">
-                  {/* 플랫폼 배지 — 틴트 박스 대신 NDS StatusChip + 플랫폼 마크(점) (§7-2) */}
+                  {/* 플랫폼 배지 — NDS StatusChip, 운영 색 (color+20 틴트 + 플랫폼 색 글자, §8) */}
                   <StatusChip
                     status="neutral"
                     icon={<PlatformDot color={item.color} />}
                     className="self-start"
+                    style={{ background: `${item.color}20`, color: item.color }}
                   >
                     {item.badge}
                   </StatusChip>
@@ -340,7 +354,14 @@ export default function DashboardClient() {
               {/* 플랫폼 링크 카드 — landing/OtherSolutions 와 같은 anatomy·클래스 */}
               <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-12">
                 {PLATFORMS.map((p) => (
-                  <Card.Root key={p.key} interactive render={<Link href={p.href} />}>
+                  <Card.Root
+                    key={p.key}
+                    interactive
+                    // 운영 색: surface 박스 + border 테두리, hover 시 테두리만 플랫폼 색 (§8)
+                    className="bg-bg-secondary hover:bg-bg-secondary hover:inset-ring-(--c)"
+                    style={{ '--c': p.color } as React.CSSProperties}
+                    render={<Link href={p.href} />}
+                  >
                     <Card.Body className="gap-4">
                       <Card.Title className="flex items-center gap-8">
                         <PlatformDot color={p.color} />
@@ -379,7 +400,7 @@ export default function DashboardClient() {
 
             {feedLoading && (
               <div className="py-32 flex justify-center">
-                <Spinner />
+                <Spinner className="text-(--border)" />
               </div>
             )}
           </div>
@@ -396,10 +417,11 @@ export default function DashboardClient() {
                   <Field.Label className="sr-only">EP Agent 질문</Field.Label>
                   <Input
                     type="text"
-                    leftIcon={<IconMessageSquare />}
+                    leftIcon={<IconMessageSquare className="text-text-tertiary" />}
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
                     placeholder="위성 영상에 대해 물어보세요..."
+                    className="bg-bg-secondary has-not-aria-invalid:not-data-disabled:hover:inset-ring-border-tertiary"
                   />
                 </Field.Root>
                 <div className="flex flex-wrap gap-6">
@@ -409,6 +431,7 @@ export default function DashboardClient() {
                       type="button"
                       variant="outline"
                       size="sm"
+                      className={SUGGESTION_COLOR_CLASS}
                       onClick={() => {
                         setChatInput(q);
                         trackEvent('chat_from_home', 'suggestion_click', { query: q });
@@ -428,14 +451,14 @@ export default function DashboardClient() {
                       <IconShoppingBag className="size-16 text-icon-secondary shrink-0" />
                       <div>
                         <p className={TILE_LABEL_CLASS}>내 주문</p>
-                        <p className={`${TILE_VALUE_CLASS} text-text-primary`}>{fmtNum(summary.recentOrders.length)}건</p>
+                        <p className={`${TILE_VALUE_CLASS} text-text-interactive-primary`}>{fmtNum(summary.recentOrders.length)}건</p>
                       </div>
                     </Link>
                     <Link href="/tasking" className={SERVICE_TILE_CLASS}>
                       <IconSatelliteSignal className="size-16 text-icon-secondary shrink-0" />
                       <div>
                         <p className={TILE_LABEL_CLASS}>촬영 요청</p>
-                        <p className={`${TILE_VALUE_CLASS} ${summary.pendingTaskings > 0 ? 'text-status-warning' : 'text-text-primary'}`}>
+                        <p className={`${TILE_VALUE_CLASS} ${summary.pendingTaskings > 0 ? 'text-[#C8923A]' : 'text-text-tertiary'}`}>
                           {summary.pendingTaskings > 0 ? `${fmtNum(summary.pendingTaskings)}건 대기` : '없음'}
                         </p>
                       </div>
@@ -444,14 +467,14 @@ export default function DashboardClient() {
                       <IconMap className="size-16 text-icon-secondary shrink-0" />
                       <div>
                         <p className={TILE_LABEL_CLASS}>위성 영상</p>
-                        <p className={`${TILE_VALUE_CLASS} text-text-primary`}>{fmtNum(summary.stats.totalImages)}장</p>
+                        <p className={`${TILE_VALUE_CLASS} text-text-tertiary`}>{fmtNum(summary.stats.totalImages)}장</p>
                       </div>
                     </Link>
                     <Link href="/quiz" className={SERVICE_TILE_CLASS}>
                       <IconHelpCircle className="size-16 text-icon-secondary shrink-0" />
                       <div>
                         <p className={TILE_LABEL_CLASS}>퀴즈</p>
-                        <p className={`${TILE_VALUE_CLASS} text-text-interactive-primary`}>도전하기</p>
+                        <p className={`${TILE_VALUE_CLASS} text-text-tertiary`}>도전하기</p>
                       </div>
                     </Link>
                   </div>
@@ -462,10 +485,11 @@ export default function DashboardClient() {
             {/* 오늘의 지구 (Compact) */}
             <div className={PANEL_CLASS}>
               <div className="flex items-center justify-between mb-12">
-                <h3 className="text-heading-lg text-text-primary">오늘의 지구</h3>
+                <h3 className="text-heading-lg text-text-tertiary">오늘의 지구</h3>
                 <Button
                   variant="text"
                   size="sm"
+                  className="text-text-interactive-primary! [&_svg]:text-text-interactive-primary!"
                   rightIcon={<IconArrowRight />}
                   render={<Link href="/core" />}
                   nativeButton={false}
@@ -477,10 +501,10 @@ export default function DashboardClient() {
                 <MiniMap />
               </div>
               <div className="grid grid-cols-2 gap-8">
-                <MetricItem label="활성 재난" value="2" suffix="건" tone="danger" />
-                <MetricItem label="대기질" value="보통" suffix="" />
-                <MetricItem label="신규 영상" value="+47" suffix="장" />
-                <MetricItem label="위성수" value="5" suffix="기" />
+                <MetricItem label="활성 재난" value="2" suffix="건" tone="danger" color="#C45C4A" />
+                <MetricItem label="대기질" value="보통" suffix="" color="var(--accent)" />
+                <MetricItem label="신규 영상" value="+47" suffix="장" color="var(--accent)" />
+                <MetricItem label="위성수" value="5" suffix="기" color="var(--text-muted)" />
               </div>
             </div>
 
@@ -502,9 +526,9 @@ export default function DashboardClient() {
                   if (v === 'subjects' || v === 'posts') setTrendingTab(v);
                 }}
               >
-                <Tabs.List variant="solid" size="sm" className="mb-12">
-                  <Tabs.Tab value="subjects">Trending</Tabs.Tab>
-                  <Tabs.Tab value="posts">인기 글</Tabs.Tab>
+                <Tabs.List variant="solid" size="sm" className={`mb-12 ${TABS_LIST_COLOR_CLASS}`}>
+                  <Tabs.Tab value="subjects" className={TAB_COLOR_CLASS}>Trending</Tabs.Tab>
+                  <Tabs.Tab value="posts" className={TAB_COLOR_CLASS}>인기 글</Tabs.Tab>
                 </Tabs.List>
 
                 <Tabs.Panel value="subjects">
@@ -516,8 +540,11 @@ export default function DashboardClient() {
                           <span className="text-body-md-medium text-text-tertiary tabular-nums w-20 text-center">{t.rank}</span>
                           <div className="flex-1 min-w-0">
                             <p className="text-body-sm-medium text-text-primary truncate">{t.title}</p>
-                            {/* 분류 = 메타 텍스트, 플랫폼 식별은 점 마크로만 (§7-2) */}
-                            <span className="inline-flex items-center gap-4 text-body-xs-regular text-text-tertiary uppercase">
+                            {/* 분류 — 운영 색: 배지 색 글자 (없으면 muted, §8) */}
+                            <span
+                              className="inline-flex items-center gap-4 text-body-xs-regular uppercase"
+                              style={{ color: badgeColor ?? 'var(--text-muted)' }}
+                            >
                               {badgeColor && <PlatformDot color={badgeColor} />}
                               {t.badge}
                             </span>
@@ -552,8 +579,8 @@ export default function DashboardClient() {
 
             {/* Newsletter */}
             <div className={PANEL_CLASS}>
-              <h3 className="text-heading-lg text-text-primary mb-4">뉴스레터</h3>
-              <p className="text-body-sm-regular text-text-secondary mb-12">매주 위성이 포착한 지구의 변화를 받아보세요.</p>
+              <h3 className="text-heading-lg text-text-tertiary mb-4">뉴스레터</h3>
+              <p className="text-body-sm-regular text-text-tertiary mb-12">매주 위성이 포착한 지구의 변화를 받아보세요.</p>
               <NewsletterForm />
             </div>
           </aside>
@@ -590,12 +617,19 @@ const PANEL_CLASS = 'rounded-lg p-16 bg-bg-tertiary inset-ring-1 inset-ring-bord
 const SERVICE_TILE_CLASS = 'flex items-center gap-8 p-8 rounded-md bg-bg-secondary transition-colors hover:bg-bg-primary';
 const RANK_ROW_CLASS = 'flex items-center gap-12 p-8 rounded-sm transition-colors hover:bg-bg-secondary cursor-pointer';
 // 사이드바 패널 제목 = 카드·블록 제목 역할 (§7-1)
-const PANEL_TITLE_CLASS = 'text-heading-lg text-text-primary mb-12';
-// 타일 라벨 = 메타, 값 = 강조 수치 (MetricItem 과 같은 위계)
-const TILE_LABEL_CLASS = 'text-body-xs-regular text-text-tertiary';
+const PANEL_TITLE_CLASS = 'text-heading-lg text-text-tertiary mb-12';
+// 타일 라벨 = 메타, 값 = 강조 수치 (MetricItem 과 같은 위계). 색은 운영 그대로 (§8)
+const TILE_LABEL_CLASS = 'text-body-xs-regular text-text-primary';
+// 운영 색 (§8) — 추천 질문: surface 배경 + muted 글자 + border 테두리, hover 변화 없음
+const SUGGESTION_COLOR_CLASS =
+  'bg-bg-secondary text-text-tertiary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-bg-secondary not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary';
+// 운영 색 (§8) — 탭: 목록 배경 없음, 활성 = surface-elevated + text + border, 비활성 = muted + 투명 테두리
+const TABS_LIST_COLOR_CLASS = 'bg-transparent [&>[data-slot=tabs-indicator]]:bg-bg-primary!';
+const TAB_COLOR_CLASS =
+  'data-active:text-text-primary! not-data-active:text-text-tertiary not-data-active:hover:text-text-tertiary not-data-active:border-transparent!';
 const TILE_VALUE_CLASS = 'text-body-sm-medium tabular-nums';
 
-// 플랫폼 마크(점) — 데이터 색이 남는 유일한 자리 (§7-2)
+// 플랫폼 마크(점)
 function PlatformDot({ color }: { color: string }) {
   return <span className="size-8 rounded-full shrink-0" style={{ background: color }} />;
 }
@@ -613,6 +647,7 @@ function SectionHeader({ title, icon, linkText, linkHref, external }: {
         <Button
           variant="text"
           size="sm"
+          className="text-text-tertiary! [&_svg]:text-text-tertiary!"
           rightIcon={<IconArrowRight />}
           render={
             external
@@ -675,13 +710,16 @@ function ShortsCard({ item }: { item: FeedItem }) {
   );
 }
 
-// color = 플랫폼 마크(점) 전용 데이터 색
+// color = 플랫폼 라벨 글자·마크(점) 색 (운영 색, §8)
 const PLATFORM_LABEL: Record<string, { label: string; color: string }> = {
   predict: { label: 'PREDICT', color: '#4A9EC4' },
   warden: { label: 'WARDEN', color: '#6B8A5E' },
   northpaper: { label: 'NORTHPAPER', color: '#3D5A80' },
   analysis: { label: 'ANALYSIS', color: '#22d3ee' },
 };
+
+// 운영 색 (§8): surface 박스 + border 테두리, hover 시 제목만 accent
+const ANALYSIS_CARD_COLOR_CLASS = 'group bg-bg-secondary hover:bg-bg-secondary hover:inset-ring-border-tertiary';
 
 function AnalysisCard({ item }: { item: FeedItem }) {
   const pl = PLATFORM_LABEL[item.type] ?? { label: item.type.toUpperCase(), color: 'var(--text-muted)' };
@@ -690,7 +728,11 @@ function AnalysisCard({ item }: { item: FeedItem }) {
   const content = (
     <>
       {item.thumbnail_url ? (
-        <Card.Image src={item.thumbnail_url} alt={item.title} loading="lazy" className="h-160 w-full" />
+        <div className="relative">
+          <Card.Image src={item.thumbnail_url} alt={item.title} loading="lazy" className="h-160 w-full" />
+          {/* 썸네일 하단 surface 그라데이션 (운영 색, §8) */}
+          <div className="absolute inset-0 rounded-md pointer-events-none bg-linear-to-t from-bg-secondary to-transparent to-60%" />
+        </div>
       ) : (
         <div className="relative h-160 rounded-md overflow-hidden bg-linear-135 from-bg-primary to-bg-secondary">
           <div className="absolute inset-0 flex items-center justify-center opacity-20">
@@ -699,13 +741,18 @@ function AnalysisCard({ item }: { item: FeedItem }) {
         </div>
       )}
       <Card.Body className="gap-8">
-        {/* 플랫폼 라벨 — 색 글자 대신 NDS StatusChip + 플랫폼 마크(점) (§7-2) */}
-        <StatusChip status="neutral" icon={<PlatformDot color={pl.color} />} className="self-start">
+        {/* 플랫폼 라벨 — NDS StatusChip, 운영 색 (배경 없음 + 플랫폼 색 글자, §8) */}
+        <StatusChip
+          status="neutral"
+          icon={<PlatformDot color={pl.color} />}
+          className="self-start bg-transparent"
+          style={{ color: pl.color }}
+        >
           {pl.label}
         </StatusChip>
-        <Card.Title>{item.title}</Card.Title>
+        <Card.Title className="transition-colors group-hover:text-text-interactive-primary">{item.title}</Card.Title>
         {item.description && (
-          <Card.Content className="line-clamp-2">{item.description}</Card.Content>
+          <Card.Content className="line-clamp-2 text-text-tertiary">{item.description}</Card.Content>
         )}
         <div className="flex items-center justify-between text-body-xs-regular text-text-tertiary tabular-nums">
           <span>{location}</span>
@@ -717,15 +764,15 @@ function AnalysisCard({ item }: { item: FeedItem }) {
 
   if (item.link_url && item.link_action === 'external') {
     return (
-      <Card.Root interactive render={<a href={item.link_url} target="_blank" rel="noopener noreferrer" />}>
+      <Card.Root interactive className={ANALYSIS_CARD_COLOR_CLASS} render={<a href={item.link_url} target="_blank" rel="noopener noreferrer" />}>
         {content}
       </Card.Root>
     );
   }
   if (item.link_url) {
-    return <Card.Root interactive render={<Link href={item.link_url} />}>{content}</Card.Root>;
+    return <Card.Root interactive className={ANALYSIS_CARD_COLOR_CLASS} render={<Link href={item.link_url} />}>{content}</Card.Root>;
   }
-  return <Card.Root>{content}</Card.Root>;
+  return <Card.Root className={ANALYSIS_CARD_COLOR_CLASS}>{content}</Card.Root>;
 }
 
 function NewsRow({ item }: { item: FeedItem }) {
@@ -734,7 +781,7 @@ function NewsRow({ item }: { item: FeedItem }) {
       <div className="flex-1 min-w-0">
         <p className="text-body-xs-regular text-text-tertiary mb-4">NEWS</p>
         <p className="text-body-md-medium text-text-primary">{item.title}</p>
-        {item.description && <p className="text-body-sm-regular text-text-secondary mt-4 line-clamp-1">{item.description}</p>}
+        {item.description && <p className="text-body-sm-regular text-text-tertiary mt-4 line-clamp-1">{item.description}</p>}
       </div>
       <span className="text-body-xs-regular text-text-tertiary tabular-nums shrink-0">
         {new Date(item.published_at).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })}
@@ -747,12 +794,15 @@ function NewsRow({ item }: { item: FeedItem }) {
   return inner;
 }
 
-// 강조 수치 — 기본 primary, 의미가 있는 값(위험)만 status 토큰 (§7-2)
-function MetricItem({ label, value, suffix, tone = 'default' }: { label: string; value: string; suffix: string; tone?: 'default' | 'danger' }) {
+// 강조 수치 — 기본 primary, 의미가 있는 값(위험)만 status 토큰. color 가 있으면 운영 색 우선 (§8)
+function MetricItem({ label, value, suffix, tone = 'default', color }: { label: string; value: string; suffix: string; tone?: 'default' | 'danger'; color?: string }) {
   return (
     <div className="p-8 rounded-md bg-bg-secondary">
       <p className="text-body-xs-regular text-text-tertiary mb-2">{label}</p>
-      <p className={`text-body-sm-medium tabular-nums ${tone === 'danger' ? 'text-status-danger' : 'text-text-primary'}`}>
+      <p
+        className={`text-body-sm-medium tabular-nums ${tone === 'danger' ? 'text-status-danger' : 'text-text-primary'}`}
+        style={color ? { color } : undefined}
+      >
         {value} <span className="text-body-xs-regular text-text-tertiary">{suffix}</span>
       </p>
     </div>
@@ -765,26 +815,27 @@ function QuickActionBtn({ href, icon, label, onClick }: { href?: string; icon: R
   const body = (
     <>
       {icon}
-      <span className="text-body-sm-regular text-text-secondary">{label}</span>
+      <span className="text-body-sm-regular text-text-tertiary">{label}</span>
     </>
   );
-  const cls = 'items-center justify-center gap-6 p-12';
+  // 운영 색 (§8): surface 타일, 테두리 없음, hover 시 surface-elevated
+  const cls = 'items-center justify-center gap-6 p-12 bg-bg-secondary inset-ring-transparent hover:bg-bg-primary hover:inset-ring-transparent';
   if (href) {
     return <Card.Root interactive render={<Link href={href} />} className={cls}>{body}</Card.Root>;
   }
   return <Card.Root interactive onClick={onClick} className={cls}>{body}</Card.Root>;
 }
 
-// 심각도 = 상태 의미 → NDS StatusChip status (임의 hex 대신, §7-2)
+// 심각도 = 상태 의미 → NDS StatusChip status. color = 운영 배지 색 (글자 + color+18 틴트, §8)
 type SeverityStatus = 'error' | 'warning' | 'alert';
-const SEVERITY_LABEL: Record<string, { text: string; status: SeverityStatus }> = {
-  critical: { text: 'CRITICAL', status: 'error' },
-  high: { text: 'HIGH', status: 'warning' },
-  medium: { text: 'MEDIUM', status: 'alert' },
+const SEVERITY_LABEL: Record<string, { text: string; status: SeverityStatus; color: string }> = {
+  critical: { text: 'CRITICAL', status: 'error', color: '#C45C4A' },
+  high: { text: 'HIGH', status: 'warning', color: '#E07B5F' },
+  medium: { text: 'MEDIUM', status: 'alert', color: '#C8923A' },
 };
 
-// 속보 띠 — Citadel 틴트 대신 NDS 상태 표면 토큰
-const BREAKING_WRAP_CLASS = 'block bg-status-danger-subtle border-b border-border-tertiary';
+// 속보 띠 — Citadel 틴트 (운영 색, §8)
+const BREAKING_WRAP_CLASS = 'block bg-[rgba(196,92,74,0.06)] border-b border-[rgba(196,92,74,0.15)]';
 
 function BreakingStrip({ items }: { items: FeedItem[] }) {
   const citadelItems = items
@@ -812,7 +863,7 @@ function BreakingStrip({ items }: { items: FeedItem[] }) {
   const current = citadelItems[currentIdx % citadelItems.length];
   if (!current) return null;
 
-  const sev = SEVERITY_LABEL[String(current.metadata.severity)] ?? { text: 'ALERT', status: 'alert' };
+  const sev = SEVERITY_LABEL[String(current.metadata.severity)] ?? { text: 'ALERT', status: 'alert', color: '#C8923A' };
   const location = String(current.metadata.location ?? '');
   const isExternal = current.link_url?.startsWith('http');
 
@@ -823,8 +874,8 @@ function BreakingStrip({ items }: { items: FeedItem[] }) {
 
   const inner = (
     <div className="max-w-6xl mx-auto px-24 py-8 flex items-center gap-12 perspective-[600px]">
-      <span className="inline-flex items-center gap-6 shrink-0 text-body-xs-regular text-text-primary">
-        {/* Citadel 플랫폼 마크(점) — 데이터 색 */}
+      <span className="inline-flex items-center gap-6 shrink-0 text-body-xs-regular text-citadel">
+        {/* Citadel 플랫폼 마크(점) */}
         <span className="size-6 rounded-full bg-citadel" style={{ animation: 'pulse-dot 1.5s ease-in-out infinite' }} />
         CITADEL
       </span>
@@ -839,7 +890,12 @@ function BreakingStrip({ items }: { items: FeedItem[] }) {
             transformOrigin: flipState === 'flip-out' ? 'bottom center' : 'top center',
           }}
         >
-          <StatusChip status={sev.status} showIcon={false} className="shrink-0">
+          <StatusChip
+            status={sev.status}
+            showIcon={false}
+            className="shrink-0"
+            style={{ background: `${sev.color}18`, color: sev.color }}
+          >
             {sev.text}
           </StatusChip>
           <span className="truncate text-body-sm-medium text-text-primary">

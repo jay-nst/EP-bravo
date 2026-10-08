@@ -20,12 +20,23 @@ import { trackEvent } from '@/lib/analytics';
 import { Button, Spinner, StatusChip } from '@naraspace-technology/nds/components';
 import { IconLayers } from '@naraspace-technology/nds/icons';
 
+// 운영 색 복원 (docs/NDS_FULL_ADOPTION_RULES.md §8) — NDS Button 의 색만 덮는다 (크기·모서리·패딩은 그대로).
+// tailwind-merge 가 기본 색을 대체하도록 NDS 와 같은 modifier 체인을 쓴다.
+// 모바일 '레이어' 버튼: surface 배경 + text, 테두리·hover 변화 없음
+const MOBILE_LAYER_BTN_COLOR =
+  'bg-bg-secondary text-text-primary inset-ring-transparent [&_svg]:text-text-primary not-data-disabled:not-aria-invalid:hover:bg-bg-secondary not-data-disabled:not-aria-invalid:hover:inset-ring-transparent';
+// 배경 지도 선택: 선택 = surface 배경 + text, 미선택 = 투명 + text-muted, 테두리는 항상 border
+const MAP_STYLE_BTN_ON =
+  'bg-bg-secondary text-text-primary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-bg-secondary not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary not-data-disabled:data-active:not-hover:bg-bg-secondary not-data-disabled:data-active:not-hover:inset-ring-border-tertiary not-data-disabled:data-active:not-hover:text-text-primary';
+const MAP_STYLE_BTN_OFF =
+  'bg-transparent text-text-tertiary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-transparent not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary';
+
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
   loading: () => (
     <div className="flex size-full items-center justify-center bg-bg-tertiary">
       <div className="flex flex-col items-center gap-12">
-        <Spinner size="md" aria-label="지도 로딩 중" />
+        <Spinner size="md" aria-label="지도 로딩 중" className="text-border-tertiary" />
         <p className="text-body-sm-regular text-text-tertiary">지도 로딩 중...</p>
       </div>
     </div>
@@ -908,28 +919,28 @@ export default function SeoulPage() {
       {
         layer: 'seoul-air-circle',
         render: (p) => `
-          <div class="mb-6 text-body-sm-medium text-text-primary">${String(p.name ?? '')}</div>
-          <div>PM2.5 <span class="text-body-sm-medium text-text-primary tabular-nums">${String(p.pm25 ?? '-')}</span> ㎍/㎥</div>
-          <div>PM10 <span class="text-body-sm-medium text-text-primary tabular-nums">${String(p.pm10 ?? '-')}</span> ㎍/㎥</div>
-          <div class="mt-6 text-body-xs-regular text-text-tertiary">${String(p.dataTime ?? '')}</div>`,
+          <div class="mb-6 text-body-sm-medium text-[#E8E4DF]">${String(p.name ?? '')}</div>
+          <div>PM2.5 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${String(p.pm25 ?? '-')}</span> ㎍/㎥</div>
+          <div>PM10 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${String(p.pm10 ?? '-')}</span> ㎍/㎥</div>
+          <div class="mt-6 text-body-xs-regular text-[#E8E4DF]/60">${String(p.dataTime ?? '')}</div>`,
       },
       {
         layer: 'seoul-cai-circle',
         render: (p) => `
-          <div class="mb-6 text-body-sm-medium text-text-primary">${String(p.name ?? '')} <span class="text-body-xs-regular text-text-tertiary">${String(p.region ?? '')}</span></div>
-          <div>통합대기환경지수 <span class="text-body-sm-medium text-text-primary tabular-nums">${String(p.cai ?? '-')}</span> (${String(p.grade ?? '-')})</div>
-          <div>초미세먼지 <span class="text-body-sm-medium text-text-primary tabular-nums">${String(p.pm25 ?? '-')}</span> ㎍/㎥</div>
-          <div>미세먼지 <span class="text-body-sm-medium text-text-primary tabular-nums">${String(p.pm10 ?? '-')}</span> ㎍/㎥</div>
-          <div>오존 <span class="text-body-sm-medium text-text-primary tabular-nums">${String(p.o3 ?? '-')}</span> ppm</div>
-          <div class="mt-6 text-body-xs-regular text-text-tertiary">주오염물질 ${String(p.dominant ?? '-')} · ${String(p.dataTime ?? '')}</div>`,
+          <div class="mb-6 text-body-sm-medium text-[#E8E4DF]">${String(p.name ?? '')} <span class="text-body-xs-regular text-[#E8E4DF]/60">${String(p.region ?? '')}</span></div>
+          <div>통합대기환경지수 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${String(p.cai ?? '-')}</span> (${String(p.grade ?? '-')})</div>
+          <div>초미세먼지 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${String(p.pm25 ?? '-')}</span> ㎍/㎥</div>
+          <div>미세먼지 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${String(p.pm10 ?? '-')}</span> ㎍/㎥</div>
+          <div>오존 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${String(p.o3 ?? '-')}</span> ppm</div>
+          <div class="mt-6 text-body-xs-regular text-[#E8E4DF]/60">주오염물질 ${String(p.dominant ?? '-')} · ${String(p.dataTime ?? '')}</div>`,
       },
       {
         layer: 'seoul-sdot-circle',
         render: (p) => `
-          <div class="mb-6 text-body-sm-medium text-text-primary">${String(p.name ?? '')}</div>
-          <div>기온 <span class="text-body-sm-medium text-text-primary tabular-nums">${String(p.temp ?? '-')}</span> °C</div>
-          <div>습도 <span class="text-body-sm-medium text-text-primary tabular-nums">${String(p.humidity ?? '-')}</span> %</div>
-          <div class="mt-6 text-body-xs-regular text-text-tertiary">
+          <div class="mb-6 text-body-sm-medium text-[#E8E4DF]">${String(p.name ?? '')}</div>
+          <div>기온 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${String(p.temp ?? '-')}</span> °C</div>
+          <div>습도 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${String(p.humidity ?? '-')}</span> %</div>
+          <div class="mt-6 text-body-xs-regular text-[#E8E4DF]/60">
             S-DoT ${String(p.sensorCount ?? '-')}지점 평균${p.dongCount ? ` · ${String(p.dongCount)}개 행정동` : ''}<br/>
             ${String(p.dataTime ?? '')}
           </div>`,
@@ -937,24 +948,24 @@ export default function SeoulPage() {
       {
         layer: 'seoul-congestion-circle',
         render: (p) => `
-          <div class="mb-6 text-body-sm-medium text-text-primary">${String(p.name ?? '')}</div>
-          <div>혼잡도 <span class="text-body-sm-medium text-text-primary tabular-nums">${String(p.level ?? '-')}</span></div>
-          <div>실시간 인구 <span class="text-body-sm-medium text-text-primary tabular-nums">${fmtNum(Number(p.pplMin ?? 0))}~${fmtNum(Number(p.pplMax ?? 0))}</span> 명</div>
+          <div class="mb-6 text-body-sm-medium text-[#E8E4DF]">${String(p.name ?? '')}</div>
+          <div>혼잡도 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${String(p.level ?? '-')}</span></div>
+          <div>실시간 인구 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${fmtNum(Number(p.pplMin ?? 0))}~${fmtNum(Number(p.pplMax ?? 0))}</span> 명</div>
           ${p.nonResidentRate !== null && p.nonResidentRate !== undefined
-            ? `<div>비거주자 <span class="text-body-sm-medium text-text-primary tabular-nums">${String(p.nonResidentRate)}</span> %</div>`
+            ? `<div>비거주자 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${String(p.nonResidentRate)}</span> %</div>`
             : ''}
-          <div class="mt-6 text-body-xs-regular text-text-secondary">${String(p.message ?? '')}</div>
-          <div class="mt-6 text-body-xs-regular text-text-tertiary">
+          <div class="mt-6 text-body-xs-regular text-[#E8E4DF]/80">${String(p.message ?? '')}</div>
+          <div class="mt-6 text-body-xs-regular text-[#E8E4DF]/60">
             ${String(p.dataTime ?? '')}${p.replaced ? ' · 원본이 대체값으로 제공한 구간' : ''}
           </div>`,
       },
       {
         layer: 'seoul-heat-crowd-circle',
         render: (p) => `
-          <div class="mb-6 text-body-sm-medium text-text-primary">${String(p.name ?? '')}</div>
-          <div>혼잡도 <span class="text-body-sm-medium text-text-primary tabular-nums">${String(p.level ?? '-')}</span> · 인구 <span class="text-body-sm-medium text-text-primary tabular-nums">${fmtNum(Number(p.ppl ?? 0))}</span> 명</div>
-          <div>지표온도 <span class="text-body-sm-medium text-text-primary tabular-nums">${String(p.lst ?? '-')}</span> °C (서울 평균 +${String(p.anomaly ?? '-')})</div>
-          <div class="mt-6 text-body-xs-regular text-text-tertiary">
+          <div class="mb-6 text-body-sm-medium text-[#E8E4DF]">${String(p.name ?? '')}</div>
+          <div>혼잡도 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${String(p.level ?? '-')}</span> · 인구 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${fmtNum(Number(p.ppl ?? 0))}</span> 명</div>
+          <div>지표온도 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${String(p.lst ?? '-')}</span> °C (서울 평균 +${String(p.anomaly ?? '-')})</div>
+          <div class="mt-6 text-body-xs-regular text-[#E8E4DF]/60">
             혼잡도는 실시간 실측, 지표온도는 추정 격자다. 두 조건을 함께 만족한 지점.<br/>
             ${String(p.dataTime ?? '')}
           </div>`,
@@ -962,18 +973,18 @@ export default function SeoulPage() {
       {
         layer: 'seoul-ghg-circle',
         render: (p) => `
-          <div class="mb-6 text-body-sm-medium text-text-primary">${String(p.name ?? '')}</div>
-          <div>온실가스 <span class="text-body-sm-medium text-text-primary tabular-nums">${fmtNum(Number(p.ghgTotal ?? 0))}</span> 천tCO₂eq</div>
-          <div>1인당 <span class="text-body-sm-medium text-text-primary tabular-nums">${String(p.ghgPerCapita ?? '-')}</span> tCO₂eq</div>
-          <div>에너지 <span class="text-body-sm-medium text-text-primary tabular-nums">${fmtNum(Number(p.energyUse ?? 0))}</span> TOE</div>
-          <div>녹지율 <span class="text-body-sm-medium text-text-primary tabular-nums">${String(p.greenRatio ?? '-')}</span> %</div>`,
+          <div class="mb-6 text-body-sm-medium text-[#E8E4DF]">${String(p.name ?? '')}</div>
+          <div>온실가스 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${fmtNum(Number(p.ghgTotal ?? 0))}</span> 천tCO₂eq</div>
+          <div>1인당 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${String(p.ghgPerCapita ?? '-')}</span> tCO₂eq</div>
+          <div>에너지 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${fmtNum(Number(p.energyUse ?? 0))}</span> TOE</div>
+          <div>녹지율 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${String(p.greenRatio ?? '-')}</span> %</div>`,
       },
       {
         layer: 'seoul-solar-circle',
         render: (p) => `
-          <div class="mb-6 text-body-sm-medium text-text-primary">${String(p.name ?? '')}</div>
-          <div>태양광 <span class="text-body-sm-medium text-text-primary tabular-nums">${fmtNum(Number(p.solarCapacity ?? 0))}</span> kW</div>
-          <div>인구 <span class="text-body-sm-medium text-text-primary tabular-nums">${fmtNum(Number(p.population ?? 0))}</span> 명</div>`,
+          <div class="mb-6 text-body-sm-medium text-[#E8E4DF]">${String(p.name ?? '')}</div>
+          <div>태양광 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${fmtNum(Number(p.solarCapacity ?? 0))}</span> kW</div>
+          <div>인구 <span class="text-body-sm-medium text-[#E8E4DF] tabular-nums">${fmtNum(Number(p.population ?? 0))}</span> 명</div>`,
       },
     ];
 
@@ -985,8 +996,8 @@ export default function SeoulPage() {
         const coords = feature.geometry.coordinates as [number, number];
 
         const el = document.createElement('div');
-        // 팝업 글자는 NDS 텍스트 토큰 (본문 secondary, 값 primary, 메타 tertiary). 데이터 색 없음
-        el.className = 'text-body-sm-regular text-text-secondary';
+        // 팝업 글자색은 운영 그대로 (§8): #E8E4DF, 보조 정보는 불투명도를 낮춘 같은 색
+        el.className = 'text-body-sm-regular text-[#E8E4DF]';
         el.innerHTML = render(feature.properties ?? {});
 
         void import('mapbox-gl').then((mod) => {
@@ -1247,12 +1258,14 @@ export default function SeoulPage() {
 
       {/* 상단 헤더 */}
       <div
-        className="pointer-events-none absolute top-0 right-0 left-0 z-10 flex items-center gap-16 bg-linear-to-b from-bg-tertiary/90 to-transparent px-16 py-12"
+        className="pointer-events-none absolute top-0 right-0 left-0 z-10 flex items-center gap-16 bg-linear-to-b from-[rgba(14,14,16,0.9)] to-[rgba(14,14,16,0)] px-16 py-12"
       >
         <div className="pointer-events-auto">
           <h1 className="text-heading-3xl text-text-primary">서울 기후 대시보드</h1>
           <p className="mt-2 flex flex-wrap items-center gap-6 text-body-xs-regular text-text-tertiary tabular-nums">
-            <StatusChip status="success">LIVE</StatusChip>
+            <StatusChip status="success" className="bg-transparent text-[#1bbfa8] [&>svg]:text-[#1bbfa8]">
+              LIVE
+            </StatusChip>
             <span>· {activeCount} LAYERS</span>
             {lastUpdated && <span>· 갱신 {lastUpdated}</span>}
             <span>· 다음 {countdown}s</span>
@@ -1283,7 +1296,7 @@ export default function SeoulPage() {
           size="sm"
           leftIcon={<IconLayers />}
           onClick={() => setSidebarOpen((v) => !v)}
-          className="pointer-events-auto ml-auto md:hidden"
+          className={`pointer-events-auto ml-auto md:hidden ${MOBILE_LAYER_BTN_COLOR}`}
           aria-label="레이어 패널 열기"
         >
           레이어
@@ -1300,7 +1313,7 @@ export default function SeoulPage() {
           <SeoulLayerPanel layers={layers} onToggle={handleToggle} />
 
           <div className="border-t border-border-tertiary pt-16">
-            <h3 className="mb-8 text-body-sm-medium text-text-secondary">배경 지도</h3>
+            <h3 className="mb-8 text-body-sm-medium text-text-tertiary">배경 지도</h3>
             <div className="flex gap-6">
               {DEFAULT_STYLE_IDS.map((id) => (
                 <Button
@@ -1310,7 +1323,7 @@ export default function SeoulPage() {
                   active={mapStyleId === id}
                   aria-pressed={mapStyleId === id}
                   onClick={() => setMapStyleId(id)}
-                  className="flex-1"
+                  className={`flex-1 ${mapStyleId === id ? MAP_STYLE_BTN_ON : MAP_STYLE_BTN_OFF}`}
                 >
                   {MAP_STYLES[id].label}
                 </Button>
@@ -1321,7 +1334,7 @@ export default function SeoulPage() {
           {/* 혼잡도는 4색 램프라 범례 없이는 읽히지 않는다. 해당 레이어를 켤 때만 띄운다. */}
           {showCongestLegend && (
             <div className="border-t border-border-tertiary pt-16">
-              <h3 className="mb-8 text-body-sm-medium text-text-secondary">혼잡도</h3>
+              <h3 className="mb-8 text-body-sm-medium text-text-tertiary">혼잡도</h3>
               <div className="flex items-center gap-8">
                 {CONGEST_LABELS.map((label, i) => (
                   <div key={label} className="flex items-center gap-6">
@@ -1342,22 +1355,30 @@ export default function SeoulPage() {
             </div>
           )}
 
-          {/* 배지 범례 — 레이어 패널과 같은 StatusChip */}
+          {/* 배지 범례 — 운영처럼 배경 없이 배지 색 글자 */}
           <div className="space-y-6 text-body-xs-regular text-text-tertiary">
             <p className="flex items-center gap-6">
-              <StatusChip status="success" showIcon={false}>LIVE</StatusChip>
+              <StatusChip status="success" showIcon={false} className="bg-transparent text-[#1bbfa8]">
+                LIVE
+              </StatusChip>
               공공 API 실시간 수신
             </p>
             <p className="flex items-center gap-6">
-              <StatusChip status="neutral" showIcon={false}>DEMO</StatusChip>
+              <StatusChip status="neutral" showIcon={false} className="bg-transparent text-[#C8923A]">
+                DEMO
+              </StatusChip>
               공개 통계 기반 데모
             </p>
             <p className="flex items-center gap-6">
-              <StatusChip status="information" showIcon={false}>분석</StatusChip>
+              <StatusChip status="information" showIcon={false} className="bg-transparent text-[#C45C4A]">
+                분석
+              </StatusChip>
               위성 데이터 처리 결과
             </p>
             <p className="flex items-center gap-6">
-              <StatusChip status="brand" showIcon={false}>영상</StatusChip>
+              <StatusChip status="brand" showIcon={false} className="bg-transparent text-[#4A9EC4]">
+                영상
+              </StatusChip>
               위성 래스터
             </p>
             <p>실시간 레이어는 {REFRESH_SEC}초마다 자동 갱신됩니다.</p>
@@ -1371,7 +1392,7 @@ export default function SeoulPage() {
       {/* 지도 하단 크레딧. EarthMap 이 hideControls 로 Mapbox 기본 attribution 을
           끄기 때문에, Mapbox·OpenStreetMap 표기도 이 줄이 대신 진다. */}
       <div
-        className="pointer-events-none absolute right-0 bottom-0 z-10 max-w-full bg-linear-to-t from-bg-tertiary/85 to-transparent px-12 py-6 text-right text-body-xs-regular text-text-tertiary md:max-w-[60%]"
+        className="pointer-events-none absolute right-0 bottom-0 z-10 max-w-full bg-linear-to-t from-[rgba(14,14,16,0.85)] to-[rgba(14,14,16,0)] px-12 py-6 text-right text-body-xs-regular text-text-tertiary md:max-w-[60%]"
       >
         출처: {SEOUL_SOURCE_PROVIDERS.join(' · ')} · 상세는 좌측 패널
       </div>
@@ -1379,7 +1400,7 @@ export default function SeoulPage() {
       {/* 모바일 사이드바 스크림 — 버튼 모양이 아닌 배경 클릭 영역이라 NDS Button 대상이 아니다 */}
       {sidebarOpen && (
         <button
-          className="absolute inset-0 z-10 bg-black/60 md:hidden"
+          className="absolute inset-0 z-10 bg-black/50 md:hidden"
           onClick={() => setSidebarOpen(false)}
           aria-label="닫기"
         />

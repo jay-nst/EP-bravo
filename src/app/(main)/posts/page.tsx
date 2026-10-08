@@ -5,6 +5,27 @@ import { Button, Card, SelectChip, StatusChip } from '@naraspace-technology/nds/
 import { IconSatellite } from '@naraspace-technology/nds/icons';
 import { POSTS, CATEGORIES } from '@/lib/sample-data';
 
+// 색 기준 78e9433 — NDS 컴포넌트 색만 원래 값으로 덮는다
+/** 카테고리 칩: 선택 = accent 배경 + 어두운 글자(테두리 없음), 나머지 = surface 배경 + muted 글자 + border 테두리 */
+const CHIP_ACTIVE_CLS =
+  'not-data-disabled:data-active:text-[#0E0E10] not-data-disabled:data-active:[&>svg]:text-[#0E0E10] not-data-disabled:data-active:hover:bg-bg-interactive-primary';
+const CHIP_IDLE_CLS =
+  'text-text-tertiary [&>svg]:text-text-tertiary inset-ring-1 inset-ring-border-tertiary not-data-disabled:hover:bg-bg-interactive-secondary';
+/** 썸네일 위 카테고리 라벨: 반투명 surface-elevated 배경 + muted 글자 */
+const THUMB_LABEL_CLS = 'relative z-10 bg-[rgba(36,36,41,0.8)] text-text-tertiary';
+/** 전체 보기: surface 배경 + accent 글자 + border 테두리 (hover 색 변화 없음) */
+const SHOW_ALL_CLS =
+  'bg-bg-secondary text-text-interactive-primary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-bg-secondary not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary';
+/** 썸네일 그리드 오버레이 */
+const GRID_OVERLAY_FEATURED = {
+  backgroundImage: 'linear-gradient(rgba(27,191,168,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(27,191,168,0.05) 1px, transparent 1px)',
+  backgroundSize: '20px 20px',
+};
+const GRID_OVERLAY_CARD = {
+  backgroundImage: 'linear-gradient(rgba(27,191,168,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(27,191,168,0.04) 1px, transparent 1px)',
+  backgroundSize: '16px 16px',
+};
+
 export default function PostsPage() {
   const [activeCategory, setActiveCategory] = useState('all');
 
@@ -20,7 +41,7 @@ export default function PostsPage() {
           <h1 className="text-heading-3xl text-text-primary md:text-display-md">
             위성으로 보는 오늘
           </h1>
-          <p className="mt-4 text-body-md-regular text-text-secondary">
+          <p className="mt-4 text-body-md-regular text-text-tertiary">
             오늘의 이슈를 궤도 위에서 바라봅니다
           </p>
         </div>
@@ -36,7 +57,7 @@ export default function PostsPage() {
               active={isActive}
               aria-pressed={isActive}
               onClick={() => setActiveCategory(cat.id)}
-              className="shrink-0"
+              className={`shrink-0 ${isActive ? CHIP_ACTIVE_CLS : CHIP_IDLE_CLS}`}
             >
               {cat.label}
             </SelectChip>
@@ -53,20 +74,21 @@ export default function PostsPage() {
               className="relative flex aspect-[16/9] min-h-240 items-center justify-center overflow-hidden lg:aspect-auto"
               style={{ background: 'linear-gradient(135deg, #0a1a15 0%, #0d2818 30%, #0a1612 60%, #111a14 100%)' }}
             >
-              <StatusChip status="neutral" showIcon={false}>
+              <div className="pointer-events-none absolute inset-0" style={GRID_OVERLAY_FEATURED} />
+              <StatusChip status="neutral" showIcon={false} className={THUMB_LABEL_CLS}>
                 {filtered[0].category}
               </StatusChip>
             </div>
             <div className="flex flex-col justify-center space-y-12 p-24">
               <div className="flex items-center gap-8 text-body-xs-regular tabular-nums text-text-tertiary">
                 <span>{filtered[0].date}</span>
-                <span aria-hidden>·</span>
+                <span aria-hidden className="text-border-tertiary">·</span>
                 <span>{filtered[0].readTime} 읽기</span>
               </div>
               <h2 className="text-heading-2xl text-text-primary">
                 {filtered[0].title}
               </h2>
-              <p className="text-body-md-regular text-text-secondary">
+              <p className="text-body-md-regular text-text-tertiary">
                 {filtered[0].summary}
               </p>
               <p className="text-body-xs-regular text-text-tertiary">
@@ -74,7 +96,7 @@ export default function PostsPage() {
               </p>
               {filtered[0].newsHeadline && (
                 <div className="mt-4 flex items-center gap-8 rounded-md bg-bg-secondary px-12 py-8 text-body-xs-regular text-text-tertiary">
-                  <span className="text-text-primary">관련</span>
+                  <span className="text-text-interactive-primary">관련</span>
                   <span className="truncate">{filtered[0].newsHeadline}</span>
                 </div>
               )}
@@ -92,20 +114,21 @@ export default function PostsPage() {
               className="relative flex aspect-[16/9] items-center justify-center overflow-hidden rounded-md"
               style={{ background: 'linear-gradient(135deg, #0a1a15 0%, #0d2216 40%, #0f1a12 100%)' }}
             >
-              <StatusChip status="neutral" showIcon={false}>
+              <div className="pointer-events-none absolute inset-0" style={GRID_OVERLAY_CARD} />
+              <StatusChip status="neutral" showIcon={false} className={THUMB_LABEL_CLS}>
                 {post.category}
               </StatusChip>
             </div>
             <Card.Body className="gap-8">
               <Card.Title>{post.title}</Card.Title>
-              <Card.Content className="line-clamp-2">
+              <Card.Content className="line-clamp-2 text-text-tertiary">
                 {post.summary}
               </Card.Content>
               <div className="flex items-center justify-between text-body-xs-regular text-text-tertiary">
                 <span>{post.author}</span>
                 <div className="flex items-center gap-8 tabular-nums">
                   <span>{post.date}</span>
-                  <span aria-hidden>·</span>
+                  <span aria-hidden className="text-border-tertiary">·</span>
                   <span>{post.readTime}</span>
                 </div>
               </div>
@@ -119,8 +142,8 @@ export default function PostsPage() {
           <div className="mx-auto flex size-56 items-center justify-center rounded-full bg-bg-secondary">
             <IconSatellite className="size-24 text-icon-tertiary" />
           </div>
-          <p className="text-body-md-regular text-text-secondary">이 카테고리에 아직 게시물이 없습니다</p>
-          <Button variant="outline" onClick={() => setActiveCategory('all')}>
+          <p className="text-body-md-regular text-text-tertiary">이 카테고리에 아직 게시물이 없습니다</p>
+          <Button variant="outline" onClick={() => setActiveCategory('all')} className={SHOW_ALL_CLS}>
             전체 보기
           </Button>
         </div>

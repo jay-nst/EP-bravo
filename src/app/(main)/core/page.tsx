@@ -684,19 +684,19 @@ export default function CorePage() {
           <div class="p-8">
             <div class="mb-6 flex items-center gap-6">
               <span class="inline-block size-8 rounded-full" style="background:${gradeColor}"></span>
-              <span class="text-body-sm-medium text-text-primary">${props.name}</span>
+              <span class="text-body-sm-medium text-[#E8E4DF]">${props.name}</span>
             </div>
-            <div class="text-body-xs-regular text-text-tertiary">
-              <span class="text-text-primary">${gradeLabel[props.grade] ?? props.grade}</span><br/>
-              PM2.5 <span class="text-text-primary">${props.pm25 ?? '-'}</span> ㎍/㎥ · PM10 <span class="text-text-primary">${props.pm10 ?? '-'}</span> ㎍/㎥
+            <div class="text-body-xs-regular text-[#8A8680]">
+              <span style="color:${gradeColor}">${gradeLabel[props.grade] ?? props.grade}</span><br/>
+              PM2.5 <span class="text-[#E8E4DF]">${props.pm25 ?? '-'}</span> ㎍/㎥ · PM10 <span class="text-[#E8E4DF]">${props.pm10 ?? '-'}</span> ㎍/㎥
             </div>
           </div>
         `;
       } else {
         popupEl.innerHTML = `
           <div class="p-8">
-            <p class="mb-6 text-body-sm-medium text-text-primary">${props.name}</p>
-            <div class="text-body-xs-regular text-text-tertiary tabular-nums">
+            <p class="mb-6 text-body-sm-medium text-[#E8E4DF]">${props.name}</p>
+            <div class="text-body-xs-regular text-[#8A8680] tabular-nums">
               🌡️ ${props.temp ?? '-'}°C · 💧 ${props.humidity ?? '-'}%<br/>
               💨 ${props.windSpeed ?? '-'} m/s · 🌧️ ${props.rainfall1h ?? '0'} mm
             </div>
@@ -729,11 +729,11 @@ export default function CorePage() {
         <div class="p-8">
           <div class="mb-6 flex items-center gap-6">
             <span class="inline-block size-8 rounded-full" style="background:${skyColor}"></span>
-            <span class="text-body-sm-medium text-text-primary">${props.name}</span>
+            <span class="text-body-sm-medium text-[#E8E4DF]">${props.name}</span>
           </div>
-          <div class="text-body-xs-regular text-text-tertiary">
-            <span class="text-text-primary">${skyLabel}</span>${precipLabel ? ` · ${precipLabel}` : ''}<br/>
-            🌡️ <span class="text-text-primary">${props.temperature ?? '-'}°C</span> · 💧 ${props.humidity ?? '-'}%<br/>
+          <div class="text-body-xs-regular text-[#8A8680]">
+            <span style="color:${skyColor}">${skyLabel}</span>${precipLabel ? ` · ${precipLabel}` : ''}<br/>
+            🌡️ <span class="text-[#E8E4DF]">${props.temperature ?? '-'}°C</span> · 💧 ${props.humidity ?? '-'}%<br/>
             💨 ${props.windSpeed ?? '-'} m/s${props.precipAmount > 0 ? ` · 🌧️ ${props.precipAmount} mm` : ''}
           </div>
         </div>
@@ -758,11 +758,11 @@ export default function CorePage() {
         <div class="p-8">
           <div class="mb-6 flex items-center gap-6">
             <span class="inline-block size-8 rounded-xs" style="background:${statusColor}"></span>
-            <span class="text-body-xs-regular text-text-secondary">${statusLabel}</span>
+            <span class="text-body-xs-regular" style="color:${statusColor}">${statusLabel}</span>
           </div>
-          <p class="mb-4 text-body-sm-medium text-text-primary">${props.name}</p>
-          <p class="mb-6 text-body-xs-regular text-text-tertiary">${props.description ?? ''}</p>
-          <div class="text-body-xs-regular text-text-tertiary tabular-nums">
+          <p class="mb-4 text-body-sm-medium text-[#E8E4DF]">${props.name}</p>
+          <p class="mb-6 text-body-xs-regular text-[#8A8680]">${props.description ?? ''}</p>
+          <div class="text-body-xs-regular text-[#8A8680] tabular-nums">
             피해면적 ${props.affectedArea} ha · ${props.startedAt?.slice(0, 10) ?? ''}
           </div>
         </div>
@@ -785,10 +785,10 @@ export default function CorePage() {
         <div class="p-8">
           <div class="mb-6 flex items-center gap-6">
             <span class="inline-block size-8 rounded-full" style="background:#D32F2F"></span>
-            <span class="text-body-xs-regular text-text-secondary">규모 ${props.magnitude} · 진도 ${props.maxIntensity}</span>
+            <span class="text-body-xs-regular text-[#EF5350]">규모 ${props.magnitude} · 진도 ${props.maxIntensity}</span>
           </div>
-          <p class="mb-4 text-body-sm-medium text-text-primary">${props.location}</p>
-          <div class="text-body-xs-regular text-text-tertiary tabular-nums">
+          <p class="mb-4 text-body-sm-medium text-[#E8E4DF]">${props.location}</p>
+          <div class="text-body-xs-regular text-[#8A8680] tabular-nums">
             깊이 ${props.depth} km<br/>
             ${props.occurredAt?.replace('T', ' ') ?? ''}
           </div>
@@ -935,11 +935,11 @@ export default function CorePage() {
         <div class="p-8">
           <div class="mb-6 flex items-center gap-6">
             <span class="inline-block size-8 rounded-xs" style="background:${sevColor}"></span>
-            <span class="text-body-xs-regular text-text-secondary">${props.severity} · ${props.event_type}</span>
+            <span class="text-body-xs-regular text-[#E8E4DF]">${props.severity} · ${props.event_type}</span>
           </div>
-          <p class="mb-4 text-body-sm-medium text-text-primary">${props.title}</p>
-          <p class="mb-6 text-body-xs-regular text-text-tertiary">${props.description ?? ''}</p>
-          <div class="text-body-xs-regular text-text-tertiary tabular-nums">
+          <p class="mb-4 text-body-sm-medium text-[#E8E4DF]">${props.title}</p>
+          <p class="mb-6 text-body-xs-regular text-[#8A8680]">${props.description ?? ''}</p>
+          <div class="text-body-xs-regular text-[#8A8680] tabular-nums">
             ${props.location_name} · ${props.source ?? ''}
           </div>
         </div>
@@ -1122,7 +1122,11 @@ export default function CorePage() {
           variant="outline"
           iconOnly
           active={sidebarOpen}
-          className="absolute top-12 right-12 z-20 md:hidden"
+          className={`absolute top-12 right-12 z-20 bg-[rgba(14,14,16,0.85)] inset-ring-border-tertiary backdrop-blur-sm not-data-disabled:not-aria-invalid:hover:bg-[rgba(14,14,16,0.85)] not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary md:hidden ${
+            sidebarOpen
+              ? 'text-accent [&_svg]:text-accent not-data-disabled:data-active:not-hover:bg-[rgba(14,14,16,0.85)] not-data-disabled:data-active:not-hover:inset-ring-border-tertiary not-data-disabled:data-active:not-hover:text-accent not-data-disabled:data-active:not-hover:[&_svg]:text-accent'
+              : 'text-text-tertiary [&_svg]:text-text-tertiary'
+          }`}
           onClick={() => setSidebarOpen(!sidebarOpen)}
           aria-label={sidebarOpen ? '패널 닫기' : '패널 열기'}
         >
@@ -1147,6 +1151,11 @@ export default function CorePage() {
                 }}
                 leftIcon={<StyleIcon className="hidden sm:block" />}
                 title={style.label}
+                className={
+                  mapStyleId === id
+                    ? 'bg-bg-primary text-text-primary inset-ring-1 inset-ring-border-tertiary [&_svg]:text-text-primary not-data-disabled:not-aria-invalid:hover:text-text-primary not-data-disabled:not-aria-invalid:hover:[&_svg]:text-text-primary not-data-disabled:data-active:not-hover:text-text-primary not-data-disabled:data-active:not-hover:[&_svg]:text-text-primary'
+                    : 'text-text-tertiary [&_svg]:text-text-tertiary not-data-disabled:not-aria-invalid:hover:text-text-tertiary not-data-disabled:not-aria-invalid:hover:[&_svg]:text-text-tertiary'
+                }
               >
                 {style.label}
               </Button>
@@ -1161,8 +1170,9 @@ export default function CorePage() {
             .map((l) => (
               <div
                 key={l.id}
-                // 지도 위 떠 있는 칩 — 어두운 반투명 배경 유지. 레이어 색은 점(swatch)에만
-                className="flex items-center gap-6 rounded-full bg-[rgba(14,14,16,0.85)] px-10 py-6 text-body-xs-regular text-text-primary inset-ring-1 inset-ring-border-tertiary backdrop-blur-sm"
+                // 지도 위 떠 있는 칩 — 어두운 반투명 배경 + 레이어 색 테두리(운영 색 복원)
+                className="flex items-center gap-6 rounded-full bg-[rgba(14,14,16,0.85)] px-10 py-6 text-body-xs-regular text-text-primary backdrop-blur-sm"
+                style={{ boxShadow: `inset 0 0 0 1px ${l.color}33` }}
               >
                 <span className="size-6 rounded-full" style={{ background: l.color }} />
                 {l.label}
@@ -1185,7 +1195,7 @@ export default function CorePage() {
         className={`
           fixed md:relative inset-y-0 right-0 z-40 md:z-auto
           top-(--header-height) w-300 md:w-320 flex flex-col border-l border-border-tertiary
-          bg-bg-tertiary
+          bg-[rgba(14,14,16,0.95)] backdrop-blur-md
           transition-transform duration-200 ease-out
           ${sidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
         `}
@@ -1196,8 +1206,8 @@ export default function CorePage() {
           className="min-h-0 flex-1"
         >
           <Tabs.List variant="line" className="w-full">
-            <Tabs.Tab value="layers">레이어</Tabs.Tab>
-            <Tabs.Tab value="purchase">영상 구매</Tabs.Tab>
+            <Tabs.Tab value="layers" className="not-data-active:text-text-tertiary not-data-active:hover:text-text-tertiary group-data-[variant=line]/tabs-list:not-data-active:opacity-100 group-data-[variant=line]/tabs-list:data-active:text-text-primary">레이어</Tabs.Tab>
+            <Tabs.Tab value="purchase" className="not-data-active:text-text-tertiary not-data-active:hover:text-text-tertiary group-data-[variant=line]/tabs-list:not-data-active:opacity-100 group-data-[variant=line]/tabs-list:data-active:text-text-primary">영상 구매</Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="layers" className="flex-1 overflow-y-auto p-16">
@@ -1206,12 +1216,12 @@ export default function CorePage() {
 
               {/* Legend */}
               <div>
-                <h3 className="mb-8 text-body-sm-medium text-text-secondary">Severity</h3>
+                <h3 className="mb-8 text-body-sm-medium text-text-tertiary">Severity</h3>
                 <div className="space-y-4">
                   {(['critical', 'high', 'moderate', 'low'] as const).map((sev) => (
                     <div key={sev} className="flex items-center gap-8 px-10 py-4">
                       <span className="size-8 rounded-xs" style={{ background: SEVERITY_COLORS[sev] }} />
-                      <span className="text-body-sm-regular text-text-secondary capitalize">{sev}</span>
+                      <span className="text-body-sm-regular text-text-tertiary capitalize">{sev}</span>
                     </div>
                   ))}
                 </div>
@@ -1220,7 +1230,7 @@ export default function CorePage() {
               {/* Air Quality Legend */}
               {layers.find((l) => l.id === 'air-quality')?.enabled && (
                 <div>
-                  <h3 className="mb-8 text-body-sm-medium text-text-secondary">대기질 등급</h3>
+                  <h3 className="mb-8 text-body-sm-medium text-text-tertiary">대기질 등급</h3>
                   <div className="space-y-4">
                     {([
                       ['good', '좋음'],
@@ -1231,7 +1241,7 @@ export default function CorePage() {
                     ] as const).map(([key, label]) => (
                       <div key={key} className="flex items-center gap-8 px-10 py-4">
                         <span className="size-8 rounded-full" style={{ background: AIR_QUALITY_COLORS[key] }} />
-                        <span className="text-body-sm-regular text-text-secondary">{label}</span>
+                        <span className="text-body-sm-regular text-text-tertiary">{label}</span>
                       </div>
                     ))}
                   </div>
@@ -1241,7 +1251,7 @@ export default function CorePage() {
               {/* Weather Forecast Legend */}
               {layers.find((l) => l.id === 'weather-forecast')?.enabled && (
                 <div>
-                  <h3 className="mb-8 text-body-sm-medium text-text-secondary">하늘 상태</h3>
+                  <h3 className="mb-8 text-body-sm-medium text-text-tertiary">하늘 상태</h3>
                   <div className="space-y-4">
                     {([
                       ['clear', '맑음'],
@@ -1251,7 +1261,7 @@ export default function CorePage() {
                     ] as const).map(([key, label]) => (
                       <div key={key} className="flex items-center gap-8 px-10 py-4">
                         <span className="size-8 rounded-full" style={{ background: SKY_COLORS[key] }} />
-                        <span className="text-body-sm-regular text-text-secondary">{label}</span>
+                        <span className="text-body-sm-regular text-text-tertiary">{label}</span>
                       </div>
                     ))}
                   </div>
@@ -1261,7 +1271,7 @@ export default function CorePage() {
               {/* Wildfire Legend */}
               {layers.find((l) => l.id === 'wildfire')?.enabled && (
                 <div>
-                  <h3 className="mb-8 text-body-sm-medium text-text-secondary">산불 상태</h3>
+                  <h3 className="mb-8 text-body-sm-medium text-text-tertiary">산불 상태</h3>
                   <div className="space-y-4">
                     {([
                       ['active', '진화중'],
@@ -1270,7 +1280,7 @@ export default function CorePage() {
                     ] as const).map(([key, label]) => (
                       <div key={key} className="flex items-center gap-8 px-10 py-4">
                         <span className="size-8 rounded-xs" style={{ background: WILDFIRE_STATUS_COLORS[key] }} />
-                        <span className="text-body-sm-regular text-text-secondary">{label}</span>
+                        <span className="text-body-sm-regular text-text-tertiary">{label}</span>
                       </div>
                     ))}
                   </div>
@@ -1280,7 +1290,7 @@ export default function CorePage() {
               {/* Earthquake Legend */}
               {layers.find((l) => l.id === 'earthquake')?.enabled && (
                 <div>
-                  <h3 className="mb-8 text-body-sm-medium text-text-secondary">지진 규모</h3>
+                  <h3 className="mb-8 text-body-sm-medium text-text-tertiary">지진 규모</h3>
                   <div className="space-y-4">
                     {([
                       [2.0, '#FFD54F', '2.0+'],
@@ -1290,7 +1300,7 @@ export default function CorePage() {
                     ] as const).map(([mag, color, label]) => (
                       <div key={mag} className="flex items-center gap-8 px-10 py-4">
                         <span className="size-8 rounded-full" style={{ background: color }} />
-                        <span className="text-body-sm-regular text-text-secondary tabular-nums">{label}</span>
+                        <span className="text-body-sm-regular text-text-tertiary tabular-nums">{label}</span>
                       </div>
                     ))}
                   </div>
@@ -1300,7 +1310,7 @@ export default function CorePage() {
               {/* Citadel Events list */}
               {layers.find((l) => l.id === 'citadel')?.enabled && (
                 <div>
-                  <h3 className="mb-8 text-body-sm-medium text-text-secondary">Active Events</h3>
+                  <h3 className="mb-8 text-body-sm-medium text-text-tertiary">Active Events</h3>
                   <div className="space-y-8">
                     {CITADEL_GEOJSON.features.map((f) => {
                       const sev = f.properties.severity as CitadelSeverity;
@@ -1308,6 +1318,7 @@ export default function CorePage() {
                         <Card.Root
                           key={f.properties.id}
                           interactive
+                          className="bg-bg-secondary inset-ring-transparent hover:bg-bg-primary hover:inset-ring-transparent"
                           onClick={() => {
                             if (!mapRef.current) return;
                             const geom = f.geometry;
@@ -1331,13 +1342,19 @@ export default function CorePage() {
                         >
                           <Card.Body className="gap-4">
                             <div className="flex items-center gap-6">
-                              <StatusChip status={SEVERITY_STATUS[sev]}>{f.properties.severity}</StatusChip>
-                              <span className="text-body-xs-regular text-text-tertiary">
+                              <StatusChip
+                                status={SEVERITY_STATUS[sev]}
+                                className="bg-transparent [&>svg]:text-current"
+                                style={{ color: SEVERITY_COLORS[sev] }}
+                              >
+                                {f.properties.severity}
+                              </StatusChip>
+                              <span className="text-body-xs-regular" style={{ color: SEVERITY_COLORS[sev] }}>
                                 {f.properties.event_type}
                               </span>
                             </div>
                             <Card.Title className="line-clamp-1">{f.properties.title}</Card.Title>
-                            <Card.Content>{f.properties.location_name}</Card.Content>
+                            <Card.Content className="text-text-tertiary">{f.properties.location_name}</Card.Content>
                           </Card.Body>
                         </Card.Root>
                       );
