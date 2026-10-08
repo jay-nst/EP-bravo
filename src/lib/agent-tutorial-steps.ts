@@ -244,8 +244,10 @@ export const COMPARE_ASSETS = {
 
 // 지도 상단 UI — 실서비스(agent.ep.naraspace.com) 현행 디자인과 동일하게 DOM 재현
 // (2026-10-08 라이브 번들 실측: 검색 박스 absolute top-20 left-20 w-[280px],
-// 비교 알약 top-20 중앙 rounded-full + Before/After solid 배지, 토큰
-// --status-info-bold #0d336e / --status-danger-bold #791716).
+// 비교 알약 top-20 중앙 rounded-full + Before/After solid 배지).
+// 알약은 다크 테마에서도 라이트 토큰을 inline 으로 강제하고, 배지는
+// bg-*-subtle + text-*-bold → Before 연하늘 #cce4fe 위 #0d336e,
+// After 연분홍 #f8d8d8 위 #791716.
 // 캡쳐에 구워져 있던 옛 통합 바(검색+비교 겹침, 피그마 댓글 1943233805)는
 // 이미지에서 지웠다. 좌표는 지도 크롭(940×944) 기준 %.
 export const MAP_TOP_BARS = {
@@ -260,14 +262,21 @@ export const MAP_TOP_BARS = {
     beforeDate: '2026-04-20',
     afterDate: '2026-06-09',
   },
+  // 다크 토큰 실측값: bg-tertiary / icon-secondary / text-primary / icon-primary /
+  // border-tertiary / text-tertiary, 검색 박스 그림자는 dark --elevation-6.
+  // 알약의 shadow-lg 는 라이브 CSS 에 정의가 없어 그림자 없음.
   colors: {
     bg: '#101f2f',
     infoBold: '#0d336e',
     infoSubtle: '#cce4fe',
     dangerBold: '#791716',
     dangerSubtle: '#f8d8d8',
-    icon: '#8fa0b3',
-    text: '#e7ebef',
+    icon: '#bcbec3',
+    text: '#eff0f1',
+    iconPrimary: '#eff0f1',
+    border: '#24405b',
+    placeholder: 'rgba(125, 130, 138, 0.7)',
+    searchShadow: '0 4px 10px 0 #00000052, 0 0 2px 0 #0000005c',
   },
 } as const;
 
