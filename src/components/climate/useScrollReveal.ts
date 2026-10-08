@@ -92,24 +92,42 @@ export function useScrollReveal(rootRef: RefObject<HTMLElement | null>) {
     };
 
     // ── 등장
+    // 헤드라인은 시작 상태가 clip-path 로 완전히 가려져 있어 교차 판정이 안 됨 → 부모 블록을 대신 관찰
+    const watched = new Map<Element, HTMLElement[]>();
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
-          const el = entry.target as HTMLElement;
-          io.unobserve(el);
-          el.setAttribute('data-in', '');
-          countUp(el);
-          // 가장 긴 트랜지션이 끝난 뒤 정리 (자식 요소 트랜지션 포함)
-          const delay = parseFloat(getComputedStyle(el).getPropertyValue('--d')) || 0;
-          window.setTimeout(() => finish(el), delay + 1700);
+          io.unobserve(entry.target);
+          const els = watched.get(entry.target) ?? [];
+          watched.delete(entry.target);
+          els.forEach((el) => reveal(el));
         }
       },
       { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
     );
 
+    const reveal = (el: HTMLElement) => {
+      el.setAttribute('data-in', '');
+      countUp(el);
+      // 가장 긴 트랜지션이 끝난 뒤 정리 (자식 요소 트랜지션 포함)
+      const delay = parseFloat(getComputedStyle(el).getPropertyValue('--d')) || 0;
+      window.setTimeout(() => finish(el), delay + 1700);
+    };
+
+    const observe = (el: HTMLElement) => {
+      const target = /^H[1-3]$/.test(el.tagName) && el.parentElement ? el.parentElement : el;
+      const list = watched.get(target);
+      if (list) {
+        if (!list.includes(el)) list.push(el);
+        return;
+      }
+      watched.set(target, [el]);
+      io.observe(target);
+    };
+
     const observeAll = (scope: ParentNode) => {
-      scope.querySelectorAll<HTMLElement>('[data-reveal]:not([data-in])').forEach((el) => io.observe(el));
+      scope.querySelectorAll<HTMLElement>('[data-reveal]:not([data-in])').forEach(observe);
     };
     observeAll(root);
 
@@ -117,7 +135,7 @@ export function useScrollReveal(rootRef: RefObject<HTMLElement | null>) {
       for (const r of records) {
         r.addedNodes.forEach((n) => {
           if (!(n instanceof HTMLElement)) return;
-          if (n.hasAttribute('data-reveal')) io.observe(n);
+          if (n.hasAttribute('data-reveal')) observe(n);
           observeAll(n);
         });
       }
