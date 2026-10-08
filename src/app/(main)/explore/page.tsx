@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, type ReactNode } from 'react';
-import { Button, Card } from '@naraspace-technology/nds/components';
+import { Badge as NdsBadge, Button, Card, StatusChip } from '@naraspace-technology/nds/components';
 import {
   IconArrowRight,
   IconCloudRain,
@@ -22,10 +22,10 @@ export default function ExplorePage() {
     <div className="mx-auto w-full max-w-6xl px-16 py-32">
       <div className="mb-24 flex items-center justify-between">
         <div>
-          <h1 className="text-heading-3xl text-text-primary">
+          <h1 className="text-heading-3xl text-text-primary md:text-display-md">
             탐색
           </h1>
-          <p className="mt-4 text-body-sm-regular text-text-tertiary">
+          <p className="mt-4 text-body-md-regular text-text-secondary">
             위성으로 기록하는 변화, 그리고 당신의 Earth Score
           </p>
         </div>
@@ -34,13 +34,13 @@ export default function ExplorePage() {
       <div className="grid grid-cols-1 gap-32 lg:grid-cols-3">
         {/* Main: Before/After Viewer */}
         <div className="space-y-24 lg:col-span-2">
-          <h2 className="text-heading-lg text-text-primary">
+          <h2 className="text-heading-2xl text-text-primary">
             Before / After
           </h2>
 
           {/* Comparison Viewer — 자식 배경이 가장자리까지 차서 inset-ring 대신 border 로 테두리 */}
           <div className="overflow-hidden rounded-lg border border-border-tertiary bg-bg-tertiary">
-            {/* Slider viewer */}
+            {/* Slider viewer — BEFORE/AFTER 그라데이션은 위성 영상 자리 일러스트 배경 (§7-2 일러스트 예외) */}
             <div className="relative bg-bg-secondary">
               <div className="grid min-h-300 grid-cols-2">
                 <div
@@ -50,10 +50,10 @@ export default function ExplorePage() {
                     clipPath: `inset(0 ${100 - sliderPos}% 0 0)`,
                   }}
                 >
-                  <span className="mb-4 text-body-xs-regular text-status-warning">
+                  <span className="mb-4 text-body-xs-regular text-text-tertiary">
                     BEFORE
                   </span>
-                  <span className="text-body-lg-regular tabular-nums text-text-tertiary">
+                  <span className="text-body-sm-medium tabular-nums text-text-primary">
                     {selectedBA.beforeDate}
                   </span>
                 </div>
@@ -61,10 +61,10 @@ export default function ExplorePage() {
                   className="col-span-2 flex flex-col items-end justify-end p-20"
                   style={{ background: 'linear-gradient(135deg, #0a1a15 0%, #0d2216 50%, #0f1a12 100%)' }}
                 >
-                  <span className="mb-4 text-body-xs-regular text-text-interactive-primary">
+                  <span className="mb-4 text-body-xs-regular text-text-tertiary">
                     AFTER
                   </span>
-                  <span className="text-body-lg-regular tabular-nums text-text-primary">
+                  <span className="text-body-sm-medium tabular-nums text-text-primary">
                     {selectedBA.afterDate}
                   </span>
                 </div>
@@ -90,9 +90,9 @@ export default function ExplorePage() {
             {/* Info */}
             <div className="space-y-8 border-t border-border-tertiary p-20">
               <div className="flex items-center gap-12">
-                <span className="rounded-full bg-[rgba(27,191,168,0.12)] px-8 py-2 text-body-xs-regular text-text-interactive-primary">
+                <StatusChip status="neutral" showIcon={false}>
                   {selectedBA.changeType}
-                </span>
+                </StatusChip>
                 <span className="text-body-xs-regular text-text-tertiary">
                   {selectedBA.location}
                 </span>
@@ -100,7 +100,7 @@ export default function ExplorePage() {
               <h3 className="text-heading-lg text-text-primary">
                 {selectedBA.title}
               </h3>
-              <p className="text-body-sm-regular text-text-tertiary">
+              <p className="text-body-sm-regular text-text-secondary">
                 {selectedBA.description}
               </p>
             </div>
@@ -116,11 +116,15 @@ export default function ExplorePage() {
                   interactive
                   render={<button type="button" aria-pressed={isActive} />}
                   onClick={() => { setSelectedBA(ba); setSliderPos(50); }}
-                  className={`text-left ${isActive ? 'inset-ring-border-interactive-primary' : ''}`}
+                  className="text-left"
                 >
+                  {/* Card 에 선택 상태가 없어 색 덮어쓰기 대신 NDS Badge dot 으로 현재 항목 표시 */}
                   <Card.Body className="gap-4">
-                    <Card.Title>{ba.title}</Card.Title>
-                    <Card.Content className="text-text-tertiary">{ba.location}</Card.Content>
+                    <div className="flex items-center gap-8">
+                      <Card.Title>{ba.title}</Card.Title>
+                      {isActive && <NdsBadge status="brand" aria-hidden />}
+                    </div>
+                    <p className="text-body-xs-regular text-text-tertiary">{ba.location}</p>
                     <div className="flex items-center gap-8 text-body-xs-regular tabular-nums text-text-tertiary">
                       <span>{ba.beforeDate}</span>
                       <IconArrowRight className="size-16 text-icon-tertiary" />
@@ -135,20 +139,20 @@ export default function ExplorePage() {
 
         {/* Sidebar: Earth Score */}
         <aside className="space-y-24">
-          <h2 className="text-heading-lg text-text-primary">
+          <h2 className="text-heading-2xl text-text-primary">
             Earth Score
           </h2>
 
           {/* Score Card */}
           <Card.Root>
             <Card.Body className="items-center gap-16 text-center">
-              <div className="mx-auto flex size-96 items-center justify-center rounded-full border-2 border-border-interactive-primary bg-[rgba(27,191,168,0.1)]">
-                <span className="text-heading-3xl tabular-nums text-text-interactive-primary">
+              <div className="mx-auto flex size-96 items-center justify-center rounded-full bg-bg-interactive-selected">
+                <span className="text-heading-xl tabular-nums text-text-primary">
                   72
                 </span>
               </div>
               <div>
-                <p className="text-body-sm-medium text-text-primary">나의 Earth Score</p>
+                <p className="text-body-md-medium text-text-primary">나의 Earth Score</p>
                 <p className="mt-4 text-body-xs-regular text-text-tertiary">
                   상위 15% 탐험가
                 </p>
@@ -207,11 +211,17 @@ function Badge({ icon, label, earned }: { icon: ReactNode; label: string; earned
   return (
     <div
       className={`flex flex-col items-center gap-4 rounded-md py-8 text-center ${
-        earned ? 'bg-[rgba(27,191,168,0.06)]' : 'bg-bg-secondary opacity-35'
+        earned ? 'bg-bg-interactive-selected' : 'bg-bg-secondary'
       }`}
     >
-      <span className="flex size-20 items-center justify-center text-icon-primary [&>svg]:size-20">{icon}</span>
-      <span className={`text-body-xs-regular ${earned ? 'text-text-primary' : 'text-text-tertiary'}`}>
+      <span
+        className={`flex size-20 items-center justify-center [&>svg]:size-20 ${
+          earned ? 'text-icon-interactive-selected' : 'text-icon-disabled'
+        }`}
+      >
+        {icon}
+      </span>
+      <span className={`text-body-xs-regular ${earned ? 'text-text-interactive-selected' : 'text-text-disabled'}`}>
         {label}
       </span>
     </div>
@@ -232,20 +242,20 @@ function LeaderRow({
   return (
     <div
       className={`flex items-center gap-12 rounded-sm px-12 py-8 text-body-sm-regular ${
-        isMe ? 'bg-[rgba(27,191,168,0.08)] inset-ring-1 inset-ring-[rgba(27,191,168,0.2)]' : ''
+        isMe ? 'bg-bg-interactive-selected' : ''
       }`}
     >
       <span
         className={`w-20 text-center text-body-xs-regular tabular-nums ${
-          rank <= 3 ? 'text-text-interactive-primary' : 'text-text-tertiary'
+          rank <= 3 ? 'text-text-primary' : 'text-text-tertiary'
         }`}
       >
         {rank}
       </span>
-      <span className={`flex-1 ${isMe ? 'text-text-interactive-primary' : 'text-text-primary'}`}>
+      <span className={`flex-1 ${isMe ? 'text-text-interactive-selected' : 'text-text-primary'}`}>
         {name}
       </span>
-      <span className="text-body-xs-regular tabular-nums text-text-tertiary">
+      <span className="text-body-sm-medium tabular-nums text-text-primary">
         {score}
       </span>
     </div>

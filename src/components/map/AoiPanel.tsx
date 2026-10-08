@@ -41,7 +41,7 @@ export default function AoiPanel({
 
       {/* Satellite selector */}
       <div>
-        <label className="mb-4 block text-body-sm-medium text-text-tertiary">위성 선택</label>
+        <label className="mb-8 block text-body-sm-medium text-text-secondary">위성 선택</label>
         <div className="flex gap-8">
           {(Object.keys(SATELLITE_CONFIG) as SatelliteType[]).map((key) => (
             <Button
@@ -59,7 +59,7 @@ export default function AoiPanel({
       </div>
 
       {/* Satellite info */}
-      <div className="rounded-md bg-bg-secondary p-12 text-body-sm-regular text-text-tertiary">
+      <div className="rounded-md bg-bg-secondary p-12 text-body-sm-regular text-text-secondary">
         <div className="flex justify-between">
           <span>해상도</span>
           <span className="text-body-sm-medium text-text-primary">{config.resolution}</span>
@@ -84,7 +84,7 @@ export default function AoiPanel({
 
       {/* AOI info */}
       {!aoi ? (
-        <div className="py-24 text-center text-body-sm-regular text-text-tertiary">
+        <div className="py-24 text-center text-body-sm-regular text-text-secondary">
           지도에서 다각형 도구로
           <br />
           관심 영역(AOI)을 그려주세요
@@ -92,7 +92,7 @@ export default function AoiPanel({
       ) : (
         <>
           <div className="rounded-md bg-bg-secondary p-12 text-body-sm-regular">
-            <div className="flex justify-between text-text-tertiary">
+            <div className="flex justify-between text-text-secondary">
               <span>선택 면적</span>
               <span className="text-body-sm-medium text-text-primary tabular-nums">
                 {fmtNum(aoi.areaKm2, 1)} km²
@@ -100,20 +100,20 @@ export default function AoiPanel({
             </div>
             <div className="mt-8 flex justify-between text-body-md-medium text-text-primary">
               <span>예상 가격</span>
-              <span className="text-text-interactive-primary tabular-nums">
+              <span className="tabular-nums">
                 ${fmtNum(aoi.price, 2)}
               </span>
             </div>
           </div>
 
           {aoi.validationError && (
-            <div className="rounded-md bg-status-danger/10 p-12 text-body-sm-regular text-status-danger inset-ring-1 inset-ring-status-danger/20">
+            <div className="rounded-md bg-status-danger-subtle p-12 text-body-sm-regular text-status-danger">
               {aoi.validationError}
             </div>
           )}
 
           {!hasCatalogItem && !aoi.validationError && (
-            <div className="rounded-md bg-status-warning/10 p-12 text-body-sm-regular text-status-warning inset-ring-1 inset-ring-status-warning/20">
+            <div className="rounded-md bg-status-warning-subtle p-12 text-body-sm-regular text-status-warning">
               이 영역에 사용 가능한 영상이 없습니다. 지도를 이동하여 영상이 있는
               영역을 선택해주세요.
             </div>

@@ -12,6 +12,7 @@ export interface OverlayLayer {
   comingSoon?: boolean;
 }
 
+// Citadel severity 데이터 색 — 지도 레이어·범례 swatch 전용 (글자 색으로 쓰지 않는다)
 const SEVERITY_COLORS: Record<CitadelSeverity, string> = {
   critical: '#C45C4A',
   high: '#E07B5F',
@@ -27,7 +28,7 @@ interface LayerPanelProps {
 export default function LayerPanel({ layers, onToggle }: LayerPanelProps) {
   return (
     <div className="space-y-4">
-      <h3 className="mb-8 text-body-xs-regular text-text-tertiary">Data Overlay</h3>
+      <h3 className="mb-8 text-body-sm-medium text-text-secondary">Data Overlay</h3>
       {layers.map((layer) => (
         <label
           key={layer.id}

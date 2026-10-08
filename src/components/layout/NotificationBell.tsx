@@ -49,8 +49,8 @@ export default function NotificationBell() {
   const renderBody = (n: Notification) => (
     <>
       <p className="text-body-sm-medium text-text-primary">{n.title}</p>
-      <p className="text-body-xs-regular text-text-tertiary mt-2">{n.message}</p>
-      <p className="text-body-xs-regular text-border-tertiary tabular-nums mt-4">
+      <p className="text-body-sm-regular text-text-secondary mt-2">{n.message}</p>
+      <p className="text-body-xs-regular text-text-tertiary tabular-nums mt-4">
         {new Date(n.created_at).toLocaleString('ko-KR')}
       </p>
     </>
@@ -77,7 +77,7 @@ export default function NotificationBell() {
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false); }} />
           <div className="absolute right-0 top-full mt-8 w-320 z-50 overflow-hidden glass-panel rounded-md inset-ring-1 inset-ring-border-tertiary shadow-6">
             <div className="px-16 py-12 border-b border-border-tertiary">
-              <p className="text-body-sm-medium text-text-primary">알림</p>
+              <p className="text-body-md-medium text-text-primary">알림</p>
             </div>
             <div className="max-h-320 overflow-y-auto">
               {notifications.length === 0 ? (
@@ -89,7 +89,7 @@ export default function NotificationBell() {
                   <div
                     key={n.id}
                     className={`px-16 py-12 transition-colors cursor-pointer border-b border-border-tertiary/50 ${
-                      !n.read ? 'bg-bg-interactive-primary/5' : 'bg-transparent'
+                      !n.read ? 'bg-bg-interactive-selected' : 'bg-transparent'
                     }`}
                     onClick={() => {
                       if (!n.read) markAsRead(n.id);

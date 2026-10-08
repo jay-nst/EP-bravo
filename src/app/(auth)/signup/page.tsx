@@ -44,14 +44,14 @@ export default function SignupPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-bg-tertiary px-16">
         <div className="w-full max-w-sm space-y-16 text-center">
-          <h2 className="text-heading-xl text-text-primary">
+          <h2 className="text-heading-3xl text-text-primary">
             이메일을 확인해주세요
           </h2>
-          <p className="text-body-sm-regular text-text-tertiary">
+          <p className="text-body-md-regular text-text-secondary">
             <span className="text-text-primary">{email}</span>으로 인증 링크를
             보냈습니다. 이메일을 확인하여 가입을 완료해주세요.
           </p>
-          <Link href="/login" className="inline-block text-body-sm-regular text-text-interactive-primary">
+          <Link href="/login" className="inline-block text-body-md-regular text-text-interactive-primary">
             로그인 페이지로 돌아가기
           </Link>
         </div>
@@ -60,16 +60,8 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-bg-tertiary px-16">
-      {/* Subtle grid background */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: 'radial-gradient(rgba(27,191,168,0.04) 1px, transparent 1px)',
-          backgroundSize: '40px 40px',
-        }}
-      />
-      <div className="relative z-10 w-full max-w-sm space-y-32">
+    <div className="flex min-h-screen items-center justify-center bg-bg-tertiary px-16">
+      <div className="w-full max-w-sm space-y-32">
         <div className="text-center">
           <Link href="/" className="inline-flex items-center justify-center gap-10 text-heading-3xl text-text-primary">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -79,10 +71,9 @@ export default function SignupPage() {
             </svg>
             EARTHPAPER
           </Link>
-          <p className="mt-8 text-body-sm-regular text-text-tertiary">
+          <p className="mt-8 text-body-md-regular text-text-secondary">
             새 계정 만들기
           </p>
-          <div className="mx-auto mt-12 h-2 w-32 rounded-xs bg-bg-interactive-primary opacity-60" />
         </div>
 
         <Form onFormSubmit={handleSignup} className="flex flex-col gap-16">
@@ -130,7 +121,7 @@ export default function SignupPage() {
           </Button>
         </Form>
 
-        <p className="text-center text-body-sm-regular text-text-tertiary">
+        <p className="text-center text-body-sm-regular text-text-secondary">
           이미 계정이 있으신가요?{' '}
           <Link href="/login" className="text-text-interactive-primary">
             로그인

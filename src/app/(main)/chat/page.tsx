@@ -141,10 +141,10 @@ export default function ChatPage() {
           {messages.length === 0 && (
             <div className="flex h-full items-center justify-center">
               <div className="space-y-12 text-center">
-                <p className="text-body-lg-medium text-text-tertiary">
+                <p className="text-heading-lg text-text-primary">
                   위성 영상 전문 어시스턴트
                 </p>
-                <p className="text-body-sm-regular text-text-tertiary">
+                <p className="text-body-md-regular text-text-secondary">
                   위성 영상 촬영, 가격, 해상도 등에 대해 질문하세요
                 </p>
                 <div className="flex flex-wrap justify-center gap-8 pt-8">
@@ -165,7 +165,7 @@ export default function ChatPage() {
               <div
                 className={`max-w-[70%] whitespace-pre-wrap rounded-md px-16 py-10 text-body-sm-regular ${
                   msg.role === 'user'
-                    ? 'bg-bg-interactive-primary text-[#0E0E10]'
+                    ? 'bg-bg-interactive-selected text-text-interactive-selected'
                     : 'bg-bg-secondary text-text-primary'
                 }`}
               >

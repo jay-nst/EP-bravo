@@ -74,7 +74,7 @@ export default function PortalPage() {
     return (
       <div className="flex flex-1 items-center justify-center gap-8">
         <Spinner size="sm" aria-label="주문 내역 로딩 중" />
-        <p className="text-body-md-regular text-text-tertiary">주문 내역 로딩 중...</p>
+        <p className="text-body-md-regular text-text-secondary">주문 내역 로딩 중...</p>
       </div>
     );
   }
@@ -89,7 +89,7 @@ export default function PortalPage() {
 
   return (
     <div className="mx-auto w-full max-w-4xl px-16 py-32">
-      <h1 className="mb-24 text-heading-3xl text-text-primary">
+      <h1 className="mb-24 text-heading-3xl text-text-primary md:text-display-md">
         내 주문
       </h1>
 
@@ -98,7 +98,7 @@ export default function PortalPage() {
           <div className="mx-auto flex size-56 items-center justify-center rounded-full bg-bg-secondary">
             <IconGlobe className="size-24 text-icon-tertiary" />
           </div>
-          <p className="text-body-sm-regular text-text-tertiary">아직 주문 내역이 없습니다</p>
+          <p className="text-body-md-regular text-text-secondary">아직 주문 내역이 없습니다</p>
           <Button render={<a href="/map" />} nativeButton={false}>
             지도에서 영상 구매하기
           </Button>
@@ -121,9 +121,9 @@ export default function PortalPage() {
                 <Card.Body className="gap-12">
                   <div className="flex items-start justify-between">
                     <div className="space-y-4">
-                      <p className="text-body-sm-regular text-text-tertiary">
+                      <p className="text-body-sm-regular text-text-secondary">
                         주문번호:{' '}
-                        <span className="text-body-xs-regular tabular-nums text-text-primary">
+                        <span className="text-body-sm-medium tabular-nums text-text-primary">
                           {order.id.slice(0, 8)}
                         </span>
                       </p>
@@ -141,7 +141,7 @@ export default function PortalPage() {
                   </div>
 
                   {order.error_message && (
-                    <p className="rounded-xs bg-status-danger/10 px-12 py-8 text-body-xs-regular text-status-danger">
+                    <p className="rounded-md bg-status-danger-subtle px-12 py-8 text-body-sm-regular text-status-danger-bold">
                       {order.error_message}
                     </p>
                   )}

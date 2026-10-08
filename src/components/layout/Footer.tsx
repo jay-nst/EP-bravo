@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { IconArrowUpRight } from '@naraspace-technology/nds/icons';
 
+// color = 플랫폼 마크(점) 전용 데이터 색 — 글자 색으로 쓰지 않는다 (§7-2)
 const PLATFORMS = [
   { label: 'Citadel', desc: '재난 · 도시 관제', color: '#C45C4A', href: '/citadel' },
   { label: 'Predict', desc: '자산 검증 · 금융', color: '#4A9EC4', href: '/predict' },
@@ -37,13 +38,13 @@ const LEGAL = [
   { label: '개인정보처리방침', href: 'https://ep.naraspace.com/ko/policy/privacy' },
 ];
 
-// 대문자 mono eyebrow → NDS body-xs (규칙 1)
-const sectionHeaderClass = 'block mb-14 text-body-xs-regular text-text-tertiary';
+// 푸터 컬럼 라벨 = 패널 내부 그룹 라벨 역할 (§7-1), 링크 = 본문, 하단 바 = 메타
+const sectionHeaderClass = 'block mb-14 text-body-sm-medium text-text-secondary';
 const listClass = 'flex flex-col gap-8';
-const linkClass = 'text-body-sm-regular text-text-tertiary';
-const externalLinkClass = 'inline-flex items-center gap-4 text-body-sm-regular text-text-tertiary';
+const linkClass = 'text-body-sm-regular text-text-secondary';
+const externalLinkClass = 'inline-flex items-center gap-4 text-body-sm-regular text-text-secondary';
 
-const externalIcon = <IconArrowUpRight className="size-16 text-icon-tertiary opacity-50" />;
+const externalIcon = <IconArrowUpRight className="size-16 text-icon-tertiary" />;
 
 export default function Footer() {
   return (
@@ -58,6 +59,7 @@ export default function Footer() {
               {PLATFORMS.map((p) => (
                 <li key={p.label}>
                   <Link href={p.href} className="flex items-center gap-8">
+                    {/* 플랫폼 마크(점) — 데이터 색 */}
                     <span className="size-6 rounded-full shrink-0" style={{ background: p.color }} />
                     <span className="text-body-sm-medium text-text-primary">{p.label}</span>
                     <span className="text-body-xs-regular text-text-tertiary">{p.desc}</span>
@@ -147,12 +149,12 @@ export default function Footer() {
                 href={l.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-body-xs-regular text-text-tertiary opacity-70"
+                className="text-body-xs-regular text-text-tertiary"
               >
                 {l.label}
               </a>
             ))}
-            <span className="text-body-xs-regular text-text-tertiary opacity-50">
+            <span className="text-body-xs-regular text-text-tertiary">
               © Nara Space Technology Inc.
             </span>
           </div>

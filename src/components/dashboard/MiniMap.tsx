@@ -3,7 +3,9 @@
 import { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { Spinner } from '@naraspace-technology/nds/components';
 
+// 이벤트 마커 색 — 지도 데이터 시각화 (마커 배경, 글자 색 아님)
 const EVENTS = [
   { lng: 129.3, lat: 35.5, color: '#1bbfa8', label: '울산 메탄' },
   { lng: 126.1, lat: 37.4, color: '#C45C4A', label: '수도권 대기' },
@@ -66,10 +68,12 @@ export default function MiniMap() {
       <div className="minimap-container relative h-120 overflow-hidden rounded-sm bg-bg-secondary">
         <div ref={containerRef} className="h-full w-full" />
         {!ready && (
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center gap-8">
+            <Spinner size="sm" aria-label="지도 로딩 중" />
             <span className="text-body-xs-regular text-text-tertiary">loading...</span>
           </div>
         )}
+        {/* 지도 위 좌표 캡션 — 지도 타일 위 가독성용 그림자 */}
         <div className="absolute top-8 left-8 text-body-xs-regular text-text-tertiary tabular-nums [text-shadow:0_1px_3px_rgba(0,0,0,0.6)]">
           36.5°N 127.5°E
         </div>

@@ -2,17 +2,9 @@
 
 import Link from 'next/link';
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { Button } from '@naraspace-technology/nds/components';
+import { Button, StatusChip } from '@naraspace-technology/nds/components';
 import { IconArrowLeft, IconGlobe } from '@naraspace-technology/nds/icons';
 import { DAILY_EARTH } from '@/lib/sample-data';
-
-const GRADIENTS = [
-  'linear-gradient(160deg, #0a1a2e 0%, #0E0E10 45%, #0d1f1a 100%)',
-  'linear-gradient(160deg, #0E0E10 0%, #0d1520 45%, #0a1a1f 100%)',
-  'linear-gradient(160deg, #0d1f1a 0%, #0E0E10 45%, #0a1520 100%)',
-  'linear-gradient(160deg, #1a0a1e 0%, #0E0E10 45%, #0a1a2e 100%)',
-  'linear-gradient(160deg, #0a1520 0%, #0E0E10 45%, #0d1f1a 100%)',
-];
 
 export default function DailyEarthPage() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -59,29 +51,14 @@ export default function DailyEarthPage() {
       <div ref={containerRef} className="cinematic-scroll h-full">
         {DAILY_EARTH.map((item, i) => {
           const isVisible = visible.has(i);
-          const isActive = activeIndex === i;
 
           return (
             <section
               key={item.id}
               data-index={i}
-              className="cinematic-section relative flex items-center justify-center"
-              style={{
-                height: 'calc(100vh - var(--header-height))',
-                background: GRADIENTS[i % GRADIENTS.length],
-              }}
+              className="cinematic-section relative flex items-center justify-center bg-bg-tertiary"
+              style={{ height: 'calc(100vh - var(--header-height))' }}
             >
-              {/* Background orb */}
-              <div
-                className="pointer-events-none absolute top-1/2 left-1/2 size-500 rounded-full"
-                style={{
-                  background: 'radial-gradient(circle, rgba(27,191,168,0.06) 0%, transparent 70%)',
-                  transform: `translate(-50%, -50%) scale(${isActive ? 1.05 : 0.95})`,
-                  opacity: isActive ? 1 : 0,
-                  transition: 'transform 1.5s ease-out, opacity 1s ease-out',
-                }}
-              />
-
               {/* Content wrapper with entrance animation */}
               <div className="relative z-10 mx-auto max-w-2xl px-24 text-center">
                 {/* Category + Date */}
@@ -93,15 +70,15 @@ export default function DailyEarthPage() {
                     transition: 'opacity 0.6s ease-out 0.1s, transform 0.6s ease-out 0.1s',
                   }}
                 >
-                  <span className="rounded-full bg-[rgba(27,191,168,0.08)] px-12 py-4 text-body-xs-regular text-text-interactive-primary">
+                  <StatusChip status="neutral" showIcon={false}>
                     {item.category}
-                  </span>
+                  </StatusChip>
                   <span className="text-body-xs-regular tabular-nums text-text-tertiary">
                     {item.date}
                   </span>
                 </div>
 
-                {/* Image placeholder */}
+                {/* Image placeholder — 위성 영상 자리 일러스트 배경 (§7-2 일러스트 예외) */}
                 <div
                   className="relative mx-auto mb-32 flex aspect-[16/10] w-full max-w-520 flex-col items-center justify-center gap-12 overflow-hidden rounded-md inset-ring-1 inset-ring-border-tertiary"
                   style={{
@@ -111,24 +88,17 @@ export default function DailyEarthPage() {
                     transition: 'opacity 0.8s ease-out 0.2s, transform 0.8s ease-out 0.2s',
                   }}
                 >
-                  <div
-                    className="pointer-events-none absolute inset-0"
-                    style={{
-                      backgroundImage: 'linear-gradient(rgba(27,191,168,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(27,191,168,0.05) 1px, transparent 1px)',
-                      backgroundSize: '20px 20px',
-                    }}
-                  />
-                  <div className="relative z-10 flex size-64 items-center justify-center rounded-full bg-[rgba(27,191,168,0.08)]">
-                    <IconGlobe className="size-24 text-icon-interactive-primary" />
+                  <div className="flex size-64 items-center justify-center rounded-full bg-bg-interactive-selected">
+                    <IconGlobe className="size-24 text-icon-interactive-selected" />
                   </div>
-                  <p className="relative z-10 text-body-xs-regular text-text-tertiary">
+                  <p className="text-body-xs-regular text-text-tertiary">
                     {item.satellite} &middot; {item.resolution}
                   </p>
                 </div>
 
                 {/* Title */}
                 <h1
-                  className="mb-20 text-heading-3xl text-text-primary md:text-display-lg"
+                  className="mb-20 text-heading-3xl text-text-primary md:text-display-md"
                   style={{
                     opacity: isVisible ? 1 : 0,
                     transform: isVisible ? 'translateY(0)' : 'translateY(25px)',
@@ -140,7 +110,7 @@ export default function DailyEarthPage() {
 
                 {/* Description */}
                 <p
-                  className="mx-auto mb-20 max-w-lg text-body-md-regular text-text-tertiary md:text-body-lg-regular"
+                  className="mx-auto mb-20 max-w-lg text-body-md-regular text-text-secondary"
                   style={{
                     opacity: isVisible ? 1 : 0,
                     transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
@@ -159,7 +129,7 @@ export default function DailyEarthPage() {
                   }}
                 >
                   <span>{item.location}</span>
-                  <span className="text-border-tertiary">&middot;</span>
+                  <span aria-hidden>&middot;</span>
                   <span>{item.coordinates}</span>
                 </div>
 
@@ -202,14 +172,16 @@ export default function DailyEarthPage() {
         })}
       </div>
 
-      {/* Side navigation dots — NDS 에 점 인디케이터가 없어 네이티브 button 유지 */}
+      {/* Side navigation dots — NDS 에 점(페이지) 인디케이터가 없어 네이티브 button 유지, 색은 NDS 토큰만.
+          Tooltip 은 NDS 가 표시 부품만 제공(트리거·포지셔닝 없음)해서 hover 라벨도 토큰 스타일로 유지 */}
       <div className="absolute top-1/2 right-16 z-20 flex -translate-y-1/2 flex-col gap-10">
         {DAILY_EARTH.map((item, i) => (
           <button
             key={item.id}
             onClick={() => scrollTo(i)}
-            className="group relative flex items-center justify-end"
+            className="group relative flex items-center justify-end rounded-full outline-offset-2 focus-visible:outline focus-visible:outline-border-focus-ring"
             aria-label={item.title}
+            aria-current={activeIndex === i ? 'true' : undefined}
           >
             <span className="pointer-events-none absolute right-24 rounded-sm bg-bg-primary px-10 py-4 text-body-xs-regular whitespace-nowrap text-text-primary opacity-0 inset-ring-1 inset-ring-border-tertiary transition-opacity group-hover:opacity-100">
               {item.title}
@@ -217,8 +189,8 @@ export default function DailyEarthPage() {
             <div
               className={`h-8 rounded-full transition-all duration-300 ${
                 activeIndex === i
-                  ? 'w-24 bg-bg-interactive-primary shadow-[0_0_8px_rgba(27,191,168,0.4)]'
-                  : 'w-8 bg-border-tertiary'
+                  ? 'w-24 bg-bg-interactive-primary'
+                  : 'w-8 bg-bg-interactive-secondary group-hover:bg-bg-interactive-secondary-hover'
               }`}
             />
           </button>
@@ -237,8 +209,8 @@ export default function DailyEarthPage() {
           홈
         </Button>
         <span className="rounded-sm bg-bg-tertiary/70 px-12 py-6 text-body-sm-regular tabular-nums text-text-tertiary inset-ring-1 inset-ring-border-tertiary backdrop-blur-sm">
-          <span className="text-text-interactive-primary">{String(activeIndex + 1).padStart(2, '0')}</span>
-          <span className="text-border-tertiary"> / </span>
+          <span className="text-text-primary">{String(activeIndex + 1).padStart(2, '0')}</span>
+          <span aria-hidden> / </span>
           {String(DAILY_EARTH.length).padStart(2, '0')}
         </span>
       </div>

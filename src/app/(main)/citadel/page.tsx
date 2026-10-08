@@ -76,14 +76,9 @@ export default function CitadelPage() {
   return (
     <div className="min-h-screen bg-bg-tertiary">
       {/* Hero */}
-      <section className="mx-auto max-w-960 px-16 pb-32 pt-48 sm:px-24 sm:pb-64 sm:pt-80">
-        <div
-          className="mb-20 inline-flex items-center gap-8 rounded-full px-12 py-4"
-          style={{ background: 'rgba(196, 92, 74, 0.12)' }}
-        >
-          <span className="size-8 rounded-xs" style={{ background: '#C45C4A' }} />
-          <span className="text-body-xs-regular text-text-tertiary">EarthPaper ·</span>
-          <span className="text-body-xs-regular" style={{ color: '#C45C4A' }}>Citadel</span>
+      <section className="mx-auto max-w-960 px-16 pb-48 pt-48 sm:px-24 sm:pb-64 sm:pt-80">
+        <div className="mb-20">
+          <StatusChip status="neutral" showIcon={false}>EarthPaper · Citadel</StatusChip>
         </div>
 
         <h1 className="mb-16 text-heading-3xl text-text-primary md:text-display-md">
@@ -91,7 +86,7 @@ export default function CitadelPage() {
           재난에 대응합니다
         </h1>
 
-        <p className="mb-32 max-w-[52ch] text-body-md-regular text-text-tertiary">
+        <p className="mb-32 max-w-[52ch] text-body-md-regular text-text-secondary">
           위성 영상 기반 도시 모니터링과 재난 대응 솔루션.
           정기 관측 구독부터 국가 단위 턴키 시스템까지,
           정부와 도시가 필요로 하는 위성 인프라를 제공합니다.
@@ -109,19 +104,18 @@ export default function CitadelPage() {
 
       {/* Use Case */}
       <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
-        <div className="mb-8 flex items-center gap-8">
-          <span className="text-body-xs-regular text-text-tertiary">Use Case</span>
+        <div className="mb-24 flex flex-col items-start gap-8">
+          <StatusChip status="neutral" showIcon={false}>Use Case</StatusChip>
+          <h2 className="text-heading-2xl text-text-primary">
+            2026 광양 산불 — 48시간 재난 리포트
+          </h2>
+          <p className="max-w-[60ch] text-body-md-regular text-text-secondary">
+            발생 탐지부터 피해 판정 리포트 전달까지, Citadel이 실제 재난 상황에서
+            어떻게 작동하는지 단계별로 살펴봅니다.
+          </p>
         </div>
 
-        <h2 className="mb-8 text-heading-xl text-text-primary md:text-heading-3xl">
-          2026 광양 산불 — 48시간 재난 리포트
-        </h2>
-        <p className="mb-28 max-w-[60ch] text-body-sm-regular text-text-tertiary">
-          발생 탐지부터 피해 판정 리포트 전달까지, Citadel이 실제 재난 상황에서
-          어떻게 작동하는지 단계별로 살펴봅니다.
-        </p>
-
-        <div className="mb-24 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-12">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-12">
           {[
             {
               n: '01',
@@ -146,11 +140,9 @@ export default function CitadelPage() {
           ].map((step) => (
             <Card.Root key={step.n}>
               <Card.Body className="gap-8">
-                <span className="mb-4 text-body-sm-medium tabular-nums" style={{ color: '#C45C4A' }}>
-                  {step.n}
-                </span>
+                <span className="text-body-xs-regular tabular-nums text-text-tertiary">{step.n}</span>
                 <Card.Title>{step.title}</Card.Title>
-                <p className="text-body-sm-regular text-text-tertiary">{step.desc}</p>
+                <p className="text-body-sm-regular text-text-secondary">{step.desc}</p>
               </Card.Body>
             </Card.Root>
           ))}
@@ -158,6 +150,7 @@ export default function CitadelPage() {
 
         <Button
           variant="text"
+          className="mt-16"
           rightIcon={<IconArrowRight />}
           render={
             <a
@@ -177,9 +170,8 @@ export default function CitadelPage() {
 
       {/* Live Events */}
       <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
-        <div className="mb-20 flex items-center gap-8">
-          <Badge type="dot" status="important" />
-          <span className="text-body-xs-regular text-text-tertiary">최근 탐지</span>
+        <div className="mb-24 flex flex-col items-start gap-8">
+          <h2 className="text-heading-2xl text-text-primary">최근 탐지</h2>
         </div>
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-12">
@@ -189,16 +181,14 @@ export default function CitadelPage() {
               interactive
               render={<a href={c.href} target="_blank" rel="noopener noreferrer" />}
             >
-              <Card.Body className="gap-4">
-                <div className="mb-8 flex items-center justify-between">
+              <Card.Body className="gap-8">
+                <div className="flex items-center justify-between">
                   <StatusChip status={SEVERITY_STATUS[c.severity]}>{c.severity}</StatusChip>
                   <span className="text-body-xs-regular tabular-nums text-text-tertiary">{c.date}</span>
                 </div>
                 <Card.Title render={<p />}>{c.event}</Card.Title>
-                <p className="mb-6 text-body-xs-regular text-text-tertiary">{c.location}</p>
-                <p className="text-body-sm-medium tabular-nums" style={{ color: '#C45C4A' }}>
-                  {c.stat}
-                </p>
+                <span className="text-body-xs-regular text-text-tertiary">{c.location}</span>
+                <span className="text-body-sm-medium tabular-nums text-text-primary">{c.stat}</span>
               </Card.Body>
             </Card.Root>
           ))}
@@ -206,39 +196,32 @@ export default function CitadelPage() {
       </section>
 
       {/* Verticals */}
-      <section id="verticals" className="mx-auto max-w-960 px-16 py-64 sm:px-24">
-        <h2 className="mb-32 border-b border-border-tertiary pb-12 text-body-xs-regular text-text-tertiary">
-          서비스 영역
-        </h2>
+      <section id="verticals" className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
+        <div className="mb-24 flex flex-col items-start gap-8">
+          <h2 className="text-heading-2xl text-text-primary">서비스 영역</h2>
+        </div>
 
-        <div className="grid gap-16">
+        <div className="grid gap-12">
           {VERTICALS.map((v) => (
             <Card.Root key={v.id}>
               <Card.Body className="gap-16">
                 <div className="flex items-center gap-12">
-                  <h3 className="flex-1 text-body-md-medium" style={{ color: '#C45C4A' }}>
-                    {v.title}
-                  </h3>
+                  <Card.Title className="flex-1">{v.title}</Card.Title>
                   <Badge type="letter">{v.label}</Badge>
                 </div>
 
-                <p className="max-w-[60ch] text-body-sm-regular text-text-tertiary">{v.desc}</p>
+                <p className="max-w-[60ch] text-body-sm-regular text-text-secondary">{v.desc}</p>
 
                 <div className="grid grid-cols-1 gap-12 sm:grid-cols-2">
-                  <div>
-                    <span className="mb-6 block text-body-xs-regular text-text-tertiary">고객</span>
-                    <p className="text-body-sm-regular text-text-primary">{v.customers}</p>
+                  <div className="flex flex-col gap-4">
+                    <span className="text-body-xs-regular text-text-tertiary">고객</span>
+                    <Card.Content>{v.customers}</Card.Content>
                   </div>
-                  <div>
-                    <span className="mb-6 block text-body-xs-regular text-text-tertiary">산출물</span>
+                  <div className="flex flex-col gap-4">
+                    <span className="text-body-xs-regular text-text-tertiary">산출물</span>
                     <div className="flex flex-wrap gap-4">
                       {v.outputs.map((o) => (
-                        <span
-                          key={o}
-                          className="rounded-full bg-bg-secondary px-8 py-2 text-body-xs-regular text-text-primary inset-ring-1 inset-ring-border-tertiary"
-                        >
-                          {o}
-                        </span>
+                        <Badge key={o} type="letter">{o}</Badge>
                       ))}
                     </div>
                   </div>
@@ -250,11 +233,11 @@ export default function CitadelPage() {
       </section>
 
       {/* Contact CTA */}
-      <section id="contact" className="mx-auto max-w-960 px-16 pb-80 pt-64 sm:px-24">
+      <section id="contact" className="mx-auto max-w-960 px-16 pb-80 sm:px-24">
         <Card.Root>
           <Card.Body className="items-center gap-8 py-32 text-center">
-            <h2 className="text-heading-xl text-text-primary">관심 구역으로 시작하세요</h2>
-            <p className="mb-16 max-w-[44ch] text-body-sm-regular text-text-tertiary">
+            <h2 className="text-heading-2xl text-text-primary">관심 구역으로 시작하세요</h2>
+            <p className="mb-16 max-w-[44ch] text-body-md-regular text-text-secondary">
               모니터링할 행정구역이나 관심 지역을 설정하면,
               정기 관측부터 재난 대응 SLA까지 맞춤 시나리오를 구성합니다.
             </p>

@@ -51,9 +51,8 @@ export default function GyeonggiLayerPanel({ layers, onToggle }: GyeonggiLayerPa
 
         return (
           <div key={group} className="space-y-4">
-            <h3 className="mb-8 text-body-xs-regular text-text-tertiary">
-              {group}
-            </h3>
+            {/* 패널 내부 그룹 라벨 (§7-1) — 제목이 아니라 묶음 이름 */}
+            <h3 className="mb-8 text-body-sm-medium text-text-secondary">{group}</h3>
 
             {groupLayers.map((layer) => (
               // 행 전체가 label 이라 어디를 눌러도 Switch 가 토글된다.

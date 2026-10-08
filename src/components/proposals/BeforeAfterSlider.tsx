@@ -157,7 +157,7 @@ export default function BeforeAfterSlider({
         aria-hidden
       >
         <div
-          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 left-1/2 size-36 rounded-full flex items-center justify-center shadow-8 bg-bg-interactive-primary text-[#0E0E10]${
+          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 left-1/2 size-36 rounded-full flex items-center justify-center shadow-8 bg-bg-interactive-primary text-icon-inverse${
             handleHinted && hintsEnabled ? ' ep-hint-blink' : ''
           }`}
         >
@@ -183,9 +183,11 @@ export default function BeforeAfterSlider({
             캡쳐의 옛 통합 바(검색+비교 겹침)는 이미지에서 지웠다 */}
         <MapTopBars />
 
-        {/* '산불 피해 보기' 패널 — 실캡쳐 위치·색 실측값으로 DOM 재현 (불투명도 실동작) */}
+        {/* '산불 피해 보기' 패널 — 실캡쳐 위치·색 실측값으로 DOM 재현 (불투명도 실동작).
+            라이브 복제(§7 예외): 아래 text-[#…] / 배경 / 심각도 swatch 는 실서비스 패널의
+            실측 색이다 — EP·NDS 토큰으로 바꾸면 캡쳐 속 실화면과 어긋난다 */}
         <div
-          className="absolute cursor-default pointer-events-auto rounded-sm px-16 py-12 text-[#E7EBEF]"
+          className="absolute cursor-default pointer-events-auto rounded-sm px-16 py-12 text-[#E7EBEF]" // 라이브 복제: 패널 본문색 실측
           style={{
             left: `${rect.x}%`,
             top: `${rect.y}%`,
@@ -201,11 +203,13 @@ export default function BeforeAfterSlider({
         >
           <div className="flex items-center justify-between mb-12">
             <span className="text-body-md-medium">산불 피해 보기</span>
+            {/* 라이브 복제: 닫기 아이콘색 실측 */}
             <IconX aria-hidden className="size-16 text-[#8fa0b3]" />
           </div>
 
           <div className="flex items-center justify-between mb-6">
             <span className="text-body-sm-medium">불투명도</span>
+            {/* 라이브 복제: 값 텍스트색 실측 */}
             <span className="text-body-sm-regular tabular-nums text-[#9db0c4]">{opacity}%</span>
           </div>
           {/* 조작 가능 어포던스 — 슬라이더의 민트 썸(점)이 반짝인다 (첫 조작 시 해제) */}
@@ -225,6 +229,7 @@ export default function BeforeAfterSlider({
           />
 
           <div className="mt-12">
+            {/* 라이브 복제: 라벨색 실측 */}
             <p className="text-body-xs-regular text-[#8fa0b3] mb-4">심각도</p>
             <div className="flex items-center gap-16">
               {(
@@ -235,6 +240,7 @@ export default function BeforeAfterSlider({
                 ] as const
               ).map(([label, color]) => (
                 <span key={label} className="flex items-center gap-6 text-body-sm-regular">
+                  {/* 데이터 시각화: 심각도 범례 swatch */}
                   <span className="inline-block size-14 rounded-xs" style={{ background: color }} />
                   {label}
                 </span>

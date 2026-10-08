@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Button } from '@naraspace-technology/nds/components';
+import { Button, StatusChip } from '@naraspace-technology/nds/components';
 import { IconArrowDown, IconArrowLeft, IconArrowUpRight } from '@naraspace-technology/nds/icons';
 
 const S3 = 'https://earthpaper.s3.ap-northeast-2.amazonaws.com/post/v2/editor/48';
@@ -180,7 +180,7 @@ export default function ShipyardsInteractive() {
   return (
     <div ref={progressRef} className="bg-bg-tertiary text-text-primary">
       {/* Progress bar */}
-      <div className="fixed top-[var(--header-height)] right-0 left-0 z-40 h-2 bg-border-tertiary">
+      <div className="fixed top-[var(--header-height)] right-0 left-0 z-40 h-2 bg-bg-secondary">
         <div className="h-full bg-bg-interactive-primary transition-all duration-150" style={{ width: `${scrollProgress * 100}%` }} />
       </div>
 
@@ -192,14 +192,15 @@ export default function ShipyardsInteractive() {
             <a
               key={site.id}
               href={`#${site.id}`}
-              className={`flex items-center gap-8 rounded-sm px-10 py-4 text-right transition-all ${
-                isActive ? 'bg-bg-primary inset-ring-1 inset-ring-border-interactive-primary' : ''
+              aria-current={isActive ? 'location' : undefined}
+              className={`flex items-center gap-8 rounded-sm px-10 py-4 text-right transition-colors ${
+                isActive ? 'bg-bg-interactive-selected' : 'hover:bg-bg-secondary'
               }`}
             >
               <span
-                className={`size-8 shrink-0 rounded-full ${isActive ? 'bg-bg-interactive-primary' : 'bg-border-tertiary'}`}
+                className={`size-8 shrink-0 rounded-full ${isActive ? 'bg-bg-interactive-primary' : 'bg-bg-interactive-secondary'}`}
               />
-              <span className={`text-body-xs-regular ${isActive ? 'text-text-interactive-primary' : 'text-text-tertiary'}`}>
+              <span className={`text-body-xs-regular ${isActive ? 'text-text-interactive-selected' : 'text-text-tertiary'}`}>
                 {site.name}
               </span>
             </a>
@@ -209,30 +210,22 @@ export default function ShipyardsInteractive() {
 
       {/* ===== COVER ===== */}
       <section className="relative flex min-h-[80vh] items-center overflow-hidden">
-        <div className="pointer-events-none absolute inset-0" style={{
-          background: 'repeating-linear-gradient(0deg, transparent, transparent 4px, rgba(27,191,168,0.015) 4px, rgba(27,191,168,0.015) 5px)',
-        }} />
-        <div className="pointer-events-none absolute inset-0" style={{
-          background: 'radial-gradient(ellipse at 65% 30%, rgba(27,191,168,0.08), transparent 60%)',
-        }} />
-
         <div className="relative z-10 mx-auto max-w-3xl px-24 py-96">
           <div
             ref={setRef(sectionIdx++)}
             className="transition-all duration-700"
             style={{ opacity: visible[0] !== false ? 1 : 0, transform: visible[0] !== false ? 'translateY(0)' : 'translateY(30px)' }}
           >
-            <div className="mb-24 flex items-center gap-8">
-              <span className="inline-block h-px w-32 bg-[#3D5A80]" />
-              <span className="text-body-xs-regular text-[#3D5A80]">
+            <div className="mb-24">
+              <StatusChip status="neutral" showIcon={false}>
                 Northpaper Original · 방위 분석
-              </span>
+              </StatusChip>
             </div>
-            <h1 className="mb-24 text-display-md text-text-primary md:text-display-lg">
+            <h1 className="mb-24 text-heading-3xl text-text-primary md:text-display-md">
               위성이 포착한<br />
               북한 5대 조선소
             </h1>
-            <p className="mb-32 text-body-lg-regular text-text-tertiary md:text-heading-xl">
+            <p className="mb-32 text-body-md-regular text-text-secondary">
               사라진 선박의 행방 — 남포, 신포, 마양도, 청진, 라진<br />
               5개 핵심 거점의 구조 변화를 위성영상으로 추적합니다.
             </p>
@@ -259,8 +252,8 @@ export default function ShipyardsInteractive() {
             className="transition-all delay-100 duration-700"
             style={{ opacity: visible[1] ? 1 : 0, transform: visible[1] ? 'translateY(0)' : 'translateY(30px)' }}
           >
-            <p className="mb-16 text-body-xs-regular text-text-tertiary">Executive Summary</p>
-            <p className="text-body-md-regular text-text-tertiary md:text-body-lg-regular">
+            <h2 className="mb-16 text-heading-2xl text-text-primary">Executive Summary</h2>
+            <p className="text-body-md-regular text-text-secondary">
               위성영상 분석 결과, 북한 5개 핵심 조선소·항만에서 <span className="text-text-primary">조직적인 해군 활동 징후</span>가 식별되었습니다.
               남포와 청진에서는 신형 수상함(최현함, 강건함)이, 신포와 마양도에서는 잠수함 지원 활동이 관측되었습니다.
               청진에서 좌초된 강건함은 라진항에서 재진수에 성공한 것으로 확인됩니다.
@@ -279,7 +272,7 @@ export default function ShipyardsInteractive() {
               { label: '주요 변화', value: '12', unit: '건' },
             ].map((stat) => (
               <div key={stat.label} className="rounded-lg bg-bg-tertiary p-16 text-center inset-ring-1 inset-ring-border-tertiary">
-                <p className="text-heading-3xl tabular-nums text-text-interactive-primary">{stat.value}</p>
+                <p className="text-heading-xl tabular-nums text-text-primary">{stat.value}</p>
                 <p className="mt-4 text-body-xs-regular text-text-tertiary">{stat.label} {stat.unit}</p>
               </div>
             ))}
@@ -306,16 +299,15 @@ export default function ShipyardsInteractive() {
                 style={{ opacity: visible[refIdx] ? 1 : 0, transform: visible[refIdx] ? 'translateY(0)' : 'translateY(30px)' }}
               >
                 <div className="mb-8 flex items-center gap-12">
-                  <span className="text-body-sm-medium tabular-nums text-text-interactive-primary">
+                  <span className="text-body-sm-medium tabular-nums text-text-tertiary">
                     {String(siteIndex + 1).padStart(2, '0')}
                   </span>
-                  <span className="h-px w-32 bg-bg-interactive-primary" />
-                  <span className="rounded-full bg-[rgba(27,191,168,0.15)] px-8 py-2 text-body-xs-regular text-text-interactive-primary">
+                  <StatusChip status="neutral" showIcon={false}>
                     {site.badge}
-                  </span>
+                  </StatusChip>
                 </div>
-                <h2 className="mb-4 text-heading-3xl">{site.name}</h2>
-                <p className="mb-24 text-body-sm-regular tabular-nums text-text-tertiary">
+                <h2 className="mb-4 text-heading-2xl text-text-primary">{site.name}</h2>
+                <p className="mb-24 text-body-xs-regular tabular-nums text-text-tertiary">
                   {site.nameEn} · {site.coord.lat}°N {site.coord.lng}°E
                 </p>
               </div>
@@ -349,32 +341,23 @@ export default function ShipyardsInteractive() {
                       loading="lazy"
                     />
                     <div className="absolute top-12 left-12">
-                      <span className="rounded-xs bg-bg-tertiary/80 px-8 py-2 text-body-xs-regular tabular-nums text-text-interactive-primary backdrop-blur-xs">
+                      <span className="rounded-xs bg-bg-tertiary/80 px-8 py-2 text-body-xs-regular tabular-nums text-text-primary backdrop-blur-xs">
                         AFTER · {site.dates.after}
                       </span>
-                    </div>
-                    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                      <div
-                        className="absolute inset-x-0 h-2"
-                        style={{
-                          background: 'linear-gradient(90deg, transparent, var(--accent), transparent)',
-                          animation: 'scan-line 3s ease-in-out infinite',
-                        }}
-                      />
                     </div>
                   </div>
                 </div>
 
                 {/* Key change callout */}
-                <div className="mb-32 rounded-md bg-[rgba(27,191,168,0.06)] p-16 inset-ring-1 inset-ring-[rgba(27,191,168,0.2)]">
-                  <p className="mb-4 text-body-xs-regular text-text-tertiary">Key Change</p>
-                  <p className="text-body-sm-medium text-text-primary">{site.keyChange}</p>
+                <div className="mb-32 rounded-md bg-bg-interactive-selected p-16">
+                  <h3 className="mb-4 text-body-md-medium text-text-primary">Key Change</h3>
+                  <p className="text-body-md-regular text-text-secondary">{site.keyChange}</p>
                 </div>
 
                 {/* Paragraphs */}
                 <div className="space-y-16">
                   {site.paragraphs.map((p, i) => (
-                    <p key={i} className="text-body-sm-regular text-text-tertiary">
+                    <p key={i} className="text-body-md-regular text-text-secondary">
                       {p}
                     </p>
                   ))}
@@ -393,8 +376,8 @@ export default function ShipyardsInteractive() {
             className="transition-all duration-700"
             style={{ opacity: visible[sectionIdx - 1] ? 1 : 0, transform: visible[sectionIdx - 1] ? 'translateY(0)' : 'translateY(30px)' }}
           >
-            <p className="mb-16 text-body-xs-regular text-text-tertiary">Conclusion</p>
-            <p className="mb-24 text-body-md-regular text-text-tertiary md:text-body-lg-regular">
+            <h2 className="mb-16 text-heading-2xl text-text-primary">Conclusion</h2>
+            <p className="mb-24 text-body-md-regular text-text-secondary">
               위성영상만으로 함정의 내부 능력이나 구체적 용도를 완전히 평가하는 데는 한계가 있습니다.
               그러나 <span className="text-text-primary">지속적인 위성영상 분석</span>은 함정 위치 변화, 시설 및 지형 변화, 재고 야적장 상태를 객관적으로 추적하는 데 상당한 가치를 지닙니다.
               이러한 데이터의 축적은 <span className="text-text-primary">북한 내부 변화를 분석하는 보다 정밀하고 과학적인 근거</span>가 됩니다.
@@ -404,8 +387,8 @@ export default function ShipyardsInteractive() {
           {/* CTA */}
           <div className="mt-48 flex flex-col items-start gap-16 rounded-lg bg-bg-tertiary p-24 inset-ring-1 inset-ring-border-tertiary sm:flex-row">
             <div className="flex-1">
-              <p className="mb-4 text-body-sm-medium">방위·보안 분야 위성영상 분석이 필요하신가요?</p>
-              <p className="text-body-xs-regular text-text-tertiary">Nara Space의 위성영상 분석 솔루션에 대해 알아보세요.</p>
+              <h3 className="mb-4 text-heading-lg text-text-primary">방위·보안 분야 위성영상 분석이 필요하신가요?</h3>
+              <p className="text-body-md-regular text-text-secondary">Nara Space의 위성영상 분석 솔루션에 대해 알아보세요.</p>
             </div>
             <Button
               className="shrink-0"
@@ -436,18 +419,6 @@ export default function ShipyardsInteractive() {
           </div>
         </div>
       </section>
-
-      <style jsx>{`
-        @keyframes shipyard-pulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(1.3); }
-        }
-        @keyframes scan-line {
-          0% { top: -2px; }
-          50% { top: 100%; }
-          100% { top: -2px; }
-        }
-      `}</style>
     </div>
   );
 }

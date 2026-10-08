@@ -250,10 +250,9 @@ export default function AgentTutorialDemo() {
       <div
         className={
           fullscreen
-            ? 'fixed inset-0 z-[100] flex flex-col px-24 py-16'
+            ? 'fixed inset-0 z-[100] flex flex-col px-24 py-16 bg-bg-tertiary'
             : ''
         }
-        style={fullscreen ? { background: 'rgba(10, 10, 12, 0.98)' } : undefined}
       >
       {/* 스텝 인디케이터 — 진행 가시화 (완주율 모범사례) */}
       <div className="flex items-center justify-between mb-12">
@@ -266,7 +265,7 @@ export default function AgentTutorialDemo() {
                 <span
                   className={`flex items-center justify-center size-28 rounded-full text-body-sm-regular tabular-nums transition-colors ${
                     active
-                      ? 'bg-bg-interactive-primary text-[#0E0E10]'
+                      ? 'bg-bg-interactive-primary text-text-inverse'
                       : passed
                         ? 'bg-bg-primary text-text-primary inset-ring-1 inset-ring-border-tertiary'
                         : 'text-text-tertiary inset-ring-1 inset-ring-border-tertiary'
@@ -359,6 +358,7 @@ export default function AgentTutorialDemo() {
             {s.widget === 'article' && phase === 'running' && i === stepIndex && (
               <div
                 className="absolute inset-0 overflow-y-auto overflow-x-hidden"
+                // 라이브 복제(§7 예외): 실서비스 아티클 iframe 배경색 실측값 — 세그먼트 캡쳐 여백과 이어지게
                 style={{ background: '#F2F3F7' }}
                 aria-label="분석 아티클 (스크롤 가능)"
               >
@@ -392,11 +392,9 @@ export default function AgentTutorialDemo() {
 
         {/* 시작/재시작 오버레이 */}
         {(phase === 'idle' || phase === 'done') && (
-          <div
-            className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-16"
-            style={{ background: 'rgba(14,14,16,0.65)', backdropFilter: 'blur(2px)' }}
-          >
-            <p className="text-body-md-regular text-text-tertiary">
+          // 스크림 = NDS Dialog backdrop 과 같은 bg-black/60
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-16 bg-black/60 backdrop-blur-[2px]">
+            <p className="text-body-md-regular text-text-secondary">
               승인자가 직접 클릭하며 체험하는 6스텝 데모입니다
             </p>
             <Button variant="solid" size="lg" onClick={startTour}>
@@ -410,7 +408,7 @@ export default function AgentTutorialDemo() {
       </div>
       </div>
 
-      <p className="mt-8 text-body-xs-regular tabular-nums text-text-tertiary">
+      <p className="mt-8 text-body-xs-regular text-text-tertiary">
         캡쳐: agent.ep.naraspace.com 실화면 (2026-09-28, 산타로사섬 산불 분석) · 대화
         목록·계정 정보는 블러 처리
       </p>

@@ -53,32 +53,34 @@ function SourceRow({ source }: { source: SeoulDataSource }) {
   const badge = SOURCE_KIND_BADGE[source.kind];
 
   return (
-    <li className="text-body-xs-regular text-text-tertiary">
+    // 역할별 위계 (§7-1): 레이어명 = 항목 제목, 기관 = 링크, 데이터셋 = 본문, 산출 방식 = 메타.
+    // opacity 로 만든 회색 단계 대신 NDS 텍스트 토큰을 쓴다.
+    <li className="text-body-xs-regular">
       <div className="flex items-center gap-6">
         <StatusChip status={KIND_STATUS[source.kind]} showIcon={false} className="shrink-0">
           {badge.label}
         </StatusChip>
-        <span className="text-text-primary">{source.layer}</span>
+        <span className="text-body-sm-medium text-text-primary">{source.layer}</span>
       </div>
 
-      <div className="mt-2">
+      <div className="mt-4">
         {source.url ? (
           <a
             href={source.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-text-tertiary underline decoration-border-tertiary"
+            className="text-text-interactive-primary underline hover:text-text-interactive-primary-hover"
           >
             {source.provider}
           </a>
         ) : (
-          source.provider
+          <span className="text-text-secondary">{source.provider}</span>
         )}
       </div>
 
-      <div className="break-words opacity-85">{source.dataset}</div>
+      <div className="break-words text-text-secondary">{source.dataset}</div>
 
-      <p className="mt-2 opacity-75">{source.note}</p>
+      <p className="mt-2 text-text-tertiary">{source.note}</p>
     </li>
   );
 }

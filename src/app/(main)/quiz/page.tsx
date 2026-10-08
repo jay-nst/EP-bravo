@@ -80,24 +80,24 @@ export default function QuizPage() {
       <div className="mb-32 flex items-center justify-between">
         <div>
           <div className="mb-4 flex items-center gap-8">
-            <h1 className="text-heading-3xl text-text-primary">
+            <h1 className="text-heading-3xl text-text-primary md:text-display-md">
               오늘의 퀴즈
             </h1>
             <StatusChip status="brand" showIcon={false}>
               DAILY
             </StatusChip>
           </div>
-          <p className="text-body-sm-regular text-text-tertiary">
+          <p className="text-body-md-regular text-text-secondary">
             위성 영상을 보고 장소를 맞혀보세요
           </p>
         </div>
         {/* Streak */}
         <div className="text-center">
           <div
-            className={`flex size-48 items-center justify-center rounded-full border-2 text-body-lg-medium tabular-nums ${
+            className={`flex size-48 items-center justify-center rounded-full text-heading-xl tabular-nums ${
               streak > 0
-                ? 'border-border-interactive-primary text-text-interactive-primary'
-                : 'border-border-tertiary text-text-tertiary'
+                ? 'bg-bg-interactive-selected text-text-interactive-selected'
+                : 'bg-bg-secondary text-text-tertiary'
             }`}
           >
             {streak}
@@ -106,57 +106,53 @@ export default function QuizPage() {
         </div>
       </div>
 
-      {/* Image / Hint area — 자식 배경이 가장자리까지 차서 inset-ring 대신 border 로 테두리 */}
+      {/* Image / Hint area — 자식 배경이 가장자리까지 차서 inset-ring 대신 border 로 테두리.
+          그라데이션(style background)은 위성 영상 자리 일러스트 배경 (§7-2 일러스트 예외) */}
       <div className="mb-24 overflow-hidden rounded-lg border border-border-tertiary">
         <div
           className="relative flex aspect-[16/10] flex-col items-center justify-center overflow-hidden p-32 text-center"
           style={{ background: 'linear-gradient(135deg, #0a1a15 0%, #0d2818 30%, #0a1612 60%, #111a14 100%)' }}
         >
-          <div
-            className="pointer-events-none absolute inset-0"
-            style={{
-              backgroundImage: 'linear-gradient(rgba(27,191,168,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(27,191,168,0.05) 1px, transparent 1px)',
-              backgroundSize: '20px 20px',
-            }}
-          />
-          <div className="relative z-10 mb-16 flex size-64 items-center justify-center rounded-full bg-[rgba(27,191,168,0.08)]">
-            <IconSatellite className="size-24 text-icon-interactive-primary" />
+          <div className="mb-16 flex size-64 items-center justify-center rounded-full bg-bg-interactive-selected">
+            <IconSatellite className="size-24 text-icon-interactive-selected" />
           </div>
-          <p className="relative z-10 max-w-md text-body-sm-regular text-text-tertiary">
+          <p className="max-w-md text-body-md-regular text-text-secondary">
             {quiz.imageHint}
           </p>
-          <p className="relative z-10 mt-12 text-body-xs-regular text-text-tertiary opacity-50">
+          <p className="mt-12 text-body-xs-regular text-text-tertiary">
             실제 위성 영상이 여기에 표시됩니다
           </p>
         </div>
       </div>
 
       {/* Question */}
-      <h2 className="mb-16 text-heading-lg text-text-primary">
+      <h2 className="mb-16 text-heading-2xl text-text-primary">
         {quiz.question}
       </h2>
 
-      {/* Choices — 정답/오답 상태를 보여주는 선택지 타일. NDS Button 에 해당 상태가 없어 네이티브 button 유지 */}
+      {/* Choices — 정답/오답 상태를 보여주는 선택지 타일.
+          NDS 에 맞는 부품이 없어(Radio 는 선택 표시만, Card 는 선택·정오 상태 없음) 네이티브 button 유지.
+          색은 NDS 토큰만: 기본 = Card 표면, 정답 = status-success, 오답 = status-danger, "정답" 표시 = StatusChip */}
       <div className="mb-32 space-y-10">
         {quiz.choices.map((choice, i) => {
-          let ringClass = 'inset-ring-border-tertiary';
-          let borderClass = 'border-border-tertiary';
-          let bgClass = '';
+          let surfaceClass =
+            'bg-bg-tertiary inset-ring-1 inset-ring-border-tertiary enabled:hover:bg-bg-secondary enabled:hover:inset-ring-2 enabled:hover:inset-ring-border-interactive-primary-hover';
+          let markClass = 'inset-ring-1 inset-ring-border-primary text-text-secondary';
           let textClass = 'text-text-primary';
 
           if (revealed) {
             if (i === quiz.answer) {
-              ringClass = 'inset-ring-border-interactive-primary';
-              borderClass = 'border-border-interactive-primary';
-              bgClass = 'bg-[rgba(27,191,168,0.08)]';
-              textClass = 'text-text-interactive-primary';
+              surfaceClass = 'bg-status-success-subtle';
+              markClass = 'inset-ring-1 inset-ring-status-success text-status-success-bold';
+              textClass = 'text-status-success-bold';
             } else if (i === selected && i !== quiz.answer) {
-              ringClass = 'inset-ring-status-danger';
-              borderClass = 'border-status-danger';
-              bgClass = 'bg-status-danger/8';
-              textClass = 'text-status-danger';
+              surfaceClass = 'bg-status-danger-subtle';
+              markClass = 'inset-ring-1 inset-ring-status-danger text-status-danger-bold';
+              textClass = 'text-status-danger-bold';
             } else {
-              textClass = 'text-text-tertiary';
+              surfaceClass = 'bg-bg-tertiary inset-ring-1 inset-ring-border-tertiary';
+              markClass = 'inset-ring-1 inset-ring-border-tertiary text-text-disabled';
+              textClass = 'text-text-disabled';
             }
           }
 
@@ -165,20 +161,20 @@ export default function QuizPage() {
               key={i}
               onClick={() => handleSelect(i)}
               disabled={revealed}
-              className={`flex w-full items-center gap-12 rounded-md px-20 py-16 text-left inset-ring-1 transition-all ${ringClass} ${bgClass}`}
+              className={`flex w-full items-center gap-12 rounded-md px-20 py-16 text-left outline-offset-2 transition-colors focus-visible:outline focus-visible:outline-border-focus-ring ${surfaceClass}`}
             >
               <span
-                className={`flex size-28 shrink-0 items-center justify-center rounded-full border-[1.5px] text-body-xs-regular tabular-nums ${borderClass} ${textClass}`}
+                className={`flex size-28 shrink-0 items-center justify-center rounded-full text-body-sm-medium tabular-nums ${markClass}`}
               >
                 {String.fromCharCode(65 + i)}
               </span>
-              <span className={`text-body-sm-regular ${textClass}`}>
+              <span className={`text-body-md-regular ${textClass}`}>
                 {choice}
               </span>
               {revealed && i === quiz.answer && (
-                <span className="ml-auto text-body-xs-regular text-text-interactive-primary">
+                <StatusChip status="success" className="ml-auto">
                   정답
-                </span>
+                </StatusChip>
               )}
             </button>
           );
@@ -187,16 +183,10 @@ export default function QuizPage() {
 
       {/* Result */}
       {revealed && (
-        <div
-          className={`space-y-16 rounded-lg p-24 inset-ring-1 ${
-            isCorrect
-              ? 'bg-[rgba(27,191,168,0.04)] inset-ring-[rgba(27,191,168,0.3)]'
-              : 'bg-[rgba(196,92,74,0.04)] inset-ring-[rgba(196,92,74,0.3)]'
-          }`}
-        >
+        <div className="space-y-16 rounded-lg bg-bg-tertiary p-24 inset-ring-1 inset-ring-border-tertiary">
           <div className="flex items-center gap-8">
             <span
-              className={`text-body-sm-medium ${isCorrect ? 'text-text-interactive-primary' : 'text-status-danger'}`}
+              className={`text-heading-lg ${isCorrect ? 'text-status-success' : 'text-status-danger'}`}
             >
               {isCorrect ? '정답입니다!' : '아쉽네요!'}
             </span>
@@ -206,12 +196,12 @@ export default function QuizPage() {
               </StatusChip>
             )}
           </div>
-          <p className="text-body-sm-regular text-text-tertiary">
+          <p className="text-body-md-regular text-text-secondary">
             {quiz.explanation}
           </p>
           <div className="flex items-center gap-16 text-body-xs-regular tabular-nums text-text-tertiary">
             <span>{quiz.location}</span>
-            <span className="text-border-tertiary">&middot;</span>
+            <span aria-hidden>&middot;</span>
             <span>{quiz.coordinates}</span>
           </div>
           <div className="flex gap-12 pt-8">
@@ -228,10 +218,10 @@ export default function QuizPage() {
       {/* Tomorrow teaser */}
       {revealed && (
         <div className="mt-32 border-t border-border-tertiary py-24 text-center">
-          <p className="text-body-sm-regular text-text-tertiary">
+          <p className="text-body-md-regular text-text-secondary">
             내일 새로운 퀴즈가 공개됩니다
           </p>
-          <p className="mt-4 text-body-xs-regular text-text-tertiary opacity-50">
+          <p className="mt-4 text-body-xs-regular text-text-tertiary">
             매일 자정 업데이트
           </p>
         </div>

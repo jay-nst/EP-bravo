@@ -12,13 +12,13 @@ export default function PaymentFailPage() {
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center gap-16">
-      <div className="flex size-48 items-center justify-center rounded-full bg-status-danger/10 text-status-danger">
+      <div className="flex size-48 items-center justify-center rounded-full bg-status-danger-subtle text-status-danger-bold">
         <IconX className="size-24" />
       </div>
-      <h2 className="text-heading-xl text-text-primary">
+      <h2 className="text-heading-3xl text-text-primary">
         결제 실패
       </h2>
-      <p className="text-body-sm-regular text-text-tertiary">
+      <p className="text-body-md-regular text-text-secondary">
         {message || '결제가 취소되었거나 오류가 발생했습니다'}
       </p>
       {code && (

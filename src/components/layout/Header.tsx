@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@naraspace-technology/nds/components';
 import { IconChevronDown, IconMenu, IconX } from '@naraspace-technology/nds/icons';
 
+// color = 플랫폼 마크(점) 전용 데이터 색 — 글자 색으로 쓰지 않는다 (§7-2)
 const SERVICES = [
   { key: 'citadel', label: 'Citadel', desc: '재난 · 도시 관제', color: '#C45C4A', href: '/citadel' },
   { key: 'predict', label: 'Predict', desc: '자산 검증 · 금융', color: '#4A9EC4', href: '/predict' },
@@ -54,7 +55,7 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 h-(--header-height) border-b border-border-tertiary bg-[var(--glass-bg,rgba(14,14,16,0.88))] backdrop-blur-md">
+    <header className="sticky top-0 z-50 h-(--header-height) border-b border-border-tertiary bg-bg-tertiary/88 backdrop-blur-md">
       <div className="h-full px-16 md:px-24 flex items-center justify-between">
         <div className="flex items-center gap-24">
           <Link href="/" className="text-body-md-medium text-text-primary flex items-center gap-8">
@@ -96,12 +97,13 @@ export default function Header() {
                       className="flex items-center gap-12 px-16 py-10 transition-colors hover:bg-bg-primary"
                       onClick={() => setDropdownOpen(false)}
                     >
+                      {/* 플랫폼 식별은 작은 점(마크)으로만 — 글자는 NDS 텍스트 토큰 (§7-2) */}
                       <span
                         className="w-8 h-8 rounded-full flex-shrink-0"
                         style={{ background: s.color }}
                       />
                       <div>
-                        <p className="text-body-sm-medium" style={{ color: s.color }}>{s.label}</p>
+                        <p className="text-body-sm-medium text-text-primary">{s.label}</p>
                         <p className="text-body-xs-regular text-text-tertiary">{s.desc}</p>
                       </div>
                     </Link>
@@ -164,7 +166,7 @@ export default function Header() {
             </Link>
 
             <div className="px-24 pt-8 pb-4 mt-4 border-t border-border-tertiary">
-              <span className="text-body-xs-regular text-text-tertiary">서비스</span>
+              <span className="text-body-sm-medium text-text-secondary">서비스</span>
             </div>
             {SERVICES.map((s) => (
               <Link
@@ -172,11 +174,12 @@ export default function Header() {
                 href={s.href}
                 className="flex items-center gap-12 px-24 py-12 transition-colors"
               >
+                {/* 플랫폼 마크(점) — 데이터 색 */}
                 <span
                   className="w-8 h-8 rounded-full flex-shrink-0"
                   style={{ background: s.color }}
                 />
-                <span className="text-body-sm-medium" style={{ color: s.color }}>{s.label}</span>
+                <span className="text-body-sm-medium text-text-primary">{s.label}</span>
                 <span className="text-body-xs-regular text-text-tertiary">{s.desc}</span>
               </Link>
             ))}

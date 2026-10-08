@@ -210,8 +210,9 @@ export default function AnalysisChatSim({ sim, onDone, exiting }: AnalysisChatSi
             draggable={false}
           />
           <div
+            // 라이브 복제(§7 예외): 실서비스 "분석 중" 말풍선 배경 실측값 (agentText 8%)
             style={{
-              background: 'rgba(231,235,239,0.08)',
+              background: 'rgba(231,235,239,0.08)', // 라이브 복제: 실측
               color: CHAT_COLORS.agentText,
               padding: '0.45em 1em',
               borderRadius: '0.8em',
@@ -268,6 +269,7 @@ function AgentRow({ text, wiggle, caret }: { text: string; wiggle: boolean; care
         style={{ width: '2.2em', marginTop: '0.1em' }}
         draggable={false}
       />
+      {/* 라이브 복제(§7 예외): 실서비스 에이전트 메시지 글자색 실측값 */}
       <p className="whitespace-pre-wrap" style={{ color: CHAT_COLORS.agentText }}>
         {text}
         {caret && <span className="ep-typing-caret" aria-hidden />}

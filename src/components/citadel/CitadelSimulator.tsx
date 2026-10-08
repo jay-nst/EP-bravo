@@ -13,7 +13,7 @@ const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
   loading: () => (
     <div className="flex size-full items-center justify-center bg-bg-tertiary">
-      <p className="text-body-sm-regular text-text-tertiary">지도 로딩 중...</p>
+      <p className="text-body-sm-regular text-text-secondary">지도 로딩 중...</p>
     </div>
   ),
 });
@@ -54,10 +54,25 @@ function generateDisaster(areaKm2: number): DisasterResult {
 
 type Phase = 'draw' | 'analyzing' | 'result';
 
-const SEVERITY_COLORS = {
-  low: '#4A9E6B',
-  moderate: '#C8923A',
-  high: '#C45C4A',
+// 결과 값의 의미 색 → NDS 상태 텍스트 토큰 (플랫폼 hex 를 글자색으로 쓰지 않는다)
+type Tone = 'danger' | 'warning' | 'success';
+
+const TONE_CLASS: Record<Tone, string> = {
+  danger: 'text-status-danger',
+  warning: 'text-status-warning',
+  success: 'text-status-success',
+};
+
+interface ResultRow {
+  label: string;
+  value: string;
+  tone?: Tone;
+}
+
+const SEVERITY_TONE: Record<DisasterResult['severityLevel'], Tone> = {
+  low: 'success',
+  moderate: 'warning',
+  high: 'danger',
 };
 
 const SEVERITY_LABELS = {
@@ -124,8 +139,8 @@ export default function CitadelSimulator() {
 
   return (
     <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
-      <div className="mb-20 flex items-center gap-8">
-        <span className="text-body-xs-regular text-text-tertiary">재난 피해 분석 체험</span>
+      <div className="mb-24 flex flex-col items-start gap-8">
+        <h2 className="text-heading-2xl text-text-primary">재난 피해 분석 체험</h2>
       </div>
 
       {/* 지도 캔버스가 컨테이너를 꽉 채워 inset-ring 을 가리므로 지도 프레임만 border 로 그린다 */}
@@ -141,15 +156,12 @@ export default function CitadelSimulator() {
         <div className="pointer-events-auto absolute bottom-0 left-0 right-0 max-h-[75%] overflow-y-auto rounded-t-lg bg-panel-bg backdrop-blur-[12px] inset-ring-1 inset-ring-border-tertiary md:bottom-auto md:left-auto md:right-12 md:top-12 md:max-h-[calc(100%-24px)] md:w-280 md:rounded-lg">
           {phase === 'draw' && (
             <div className="p-16 md:p-20">
-              <h3 className="mb-8 text-body-md-medium text-text-primary">재난 피해 분석</h3>
-              <p className="mb-16 text-body-sm-regular text-text-tertiary">
+              <h3 className="mb-8 text-heading-lg text-text-primary">재난 피해 분석</h3>
+              <p className="mb-16 text-body-sm-regular text-text-secondary">
                 피해 지역을 그려보세요. NDVI/dNBR 기반 피해 범위와 심각도가
                 시뮬레이션됩니다.
               </p>
-              <div
-                className="rounded-md px-12 py-8 text-body-xs-regular"
-                style={{ background: 'rgba(196, 92, 74, 0.12)', color: '#C45C4A' }}
-              >
+              <div className="rounded-md bg-bg-secondary px-12 py-8 text-body-sm-regular text-text-secondary">
                 왼쪽 상단 도구로 피해 지역을 그리세요
               </div>
             </div>
@@ -158,16 +170,14 @@ export default function CitadelSimulator() {
           {phase === 'analyzing' && (
             <div className="flex flex-col items-center gap-12 p-16 text-center md:p-20">
               <Spinner />
-              <p className="text-body-sm-regular text-text-tertiary">NDVI / dNBR 분석 중...</p>
+              <p className="text-body-sm-regular text-text-secondary">NDVI / dNBR 분석 중...</p>
             </div>
           )}
 
           {phase === 'result' && result && (
             <div>
               <div className="flex items-center justify-between py-8 pl-16 pr-8">
-                <span className="text-body-xs-regular" style={{ color: '#C45C4A' }}>
-                  피해 분석 결과
-                </span>
+                <h3 className="text-heading-lg text-text-primary">피해 분석 결과</h3>
                 <Button variant="text" size="sm" onClick={handleReset}>
                   초기화
                 </Button>
@@ -184,25 +194,22 @@ export default function CitadelSimulator() {
               </div>
 
               <div className="p-16">
-                {[
+                {([
                   { label: '분석 면적', value: `${fmtNum(result.areaKm2, 1)} km²` },
-                  { label: '피해 면적', value: `${fmtNum(result.affectedAreaKm2, 1)} km² (${fmtNum(result.affectedPct, 0)}%)`, color: '#C8923A' },
-                  { label: '소실 면적', value: `${fmtNum(result.burnedAreaKm2, 2)} km²`, color: '#C45C4A' },
-                  { label: '피해 건물', value: `${fmtNum(result.damagedBuildings)}동`, color: '#C45C4A' },
+                  { label: '피해 면적', value: `${fmtNum(result.affectedAreaKm2, 1)} km² (${fmtNum(result.affectedPct, 0)}%)`, tone: 'warning' },
+                  { label: '소실 면적', value: `${fmtNum(result.burnedAreaKm2, 2)} km²`, tone: 'danger' },
+                  { label: '피해 건물', value: `${fmtNum(result.damagedBuildings)}동`, tone: 'danger' },
                   { label: 'NDVI 감소', value: `${result.ndviDrop}%` },
-                  { label: '심각도', value: SEVERITY_LABELS[result.severityLevel], color: SEVERITY_COLORS[result.severityLevel] },
+                  { label: '심각도', value: SEVERITY_LABELS[result.severityLevel], tone: SEVERITY_TONE[result.severityLevel] },
                   { label: '회복 예상', value: `${result.estimatedRecoveryMonths}개월` },
                   { label: '마지막 관측', value: result.lastObservation },
-                ].map((item) => (
+                ] satisfies ResultRow[]).map((item) => (
                   <div
                     key={item.label}
                     className="flex items-center justify-between border-b border-border-tertiary py-6"
                   >
                     <span className="text-body-xs-regular text-text-tertiary">{item.label}</span>
-                    <span
-                      className="text-body-sm-medium tabular-nums text-text-primary"
-                      style={item.color ? { color: item.color } : undefined}
-                    >
+                    <span className={`text-body-sm-medium tabular-nums ${item.tone ? TONE_CLASS[item.tone] : 'text-text-primary'}`}>
                       {item.value}
                     </span>
                   </div>

@@ -99,6 +99,46 @@ NDS 에 없는 것은 기존 유지 + 위 1~3 규칙만 적용: 범위 슬라이
 `src/app/(main)/warden/**`, `src/app/(main)/climate/**`, `src/components/warden/**`, `src/components/climate/**`
 — CSS 모듈 기반 랜딩, 2026-10-08 현재 다른 세션이 활발히 수정 중. 끝난 뒤 같은 규칙으로 별도 적용.
 
+## 7. 역할 기반 재정의 (2차 패스, 2026-10-08) — §1·§0-2 보다 우선
+
+1차 패스는 "예전 크기·색 → 가장 가까운 NDS 값"으로 옮겨서, NDS 컴포넌트 옆에 EP식 위계(작은 eyebrow 섹션 제목,
+플랫폼 색 텍스트)가 남아 화면이 섞여 보였다 (사용자 지적: citadel "서비스 영역", "연소 범위 시계열 분석").
+2차 패스는 **예전 값이 아니라 요소의 역할**로 NDS 스타일을 정한다.
+
+### 7-1. 텍스트 위계 (역할 → 클래스, 예전 크기 무시)
+
+| 역할 | 클래스 | 색 |
+|---|---|---|
+| 페이지 제목 (h1, 히어로) | `text-heading-3xl md:text-display-md` | `text-text-primary` |
+| 섹션 제목 (h2 — 예전 eyebrow+밑줄 라벨 포함) | `text-heading-2xl` | `text-text-primary` |
+| 섹션 설명 (제목 아래 한두 줄) | `text-body-md-regular` | `text-text-secondary` |
+| 카드·블록 제목 (h3) | `text-heading-lg` (Card 면 `Card.Title`) | `text-text-primary` |
+| 소제목·필드 그룹 라벨 (h4) | `text-body-md-medium` | `text-text-primary` |
+| 본문 | `text-body-md-regular` (밀집 UI·패널은 `text-body-sm-regular`) | `text-text-secondary` |
+| 강조 수치·핵심 값 | `text-body-sm-medium` / 큰 지표는 `text-heading-xl` + `tabular-nums` | `text-text-primary` |
+| 메타·캡션·출처·타임스탬프 | `text-body-xs-regular` | `text-text-tertiary` |
+| 패널 내부 그룹 라벨 (사이드바 "레이어" 등, 제목이 아닌 것) | `text-body-sm-medium` | `text-text-secondary` |
+
+- **eyebrow(제목 위 작은 라벨) 를 섹션 제목처럼 쓰던 곳 → 진짜 h2 섹션 제목**(`text-heading-2xl`)으로 승격. 밑줄 장식은 제거
+  (섹션 구분이 필요하면 섹션 간 여백 또는 `<Separator />`).
+- 제목 위에 붙은 kicker(“EarthPaper · Platform” 등)는 NDS `Badge`/`StatusChip`(neutral) 로, 아니면 제거.
+- 같은 페이지에서 같은 역할은 같은 클래스 — 섹션마다 제목 크기가 다르면 안 된다.
+
+### 7-2. 텍스트 색 = NDS 텍스트 토큰만
+
+- 글자 색은 `text-text-primary/secondary/tertiary/disabled`, `text-text-interactive-*`, `text-status-*` 만.
+  **플랫폼 hex(#C45C4A·#4A9EC4·#3D5A80·#C8923A·#6B8A5E 등)를 글자 색으로 쓰지 않는다** (사용자 결정, §0-2 대체).
+  의미가 있는 수치(위험·경고·성공)는 `text-status-danger/warning/success`, 그 외는 primary.
+- 링크·강조 텍스트는 `text-text-interactive-primary`.
+- 플랫폼 색이 남아도 되는 곳: 지도·차트·범례·데이터 시각화의 색, 플랫폼을 나타내는 작은 점/마크(로고 dot, 범례 swatch),
+  일러스트 배경. 그 외 배경 틴트(`${color}15` 같은 hex+alpha 박스)도 제거하고 NDS 표면으로.
+- 같은 이유로 `rgba(27,191,168,x)` 같은 액센트 임의 틴트는 `bg-bg-interactive-selected`·`bg-status-*-subtle` 등 NDS 토큰으로.
+
+### 7-3. 점검 방법
+
+작업 후 각 파일에서 다음이 0 이어야 한다 (데이터 시각화 예외만 허용):
+`grep -nE "color: ?'#|style=\{\{[^}]*color|text-\[#|bg-\[#|rgba\(" <file>` — 남는 줄은 데이터 시각화임을 주석으로 표시.
+
 ## 6. 검증
 
 - `npx tsc --noEmit`, 관련 vitest, `npx eslint <파일>` (기존 오류 7건 외 증가 없음)

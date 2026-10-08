@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Badge, Button, Card, Separator } from '@naraspace-technology/nds/components';
+import { Badge, Button, Card, Separator, StatusChip } from '@naraspace-technology/nds/components';
 import { IconArrowRight } from '@naraspace-technology/nds/icons';
 import OtherSolutions from '@/components/landing/OtherSolutions';
 
@@ -61,18 +61,19 @@ const VERTICALS = [
   },
 ];
 
+// 검증 리포트 예시 값의 의미 색 → NDS 상태 텍스트 토큰
+const REPORT_TONE_CLASS = {
+  success: 'text-status-success',
+  warning: 'text-status-warning',
+} as const;
+
 export default function PredictPage() {
   return (
     <div className="min-h-screen bg-bg-tertiary">
       {/* Hero */}
-      <section className="mx-auto max-w-960 px-16 pb-32 pt-48 sm:px-24 sm:pb-48 sm:pt-80">
-        <div
-          className="mb-20 inline-flex items-center gap-8 rounded-full px-12 py-4"
-          style={{ background: 'rgba(74, 158, 196, 0.12)' }}
-        >
-          <span className="size-8 rounded-xs" style={{ background: '#4A9EC4' }} />
-          <span className="text-body-xs-regular text-text-tertiary">EarthPaper ·</span>
-          <span className="text-body-xs-regular" style={{ color: '#4A9EC4' }}>Predict</span>
+      <section className="mx-auto max-w-960 px-16 pb-48 pt-48 sm:px-24 sm:pb-64 sm:pt-80">
+        <div className="mb-20">
+          <StatusChip status="neutral" showIcon={false}>EarthPaper · Predict</StatusChip>
         </div>
 
         <h1 className="mb-16 text-heading-3xl text-text-primary md:text-display-md">
@@ -80,7 +81,7 @@ export default function PredictPage() {
           자산을 검증합니다
         </h1>
 
-        <p className="mb-32 max-w-[52ch] text-body-md-regular text-text-tertiary">
+        <p className="mb-32 max-w-[52ch] text-body-md-regular text-text-secondary">
           해외 태양광 발전소, 광산, 야적장 —
           위성 영상으로 자산의 존재와 상태를 원격 검증합니다.
         </p>
@@ -101,27 +102,25 @@ export default function PredictPage() {
       </section>
 
       {/* Use case */}
-      <section className="mx-auto max-w-960 px-16 pb-56 sm:px-24">
-        <h2 className="mb-8 text-body-xs-regular text-text-tertiary">
-          Use Case
-        </h2>
-        <h3 className="mb-6 text-heading-lg text-text-primary">
-          인도 라자스탄 태양광 발전소 — 원격 자산 검증
-        </h3>
-        <p className="mb-28 max-w-[64ch] text-body-sm-regular text-text-tertiary">
-          수출입은행이 인도 라자스탄의 150MW 태양광 발전소에 투자했습니다.
-          현지 실사단을 파견하는 대신, 위성 기반 검증으로 자산을 원격 관리합니다.
-        </p>
+      <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
+        <div className="mb-24 flex flex-col items-start gap-8">
+          <StatusChip status="neutral" showIcon={false}>Use Case</StatusChip>
+          <h2 className="text-heading-2xl text-text-primary">
+            인도 라자스탄 태양광 발전소 — 원격 자산 검증
+          </h2>
+          <p className="max-w-[60ch] text-body-md-regular text-text-secondary">
+            수출입은행이 인도 라자스탄의 150MW 태양광 발전소에 투자했습니다.
+            현지 실사단을 파견하는 대신, 위성 기반 검증으로 자산을 원격 관리합니다.
+          </p>
+        </div>
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-12">
           {USE_CASE_STEPS.map((step) => (
             <Card.Root key={step.n}>
               <Card.Body className="gap-8">
-                <span className="mb-4 text-body-sm-medium tabular-nums" style={{ color: '#4A9EC4' }}>
-                  {step.n}
-                </span>
-                <Card.Title render={<h4 />}>{step.title}</Card.Title>
-                <p className="text-body-sm-regular text-text-tertiary">{step.desc}</p>
+                <span className="text-body-xs-regular tabular-nums text-text-tertiary">{step.n}</span>
+                <Card.Title>{step.title}</Card.Title>
+                <p className="text-body-sm-regular text-text-secondary">{step.desc}</p>
               </Card.Body>
             </Card.Root>
           ))}
@@ -139,26 +138,23 @@ export default function PredictPage() {
       <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
         <Card.Root>
           <Card.Body className="gap-16">
-            <span className="text-body-xs-regular text-text-tertiary">검증 리포트 예시</span>
+            <Card.Title>검증 리포트 예시</Card.Title>
             <Separator />
             <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-16">
               {[
                 { label: '자산 유형', value: '태양광 발전소' },
                 { label: '위치', value: 'Rajasthan, India' },
                 { label: '용량', value: '150 MW' },
-                { label: '검증 상태', value: '가동 확인', color: '#4A9E6B' },
+                { label: '검증 상태', value: '가동 확인', tone: 'success' as const },
                 { label: '패널 면적', value: '2.4 km²' },
                 { label: '마지막 관측', value: '2026. 07. 12.' },
-                { label: '식생 침범', value: '2개 구역 탐지', color: '#C8923A' },
+                { label: '식생 침범', value: '2개 구역 탐지', tone: 'warning' as const },
                 { label: '건설 진행률', value: '100%' },
               ].map((item) => (
-                <div key={item.label}>
-                  <span className="mb-4 block text-body-xs-regular text-text-tertiary">
-                    {item.label}
-                  </span>
+                <div key={item.label} className="flex flex-col gap-4">
+                  <span className="text-body-xs-regular text-text-tertiary">{item.label}</span>
                   <span
-                    className="text-body-sm-medium tabular-nums text-text-primary"
-                    style={item.color ? { color: item.color } : undefined}
+                    className={`text-body-sm-medium tabular-nums ${item.tone ? REPORT_TONE_CLASS[item.tone] : 'text-text-primary'}`}
                   >
                     {item.value}
                   </span>
@@ -170,35 +166,32 @@ export default function PredictPage() {
       </section>
 
       {/* Verticals */}
-      <section className="mx-auto max-w-960 px-16 py-64 sm:px-24">
-        <h2 className="mb-32 border-b border-border-tertiary pb-12 text-body-xs-regular text-text-tertiary">
-          서비스 영역
-        </h2>
+      <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
+        <div className="mb-24 flex flex-col items-start gap-8">
+          <h2 className="text-heading-2xl text-text-primary">서비스 영역</h2>
+        </div>
 
-        <div className="grid gap-16">
+        <div className="grid gap-12">
           {VERTICALS.map((v) => (
             <Card.Root key={v.id}>
               <Card.Body className="gap-16">
                 <div className="flex items-center gap-12">
-                  <h3 className="flex-1 text-body-md-medium" style={{ color: '#4A9EC4' }}>{v.title}</h3>
+                  <Card.Title className="flex-1">{v.title}</Card.Title>
                   {v.badge && <Badge type="letter">{v.badge}</Badge>}
                 </div>
-                <p className="max-w-[60ch] text-body-sm-regular text-text-tertiary">{v.desc}</p>
+
+                <p className="max-w-[60ch] text-body-sm-regular text-text-secondary">{v.desc}</p>
+
                 <div className="grid grid-cols-1 gap-12 sm:grid-cols-2">
-                  <div>
-                    <span className="mb-6 block text-body-xs-regular text-text-tertiary">고객</span>
-                    <p className="text-body-sm-regular text-text-primary">{v.customers}</p>
+                  <div className="flex flex-col gap-4">
+                    <span className="text-body-xs-regular text-text-tertiary">고객</span>
+                    <Card.Content>{v.customers}</Card.Content>
                   </div>
-                  <div>
-                    <span className="mb-6 block text-body-xs-regular text-text-tertiary">산출물</span>
+                  <div className="flex flex-col gap-4">
+                    <span className="text-body-xs-regular text-text-tertiary">산출물</span>
                     <div className="flex flex-wrap gap-4">
                       {v.outputs.map((o) => (
-                        <span
-                          key={o}
-                          className="rounded-full bg-bg-secondary px-8 py-2 text-body-xs-regular text-text-primary inset-ring-1 inset-ring-border-tertiary"
-                        >
-                          {o}
-                        </span>
+                        <Badge key={o} type="letter">{o}</Badge>
                       ))}
                     </div>
                   </div>
@@ -210,13 +203,13 @@ export default function PredictPage() {
       </section>
 
       {/* Contact */}
-      <section id="contact" className="mx-auto max-w-960 px-16 pb-80 pt-64 sm:px-24">
+      <section id="contact" className="mx-auto max-w-960 px-16 pb-80 sm:px-24">
         <Card.Root>
           <Card.Body className="items-center gap-8 py-32 text-center">
-            <h2 className="text-heading-xl text-text-primary">
+            <h2 className="text-heading-2xl text-text-primary">
               검증할 자산을 등록하세요
             </h2>
-            <p className="mb-16 max-w-[44ch] text-body-sm-regular text-text-tertiary">
+            <p className="mb-16 max-w-[44ch] text-body-md-regular text-text-secondary">
               태양광 발전소, 광산, 야적장 — 자산 위치를 등록하면
               위성 관측 기반 검증 리포트가 자동으로 생성됩니다.
             </p>

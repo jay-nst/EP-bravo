@@ -6,6 +6,7 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { calculateAreaKm2, calculatePrice, validateAoi } from '@/lib/geo';
 import { createCircuitBreaker } from '@/lib/circuit-breaker';
 import type { SatelliteType, CatalogItem } from '@/types/database';
+import { Badge, Spinner } from '@naraspace-technology/nds/components';
 import { applyDarkStyleOverrides, applyLightStyleOverrides, applyLocalizedLabels } from '@/lib/map-style-overrides';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
@@ -49,7 +50,7 @@ function applyStyleOverridesFor(styleId: MapStyleId, map: mapboxgl.Map) {
   else if (styleId === 'light') applyLightStyleOverrides(map);
 }
 
-// Design tokens for map layers
+// Mapbox paint 전용 색 (카탈로그 footprint 데이터 시각화) — 글자 색 아님
 const ACCENT = '#1bbfa8';
 const ACCENT_DIM = 'rgba(27, 191, 168, 0.15)';
 const ACCENT_BORDER = 'rgba(27, 191, 168, 0.6)';
@@ -326,15 +327,24 @@ export default function EarthMap({
     <div className="relative w-full h-full">
       <div ref={mapContainer} className="w-full h-full" />
       {!isLoaded && (
+        // 지도 위 반투명 로딩 오버레이 — 아래 지도가 비쳐야 해서 반투명 배경 유지
         <div className="absolute inset-0 flex items-center justify-center bg-[rgba(14,14,16,0.5)]">
-          <p className="text-body-sm-regular text-text-tertiary">지도 로딩 중...</p>
+          <div className="flex flex-col items-center gap-12">
+            <Spinner aria-label="지도 로딩 중" />
+            <p className="text-body-sm-regular text-text-tertiary">지도 로딩 중...</p>
+          </div>
         </div>
       )}
       {isLoaded && catalogItems.length > 0 && (
-        <div className="glass-panel absolute bottom-16 left-16 rounded-full px-12 py-6 text-body-xs-regular text-text-primary">
-          <span className="text-text-interactive-primary tabular-nums">{catalogItems.length}</span>
-          개 영상 검색됨
-        </div>
+        // 지도(어두운 배경) 위 짧은 수량 표시 — Badge docs: 어두운 배경은 variant="transparent"
+        <Badge
+          type="letter"
+          status="information"
+          variant="transparent"
+          className="absolute bottom-16 left-16"
+        >
+          {catalogItems.length}개 영상 검색됨
+        </Badge>
       )}
     </div>
   );

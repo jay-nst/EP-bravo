@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { Card } from '@naraspace-technology/nds/components';
 import './tutorial.css';
 import AgentTutorialDemo from '@/components/proposals/AgentTutorialDemo';
 import { trackEvent } from '@/lib/analytics';
@@ -17,9 +18,14 @@ export default function AgentTutorialProposalPage() {
       <div className="hidden xl:block">
         <AgentTutorialDemo />
       </div>
-      <div className="xl:hidden p-32 text-center text-body-sm-regular text-text-tertiary rounded-lg bg-bg-secondary inset-ring-1 inset-ring-border-tertiary">
-        이 데모는 데스크톱 전용입니다 (최소 1280px). 더 넓은 화면에서 열어 주세요.
-      </div>
+      {/* 모바일 안내 — NDS Card 표면 (Root/Body/Content) */}
+      <Card.Root className="xl:hidden">
+        <Card.Body className="w-full text-center">
+          <Card.Content>
+            이 데모는 데스크톱 전용입니다 (최소 1280px). 더 넓은 화면에서 열어 주세요.
+          </Card.Content>
+        </Card.Body>
+      </Card.Root>
     </div>
   );
 }

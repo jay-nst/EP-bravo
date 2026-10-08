@@ -120,7 +120,7 @@ export default function TaskingPage() {
   return (
     <div className="mx-auto w-full max-w-4xl px-16 py-32">
       <div className="mb-24 flex items-center justify-between">
-        <h1 className="text-heading-3xl text-text-primary">
+        <h1 className="text-heading-3xl text-text-primary md:text-display-md">
           촬영 요청
         </h1>
         <Button
@@ -135,7 +135,7 @@ export default function TaskingPage() {
       {success && (
         <div
           role="status"
-          className="mb-16 rounded-sm bg-status-success/15 px-16 py-12 text-body-sm-regular text-status-success inset-ring-1 inset-ring-status-success/30"
+          className="mb-16 rounded-md bg-status-success-subtle px-16 py-12 text-body-sm-regular text-status-success-bold"
         >
           촬영 요청이 접수되었습니다. 검토 후 연락드리겠습니다.
         </div>
@@ -144,7 +144,7 @@ export default function TaskingPage() {
       {error && (
         <div
           role="alert"
-          className="mb-16 rounded-sm bg-status-danger/15 px-16 py-12 text-body-sm-regular text-status-danger inset-ring-1 inset-ring-status-danger/30"
+          className="mb-16 rounded-md bg-status-danger-subtle px-16 py-12 text-body-sm-regular text-status-danger-bold"
         >
           {error}
         </div>
@@ -155,7 +155,7 @@ export default function TaskingPage() {
           onFormSubmit={handleSubmit}
           className="mb-32 flex flex-col gap-16 rounded-lg bg-bg-tertiary p-24 inset-ring-1 inset-ring-border-tertiary"
         >
-          <p className="mb-8 text-body-sm-regular text-text-tertiary">
+          <p className="mb-8 text-body-md-regular text-text-secondary">
             지도에서 촬영할 영역을 그려주세요. 왼쪽 상단의 폴리곤 도구를 사용하세요.
           </p>
 
@@ -179,7 +179,7 @@ export default function TaskingPage() {
                 <Separator orientation="vertical" className="h-32" />
                 <div>
                   <span className="text-body-xs-regular text-text-tertiary">예상 가격</span>
-                  <p className="text-body-sm-medium tabular-nums text-text-interactive-primary">
+                  <p className="text-body-sm-medium tabular-nums text-text-primary">
                     ${fmtNum(aoi.price, 2)}
                   </p>
                 </div>
@@ -258,12 +258,12 @@ export default function TaskingPage() {
       {loading ? (
         <div className="flex items-center justify-center gap-8 py-32">
           <Spinner size="sm" aria-label="로딩 중" />
-          <p className="text-body-md-regular text-text-tertiary">로딩 중...</p>
+          <p className="text-body-md-regular text-text-secondary">로딩 중...</p>
         </div>
       ) : requests.length === 0 ? (
         <div className="py-64 text-center">
-          <p className="mb-8 text-body-md-regular text-text-tertiary">촬영 요청 내역이 없습니다</p>
-          <p className="text-body-sm-regular text-text-tertiary">
+          <p className="mb-8 text-heading-lg text-text-primary">촬영 요청 내역이 없습니다</p>
+          <p className="text-body-md-regular text-text-secondary">
             새 요청을 만들어 원하는 지역의 위성 촬영을 신청하세요
           </p>
         </div>
@@ -279,9 +279,9 @@ export default function TaskingPage() {
                 <Card.Body className="gap-8">
                   <div className="flex items-start justify-between">
                     <div className="space-y-4">
-                      <p className="text-body-sm-regular text-text-tertiary">
+                      <p className="text-body-sm-regular text-text-secondary">
                         요청번호:{' '}
-                        <span className="text-body-xs-regular tabular-nums text-text-primary">
+                        <span className="text-body-sm-medium tabular-nums text-text-primary">
                           {req.id.slice(0, 8)}
                         </span>
                       </p>
@@ -300,7 +300,7 @@ export default function TaskingPage() {
                     </StatusChip>
                   </div>
                   {req.notes && (
-                    <p className="rounded-md bg-bg-secondary px-12 py-8 text-body-xs-regular text-text-tertiary">
+                    <p className="rounded-md bg-bg-secondary px-12 py-8 text-body-sm-regular text-text-secondary">
                       {req.notes}
                     </p>
                   )}

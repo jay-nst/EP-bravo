@@ -67,7 +67,7 @@ export default function PaymentSuccessPage() {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-16">
         <Spinner aria-label="결제 확인 중" />
-        <p className="text-body-md-regular text-text-tertiary">결제 확인 및 영상 클리핑 처리 중...</p>
+        <p className="text-body-md-regular text-text-secondary">결제 확인 및 영상 클리핑 처리 중...</p>
         <p className="text-body-xs-regular text-text-tertiary">잠시만 기다려주세요</p>
       </div>
     );
@@ -76,13 +76,13 @@ export default function PaymentSuccessPage() {
   if (result.status === 'completed') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-16">
-        <div className="flex size-48 items-center justify-center rounded-full bg-status-success/10 text-status-success">
+        <div className="flex size-48 items-center justify-center rounded-full bg-status-success-subtle text-status-success-bold">
           <IconCheck className="size-24" />
         </div>
-        <h2 className="text-heading-xl text-text-primary">
+        <h2 className="text-heading-3xl text-text-primary">
           결제 및 클리핑 완료
         </h2>
-        <p className="text-body-sm-regular text-text-tertiary">
+        <p className="text-body-md-regular text-text-secondary">
           영상이 준비되었습니다
         </p>
         <div className="mt-16 flex gap-12">
@@ -100,13 +100,13 @@ export default function PaymentSuccessPage() {
   if (result.status === 'refunded') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-16">
-        <div className="flex size-48 items-center justify-center rounded-full bg-status-warning/10 text-status-warning">
+        <div className="flex size-48 items-center justify-center rounded-full bg-status-warning-subtle text-status-warning-bold">
           <IconAlertCircle className="size-24" />
         </div>
-        <h2 className="text-heading-xl text-text-primary">
+        <h2 className="text-heading-3xl text-text-primary">
           클리핑 실패 - 자동 환불
         </h2>
-        <p className="text-body-sm-regular text-text-tertiary">{result.message}</p>
+        <p className="text-body-md-regular text-text-secondary">{result.message}</p>
         <Button className="mt-16" render={<Link href="/map" />} nativeButton={false}>
           다시 시도하기
         </Button>
@@ -116,13 +116,13 @@ export default function PaymentSuccessPage() {
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center gap-16">
-      <div className="flex size-48 items-center justify-center rounded-full bg-status-danger/10 text-status-danger">
+      <div className="flex size-48 items-center justify-center rounded-full bg-status-danger-subtle text-status-danger-bold">
         <IconX className="size-24" />
       </div>
-      <h2 className="text-heading-xl text-text-primary">
+      <h2 className="text-heading-3xl text-text-primary">
         결제 처리 실패
       </h2>
-      <p className="text-body-sm-regular text-text-tertiary">{result.message}</p>
+      <p className="text-body-md-regular text-text-secondary">{result.message}</p>
       <Button className="mt-16" variant="outline" render={<Link href="/map" />} nativeButton={false}>
         지도로 돌아가기
       </Button>

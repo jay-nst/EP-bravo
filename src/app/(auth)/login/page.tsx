@@ -36,16 +36,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-bg-tertiary px-16">
-      {/* Subtle grid background */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: 'radial-gradient(rgba(27,191,168,0.04) 1px, transparent 1px)',
-          backgroundSize: '40px 40px',
-        }}
-      />
-      <div className="relative z-10 w-full max-w-sm space-y-32">
+    <div className="flex min-h-screen items-center justify-center bg-bg-tertiary px-16">
+      <div className="w-full max-w-sm space-y-32">
         <div className="text-center">
           <Link href="/" className="inline-flex items-center justify-center gap-10 text-heading-3xl text-text-primary">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -55,10 +47,9 @@ export default function LoginPage() {
             </svg>
             EARTHPAPER
           </Link>
-          <p className="mt-8 text-body-sm-regular text-text-tertiary">
+          <p className="mt-8 text-body-md-regular text-text-secondary">
             위성 영상 셀프서비스 포털
           </p>
-          <div className="mx-auto mt-12 h-2 w-32 rounded-xs bg-bg-interactive-primary opacity-60" />
         </div>
 
         <Form onFormSubmit={handleLogin} className="flex flex-col gap-16">
@@ -95,7 +86,7 @@ export default function LoginPage() {
           </Button>
         </Form>
 
-        <p className="text-center text-body-sm-regular text-text-tertiary">
+        <p className="text-center text-body-sm-regular text-text-secondary">
           계정이 없으신가요?{' '}
           <Link href="/signup" className="text-text-interactive-primary">
             회원가입

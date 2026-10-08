@@ -1,9 +1,7 @@
 'use client';
 
-import { Badge, Button, Card } from '@naraspace-technology/nds/components';
+import { Badge, Button, Card, StatusChip } from '@naraspace-technology/nds/components';
 import OtherSolutions from '@/components/landing/OtherSolutions';
-
-const NEXUS_COLOR = '#C8923A';
 
 const VERTICALS = [
   {
@@ -43,14 +41,9 @@ export default function NexusPage() {
   return (
     <div className="min-h-screen bg-bg-tertiary">
       {/* Hero */}
-      <section className="mx-auto max-w-960 px-16 pb-32 pt-48 sm:px-24 sm:pb-64 sm:pt-80">
-        <div
-          className="mb-20 inline-flex items-center gap-8 rounded-full px-12 py-4"
-          style={{ background: `${NEXUS_COLOR}1A` }}
-        >
-          <span className="size-8 rounded-xs" style={{ background: NEXUS_COLOR }} />
-          <span className="text-body-xs-regular text-text-tertiary">EarthPaper ·</span>
-          <span className="text-body-xs-regular" style={{ color: NEXUS_COLOR }}>Nexus</span>
+      <section className="mx-auto max-w-960 px-16 pb-48 pt-48 sm:px-24 sm:pb-64 sm:pt-80">
+        <div className="mb-20">
+          <StatusChip status="neutral" showIcon={false}>EarthPaper · Nexus</StatusChip>
         </div>
 
         <h1 className="mb-16 text-heading-3xl text-text-primary md:text-display-md">
@@ -58,7 +51,7 @@ export default function NexusPage() {
           바로 연결합니다
         </h1>
 
-        <p className="mb-32 max-w-[52ch] text-body-md-regular text-text-tertiary">
+        <p className="mb-32 max-w-[52ch] text-body-md-regular text-text-secondary">
           검색에서 다운로드까지 한 곳에서. API 자동화, 아카이브 탐색,
           산업별 맞춤 패키지로 위성 데이터를 가장 빠르게 확보하세요.
         </p>
@@ -78,16 +71,10 @@ export default function NexusPage() {
         <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-12">
           {DATA_STATS.map((s) => (
             <Card.Root key={s.label}>
-              <Card.Body>
-                <span className="mb-8 block text-body-xs-regular text-text-tertiary">
-                  {s.label}
-                </span>
-                <span className="mb-4 block text-heading-3xl tabular-nums" style={{ color: NEXUS_COLOR }}>
-                  {s.value}
-                </span>
-                <span className="text-body-xs-regular text-text-tertiary">
-                  {s.sub}
-                </span>
+              <Card.Body className="gap-8">
+                <span className="text-body-xs-regular text-text-tertiary">{s.label}</span>
+                <span className="text-heading-xl tabular-nums text-text-primary">{s.value}</span>
+                <span className="text-body-xs-regular text-text-tertiary">{s.sub}</span>
               </Card.Body>
             </Card.Root>
           ))}
@@ -95,43 +82,32 @@ export default function NexusPage() {
       </section>
 
       {/* Verticals */}
-      <section id="verticals" className="mx-auto max-w-960 px-16 py-64 sm:px-24">
-        <h2 className="mb-32 border-b border-border-tertiary pb-12 text-body-xs-regular text-text-tertiary">
-          데이터 접근 방식
-        </h2>
+      <section id="verticals" className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
+        <div className="mb-24 flex flex-col items-start gap-8">
+          <h2 className="text-heading-2xl text-text-primary">데이터 접근 방식</h2>
+        </div>
 
-        <div className="grid gap-16">
+        <div className="grid gap-12">
           {VERTICALS.map((v) => (
             <Card.Root key={v.id}>
               <Card.Body className="gap-16">
                 <div className="flex items-center gap-12">
-                  <h3 className="flex-1 text-body-md-medium" style={{ color: NEXUS_COLOR }}>{v.title}</h3>
+                  <Card.Title className="flex-1">{v.title}</Card.Title>
                   <Badge type="letter">{v.label}</Badge>
                 </div>
 
-                <p className="max-w-[60ch] text-body-sm-regular text-text-tertiary">
-                  {v.desc}
-                </p>
+                <p className="max-w-[60ch] text-body-sm-regular text-text-secondary">{v.desc}</p>
 
                 <div className="grid grid-cols-1 gap-12 sm:grid-cols-2">
-                  <div>
-                    <span className="mb-6 block text-body-xs-regular text-text-tertiary">
-                      고객
-                    </span>
-                    <p className="text-body-sm-regular text-text-primary">{v.customers}</p>
+                  <div className="flex flex-col gap-4">
+                    <span className="text-body-xs-regular text-text-tertiary">고객</span>
+                    <Card.Content>{v.customers}</Card.Content>
                   </div>
-                  <div>
-                    <span className="mb-6 block text-body-xs-regular text-text-tertiary">
-                      제공 항목
-                    </span>
+                  <div className="flex flex-col gap-4">
+                    <span className="text-body-xs-regular text-text-tertiary">제공 항목</span>
                     <div className="flex flex-wrap gap-4">
                       {v.outputs.map((o) => (
-                        <span
-                          key={o}
-                          className="rounded-full bg-bg-secondary px-8 py-2 text-body-xs-regular text-text-primary inset-ring-1 inset-ring-border-tertiary"
-                        >
-                          {o}
-                        </span>
+                        <Badge key={o} type="letter">{o}</Badge>
                       ))}
                     </div>
                   </div>
@@ -143,13 +119,13 @@ export default function NexusPage() {
       </section>
 
       {/* Contact CTA */}
-      <section id="contact" className="mx-auto max-w-960 px-16 pb-80 pt-64 sm:px-24">
+      <section id="contact" className="mx-auto max-w-960 px-16 pb-80 sm:px-24">
         <Card.Root>
           <Card.Body className="items-center gap-8 py-32 text-center">
-            <h2 className="text-heading-xl text-text-primary">
+            <h2 className="text-heading-2xl text-text-primary">
               데이터에 바로 연결하세요
             </h2>
-            <p className="mb-16 max-w-[44ch] text-body-sm-regular text-text-tertiary">
+            <p className="mb-16 max-w-[44ch] text-body-md-regular text-text-secondary">
               API 키를 발급받고 위성 영상 카탈로그에 즉시 접근하거나,
               맞춤 데이터 패키지를 상담하세요.
             </p>

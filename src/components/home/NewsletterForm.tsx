@@ -40,7 +40,7 @@ export default function NewsletterForm() {
 
   if (status === 'done') {
     return (
-      <p className="text-body-sm-regular text-text-interactive-primary py-8">
+      <p className="text-body-sm-regular text-status-success py-8">
         구독 완료! 매주 위성 뉴스를 보내드릴게요.
       </p>
     );

@@ -59,6 +59,7 @@ const EMD_SCORE_STOPS: [number, string][] = [
   [68, '#1bbfa8'],
 ];
 
+// color: 레이어 고유색 — 지도 레이어·범례 스와치에만 쓰는 데이터 시각화 색 (글자 색 아님, §7-2 예외)
 const INITIAL_LAYERS: GyeonggiLayer[] = [
   {
     id: 'access-contour',
@@ -359,10 +360,10 @@ export default function GyeonggiPage() {
               if (p) {
                 const radius = baseRadiusM({ sclsfNm: p.sclsfNm, areaM2: p.areaM2 });
                 sections.push(`
-                  <div style="font-weight:600;margin-bottom:6px">${p.sclsfNm} <span style="opacity:.6;font-weight:400">${p.sggNm}</span></div>
-                  <div>면적 <b>${areaLabel(p.areaM2)}</b></div>
-                  <div>기본 서비스 반경 <b>${fmtNum(radius)}</b> m <span style="opacity:.6">(평가 가중 전)</span></div>
-                  <div style="opacity:.6;margin-top:4px;font-size:11px">${p.uid}</div>`);
+                  <div class="mb-6 text-body-sm-medium text-text-primary">${p.sclsfNm} <span class="text-body-xs-regular text-text-tertiary">${p.sggNm}</span></div>
+                  <div>면적 <span class="text-body-sm-medium text-text-primary tabular-nums">${areaLabel(p.areaM2)}</span></div>
+                  <div>기본 서비스 반경 <span class="text-body-sm-medium text-text-primary tabular-nums">${fmtNum(radius)}</span> m <span class="text-text-tertiary">(평가 가중 전)</span></div>
+                  <div class="mt-4 text-body-xs-regular text-text-tertiary">${p.uid}</div>`);
               }
             }
           } catch {
@@ -375,8 +376,8 @@ export default function GyeonggiPage() {
         if (contourHits.length > 0) {
           const p = contourHits[0].properties as { label: string; min: number; max: number | null };
           sections.push(`
-            <div style="font-weight:600;margin-bottom:2px">공원 접근성 <b style="color:#7FE8D2">${p.label}</b></div>
-            <div style="opacity:.7;font-size:12px">영향 지수 ${p.min}${p.max !== null ? `~${p.max}` : ' 이상'}</div>`);
+            <div class="mb-2 text-body-sm-medium text-text-primary">공원 접근성 <span class="text-body-sm-medium text-text-interactive-primary">${p.label}</span></div>
+            <div class="text-body-xs-regular text-text-tertiary">영향 지수 ${p.min}${p.max !== null ? `~${p.max}` : ' 이상'}</div>`);
         }
 
         // 읍면동 평가
@@ -393,19 +394,20 @@ export default function GyeonggiPage() {
             benefitRate: number;
           };
           sections.push(`
-            <div style="font-weight:600;margin-bottom:6px">${p.sigunNm}${p.sggNm ? ` ${p.sggNm}` : ''} ${p.emdNm}</div>
-            <div>종합평가 <b>${p.score}</b>점 · <b>${p.rank}</b>위/${EMD_COUNT}</div>
-            <div>1인당 공원녹지 <b>${p.perCapita}</b> ㎡</div>
-            <div>공원녹지율 <b>${p.greenRate}</b> %</div>
-            <div>서비스 수혜인구 <b>${p.benefitRate}</b> %</div>`);
+            <div class="mb-6 text-body-sm-medium text-text-primary">${p.sigunNm}${p.sggNm ? ` ${p.sggNm}` : ''} ${p.emdNm}</div>
+            <div>종합평가 <span class="text-body-sm-medium text-text-primary tabular-nums">${p.score}</span>점 · <span class="text-body-sm-medium text-text-primary tabular-nums">${p.rank}</span>위/${EMD_COUNT}</div>
+            <div>1인당 공원녹지 <span class="text-body-sm-medium text-text-primary tabular-nums">${p.perCapita}</span> ㎡</div>
+            <div>공원녹지율 <span class="text-body-sm-medium text-text-primary tabular-nums">${p.greenRate}</span> %</div>
+            <div>서비스 수혜인구 <span class="text-body-sm-medium text-text-primary tabular-nums">${p.benefitRate}</span> %</div>`);
         }
 
         if (sections.length === 0) return;
 
         const el = document.createElement('div');
-        el.style.cssText = 'font-size:13px;line-height:1.6;color:#E8E4DF';
+        // 팝업 글자는 NDS 텍스트 토큰 (본문 secondary, 값 primary, 메타 tertiary). 데이터 색 없음
+        el.className = 'text-body-sm-regular text-text-secondary';
         el.innerHTML = sections.join(
-          '<div style="border-top:1px solid rgba(232,228,223,0.12);margin:8px 0"></div>',
+          '<div class="my-8 border-t border-border-tertiary"></div>',
         );
 
         void import('mapbox-gl').then((mod) => {
@@ -532,13 +534,10 @@ export default function GyeonggiPage() {
 
       {/* 상단 헤더 */}
       <div
-        className="pointer-events-none absolute top-0 right-0 left-0 z-10 flex items-center gap-16 px-16 py-12"
-        style={{
-          background: 'linear-gradient(to bottom, rgba(14,14,16,0.9), rgba(14,14,16,0))',
-        }}
+        className="pointer-events-none absolute top-0 right-0 left-0 z-10 flex items-center gap-16 bg-linear-to-b from-bg-tertiary/90 to-transparent px-16 py-12"
       >
         <div className="pointer-events-auto">
-          <h1 className="text-body-md-medium text-text-primary">경기 공원 접근성 지도</h1>
+          <h1 className="text-heading-3xl text-text-primary">경기 공원 접근성 지도</h1>
           <p className="mt-2 flex flex-wrap items-center gap-6 text-body-xs-regular text-text-tertiary tabular-nums">
             {/* 기준일 고정 공식 통계 — '통계' 배지와 같은 information */}
             <StatusChip status="information">평가 기준 {CRTR_LABEL}</StatusChip>
@@ -577,7 +576,7 @@ export default function GyeonggiPage() {
           <GyeonggiLayerPanel layers={layers} onToggle={handleToggle} />
 
           <div className="border-t border-border-tertiary pt-16">
-            <h3 className="mb-8 text-body-xs-regular text-text-tertiary">배경 지도</h3>
+            <h3 className="mb-8 text-body-sm-medium text-text-secondary">배경 지도</h3>
             <div className="flex gap-6">
               {DEFAULT_STYLE_IDS.map((id) => (
                 <Button
@@ -597,7 +596,7 @@ export default function GyeonggiPage() {
 
           {showContourLegend && (
             <div className="border-t border-border-tertiary pt-16">
-              <h3 className="mb-8 text-body-xs-regular text-text-tertiary">접근성 등급</h3>
+              <h3 className="mb-8 text-body-sm-medium text-text-secondary">접근성 등급</h3>
               <div className="space-y-4">
                 {ACCESS_LEVELS.map((lv, i) => (
                   <div key={lv.label} className="flex items-center gap-8">
@@ -608,7 +607,7 @@ export default function GyeonggiPage() {
                     />
                     <span className="text-body-xs-regular text-text-tertiary">
                       {lv.label}
-                      <span className="opacity-70 tabular-nums"> ≥ {lv.min}</span>
+                      <span className="tabular-nums"> ≥ {lv.min}</span>
                     </span>
                   </div>
                 ))}
@@ -622,7 +621,7 @@ export default function GyeonggiPage() {
 
           {showEmdLegend && (
             <div className="border-t border-border-tertiary pt-16">
-              <h3 className="mb-8 text-body-xs-regular text-text-tertiary">읍면동 종합점수</h3>
+              <h3 className="mb-8 text-body-sm-medium text-text-secondary">읍면동 종합점수</h3>
               {/* 범례 램프 — 지도 데이터 색 */}
               <div
                 className="mb-4 h-8 rounded-xs"
@@ -639,7 +638,7 @@ export default function GyeonggiPage() {
 
           {/* 시군 순위표 */}
           <div className="border-t border-border-tertiary pt-16">
-            <h3 className="mb-8 text-body-xs-regular text-text-tertiary">시군 평가 순위</h3>
+            <h3 className="mb-8 text-body-sm-medium text-text-secondary">시군 평가 순위</h3>
             <ol className="max-h-224 space-y-2 overflow-y-auto pr-4">
               {SIGUN_PARK_SCORES.map((s, i) => (
                 <li key={s.code}>
@@ -651,13 +650,7 @@ export default function GyeonggiPage() {
                     onClick={() => flyToSigun(s.lng, s.lat)}
                   >
                     <span className="flex w-full items-center gap-8 text-left tabular-nums">
-                      <span
-                        className={`w-20 shrink-0 text-right ${
-                          i < 3 ? 'text-text-interactive-primary' : 'text-text-tertiary'
-                        }`}
-                      >
-                        {i + 1}
-                      </span>
+                      <span className="w-20 shrink-0 text-right">{i + 1}</span>
                       <span className="flex-1 truncate">{s.name}</span>
                       <span className="text-text-tertiary">{s.score.toFixed(1)}</span>
                     </span>
@@ -696,10 +689,7 @@ export default function GyeonggiPage() {
 
       {/* 지도 하단 크레딧 */}
       <div
-        className="pointer-events-none absolute right-0 bottom-0 z-10 max-w-full px-12 py-6 text-right text-body-xs-regular text-text-tertiary md:max-w-[60%]"
-        style={{
-          background: 'linear-gradient(to top, rgba(14,14,16,0.85), rgba(14,14,16,0))',
-        }}
+        className="pointer-events-none absolute right-0 bottom-0 z-10 max-w-full bg-linear-to-t from-bg-tertiary/85 to-transparent px-12 py-6 text-right text-body-xs-regular text-text-tertiary md:max-w-[60%]"
       >
         출처: {GYEONGGI_SOURCE_PROVIDERS.join(' · ')} · 상세는 좌측 패널
       </div>
@@ -707,8 +697,7 @@ export default function GyeonggiPage() {
       {/* 모바일 사이드바 스크림 — 버튼 모양이 아닌 배경 클릭 영역이라 NDS Button 대상이 아니다 */}
       {sidebarOpen && (
         <button
-          className="absolute inset-0 z-10 md:hidden"
-          style={{ background: 'rgba(0,0,0,0.5)' }}
+          className="absolute inset-0 z-10 bg-black/60 md:hidden"
           onClick={() => setSidebarOpen(false)}
           aria-label="닫기"
         />
