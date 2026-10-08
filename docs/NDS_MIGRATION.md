@@ -119,10 +119,36 @@ node scripts/nds-verify.mjs <변환 전 커밋>
 
 자동 검증이 다루지 않는 것: 브라우저 렌더링 자체 → 배포 후 육안 확인.
 
-## 다음 단계
+1단계 운영 배포: 2026-10-08 (master `597a0fd`).
 
-- **2단계** — 공통 UI 를 NDS 컴포넌트로 교체 (Button, Input, Badge, Dialog, Tooltip, Tabs …).
-  `<body>` 안에 `<div className="isolate">` 포털 래퍼 추가 (NDS README). 지도 상단바 수제 재현
-  (`BeforeAfterSlider` `MapTopBars`) → NDS `Badge`/`Input`/`Button`/아이콘.
-- **3단계** — 페이지별: 인라인 style·EP 별칭·Tailwind 기본 글자 크기를 NDS 토큰/타이포 스케일로.
-  다 옮기면 EP 별칭과 typography/shadow 재등록 블록 제거.
+## 2단계 — 공통 UI → NDS 컴포넌트
+
+**정본 원칙:** 피그마에서 옮긴 기존 EP 규칙과 NDS 가 다르면 **NDS 를 따른다** (사용자 결정 2026-10-08).
+이 단계부터 화면이 바뀐다 — NDS 표준 모양으로 맞춰지는 것이 의도된 변화다.
+
+결정 (2026-10-08):
+
+| 항목 | 결정 |
+|---|---|
+| 강조 CTA (EP 민트 채움 버튼) | **NDS 기본 `solid`** — 회색 바탕, hover/active 때 민트. EP 민트 채움 CTA 는 없어진다 |
+| 버튼·입력 모양 | **NDS 표준 그대로** — Button `rounded-xl`(32px), Input `rounded-lg`(24px) + 1px inset ring |
+| 진행 | `feat/nds-phase2` 브랜치, 묶음별 커밋 → :3001 미리보기 육안 확인 → master |
+
+| # | 묶음 | 현재 | NDS | 규모 |
+|---|---|---|---|---|
+| 0 | 기반 | — | 루트 레이아웃 `<div className="isolate">` 포털 래퍼 | 1 |
+| 1 | **참조 구현** | `LeadCaptureModal` | `Dialog` + `Field`/`Input` + `Button` → CLAUDE.md 참조 패턴 등록 | 1 |
+| 2 | 버튼 | `<button>` 60개 | `Button` (solid/outline/text, iconOnly) | 30 파일 |
+| 3 | 폼 | input 16 · textarea 3 · select 2 | `Input`/`Textarea`/`Select` + `Field` | 8 파일 |
+| 4 | 모달 | `SignupConversionModal`, core 오버레이 | `Dialog` | 2 파일 |
+| 5 | 배지·칩 | 레이어 패널 LIVE/DEMO/통계 배지, 튜토리얼 `MapTopBars` | `Badge`/`StatusChip`/`Input`/`Button` | ~6 파일 |
+| 6 | 로딩 | spin 5 · pulse 4 | `Spinner`/`Skeleton` | 7 파일 |
+| 7 | 탭·아이콘 | `PostCuration` 탭, 인라인 SVG 14 | `Tabs`, NDS 아이콘(같은 모양만) | ~10 파일 |
+
+NDS 에 대응이 없어 유지: range 슬라이더 2, 알림 드롭다운(Popover/Menu 없음), Mapbox 컨트롤,
+튜토리얼 전체화면 스테이지. 카드는 3단계.
+
+## 3단계 — 페이지별 마무리
+
+인라인 style·EP 별칭·Tailwind 기본 글자 크기·`rounded-[12px]` 등 피그마 시절 값을 NDS 토큰/타이포 스케일로.
+카드 → `Card`. 다 옮기면 EP 별칭과 typography/shadow 재등록 블록 제거.
