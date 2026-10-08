@@ -11,7 +11,8 @@ const SOLUTIONS = [
 ] as const;
 
 interface OtherSolutionsProps {
-  current: typeof SOLUTIONS[number]['key'];
+  /** 현재 페이지의 솔루션 — 목록에서 제외. 솔루션 페이지가 아니면 생략 */
+  current?: typeof SOLUTIONS[number]['key'];
 }
 
 export default function OtherSolutions({ current }: OtherSolutionsProps) {

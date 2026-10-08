@@ -138,6 +138,21 @@ export default function Header() {
             >
               EP Agent
             </Link>
+
+            <Link
+              href="/climate"
+              className="px-12 py-10 text-sm rounded-[6px] transition-colors"
+              style={{
+                color: pathname.startsWith('/climate')
+                  ? 'var(--accent)'
+                  : 'var(--text-muted)',
+                background: pathname.startsWith('/climate')
+                  ? 'var(--surface-elevated)'
+                  : 'transparent',
+              }}
+            >
+              기후 인텔리전스
+            </Link>
           </nav>
         </div>
 
@@ -207,6 +222,18 @@ export default function Header() {
               }}
             >
               EP Agent
+            </Link>
+
+            <Link
+              href="/climate"
+              className="flex items-center px-24 py-12 text-sm transition-colors"
+              style={{
+                color: pathname.startsWith('/climate')
+                  ? 'var(--accent)'
+                  : 'var(--text)',
+              }}
+            >
+              기후 인텔리전스
             </Link>
 
             <div style={{ padding: '8px 24px 4px', marginTop: 4, borderTop: '1px solid var(--border)' }}>
