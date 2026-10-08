@@ -64,8 +64,8 @@ export default function MethaneSection() {
             <span className={s.eyebrow}>왜 메탄인가</span>
             <h2 className={s.h2}>보이지 않지만,<br />가장 빨리 줄일 수 있는 온실가스.</h2>
             <p className={`${s.lead} ${s.narrow}`}>
-              메탄은 이산화탄소보다 훨씬 강하게 지구를 데웁니다. 대신 대기에 머무는 시간이 짧아서,
-              새는 곳을 찾아 막으면 효과가 <strong>바로</strong> 나타납니다.
+              이산화탄소보다 훨씬 강한 온실효과. 대신 대기 중 체류 기간이 짧아
+              배출원을 찾아 줄이면 감축 효과도 <strong>빠르게</strong> 확인
             </p>
           </div>
           <div className={`${s.specs} ${s.specs4}`}>
@@ -87,11 +87,10 @@ export default function MethaneSection() {
       <section className={`${s.tile} ${s.tileAlt}`}>
         <div className={s.inner}>
           <div className={s.center} data-reveal="">
-            <span className={s.eyebrow}>어떻게 찾나</span>
-            <h2 className={s.h2}>빛 속에 남은<br />메탄의 흔적을 읽습니다.</h2>
+            <span className={s.eyebrow}>관측 원리</span>
+            <h2 className={s.h2}>빛의 파장으로<br />찾아내는 메탄.</h2>
             <p className={`${s.lead} ${s.narrow}`}>
-              햇빛이 지표에 반사돼 위성으로 돌아오는 길에 메탄을 지나면, 특정 파장만 약해집니다.
-              초분광 센서는 그 차이를 잡아냅니다.
+              지표에서 반사된 햇빛이 메탄을 지나면 특정 파장만 약해지는 원리. 초분광 센서로 그 차이 포착
             </p>
           </div>
 
@@ -119,7 +118,7 @@ export default function MethaneSection() {
         <div className={s.inner}>
           <div className={s.center} style={{ marginBottom: 56 }} data-reveal="">
             <span className={s.eyebrow}>NarSha</span>
-            <h2 className={s.h2}>메탄 구름이 아니라,<br />새는 곳을 알려줍니다.</h2>
+            <h2 className={s.h2}>누출 시설까지,<br />정확하게.</h2>
           </div>
           <div className={s.grid2}>
             {METHANE_ADVANTAGES.map((a, i) => (
@@ -136,8 +135,8 @@ export default function MethaneSection() {
       <section className={`${s.tile} ${s.tileAlt}`}>
         <div className={s.inner}>
           <div className={s.center} style={{ marginBottom: 56 }} data-reveal="">
-            <span className={s.eyebrow}>누가 쓰나</span>
-            <h2 className={s.h2}>메탄 위험은<br />업종마다 다릅니다.</h2>
+            <span className={s.eyebrow}>활용 분야</span>
+            <h2 className={s.h2}>업종마다<br />다른 메탄 위험.</h2>
           </div>
           <div className={s.grid2}>
             {METHANE_INDUSTRIES.map((ind, i) => (
@@ -162,9 +161,9 @@ export default function MethaneSection() {
         <div className={s.inner}>
           <div className={s.center} data-reveal="">
             <span className={s.eyebrow}>규제</span>
-            <h2 className={s.h2}>측정하지 못하면<br />줄일 수 없습니다.</h2>
+            <h2 className={s.h2}>감축의 시작은<br />측정.</h2>
             <p className={`${s.lead} ${s.narrow}`}>
-              주요국은 이미 메탄을 숫자로 보고하라고 요구합니다. 자체 보고만으로는 부족하고, 독립적인 검증 데이터가 필요해졌습니다.
+              주요국은 이미 메탄 배출량의 수치 보고를 의무화. 자체 보고를 넘어 독립 검증 데이터가 필요한 시점
             </p>
           </div>
           <div className={s.specs}>
@@ -184,7 +183,7 @@ export default function MethaneSection() {
         <div className={s.inner}>
           <div className={s.center} style={{ marginBottom: 56 }} data-reveal="">
             <h2 className={s.h2}>NarSha 제원.</h2>
-            <p className={`${s.lead} ${s.narrow}`}>경기샛-2A·2B가 같은 플랫폼을 씁니다.</p>
+            <p className={`${s.lead} ${s.narrow}`}>경기샛-2A·2B와 동일한 플랫폼</p>
           </div>
           <div className={s.grid3}>
             {NARSHA_SPECS.map((g, i) => (

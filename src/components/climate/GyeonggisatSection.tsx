@@ -23,12 +23,12 @@ export default function GyeonggisatSection({ alt = false }: GyeonggisatSectionPr
         <div className={`${s.inner} ${s.center}`}>
           <span className={s.eyebrow} data-reveal="">새 위성 · 궤도에서 {days}일째</span>
           <h2 className={s.hero} data-reveal="" style={revealDelay(100)}>
-            경기샛-2A.<br />
-            메탄을 보는 위성.
+            경기샛-2A,<br />
+            메탄 배출원을 찾는 위성.
           </h2>
           <p className={`${s.lead} ${s.narrow}`} data-reveal="" style={revealDelay(200)}>
-            국내 최초의 메탄 관측 위성입니다. 초분광 센서가 지표면에서 반사된 빛을 아주 좁은 파장으로 쪼개고,
-            메탄이 빛을 삼키는 파장을 찾아 <strong>어디서 새는지</strong> 알아냅니다.
+            국내 최초 메탄 관측 위성. 초분광 센서로 지표면 반사광을 파장별로 나눠 관측하고
+            메탄 흡수 파장을 분석해 <strong>배출 위치</strong>까지 탐지
           </p>
 
           {/* eslint-disable-next-line @next/next/no-img-element */}

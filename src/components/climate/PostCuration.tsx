@@ -20,9 +20,9 @@ export default function PostCuration() {
     <section id="posts" className={`${s.tile} ${s.tileAlt}`}>
       <div className={s.inner}>
         <div className={s.center} data-reveal="">
-          <h2 className={s.h2}>위성이 기록한 기후.</h2>
+          <h2 className={s.h2}>위성으로 분석한 기후 사례.</h2>
           <p className={`${s.lead} ${s.narrow}`}>
-            EarthPaper가 직접 분석한 산불, 홍수, 산림, 식량 이야기입니다.
+            EarthPaper가 직접 분석한 산불·홍수·산림·식량 사례
           </p>
         </div>
 

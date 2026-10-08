@@ -15,10 +15,9 @@ export default function SatelliteSection() {
       <div className={s.inner}>
         <div className={s.center} style={{ marginBottom: 64 }} data-reveal="">
           <span className={s.eyebrow}>우리 위성</span>
-          <h2 className={s.h2}>위성을 직접 만들고,<br />띄우고, 운용합니다.</h2>
+          <h2 className={s.h2}>위성 개발부터 운용까지,<br />모두 자체 기술로.</h2>
           <p className={`${s.lead} ${s.narrow}`}>
-            기후 데이터는 남의 위성을 빌려 쓰면 원하는 날, 원하는 곳을 볼 수 없습니다.
-            나라스페이스는 16U 초소형 위성을 설계부터 관제까지 직접 합니다.
+            외부 위성에 의존하면 원하는 날짜·지역의 데이터 확보 불가. 16U 초소형 위성 설계부터 관제까지 자체 수행
           </p>
         </div>
 
@@ -36,7 +35,7 @@ export default function SatelliteSection() {
         </div>
 
         <h3 className={s.h3} style={{ marginTop: 96, marginBottom: 24 }} data-reveal="">
-          궤도 위의 위성과 다음 위성
+          운용 중인 위성과 발사 예정 위성
         </h3>
         <ol className={s.fleet}>
           {FLEET.map((sat, i) => (

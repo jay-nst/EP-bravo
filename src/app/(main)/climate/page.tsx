@@ -24,7 +24,7 @@ export default function ClimatePage() {
       <LocalNav />
 
       <a href="#methane" className={s.notice}>
-        경기샛-2A, 궤도에 올랐습니다. 국내 최초 메탄 관측 위성<span>자세히 보기 ›</span>
+        경기샛-2A 궤도 진입 성공 · 국내 최초 메탄 관측 위성<span>자세히 보기 ›</span>
       </a>
 
       {/* Hero */}
@@ -33,11 +33,11 @@ export default function ClimatePage() {
           <span className={s.eyebrow} data-reveal="">나라스페이스 기후 인텔리전스</span>
           <h1 className={s.hero} data-reveal="" style={revealDelay(120)}>
             지구의 변화,<br />
-            우주에서 먼저 봅니다.
+            우주에서 먼저.
           </h1>
           <p className={`${s.lead} ${s.narrow}`} data-reveal="" style={revealDelay(240)}>
-            메탄이 새는 곳, 산불이 지나간 자리, 바뀌는 땅. 나라스페이스가 만든 위성과 AI가
-            기후 문제를 <strong>숫자로</strong> 보여줍니다.
+            메탄 배출원, 산불 피해 지역, 개발로 바뀌는 땅까지. 나라스페이스 자체 위성과 AI로 관측해
+            <strong>수치로</strong> 제시
           </p>
           <div className={s.actions} data-reveal="" style={revealDelay(360)}>
             <a href="#contact" className={s.pill}>도입 문의</a>
@@ -61,8 +61,8 @@ export default function ClimatePage() {
       <section id="dashboards" className={s.tile}>
         <div className={s.inner}>
           <div className={s.center} style={{ marginBottom: 56 }}>
-            <h2 className={s.h2} data-reveal="">지금 돌아가는 기후 지도.</h2>
-            <p className={`${s.lead} ${s.narrow}`}>공공데이터와 위성 분석을 합쳐 지자체가 바로 쓰는 지도로 만들었습니다.</p>
+            <h2 className={s.h2} data-reveal="">운영 중인 기후 지도.</h2>
+            <p className={`${s.lead} ${s.narrow}`}>공공데이터와 위성 분석을 결합한 지자체 실무용 지도</p>
           </div>
           <div className={s.grid2}>
             {CLIMATE_DASHBOARDS.map((d, i) => (
@@ -81,9 +81,9 @@ export default function ClimatePage() {
       {/* Contact */}
       <section id="contact" className={`${s.tile} ${s.tileAlt}`}>
         <div className={`${s.inner} ${s.center}`}>
-          <h2 className={s.hero} data-reveal="">어디를 봐야 할지<br />알려주세요.</h2>
+          <h2 className={s.hero} data-reveal="">관측이 필요한 곳,<br />어디든.</h2>
           <p className={`${s.lead} ${s.narrow}`} data-reveal="" style={revealDelay(120)}>
-            메탄 배출원, 재난 피해, 토지 변화. 관심 있는 지역과 목적을 알려주시면 맞는 위성과 분석을 제안드립니다.
+            메탄 배출원부터 재난 피해, 토지 변화까지. 관심 지역과 목적에 맞는 위성·분석 제안
           </p>
           <div className={s.actions}>
             <a href="mailto:support@naraspace.com" className={s.pill}>도입 문의</a>

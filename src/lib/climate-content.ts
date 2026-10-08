@@ -19,15 +19,15 @@ export const GG2A_LAUNCH_KST = new Date('2026-10-02T03:32:00+09:00');
 
 export const GG2A_SPECS = [
   { value: '25', unit: 'm', label: '공간해상도' },
-  { value: '10×10', unit: 'km', label: '한 번에 찍는 면적' },
+  { value: '10×10', unit: 'km', label: '1회 촬영 범위' },
   { value: '100', unit: 'kg/h', label: '이상 배출원 탐지' },
 ] as const;
 
 export const LAUNCH_SEQUENCE = [
-  { key: '10월 2일 03:32', title: '발사', detail: '반덴버그 우주군기지에서 SpaceX Falcon 9(Transporter-18)에 실려 올라갔습니다.' },
-  { key: '55분 뒤', title: '궤도 분리', detail: '태양동기궤도에서 정상적으로 떨어져 나왔습니다.' },
-  { key: '같은 날', title: '첫 교신', detail: '나라스페이스 본사 관제센터와 양방향 교신에 성공했습니다.' },
-  { key: '지금', title: '점검과 검보정', detail: '본체와 탑재체를 점검하고 있습니다. 끝나면 본격적으로 메탄을 관측합니다.' },
+  { key: '10월 2일 03:32', title: '발사', detail: '반덴버그 우주군기지에서 SpaceX Falcon 9(Transporter-18)로 발사' },
+  { key: '55분 뒤', title: '궤도 분리', detail: '태양동기궤도 정상 분리' },
+  { key: '같은 날', title: '첫 교신', detail: '나라스페이스 본사 관제센터와 양방향 교신 성공' },
+  { key: '지금', title: '점검과 검보정', detail: '본체·탑재체 점검 중. 완료 후 메탄 관측 본격 착수' },
 ] as const;
 
 export const GG2A_NOTES = [
@@ -47,7 +47,7 @@ export const FLEET = [
     launch: '2023.11',
     status: 'live' as const,
     statusLabel: '운용 중',
-    desc: '국내 최초 상업용 초소형 관측 위성. 포천 산사태 지역을 찍어 피해 범위와 복구 현황 파악에 썼습니다.',
+    desc: '국내 최초 상업용 초소형 관측 위성. 포천 산사태 지역 촬영으로 피해 범위·복구 현황 파악',
   },
   {
     id: 'gg1',
@@ -56,7 +56,7 @@ export const FLEET = [
     launch: '2025.11',
     status: 'live' as const,
     statusLabel: '운용 중',
-    desc: '지자체 최초 기후 위성. 고도 약 500 km에서 한 번에 14 × 40 km를 찍습니다. 2026년 3월 첫 영상 공개.',
+    desc: '지자체 최초 기후 위성. 고도 약 500 km, 1회 촬영 범위 14 × 40 km. 2026년 3월 첫 영상 공개',
   },
   {
     id: 'gg2a',
@@ -65,7 +65,7 @@ export const FLEET = [
     launch: '2026.10',
     status: 'new' as const,
     statusLabel: '초기 운영 중',
-    desc: '국내 최초 메탄 관측 위성. 산업단지·발전소·매립지의 메탄 배출원을 찾습니다.',
+    desc: '국내 최초 메탄 관측 위성. 산업단지·발전소·매립지 메탄 배출원 탐지',
   },
   {
     id: 'gg2b',
@@ -74,7 +74,7 @@ export const FLEET = [
     launch: '2027',
     status: 'planned' as const,
     statusLabel: '발사 예정',
-    desc: '2A와 같은 곳을 더 자주 보도록 함께 돕니다.',
+    desc: '2A와 함께 운용해 같은 지역 관측 빈도 확대',
   },
   {
     id: 'narsha',
@@ -83,7 +83,7 @@ export const FLEET = [
     launch: '구축 중',
     status: 'planned' as const,
     statusLabel: '군집 구축 중',
-    desc: '경기샛-2A·2B와 같은 플랫폼의 자체 메탄 군집. 2026.02 CEOS 공식 포털 등재.',
+    desc: '경기샛-2A·2B와 같은 플랫폼의 자체 메탄 군집. 2026.02 CEOS 공식 포털 등재',
   },
 ] as const;
 
@@ -91,35 +91,35 @@ export const BUILD_PHOTOS = [
   {
     src: '/climate/observer-bus.jpg',
     alt: '나라스페이스 16U 초소형 관측 위성 실물',
-    title: '만듭니다',
-    desc: '16U 초소형 위성 버스를 직접 설계하고 조립합니다.',
+    title: '제작',
+    desc: '16U 초소형 위성 버스 자체 설계·조립',
   },
   {
     src: '/climate/cleanroom.jpg',
     alt: '클린룸에서 위성을 조립하는 연구원',
-    title: '시험합니다',
-    desc: '클린룸에서 조립하고, 발사 전 환경시험을 거칩니다.',
+    title: '테스트',
+    desc: '클린룸 조립과 발사 전 환경시험',
   },
   {
     src: '/climate/mission-control.jpg',
     alt: '나라스페이스 본사 위성관제센터',
-    title: '운용합니다',
-    desc: '본사 관제센터에서 위성과 교신하고 촬영 계획을 짭니다.',
+    title: '운용',
+    desc: '본사 관제센터에서 위성 교신·촬영 계획 수립',
   },
 ] as const;
 
 // ── 토지 변화 (경기샛-1 · Observer-1A) ─────────────────────────────
 
 export const LAND_USES = [
-  { title: '벼 재배지 모니터링', desc: '벼 재배지가 어디에 얼마나 있는지 계절마다 확인합니다.' },
-  { title: '개발제한구역 변화', desc: '개발제한구역의 불법 훼손과 휴경지를 찾아냅니다.' },
-  { title: '토지 이용 현황', desc: '도시 밀집 지역과 녹지, 항만과 해안선 구조를 구분합니다.' },
-  { title: '홍수 · 산사태 피해', desc: '같은 곳을 반복 촬영해 피해 범위와 복구 진행을 따라갑니다.' },
+  { title: '벼 재배지 모니터링', desc: '벼 재배지 위치·면적 계절별 확인' },
+  { title: '개발제한구역 변화', desc: '개발제한구역 불법 훼손·휴경지 탐지' },
+  { title: '토지 이용 현황', desc: '도시 밀집 지역과 녹지, 항만·해안선 구조 구분' },
+  { title: '홍수 · 산사태 피해', desc: '같은 지역 반복 촬영으로 피해 범위·복구 진행 추적' },
 ] as const;
 
 export const LAND_FACTS = [
   { value: '1.5', unit: 'm', label: '공간해상도' },
-  { value: '14×40', unit: 'km', label: '한 번에 찍는 면적' },
+  { value: '14×40', unit: 'km', label: '1회 촬영 범위' },
   { value: '500', unit: 'km', label: '촬영 고도' },
 ] as const;
 
@@ -135,37 +135,37 @@ export const METHANE_FACTS = [
 export const METHANE_HOW = [
   {
     num: '01',
-    title: '빛을 150갈래로 쪼갭니다',
-    desc: '단파적외선(SWIR) 1625–1670 nm 구간을 150개 채널, 0.6 nm 간격으로 나눠 봅니다.',
+    title: '150개 채널 분광',
+    desc: '단파적외선(SWIR) 1625–1670 nm 구간을 150개 채널, 0.6 nm 간격으로 분해 관측',
   },
   {
     num: '02',
-    title: '메탄이 삼킨 파장을 읽습니다',
-    desc: '메탄은 정해진 파장의 빛만 흡수합니다. 그 흡수 깊이로 농도를 계산합니다. 정밀도 50 ppb.',
+    title: '메탄 흡수 파장 분석',
+    desc: '메탄은 특정 파장의 빛만 흡수. 흡수 깊이로 농도 산출, 정밀도 50 ppb',
   },
   {
     num: '03',
-    title: '어느 시설인지 짚습니다',
-    desc: '함께 찍은 12.5 m 가시광 영상에 메탄 플룸을 겹쳐 배출 시설을 특정하고, 시간당 배출량을 추정합니다.',
+    title: '배출 시설 특정',
+    desc: '함께 촬영한 12.5 m 가시광 영상에 메탄 플룸을 겹쳐 배출 시설 특정, 시간당 배출량 추정',
   },
 ] as const;
 
 export const METHANE_ADVANTAGES = [
   {
-    title: '시설 단위로 찾습니다',
-    desc: '시간당 100 kg 수준의 국지적 배출까지 탐지합니다. 넓은 메탄 구름이 아니라 의심 시설 하나로 좁혀 줍니다.',
+    title: '시설 단위 탐지',
+    desc: '시간당 100 kg 수준의 국지적 배출까지 탐지. 넓게 퍼진 메탄 구름 속 의심 시설 한 곳 식별',
   },
   {
-    title: '간헐적 누출도 놓치지 않습니다',
-    desc: '군집으로 같은 곳을 자주 봅니다. 목표는 하루 최대 5회 관측. 잠깐 샜다 멈추는 누출까지 따라갑니다.',
+    title: '간헐적 누출 포착',
+    desc: '군집 운용으로 같은 지역 하루 최대 5회 관측 목표. 잠시 새다 멈추는 누출까지 포착',
   },
   {
     title: '도시부터 해상 플랫폼까지',
-    desc: '복잡한 산업단지와, 기존 위성이 보기 어려운 해상 플랫폼까지 관측 모드를 바꿔 가며 봅니다.',
+    desc: '복잡한 산업단지부터 기존 위성으로 관측이 어려운 해상 플랫폼까지, 관측 모드 전환으로 모니터링',
   },
   {
-    title: '받자마자 쓸 수 있는 데이터',
-    desc: '위성에서 바로 구름을 걸러내고 압축해 내려보냅니다. 원시 영상이 아니라 분석 결과와 리포트로 받습니다.',
+    title: '바로 쓰는 분석 데이터',
+    desc: '위성에서 구름 탐지·제거와 압축 후 전송. 원본 영상 대신 분석 결과와 리포트로 제공',
   },
 ] as const;
 
@@ -173,26 +173,26 @@ export const METHANE_INDUSTRIES = [
   {
     id: 'energy',
     title: '석유 · 가스 · 에너지',
-    problem: '넓게 퍼진 파이프라인과 설비의 누출은 제품 손실과 규제 위험으로 이어집니다.',
-    solution: '파이프라인, 벤팅, 플레어링 누출을 일찍 찾고 반복 관측으로 규제 기한 안에 고칠 수 있게 돕습니다.',
+    problem: '넓게 분포한 파이프라인·설비의 누출은 제품 손실과 규제 위험으로 직결',
+    solution: '파이프라인, 벤팅, 플레어링 누출 조기 발견. 반복 관측으로 규제 기한 내 보수 지원',
   },
   {
     id: 'gov',
     title: '지자체 · 스마트시티',
-    problem: '탄소중립을 선언해도 복잡한 도시와 산업단지의 실제 배출량은 기존 데이터로 잡기 어렵습니다.',
-    solution: '경기샛-2A·2B로 도시 규모 배출을 직접 관측하고, 독립적인 MRV 데이터를 만듭니다.',
+    problem: '탄소중립 선언만으로는 부족한 배출량 파악. 복잡한 도시·산업단지의 실제 배출은 기존 데이터로 측정 한계',
+    solution: '경기샛-2A·2B로 도시 규모 배출을 직접 관측해 독립적인 MRV 데이터 생산',
   },
   {
     id: 'finance',
     title: '금융 · ESG 투자',
-    problem: '기업이 스스로 공시한 숫자만으로는 실제 환경 위험을 가늠하기 어렵습니다.',
-    solution: '제3자 위성 데이터로 실제 배출을 검증하고, 전 세계 가스 시설의 가동 변화를 먼저 읽습니다.',
+    problem: '기업 자체 공시만으로는 실제 환경 위험 판단에 한계',
+    solution: '제3자 위성 데이터로 실제 배출 검증, 전 세계 가스 시설 가동 변화 선제 파악',
   },
   {
     id: 'waste',
     title: '폐기물 · 매립지',
-    problem: '매립지 메탄은 민원과 규제 위험을 만들고, 기온과 날씨에 따라 계속 바뀝니다.',
-    solution: '매립지 안에서 메탄이 몰리는 구역을 찾아 포집 효율을 높이고, 연중 변화를 추적합니다.',
+    problem: '매립지 메탄은 민원·규제 위험의 원인. 기온·날씨에 따라 배출량도 계속 변동',
+    solution: '매립지 내 메탄 집중 구역을 찾아 포집 효율 개선, 연중 변화 추적',
   },
 ] as const;
 
@@ -237,25 +237,25 @@ export const SOLUTIONS = [
   {
     id: 'methane',
     title: '메탄 · 온실가스 MRV',
-    desc: '산업단지, 발전소, 매립지에서 나오는 메탄을 시설 단위로 찾아 배출량을 잽니다. 통계 추정 대신 위성 관측값으로 검증합니다.',
+    desc: '산업단지·발전소·매립지 메탄을 시설 단위로 탐지해 배출량 측정. 통계 추정 대신 위성 관측값으로 검증',
     link: { label: '경기샛-2A 보기', href: '#methane' },
   },
   {
     id: 'disaster',
     title: '기후재난 대응',
-    desc: '산불, 홍수, 산사태가 나면 그 지역을 바로 찍고 피해 범위와 심각도를 AI가 계산합니다.',
+    desc: '산불·홍수·산사태 발생 시 해당 지역 즉시 촬영, AI로 피해 범위와 심각도 산출',
     link: { label: 'EP Agent 보기', href: '#agent' },
   },
   {
     id: 'forest',
     title: '산림 · 토지 변화',
-    desc: '산림 같은 탄소흡수원과 벼 재배지, 휴경지의 변화를 따라가고 개발제한구역 불법 훼손을 찾아냅니다.',
+    desc: '산림 등 탄소흡수원과 벼 재배지·휴경지 변화 모니터링, 개발제한구역 불법 훼손 탐지',
     link: { label: '토지 변화 보기', href: '#land' },
   },
   {
     id: 'platform',
     title: '지자체 기후 플랫폼',
-    desc: '관측과 분석 결과를 지자체 기후 플랫폼에 쌓습니다. 도민은 우리 동네 기후 정보를 보고, 행정은 정책 근거로 씁니다.',
+    desc: '관측·분석 결과를 지자체 기후 플랫폼에 축적. 도민에게는 지역 기후 정보로, 행정에는 정책 근거로 제공',
     link: { label: '기후 지도 보기', href: '#dashboards' },
   },
 ] as const;
@@ -263,15 +263,15 @@ export const SOLUTIONS = [
 export const AGENT_STEPS = [
   {
     num: '01',
-    title: '물어보면 분석합니다.',
-    desc: '화재 전후 영상을 찾아 dNBR로 피해 면적과 심각도를 계산하고, 지도 위에 겹쳐 보여줍니다.',
+    title: '질문 즉시 분석',
+    desc: '화재 전후 영상 검색, dNBR 기반 피해 면적·심각도 계산, 지도 위 중첩 표시',
     image: '/proposals/agent-tutorial/step2-result.png',
     alt: 'EP Agent 채팅에서 산불 피해 분석 결과와 전후 비교 지도가 표시된 화면',
   },
   {
     num: '02',
-    title: '보고서로 정리합니다.',
-    desc: '사건 배경, 피해 현황, 심각도 분포를 담은 분석 아티클을 쓰고 PDF로 내려받을 수 있습니다.',
+    title: '보고서 자동 작성',
+    desc: '사건 배경·피해 현황·심각도 분포를 담은 분석 아티클 작성, PDF 다운로드 가능',
     image: '/proposals/agent-tutorial/step4-article.png',
     alt: 'EP Agent가 작성한 산타로사섬 산불 분석 아티클 화면',
   },
@@ -310,7 +310,7 @@ export const CURATED_POSTS: CuratedPost[] = [
     id: 'santa-rosa',
     category: 'wildfire',
     title: 'Santa Rosa Island 산불 확산 및 피해 범위 위성 추적',
-    desc: '시계열로 비교해 불탄 범위와 번진 경로를 계산했습니다.',
+    desc: '시계열 비교로 연소 범위와 확산 경로 산출',
     location: 'California, USA',
     thumbnail: `${S3}/54/Thumbnail-santa-rosa-island-wildfire-satellite-analysis.png`,
     href: `${EP}/santa-rosa-island-wildfire-satellite-analysis`,
@@ -319,7 +319,7 @@ export const CURATED_POSTS: CuratedPost[] = [
     id: 'patagonia',
     category: 'wildfire',
     title: '2026 파타고니아 산불 피해 분석 (64,468ha)',
-    desc: 'dNBR로 피해 등급을 나누고 번지는 속도를 쟀습니다.',
+    desc: 'dNBR 기반 피해 등급 구분과 확산 속도 측정',
     location: 'Patagonia, Chile',
     thumbnail: `${S3}/39/Thumbnail-2026-patagonia-wildfire-damage-analysis-64468ha-satellite-severity-spread-rate.png`,
     href: `${EP}/2026-patagonia-wildfire-damage-analysis-64468ha-satellite-severity-spread-rate`,
@@ -328,7 +328,7 @@ export const CURATED_POSTS: CuratedPost[] = [
     id: 'gwangyang',
     category: 'wildfire',
     title: '2026 전남 광양 산불 분석 (NDMI, dNBR)',
-    desc: '피해 범위와 산림이 얼마나 말랐는지 지수로 봤습니다.',
+    desc: '피해 범위와 산림 건조도 지수 분석',
     location: '전남 광양시',
     thumbnail: `${S3}/33/Thumbnail-2026-gwangyang-wildfire-ndmi-dnbr-analysis.png`,
     href: `${EP}/2026-gwangyang-wildfire-ndmi-dnbr-analysis`,
@@ -337,7 +337,7 @@ export const CURATED_POSTS: CuratedPost[] = [
     id: 'jamaica',
     category: 'flood',
     title: '자메이카 홍수 피해 위성영상 분석',
-    desc: '통신과 도로가 끊긴 곳의 피해 면적과 복구 순서를 짚었습니다.',
+    desc: '통신·도로가 끊긴 지역의 피해 면적 분석과 복구 우선순위 제시',
     location: 'Jamaica',
     thumbnail: `${S3}/46/Thumbnail-disaster-impact-jamaica-flood-damage-satellite-imagery.png`,
     href: `${EP}/disaster-impact-jamaica-flood-damage-satellite-imagery`,
@@ -346,7 +346,7 @@ export const CURATED_POSTS: CuratedPost[] = [
     id: 'akosombo',
     category: 'flood',
     title: '가나 Akosombo 댐 방류 및 Volta강 홍수 확산 분석',
-    desc: '긴급 방류 뒤 강 유역이 얼마나 잠겼는지 따라갔습니다.',
+    desc: '긴급 방류 이후 강 유역 침수 범위 추적',
     location: 'Ghana',
     thumbnail: `${S3}/41/Thumbnail-satellite-analysis-akosombo-dam-release-volta-river-flood-ghana.png`,
     href: `${EP}/satellite-analysis-akosombo-dam-release-volta-river-flood-ghana`,
@@ -355,7 +355,7 @@ export const CURATED_POSTS: CuratedPost[] = [
     id: 'raja-ampat',
     category: 'forest',
     title: 'Raja Ampat 니켈 채굴 허가 취소 후 산림 변화',
-    desc: '허가가 취소된 뒤 산림 손실이 정말 멈췄는지 확인했습니다.',
+    desc: '허가 취소 이후 산림 손실 중단 여부 검증',
     location: 'Raja Ampat, Indonesia',
     thumbnail: `${S3}/51/Thumbnail-indonesia-raja-ampat-nickel-mining-permits-forest-loss.png`,
     href: `${EP}/indonesia-raja-ampat-nickel-mining-permits-forest-loss`,
@@ -364,7 +364,7 @@ export const CURATED_POSTS: CuratedPost[] = [
     id: 'corn',
     category: 'agri',
     title: '미국 옥수수 수확량 예측 (97% 정확도 모델)',
-    desc: 'Corn Belt 수확량을 위성으로 예측했습니다.',
+    desc: '위성 기반 Corn Belt 수확량 예측',
     location: 'US Corn Belt',
     thumbnail: `${S3}/28/Thumbnail-corn-belt-yield-model-97pct-accuracy-satellite-forecast.png`,
     href: `${EP}/2025-us-corn-yield-prediction`,
@@ -373,7 +373,7 @@ export const CURATED_POSTS: CuratedPost[] = [
     id: 'cocoa',
     category: 'agri',
     title: '글로벌 초콜릿 가격 급등 — 코코아 작황 위성 분석',
-    desc: '서아프리카 코코아 산지의 작황을 지켜봤습니다.',
+    desc: '서아프리카 코코아 산지 작황 모니터링',
     location: 'West Africa',
     thumbnail: `${S3}/14/Thumbnail-global-chocolate-prices-soar-amid-plummeting-cocoa-stocks.png`,
     href: `${EP}/global-chocolate-prices-soar-amid-plummeting-cocoa-stocks`,
@@ -384,12 +384,12 @@ export const CLIMATE_DASHBOARDS = [
   {
     href: '/gyeonggi',
     label: '경기 공원 접근성 지도',
-    desc: '경기기후플랫폼 데이터로 읍면동 600곳의 공원 접근성을 봅니다.',
+    desc: '경기기후플랫폼 데이터 기반 읍면동 600곳 공원 접근성 분석',
   },
   {
     href: '/seoul',
     label: '서울 도시 기후 대시보드',
-    desc: '초미세먼지, 대기환경지수, S-DoT 기온을 실시간으로 봅니다.',
+    desc: '초미세먼지·대기환경지수·S-DoT 기온 실시간 확인',
   },
 ] as const;
 

@@ -9,10 +9,9 @@ export default function AgentShowcase() {
       <div className={s.inner}>
         <div className={s.center} style={{ marginBottom: 72 }} data-reveal="">
           <span className={s.eyebrow}>EP Agent</span>
-          <h2 className={s.hero}>물어보면,<br />위성이 답합니다.</h2>
+          <h2 className={s.hero}>질문 하나로<br />위성 분석까지.</h2>
           <p className={`${s.lead} ${s.narrow}`}>
-            “이 산불, 피해가 얼마나 돼?” 한 문장이면 됩니다. 영상을 찾고, 전후를 비교하고, 피해를 계산해
-            보고서까지 씁니다. GIS 전문가가 없어도 됩니다.
+            “이 산불, 피해가 얼마나 돼?” 질문 한 문장으로 영상 검색, 전후 비교, 피해 계산, 보고서 작성까지. GIS 전문 인력 없이도 가능
           </p>
           <div className={s.actions}>
             <Link href="/proposals/agent-tutorial" className={s.pill}>데모 체험하기</Link>
