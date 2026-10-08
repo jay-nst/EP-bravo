@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { DAMAGE_PANEL } from '@/lib/agent-tutorial-steps';
+import { DAMAGE_PANEL, MAP_TOP_BARS } from '@/lib/agent-tutorial-steps';
 
 interface BeforeAfterSliderProps {
   beforeSrc: string;
@@ -157,19 +157,9 @@ export default function BeforeAfterSlider({
         </div>
       </div>
 
-      {/* 라벨 칩 */}
-      <span
-        className="absolute px-2 py-1 rounded text-xs font-mono pointer-events-none"
-        style={{ bottom: '2%', left: '32%', background: 'rgba(14,14,16,0.8)', color: '#E8E4DF' }}
-      >
-        {beforeLabel}
-      </span>
-      <span
-        className="absolute bottom-3 right-3 px-2 py-1 rounded text-xs font-mono pointer-events-none"
-        style={{ background: 'rgba(14,14,16,0.8)', color: '#E8E4DF' }}
-      >
-        {afterLabel}
-      </span>
+      {/* 지도 상단 UI — 실서비스 현행 디자인 재현 (장식용, 조작 불가).
+          캡쳐의 옛 통합 바(검색+비교 겹침)는 이미지에서 지웠다 */}
+      <MapTopBars />
 
       {/* '산불 피해 보기' 패널 — 실캡쳐 위치·색 실측값으로 DOM 재현 (불투명도 실동작) */}
       <div
@@ -244,4 +234,74 @@ export default function BeforeAfterSlider({
 
 function easeInOut(t: number): number {
   return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+}
+
+// 실서비스의 지도 상단 UI 재현: 좌상단 검색 박스 + 상단 중앙 비교 알약.
+// 색·배치는 라이브 번들 실측값 (MAP_TOP_BARS 주석 참조). 장식용이라
+// pointer-events 를 받지 않는다 — 클릭/드래그는 비교 슬라이더로 통과.
+function MapTopBars() {
+  const { search, compare, colors: c } = MAP_TOP_BARS;
+  const badge = (bg: string, fg: string): React.CSSProperties => ({
+    background: bg,
+    color: fg,
+    borderRadius: '999px',
+    padding: '0.1em 0.65em',
+    fontSize: '0.86em',
+    fontWeight: 600,
+    lineHeight: 1.45,
+  });
+  return (
+    <div className="pointer-events-none" aria-hidden>
+      {/* 검색 박스 */}
+      <div
+        className="absolute flex items-center"
+        style={{
+          left: `${search.rect.x}%`,
+          top: `${search.rect.y}%`,
+          width: `${search.rect.w}%`,
+          height: `${search.rect.h}%`,
+          background: c.bg,
+          borderRadius: '0.6em',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.35)',
+          padding: '0 0.9em',
+          gap: '0.6em',
+          color: c.icon,
+        }}
+      >
+        <svg viewBox="0 0 24 24" width="1.1em" height="1.1em" fill="none" aria-hidden>
+          <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.8" />
+          <path d="M16 16L20.5 20.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+        <span>{search.placeholder}</span>
+      </div>
+
+      {/* 비교 알약 — Before/After 배지 + 날짜 + ⓘ + ✕ */}
+      <div
+        className="absolute flex items-center"
+        style={{
+          left: '50%',
+          top: `${compare.top}%`,
+          transform: 'translateX(-50%)',
+          background: c.bg,
+          borderRadius: '999px',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.35)',
+          padding: '0.32em 0.6em 0.32em 0.9em',
+          gap: '0.75em',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        <span className="flex items-center" style={{ gap: '0.4em' }}>
+          <span style={badge(c.infoBold, c.infoSubtle)}>{compare.beforeLabel}</span>
+          <span style={{ color: c.text, fontWeight: 500 }}>{compare.beforeDate}</span>
+        </span>
+        <span style={{ color: c.icon }}>→</span>
+        <span className="flex items-center" style={{ gap: '0.4em' }}>
+          <span style={badge(c.dangerBold, c.dangerSubtle)}>{compare.afterLabel}</span>
+          <span style={{ color: c.text, fontWeight: 500 }}>{compare.afterDate}</span>
+        </span>
+        <span style={{ color: c.icon, fontSize: '1.05em' }}>ⓘ</span>
+        <span style={{ color: c.icon, fontSize: '1.05em' }}>✕</span>
+      </div>
+    </div>
+  );
 }

@@ -242,6 +242,35 @@ export const COMPARE_ASSETS = {
   afterLabel: '화재 후 2026-06-09',
 } as const;
 
+// 지도 상단 UI — 실서비스(agent.ep.naraspace.com) 현행 디자인과 동일하게 DOM 재현
+// (2026-10-08 라이브 번들 실측: 검색 박스 absolute top-20 left-20 w-[280px],
+// 비교 알약 top-20 중앙 rounded-full + Before/After solid 배지, 토큰
+// --status-info-bold #0d336e / --status-danger-bold #791716).
+// 캡쳐에 구워져 있던 옛 통합 바(검색+비교 겹침, 피그마 댓글 1943233805)는
+// 이미지에서 지웠다. 좌표는 지도 크롭(940×944) 기준 %.
+export const MAP_TOP_BARS = {
+  search: {
+    rect: { x: 2.13, y: 2.12, w: 29.8, h: 4.24 }, // 20,20,280,40 px
+    placeholder: '지역을 검색하세요',
+  },
+  compare: {
+    top: 2.12,
+    beforeLabel: 'Before',
+    afterLabel: 'After',
+    beforeDate: '2026-04-20',
+    afterDate: '2026-06-09',
+  },
+  colors: {
+    bg: '#101f2f',
+    infoBold: '#0d336e',
+    infoSubtle: '#cce4fe',
+    dangerBold: '#791716',
+    dangerSubtle: '#f8d8d8',
+    icon: '#8fa0b3',
+    text: '#e7ebef',
+  },
+} as const;
+
 // '산불 피해 보기' 패널 — 실캡쳐 픽셀 실측 (map-after.png, 지도 크롭 940×944 기준 %).
 // 불투명도 슬라이더를 직접 조작할 수 있도록 DOM 으로 재현한다.
 export const DAMAGE_PANEL = {
