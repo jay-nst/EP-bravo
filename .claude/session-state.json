@@ -1,8 +1,9 @@
 {
-  "timestamp": "2026-09-29T18:50:00+09:00",
-  "branch": "feat/gyeonggi-parks",
-  "last_commit": "5daa574",
+  "timestamp": "2026-10-08T18:40:00+09:00",
+  "branch": "feat/order-tutorial",
+  "last_commit": "a4f317c (feat/order-tutorial) / 배포: master 02b0d3f",
   "completed_tasks": [
+    "구매 튜토리얼 제안 데모 (2026-10-08) — 커밋 a4f317c(feat/order-tutorial), master 02b0d3f 로 이식(TaskingSim 렌더 테스트 제외) 후 192.168.127.13 배포, /proposals/order-tutorial HTTP 200",
     "Agent 튜토리얼 피그마 디자인 리뷰 반영 (2026-09-29, 미커밋) — 피그마 댓글 9건(EUNJI CHOI, 2026-09-28) 중 8건 코드 반영",
     "  - 스텝 분리: map-compare(다음 버튼 진행) + open-article(버튼 하이라이트 클릭) → 총 6스텝, 테스트 소프트 상한 6으로 갱신",
     "  - 팝오버 위치: popoverSide/popoverAlign 스펙 추가 — open-article 은 버튼 위, analysis-article 은 PDF 저장 근처 오른쪽",
@@ -73,6 +74,7 @@
   ],
   "in_progress": [],
   "remaining_tasks": [
+    "구매 튜토리얼: NDS 2단계가 master 에 들어오면 TaskingSim.test.tsx 이식 / 헤더 탭 여부 / 사용자 육안 QA 피드백",
     "Agent 튜토리얼: Clarity 최근 30일 수치 3개 확보 → steps.ts CLARITY_METRICS value 채우기 (도입부 '수치 입력 대기' 해제)",
     "Agent 튜토리얼: 배포 완료 (2026-09-28, master 4f14b11 → 192.168.127.13:3000, 헤더 EP Agent 탭). 승인자 회람만 남음",
     "T1: Feed API → Supabase 실 데이터 연동 (스키마 설계 선행 필요)",
@@ -85,8 +87,9 @@
     "Supabase 인스턴스 연결 불가 (fetch failed) — /api/events, /api/catalog/search 500. /seoul 은 Supabase 비의존이라 영향 없음",
     "DATA_GO_KR_AWS_KEY 미작동 — AWS 기상 레이어가 목업으로 폴백"
   ],
-  "test_status": "vitest 150개 테스트 통과 (15 파일), typecheck·eslint 통과",
+  "test_status": "vitest 187 통과 (scripts/nds-codemod.test.ts 는 base 부터 로드 실패, 무관), tsc·eslint 클린",
   "decisions_made": [
+    "구매 튜토리얼: 실캡쳐 기반(DOM 재현 기각), 궤도 조회 빈 결과라 Tasking 궤도 이후만 소스 기반 재현, 예시 일정 표시 (사용자 결정 2026-10-08)",
     "DEM maxzoom 12 채택 — 실제 팔레트(shadow alpha 0.36, highlight 투명)에서 서울/설악산 z14 육안 비교 결과 차이 미미. 단 기본 hillshade 페인트에서는 오버줌 음영이 뚜렷하게 뭉툭해지므로 팔레트를 바꾸면 재검토할 것",
     "서울 데모는 Core 복제가 아닌 기후 전용 슬림 페이지로 구성 (결제/AOI구매 제외)",
     "단기예보·AWS기상 레이어는 서울 내 지점이 3개/6개뿐이라 서울 페이지에서 제외",
