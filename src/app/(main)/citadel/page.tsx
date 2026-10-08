@@ -652,7 +652,7 @@ export default function CitadelPage() {
             정기 관측부터 재난 대응 SLA까지 맞춤 시나리오를 구성합니다.
           </p>
           <a
-            href="mailto:contact@earthpaper.space"
+            href="mailto:support@naraspace.com"
             className="ep-cta"
             style={{
               display: 'inline-flex',

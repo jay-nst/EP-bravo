@@ -126,27 +126,21 @@ export default function WardenSimulator() {
 
   return (
     <section style={{ padding: '0 24px 64px', maxWidth: 960, margin: '0 auto' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-        <span
-          style={{
-            fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: 13,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: 'var(--text-muted)',
-          }}
-        >
-          EUDR 스크리닝 체험
-        </span>
+      <div style={{ textAlign: 'center', marginBottom: 32 }}>
+        <h3 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', color: '#f5f5f7', marginBottom: 8 }}>
+          직접 그려보세요.
+        </h3>
+        <p style={{ fontSize: 17, lineHeight: 1.5, color: '#86868b' }}>
+          칼리만탄 지도 위에 공급 농지를 그리면 산림전용 판정을 미리 볼 수 있습니다.
+        </p>
       </div>
 
       <div
         className="h-[320px] md:h-[480px]"
         style={{
           position: 'relative',
-          borderRadius: 8,
+          borderRadius: 20,
           overflow: 'hidden',
-          border: '1px solid var(--border)',
         }}
       >
         <EarthMap
@@ -191,12 +185,11 @@ export default function WardenSimulator() {
               </p>
               <div
                 style={{
-                  padding: '8px 12px',
-                  borderRadius: 6,
-                  background: 'rgba(107, 138, 94, 0.12)',
-                  fontSize: 12,
-                  color: '#6B8A5E',
-                  fontFamily: "'IBM Plex Mono', monospace",
+                  padding: '8px 14px',
+                  borderRadius: 980,
+                  background: 'rgba(27, 191, 168, 0.12)',
+                  fontSize: 13,
+                  color: '#1bbfa8',
                 }}
               >
                 왼쪽 상단 도구로 영역을 그리세요
@@ -212,7 +205,7 @@ export default function WardenSimulator() {
                   height: 32,
                   margin: '0 auto 12px',
                   border: '2px solid var(--border)',
-                  borderTopColor: '#6B8A5E',
+                  borderTopColor: '#1bbfa8',
                   borderRadius: '50%',
                   animation: 'warden-spin 1s linear infinite',
                 }}
@@ -236,11 +229,8 @@ export default function WardenSimulator() {
               >
                 <span
                   style={{
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: 12,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    color: '#6B8A5E',
+                    fontSize: 15,
+                    color: '#f5f5f7',
                     fontWeight: 600,
                   }}
                 >
@@ -284,10 +274,8 @@ export default function WardenSimulator() {
                   >
                     <span
                       style={{
-                        fontFamily: "'IBM Plex Mono', monospace",
-                        fontSize: 12,
-                        color: 'var(--text-muted)',
-                        letterSpacing: '0.04em',
+                        fontSize: 13,
+                        color: '#86868b',
                       }}
                     >
                       {row.label}
@@ -314,10 +302,10 @@ export default function WardenSimulator() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    borderRadius: 6,
-                    background: '#6B8A5E',
-                    color: '#fff',
-                    fontSize: 14,
+                    borderRadius: 980,
+                    background: '#1bbfa8',
+                    color: '#000',
+                    fontSize: 15,
                     fontWeight: 500,
                     border: 'none',
                     cursor: 'pointer',
@@ -336,15 +324,13 @@ export default function WardenSimulator() {
 
       <p
         style={{
-          fontFamily: "'IBM Plex Mono', monospace",
           fontSize: 12,
-          color: 'var(--text-muted)',
-          marginTop: 12,
-          letterSpacing: '0.04em',
+          color: '#86868b',
+          marginTop: 16,
+          textAlign: 'center',
         }}
       >
-        시뮬레이션 데이터입니다. 실 서비스에서는 Sentinel-2 위성영상 기반으로
-        분석됩니다.
+        시뮬레이션 데이터 · 실서비스는 Sentinel-2 위성영상 기반 분석
       </p>
 
       <style>{`
@@ -357,7 +343,7 @@ export default function WardenSimulator() {
         open={showLeadForm}
         onClose={() => setShowLeadForm(false)}
         vertical="warden"
-        accentColor="#6B8A5E"
+        accentColor="#1bbfa8"
       />
     </section>
   );

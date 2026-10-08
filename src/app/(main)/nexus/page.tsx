@@ -220,7 +220,7 @@ export default function NexusPage() {
             맞춤 데이터 패키지를 상담하세요.
           </p>
           <a
-            href="mailto:contact@earthpaper.space"
+            href="mailto:support@naraspace.com"
             className="ep-cta"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,

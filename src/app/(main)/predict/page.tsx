@@ -303,7 +303,7 @@ export default function PredictPage() {
             위성 관측 기반 검증 리포트가 자동으로 생성됩니다.
           </p>
           <a
-            href="mailto:contact@earthpaper.space"
+            href="mailto:support@naraspace.com"
             className="ep-cta"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '12px 28px', borderRadius: 8, background: '#4A9EC4', color: '#fff', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}
           >
