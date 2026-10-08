@@ -9,6 +9,10 @@ import {
 import s from './climate.module.css';
 import { revealDelay } from './useScrollReveal';
 
+const CEO_QUOTE =
+  '“최근 위성 기반 글로벌 메탄 배출량 데이터가 탄소 배출권 시장, 에너지 안보 측면에서 높은 가치와 희소성을 지니는 만큼, 경기샛과 향후 발사를 준비 중인 자체 메탄 관측 위성군 ‘나르샤(NarSha)’를 통해 우주 데이터 주권 확립과 환경 데이터 시장을 주도하는 데 기여할 것”';
+const QUOTE_WORDS = CEO_QUOTE.split(' ');
+
 /** 메탄 흡수 개념도 — 실측 스펙트럼 아님. 1625–1670 nm 구간에 흡수선이 파인 모양만 표현 */
 function SpectrumDiagram() {
   const W = 880;
@@ -32,12 +36,12 @@ function SpectrumDiagram() {
   const peakX = toX(1665.6);
 
   return (
-    <figure className={s.diagram} data-reveal="zoom">
+    <figure className={s.diagram} data-reveal="">
       <svg viewBox={`0 0 ${W} ${H + 40}`} role="img" aria-label="메탄 흡수선 개념도: 1625에서 1670 나노미터 구간에서 메탄이 특정 파장의 빛을 흡수해 신호가 움푹 파인다">
         <line x1={x0} x2={x1} y1={H + 4} y2={H + 4} stroke="rgba(255,255,255,0.15)" />
-        <polyline points={pts.join(' ')} fill="none" stroke="#f5f5f7" strokeWidth="2" strokeLinejoin="round" />
-        <line x1={peakX} x2={peakX} y1={base - 10} y2={H + 4} stroke="#1bbfa8" strokeDasharray="3 4" />
-        <text x={peakX - 8} y={base - 18} textAnchor="end" fill="#1bbfa8" fontSize="15" fontWeight="600">
+        <polyline className={s.specLine} pathLength={1} points={pts.join(' ')} fill="none" stroke="#f5f5f7" strokeWidth="2" strokeLinejoin="round" />
+        <line className={s.specMark} x1={peakX} x2={peakX} y1={base - 10} y2={H + 4} stroke="#1bbfa8" strokeDasharray="3 4" />
+        <text className={s.specMark} x={peakX - 8} y={base - 18} textAnchor="end" fill="#1bbfa8" fontSize="15" fontWeight="600">
           1665.6 nm 메탄 흡수선
         </text>
         {[1625, 1640, 1655, 1670].map((nm) => (
@@ -72,7 +76,7 @@ export default function MethaneSection() {
             {METHANE_FACTS.map((f, i) => (
               <div key={f.label} className={s.spec} data-reveal="" style={revealDelay(i * 100)}>
                 <span className={s.specValue}>
-                  {f.value}
+                  <span data-count={f.value}>{f.value}</span>
                   <span className={s.specUnit}>{f.unit}</span>
                 </span>
                 <span className={s.specLabel}>{f.label}</span>
@@ -169,7 +173,7 @@ export default function MethaneSection() {
           <div className={s.specs}>
             {METHANE_REGULATIONS.map((r, i) => (
               <div key={r.label} className={s.spec} data-reveal="" style={revealDelay(i * 120)}>
-                <span className={s.specValue}>{r.value}</span>
+                <span className={s.specValue}><span data-count={r.value}>{r.value}</span></span>
                 <span className={s.specLabel} style={{ display: 'block', color: 'var(--w-text)', marginBottom: 6 }}>{r.label}</span>
                 <span className={s.specLabel} style={{ fontSize: 13 }}>{r.detail}</span>
               </div>
@@ -207,10 +211,17 @@ export default function MethaneSection() {
       {/* 인용 */}
       <section className={s.tile}>
         <figure className={`${s.narrow} ${s.center}`} style={{ margin: '0 auto', maxWidth: 860 }}>
-          <blockquote className={s.quote} data-reveal="">
-            “최근 위성 기반 글로벌 메탄 배출량 데이터가 탄소 배출권 시장, 에너지 안보 측면에서 높은 가치와
-            희소성을 지니는 만큼, 경기샛과 향후 발사를 준비 중인 자체 메탄 관측 위성군 ‘나르샤(NarSha)’를 통해
-            우주 데이터 주권 확립과 환경 데이터 시장을 주도하는 데 기여할 것”
+          {/* 스크롤에 따라 단어가 차례로 밝아짐 */}
+          <blockquote
+            className={`${s.quote} ${s.quoteWords}`}
+            data-progress="through"
+            style={{ '--n': QUOTE_WORDS.length } as React.CSSProperties}
+          >
+            {QUOTE_WORDS.map((w, i) => (
+              <span key={i} style={{ '--i': i } as React.CSSProperties}>
+                {w}{i < QUOTE_WORDS.length - 1 ? ' ' : ''}
+              </span>
+            ))}
           </blockquote>
           <figcaption className={s.body}>박재필 · 나라스페이스 대표</figcaption>
         </figure>

@@ -35,15 +35,15 @@ export default function GyeonggisatSection({ alt = false }: GyeonggisatSectionPr
           <img
             src="/warden/narsha-render.png"
             alt="태양전지판을 펼친 NarSha 플랫폼 메탄 관측 위성 렌더 이미지"
-            className={s.render}
-            data-reveal="zoom"
+            className={`${s.render} ${s.renderScrub}`}
+            data-progress="enter"
           />
 
           <div className={s.specs}>
             {GG2A_SPECS.map((sp, i) => (
               <div key={sp.label} className={s.spec} data-reveal="" style={revealDelay(i * 120)}>
                 <span className={s.specValue}>
-                  {sp.value}
+                  <span data-count={sp.value}>{sp.value}</span>
                   <span className={s.specUnit}>{sp.unit}</span>
                 </span>
                 <span className={s.specLabel}>{sp.label}</span>

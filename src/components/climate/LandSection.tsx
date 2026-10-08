@@ -19,7 +19,7 @@ export default function LandSection() {
           {LAND_FACTS.map((f, i) => (
             <div key={f.label} className={s.spec} data-reveal="" style={revealDelay(i * 120)}>
               <span className={s.specValue}>
-                {f.value}
+                <span data-count={f.value}>{f.value}</span>
                 <span className={s.specUnit}>{f.unit}</span>
               </span>
               <span className={s.specLabel}>{f.label}</span>

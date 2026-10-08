@@ -26,7 +26,7 @@ export default function AgentShowcase() {
 
         <div style={{ display: 'grid', gap: 72 }}>
           {AGENT_STEPS.map((step) => (
-            <figure key={step.num} className={s.shot} data-reveal="zoom">
+            <figure key={step.num} className={s.shot} data-reveal="">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={step.image} alt={step.alt} loading="lazy" />
               <figcaption>
@@ -41,7 +41,7 @@ export default function AgentShowcase() {
           {AGENT_FACTS.map((f, i) => (
             <div key={f.label} className={s.spec} data-reveal="" style={revealDelay(i * 120)}>
               <span className={s.specValue}>
-                {f.value}
+                <span data-count={f.value}>{f.value}</span>
                 <span className={s.specUnit}>{f.unit}</span>
               </span>
               <span className={s.specLabel}>{f.label}</span>

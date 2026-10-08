@@ -29,8 +29,8 @@ export default function ClimatePage() {
       </a>
 
       {/* Hero */}
-      <section id="top" className={s.tile} style={{ paddingTop: 140, paddingBottom: 140 }}>
-        <div className={`${s.inner} ${s.center}`}>
+      <section id="top" className={s.tile} style={{ paddingTop: 140, paddingBottom: 140 }} data-progress="exit">
+        <div className={`${s.inner} ${s.center} ${s.heroExit}`}>
           <span className={s.eyebrow} data-reveal="">나라스페이스 기후 인텔리전스</span>
           <h1 className={s.hero} data-reveal="" style={revealDelay(120)}>
             지구의 변화,<br />
