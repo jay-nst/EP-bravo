@@ -10,6 +10,7 @@
 // - 심층 글: 오형직 이사 발표(2026-09, 해외 관측 현황·빌려 쓰는 데이터의 한계·first light), WEF 기고문(아시아 산업단지 해상도),
 //   NarSha 스토리보드(Offshore Glint Mode), 보도자료 2026-10-02(정수종 교수 인용 원문), Scanway 협력(2024.03 공식 SNS)
 //   dNBR·흡수선 원리는 일반 원격탐사 지식
+// - 메탄 검출 사례: NASA Image Library PIA25592·PIA26113 (NASA/JPL-Caltech, 공개 이미지). 해외 위성 사례임을 캡션에 명시
 // - 로드맵: 보도자료 2026-10-02(검보정 후 정상 운용), 경기기후위성 리플렛(2B 2027, 경기기후플랫폼 연계)
 // - Transporter-18 / CEOS 등재 / 카자흐스탄 KGS 공급: 웹 보도 (gktoday, venturesquare 1040076·1114931)
 // - 메탄 모니터링: NarSha leaflet_en (2026-08) — 제원·강점·업종별 활용 / NarSha 홍보영상 스토리보드 (2026-06)
@@ -290,6 +291,27 @@ export const METHANE_HOW = [
     num: '03',
     title: '배출 시설 특정',
     desc: '메탄 플룸을 함께 촬영한 12.5 m 가시광 영상에 겹쳐 배출 시설을 특정하고 시간당 배출량을 추정합니다.',
+  },
+] as const;
+
+export const METHANE_EXAMPLES = [
+  {
+    src: '/climate/methane-emit-permian.jpg',
+    alt: '미국 뉴멕시코주 퍼미안 분지에서 위성이 검출한 3.3 km 길이 메탄 플룸',
+    date: '2022.08',
+    tag: '미국 퍼미안 분지 · 유전',
+    caption:
+      '세계 최대급 유전인 퍼미안 분지에서 위성이 잡아낸 3.3 km 길이의 메탄 플룸입니다. 색이 밝을수록 메탄 농도가 높고, 검은 원이 추정 배출 지점입니다. 연기와 달리 눈에 보이지 않는 가스도 흡수 파장을 분석하면 이렇게 지도로 나타납니다.',
+    credit: 'NASA/JPL-Caltech · EMIT · 배경 Google Earth',
+  },
+  {
+    src: '/climate/methane-emit-uzbekistan.jpg',
+    alt: '우즈베키스탄 남부에서 한 장면에 검출된 메탄 플룸 12개',
+    date: '2022.09.01',
+    tag: '우즈베키스탄 남부 · 12개 플룸',
+    caption:
+      '약 400 km² 지역에서 메탄 플룸 12개를 한 번에 찾아냈습니다. 합계 배출량은 시간당 약 22,559 kg입니다. 파란 영역이 위성 한 장면(80 × 80 km)이며, 같은 면적을 항공기로 훑으려면 약 65시간이 걸린다고 NASA는 설명합니다.',
+    credit: 'NASA/JPL-Caltech · EMIT',
   },
 ] as const;
 

@@ -1,6 +1,7 @@
 import DeepDive from './DeepDive';
 import {
   METHANE_DEEP_DIVE,
+  METHANE_EXAMPLES,
   METHANE_ADVANTAGES,
   METHANE_FACTS,
   METHANE_HOW,
@@ -111,6 +112,27 @@ export default function MethaneSection() {
               </li>
             ))}
           </ol>
+
+          {/* 실제 검출 사례 (해외 위성) */}
+          <div className={s.examples}>
+            <h3 className={s.h3} data-reveal="">실제로는 이렇게 보입니다</h3>
+            <p className={s.body} style={{ marginBottom: 32 }} data-reveal="">
+              해외 위성이 검출한 메탄 플룸입니다. 경기샛-2A도 같은 원리로 관측하며, 25 m 해상도로 시간당 100 kg 수준의 배출원을 찾는 것이 목표입니다.
+            </p>
+            {METHANE_EXAMPLES.map((ex, i) => (
+              <figure key={ex.src} className={s.caseFrame} style={{ marginBottom: i === 0 ? 48 : 0 }} data-reveal="">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={ex.src} alt={ex.alt} loading="lazy" className={s.exampleImg} />
+                <figcaption>
+                  <span className={s.caseTag}>
+                    <strong>{ex.date}</strong> · {ex.tag}
+                  </span>
+                  <span>{ex.caption}</span>
+                  <span className={s.exampleCredit}>{ex.credit} · 나라스페이스 관측 데이터 아님</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
 
           <ul className={s.notes} data-reveal="">
             <li>경기샛-2A 항공시험에서 1665.6 nm 메탄 흡수선 첫 검출 (first light)</li>
