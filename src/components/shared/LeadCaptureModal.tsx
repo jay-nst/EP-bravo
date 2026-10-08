@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
+import { Button, Dialog, Field, Input, Select, Textarea } from '@naraspace-technology/nds/components';
+import { IconCheckCircle, IconX } from '@naraspace-technology/nds/icons';
 import { trackEvent } from '@/lib/analytics';
 
 interface LeadCaptureModalProps {
@@ -34,6 +36,15 @@ const VERTICAL_LABELS: Record<string, string> = {
   northpaper: 'Northpaper — 변화 탐지',
 };
 
+// NDS 참조 구현 (2단계 #1) — Dialog + Field/Input/Select/Textarea + Button.
+// 이후 폼·모달 교체는 이 파일의 패턴을 따른다 (CLAUDE.md "참조 패턴").
+//  - 열림/닫힘: Dialog.Root open + onOpenChange(false → onClose). 스크롤 잠금·Esc·바깥 클릭은 Base UI 가 처리
+//  - 필드: Field.Root > Field.Label(+Required/Optional) > 컨트롤. 라벨-컨트롤 연결도 Field 가 처리
+//  - Select: '' (미선택) ↔ null. "선택 안 함" 같은 해제 항목은 value null 인 item
+//  - 버튼: NDS 기본 solid (강조 CTA 도 동일 — docs/NDS_MIGRATION.md 2단계 결정)
+const ROLE_ITEMS = ROLE_OPTIONS.filter((o) => o.value);
+const BUDGET_ITEMS = BUDGET_OPTIONS.map((o) => ({ value: o.value || null, label: o.label }));
+
 export default function LeadCaptureModal({ open, onClose, vertical, accentColor }: LeadCaptureModalProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -44,20 +55,6 @@ export default function LeadCaptureModal({ open, onClose, vertical, accentColor 
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
-  const backdropRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden';
-    }
-    return () => { document.body.style.overflow = ''; };
-  }, [open]);
-
-  if (!open) return null;
-
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === backdropRef.current) onClose();
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,236 +96,114 @@ export default function LeadCaptureModal({ open, onClose, vertical, accentColor 
     }
   };
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '10px 12px',
-    fontSize: 14,
-    fontFamily: 'var(--font-pretendard), sans-serif',
-    background: 'var(--surface)',
-    color: 'var(--text)',
-    border: '1px solid var(--border)',
-    borderRadius: 8,
-    outline: 'none',
-    transition: 'border-color 0.15s ease',
-  };
-
-  const labelStyle: React.CSSProperties = {
-    display: 'block',
-    fontSize: 13,
-    fontWeight: 500,
-    color: 'var(--text-muted)',
-    marginBottom: 6,
-  };
-
   return (
-    <div
-      ref={backdropRef}
-      onClick={handleBackdropClick}
-      style={{
-        position: 'fixed', inset: 0, zIndex: 9999,
-        background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: 16,
-      }}
-    >
-      <div
-        style={{
-          background: 'var(--bg)',
-          border: '1px solid var(--border)',
-          borderRadius: 12,
-          width: '100%', maxWidth: 440,
-          maxHeight: 'calc(100vh - 32px)',
-          overflowY: 'auto',
-          animation: 'lead-modal-in 0.2s ease-out',
-        }}
-      >
+    <Dialog.Root open={open} onOpenChange={(next) => { if (!next) onClose(); }}>
+      <Dialog.Popup className="max-h-[calc(100vh-32px)] overflow-y-auto">
         {submitted ? (
-          <div style={{ padding: '48px 32px', textAlign: 'center' }}>
-            <div style={{
-              width: 48, height: 48, borderRadius: '50%',
-              background: accentColor, margin: '0 auto 16px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 24,
-            }}>
-              &#10003;
-            </div>
-            <p style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>
-              등록 완료
-            </p>
-            <p style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+          <div className="flex flex-col items-center gap-8 py-24 text-center">
+            <IconCheckCircle className="size-48" style={{ color: accentColor }} aria-hidden />
+            <Dialog.Title>등록 완료</Dialog.Title>
+            <Dialog.Description className="text-text-secondary">
               관심을 가져주셔서 감사합니다.<br />
               담당자가 빠르게 연락드리겠습니다.
-            </p>
-            <button
-              onClick={onClose}
-              style={{
-                marginTop: 24, padding: '10px 24px',
-                background: 'var(--surface)', color: 'var(--text)',
-                border: '1px solid var(--border)', borderRadius: 8,
-                fontSize: 14, cursor: 'pointer',
-              }}
-            >
-              닫기
-            </button>
+            </Dialog.Description>
+            <Dialog.Footer className="w-full pt-16">
+              <Dialog.Close render={<Button variant="solid" size="md" display="block" />}>닫기</Dialog.Close>
+            </Dialog.Footer>
           </div>
         ) : (
           <>
-            <div style={{
-              padding: '20px 24px 16px', borderBottom: '1px solid var(--border)',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            }}>
-              <div>
-                <p style={{
-                  fontFamily: "'IBM Plex Mono', monospace", fontSize: 11,
-                  textTransform: 'uppercase', letterSpacing: '0.08em',
-                  color: accentColor, marginBottom: 4,
-                }}>
+            <div className="flex items-start justify-between gap-12">
+              <div className="flex flex-col gap-4">
+                <p className="font-mono text-body-xs-regular uppercase tracking-[0.08em]" style={{ color: accentColor }}>
                   {VERTICAL_LABELS[vertical]}
                 </p>
-                <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', margin: 0 }}>
-                  상세 리포트 요청
-                </h2>
+                <Dialog.Title>상세 리포트 요청</Dialog.Title>
               </div>
-              <button
-                onClick={onClose}
-                aria-label="닫기"
-                style={{
-                  width: 32, height: 32, borderRadius: 8,
-                  background: 'var(--surface)', border: '1px solid var(--border)',
-                  color: 'var(--text-muted)', fontSize: 18, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}
-              >
-                &times;
-              </button>
+              <Dialog.Close render={<Button variant="text" size="sm" iconOnly aria-label="닫기" />}>
+                <IconX />
+              </Dialog.Close>
             </div>
 
-            <form onSubmit={handleSubmit} style={{ padding: '20px 24px 24px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div>
-                  <label style={labelStyle}>이름 *</label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="홍길동"
-                    style={inputStyle}
-                    onFocus={(e) => { e.currentTarget.style.borderColor = accentColor; }}
-                    onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; }}
-                  />
-                </div>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-16" noValidate>
+              <Field.Root>
+                <Field.Label>이름<Field.Required /></Field.Label>
+                <Input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="홍길동" />
+              </Field.Root>
 
-                <div>
-                  <label style={labelStyle}>이메일 *</label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="hong@company.com"
-                    style={inputStyle}
-                    onFocus={(e) => { e.currentTarget.style.borderColor = accentColor; }}
-                    onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; }}
-                  />
-                </div>
+              <Field.Root>
+                <Field.Label>이메일<Field.Required /></Field.Label>
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="hong@company.com" />
+              </Field.Root>
 
-                <div>
-                  <label style={labelStyle}>소속 *</label>
-                  <input
-                    type="text"
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    placeholder="회사 또는 기관명"
-                    style={inputStyle}
-                    onFocus={(e) => { e.currentTarget.style.borderColor = accentColor; }}
-                    onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; }}
-                  />
-                </div>
+              <Field.Root>
+                <Field.Label>소속<Field.Required /></Field.Label>
+                <Input type="text" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="회사 또는 기관명" />
+              </Field.Root>
 
-                <div>
-                  <label style={labelStyle}>담당 분야 *</label>
-                  <select
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                    style={{ ...inputStyle, appearance: 'none', cursor: 'pointer' }}
-                    onFocus={(e) => { e.currentTarget.style.borderColor = accentColor; }}
-                    onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; }}
-                  >
-                    {ROLE_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <Field.Root>
+                <Field.Label>담당 분야<Field.Required /></Field.Label>
+                <Select.Root<string | null>
+                  items={ROLE_ITEMS}
+                  value={role || null}
+                  onValueChange={(v) => setRole(v ?? '')}
+                >
+                  <Select.Trigger>
+                    <Select.Value placeholder={ROLE_OPTIONS[0].label} />
+                  </Select.Trigger>
+                  <Select.Popup>
+                    {ROLE_ITEMS.map((opt) => (
+                      <Select.Item key={opt.value} value={opt.value}>{opt.label}</Select.Item>
                     ))}
-                  </select>
-                </div>
+                  </Select.Popup>
+                </Select.Root>
+              </Field.Root>
 
-                <div>
-                  <label style={labelStyle}>활용 목적</label>
-                  <textarea
-                    value={useCase}
-                    onChange={(e) => setUseCase(e.target.value)}
-                    placeholder="어떤 업무에 위성 데이터를 활용하고 싶으신가요?"
-                    rows={3}
-                    style={{ ...inputStyle, resize: 'vertical' }}
-                    onFocus={(e) => { e.currentTarget.style.borderColor = accentColor; }}
-                    onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; }}
-                  />
-                </div>
+              <Field.Root>
+                <Field.Label>활용 목적<Field.Optional>(선택)</Field.Optional></Field.Label>
+                <Textarea
+                  value={useCase}
+                  onChange={(e) => setUseCase(e.target.value)}
+                  placeholder="어떤 업무에 위성 데이터를 활용하고 싶으신가요?"
+                  rows={3}
+                />
+              </Field.Root>
 
-                <div>
-                  <label style={labelStyle}>예상 연간 예산 (선택)</label>
-                  <select
-                    value={budget}
-                    onChange={(e) => setBudget(e.target.value)}
-                    style={{ ...inputStyle, appearance: 'none', cursor: 'pointer' }}
-                    onFocus={(e) => { e.currentTarget.style.borderColor = accentColor; }}
-                    onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; }}
-                  >
-                    {BUDGET_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <Field.Root>
+                <Field.Label>예상 연간 예산<Field.Optional>(선택)</Field.Optional></Field.Label>
+                <Select.Root<string | null>
+                  items={BUDGET_ITEMS}
+                  value={budget || null}
+                  onValueChange={(v) => setBudget(v ?? '')}
+                >
+                  <Select.Trigger>
+                    <Select.Value placeholder={BUDGET_OPTIONS[0].label} />
+                  </Select.Trigger>
+                  <Select.Popup>
+                    {BUDGET_ITEMS.map((opt) => (
+                      <Select.Item key={opt.label} value={opt.value}>{opt.label}</Select.Item>
                     ))}
-                  </select>
-                </div>
-              </div>
+                  </Select.Popup>
+                </Select.Root>
+              </Field.Root>
 
               {error && (
-                <p style={{ fontSize: 13, color: 'var(--error)', marginTop: 12 }}>
+                <p role="alert" className="text-body-sm-regular text-status-danger">
                   {error}
                 </p>
               )}
 
-              <button
-                type="submit"
-                disabled={submitting}
-                style={{
-                  width: '100%', marginTop: 20, padding: '12px',
-                  minHeight: 48, borderRadius: 8,
-                  background: accentColor, color: '#fff',
-                  fontSize: 15, fontWeight: 600,
-                  border: 'none', cursor: submitting ? 'wait' : 'pointer',
-                  opacity: submitting ? 0.7 : 1,
-                  transition: 'opacity 0.15s ease',
-                }}
-                onMouseEnter={(e) => { if (!submitting) e.currentTarget.style.opacity = '0.85'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.opacity = submitting ? '0.7' : '1'; }}
-              >
+              <Button type="submit" variant="solid" size="lg" display="block" loading={submitting}>
                 {submitting ? '제출 중...' : '리포트 요청하기'}
-              </button>
+              </Button>
 
-              <p style={{
-                fontSize: 12, color: 'var(--text-muted)', textAlign: 'center',
-                marginTop: 12, lineHeight: 1.5,
-              }}>
+              <p className="text-center text-body-xs-regular text-text-tertiary">
                 입력하신 정보는 서비스 안내 목적으로만 사용됩니다.
               </p>
             </form>
           </>
         )}
-
-        <style>{`
-          @keyframes lead-modal-in {
-            from { opacity: 0; transform: translateY(12px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-          }
-        `}</style>
-      </div>
-    </div>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 }

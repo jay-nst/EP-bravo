@@ -21,6 +21,11 @@
 - **Design System:** NDS (`@naraspace-technology/nds`) 기반, EP 색 유지. **Tailwind 간격 단위 1px** (`p-16`=16px). 규칙: docs/NDS_MIGRATION.md
 - **Dev server:** `npm run dev` (localhost:3000)
 
+## 참조 패턴 (NDS)
+
+- **폼·모달:** `src/components/shared/LeadCaptureModal.tsx` — NDS `Dialog` + `Field`/`Input`/`Select`/`Textarea` + `Button`. 테스트: 같은 폴더 `.test.tsx` (`// @vitest-environment jsdom` + Testing Library)
+  - 새 폼/모달·교체 작업은 이 파일을 복제해서 만든다. 버튼은 NDS 기본 `solid`(강조 CTA 포함), 모양은 NDS 표준 (docs/NDS_MIGRATION.md 2단계)
+
 ## Design Review History
 
 총 24건 수정 완료 (5 rounds). 현재 점수: Design A- / AI Slop A / Performance A.
