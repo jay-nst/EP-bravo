@@ -23,8 +23,13 @@
 
 ## 참조 패턴 (NDS)
 
-- **폼·모달:** `src/components/shared/LeadCaptureModal.tsx` — NDS `Dialog` + `Field`/`Input`/`Select`/`Textarea` + `Button`. 테스트: 같은 폴더 `.test.tsx` (`// @vitest-environment jsdom` + Testing Library)
-  - 새 폼/모달·교체 작업은 이 파일을 복제해서 만든다. 버튼은 NDS 기본 `solid`(강조 CTA 포함), 모양은 NDS 표준 (docs/NDS_MIGRATION.md 2단계)
+- **작업 전 필수:** 쓰려는 NDS 컴포넌트의 문서·예제를 먼저 읽고 그 anatomy 를 그대로 따른다 —
+  `gh api repos/Naraspace-Technology/nds/contents/src/lib/components/<name>/<Name>.docs.mdx` 와 `<Name>.examples.tsx`
+  (Storybook: https://main--6a201f758a180e53a7d86a2a.chromatic.com). 기존 화면 구조에 끼워 맞추지 않는다
+- **색·크기 커스텀 금지:** 플랫폼 색 등 EP 색을 NDS 컴포넌트에 덧칠하지 않는다. NDS 기본 variant/size 만 (강조 CTA 도 기본 `solid`)
+- **폼·모달:** `src/components/shared/LeadCaptureModal.tsx` — Dialog(Title→Description→본문→SubDescription→Footer[Cancel+Action], × 없음)
+  + Base UI `Form`(`onFormSubmit`) + `Field.Root name/validate` + `Field.Error`, 선택 항목에만 `Field.Optional`.
+  테스트: 같은 폴더 `.test.tsx` (`// @vitest-environment jsdom` + Testing Library). 새 폼/모달은 이 파일을 복제해서 만든다
 
 ## Design Review History
 

@@ -1,14 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Dialog, Field, Input, Select, Textarea } from '@naraspace-technology/nds/components';
-import { IconCheckCircle, IconX } from '@naraspace-technology/nds/icons';
+import { Form } from '@base-ui/react/form';
+import { Dialog, Field, Input, Select, Textarea } from '@naraspace-technology/nds/components';
 import { trackEvent } from '@/lib/analytics';
 
 interface LeadCaptureModalProps {
   open: boolean;
   onClose: () => void;
   vertical: 'citadel' | 'predict' | 'warden' | 'northpaper';
+  /** NDS 전환 후 미사용 — 모달은 NDS 표준 색만 쓴다. 호출부 호환을 위해 유지 */
   accentColor: string;
 }
 
@@ -36,16 +37,28 @@ const VERTICAL_LABELS: Record<string, string> = {
   northpaper: 'Northpaper — 변화 탐지',
 };
 
-// NDS 참조 구현 (2단계 #1) — Dialog + Field/Input/Select/Textarea + Button.
-// 이후 폼·모달 교체는 이 파일의 패턴을 따른다 (CLAUDE.md "참조 패턴").
-//  - 열림/닫힘: Dialog.Root open + onOpenChange(false → onClose). 스크롤 잠금·Esc·바깥 클릭은 Base UI 가 처리
-//  - 필드: Field.Root > Field.Label(+Required/Optional) > 컨트롤. 라벨-컨트롤 연결도 Field 가 처리
+// ── NDS 참조 구현 (2단계 #1) ─────────────────────────────────────────────
+// NDS 문서(Dialog/Field *.docs.mdx, *.examples.tsx)의 anatomy 를 그대로 따른다.
+//  - Dialog: Title → Description → (본문) → SubDescription → Footer(Cancel + Action).
+//    × 버튼 없음 — 닫기는 Cancel·Esc·바깥 클릭. 스크롤 잠금·포커스 가두기는 Base UI
+//  - 폼: Base UI Form + 필드별 validate + Field.Error. 제출 시 검증, 이후 입력하면 재검증.
+//    Footer 의 Action 은 form 밖에 있으므로 form 속성으로 연결
+//  - 표기: 필수가 대부분이라 선택 항목에만 Field.Optional ("한 폼 안에서 하나로 통일")
 //  - Select: '' (미선택) ↔ null. "선택 안 함" 같은 해제 항목은 value null 인 item
-//  - 버튼: NDS 기본 solid (강조 CTA 도 동일 — docs/NDS_MIGRATION.md 2단계 결정)
+//  - 색·크기 커스텀 없음 (플랫폼 색 포함) — NDS 기본값만
+const FORM_ID = 'lead-capture-form';
 const ROLE_ITEMS = ROLE_OPTIONS.filter((o) => o.value);
 const BUDGET_ITEMS = BUDGET_OPTIONS.map((o) => ({ value: o.value || null, label: o.label }));
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function LeadCaptureModal({ open, onClose, vertical, accentColor }: LeadCaptureModalProps) {
+const required = (message: string) => (value: unknown) => (String(value ?? '').trim() ? null : message);
+const validateEmail = (value: unknown) => {
+  const v = String(value ?? '').trim();
+  if (!v) return '이메일을 입력해주세요.';
+  return EMAIL_RE.test(v) ? null : '이메일 형식을 확인해주세요.';
+};
+
+export default function LeadCaptureModal({ open, onClose, vertical }: LeadCaptureModalProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
@@ -56,15 +69,9 @@ export default function LeadCaptureModal({ open, onClose, vertical, accentColor 
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Form 이 모든 필드 validate 를 통과시켰을 때만 호출된다
+  const handleSubmit = async () => {
     setError('');
-
-    if (!name.trim() || !email.trim() || !company.trim() || !role) {
-      setError('필수 항목을 모두 입력해주세요.');
-      return;
-    }
-
     setSubmitting(true);
     try {
       const res = await fetch('/api/leads', {
@@ -83,7 +90,6 @@ export default function LeadCaptureModal({ open, onClose, vertical, accentColor 
 
       if (!res.ok) {
         setError('제출에 실패했습니다. 다시 시도해주세요.');
-        setSubmitting(false);
         return;
       }
 
@@ -100,49 +106,41 @@ export default function LeadCaptureModal({ open, onClose, vertical, accentColor 
     <Dialog.Root open={open} onOpenChange={(next) => { if (!next) onClose(); }}>
       <Dialog.Popup className="max-h-[calc(100vh-32px)] overflow-y-auto">
         {submitted ? (
-          <div className="flex flex-col items-center gap-8 py-24 text-center">
-            <IconCheckCircle className="size-48" style={{ color: accentColor }} aria-hidden />
+          <>
             <Dialog.Title>등록 완료</Dialog.Title>
-            <Dialog.Description className="text-text-secondary">
-              관심을 가져주셔서 감사합니다.<br />
-              담당자가 빠르게 연락드리겠습니다.
+            <Dialog.Description>
+              관심을 가져주셔서 감사합니다. 담당자가 빠르게 연락드리겠습니다.
             </Dialog.Description>
-            <Dialog.Footer className="w-full pt-16">
-              <Dialog.Close render={<Button variant="solid" size="md" display="block" />}>닫기</Dialog.Close>
+            <Dialog.Footer>
+              <Dialog.Cancel>닫기</Dialog.Cancel>
             </Dialog.Footer>
-          </div>
+          </>
         ) : (
           <>
-            <div className="flex items-start justify-between gap-12">
-              <div className="flex flex-col gap-4">
-                <p className="font-mono text-body-xs-regular uppercase tracking-[0.08em]" style={{ color: accentColor }}>
-                  {VERTICAL_LABELS[vertical]}
-                </p>
-                <Dialog.Title>상세 리포트 요청</Dialog.Title>
-              </div>
-              <Dialog.Close render={<Button variant="text" size="sm" iconOnly aria-label="닫기" />}>
-                <IconX />
-              </Dialog.Close>
-            </div>
+            <Dialog.Title>상세 리포트 요청</Dialog.Title>
+            <Dialog.Description>{VERTICAL_LABELS[vertical]}</Dialog.Description>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-16" noValidate>
-              <Field.Root>
-                <Field.Label>이름<Field.Required /></Field.Label>
+            <Form id={FORM_ID} onFormSubmit={handleSubmit} className="flex flex-col gap-16">
+              <Field.Root name="name" validate={required('이름을 입력해주세요.')}>
+                <Field.Label>이름</Field.Label>
                 <Input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="홍길동" />
+                <Field.Error />
               </Field.Root>
 
-              <Field.Root>
-                <Field.Label>이메일<Field.Required /></Field.Label>
+              <Field.Root name="email" validate={validateEmail}>
+                <Field.Label>이메일</Field.Label>
                 <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="hong@company.com" />
+                <Field.Error />
               </Field.Root>
 
-              <Field.Root>
-                <Field.Label>소속<Field.Required /></Field.Label>
+              <Field.Root name="company" validate={required('소속을 입력해주세요.')}>
+                <Field.Label>소속</Field.Label>
                 <Input type="text" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="회사 또는 기관명" />
+                <Field.Error />
               </Field.Root>
 
-              <Field.Root>
-                <Field.Label>담당 분야<Field.Required /></Field.Label>
+              <Field.Root name="role" validate={required('담당 분야를 선택해주세요.')}>
+                <Field.Label>담당 분야</Field.Label>
                 <Select.Root<string | null>
                   items={ROLE_ITEMS}
                   value={role || null}
@@ -157,9 +155,10 @@ export default function LeadCaptureModal({ open, onClose, vertical, accentColor 
                     ))}
                   </Select.Popup>
                 </Select.Root>
+                <Field.Error />
               </Field.Root>
 
-              <Field.Root>
+              <Field.Root name="use_case">
                 <Field.Label>활용 목적<Field.Optional>(선택)</Field.Optional></Field.Label>
                 <Textarea
                   value={useCase}
@@ -169,7 +168,7 @@ export default function LeadCaptureModal({ open, onClose, vertical, accentColor 
                 />
               </Field.Root>
 
-              <Field.Root>
+              <Field.Root name="budget">
                 <Field.Label>예상 연간 예산<Field.Optional>(선택)</Field.Optional></Field.Label>
                 <Select.Root<string | null>
                   items={BUDGET_ITEMS}
@@ -186,21 +185,22 @@ export default function LeadCaptureModal({ open, onClose, vertical, accentColor 
                   </Select.Popup>
                 </Select.Root>
               </Field.Root>
+            </Form>
 
-              {error && (
-                <p role="alert" className="text-body-sm-regular text-status-danger">
-                  {error}
-                </p>
-              )}
-
-              <Button type="submit" variant="solid" size="lg" display="block" loading={submitting}>
-                {submitting ? '제출 중...' : '리포트 요청하기'}
-              </Button>
-
-              <p className="text-center text-body-xs-regular text-text-tertiary">
-                입력하신 정보는 서비스 안내 목적으로만 사용됩니다.
+            {/* 서버/네트워크 오류 — 특정 필드에 속하지 않는 메시지 (NDS 에 인라인 Alert 컴포넌트 없음) */}
+            {error && (
+              <p role="alert" className="text-body-sm-regular text-status-danger">
+                {error}
               </p>
-            </form>
+            )}
+
+            <Dialog.SubDescription>입력하신 정보는 서비스 안내 목적으로만 사용됩니다.</Dialog.SubDescription>
+            <Dialog.Footer>
+              <Dialog.Cancel>취소</Dialog.Cancel>
+              <Dialog.Action type="submit" form={FORM_ID} loading={submitting}>
+                리포트 요청하기
+              </Dialog.Action>
+            </Dialog.Footer>
           </>
         )}
       </Dialog.Popup>

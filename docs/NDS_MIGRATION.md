@@ -133,6 +133,8 @@ node scripts/nds-verify.mjs <변환 전 커밋>
 | 강조 CTA (EP 민트 채움 버튼) | **NDS 기본 `solid`** — 회색 바탕, hover/active 때 민트. EP 민트 채움 CTA 는 없어진다 |
 | 버튼·입력 모양 | **NDS 표준 그대로** — Button `rounded-xl`(32px), Input `rounded-lg`(24px) + 1px inset ring |
 | 진행 | `feat/nds-phase2` 브랜치, 묶음별 커밋 → :3001 미리보기 육안 확인 → master |
+| NDS 반영 수준 | **최대한** — 컴포넌트 문서·예제(`*.docs.mdx`, `*.examples.tsx`)의 anatomy 를 그대로. 기존 화면 구조에 끼워 맞추지 않음 |
+| 색 | NDS 컴포넌트에 EP/플랫폼 색 덧칠 금지 (리드 모달의 플랫폼 색 라벨·아이콘 제거) |
 
 | # | 묶음 | 현재 | NDS | 규모 |
 |---|---|---|---|---|
