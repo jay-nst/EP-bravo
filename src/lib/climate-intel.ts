@@ -4,6 +4,8 @@
 // - 경기샛-2A 발사·교신: 나라스페이스 보도자료 2026-10-02 「국내 최초 메탄 관측 위성 '경기샛-2A' 양방향 교신 성공」
 // - 경기샛 제원·임무: 경기기후위성 리플렛 A4 국문 최종 (2026-09-16)
 // - Transporter-18 / CEOS 등재 / 카자흐스탄 KGS 공급: 웹 보도 (gktoday, venturesquare 1040076·1114931)
+// - 메탄 모니터링: NarSha leaflet_en (2026-08) — 제원·강점·업종별 활용 / NarSha 홍보영상 스토리보드 (2026-06)
+//   메탄 통계·규제: WEF 매거진 기고문 (2025-06, 출처 링크 포함) / 1665.6 nm first light: 오형직 이사 발표 (2026-09)
 // - "세계 네 번째 메탄 관측 초소형위성"은 회사 발표 기준 — 페이지에 단서 표기
 // - EP Post: src/lib/mock-dashboard.ts 의 실제 ep.naraspace.com 링크만 사용 (link_url null 항목 제외)
 //
@@ -32,10 +34,110 @@ export const GG2A_NOTES = [
   'NarSha: 2026.02 국내 민간 메탄 위성 최초 CEOS 공식 포털 등재, 카자흐스탄 국영우주공사(KGS) 메탄 MRV 데이터 공급 계약',
 ] as const;
 
+// ── 메탄 모니터링 (NarSha) ─────────────────────────────
+
+export const METHANE_FACTS = [
+  { value: '82', unit: '배', label: 'CO₂ 대비 온난화 효과 (20년 기준)', source: 'IPCC AR6' },
+  { value: '30', unit: '%', label: '지구 온난화의 약 30%가 메탄 때문', source: 'IEA' },
+  { value: '71', unit: '%', label: '국내 에너지 부문 메탄 중 의도치 않은 누출', source: '한국 메탄 전략 2023' },
+  { value: '9', unit: '년', label: '대기 중 수명 · 줄이면 효과가 빨리 나타남', source: 'NOAA' },
+] as const;
+
+export const METHANE_HOW = [
+  {
+    num: '01',
+    title: '빛을 150갈래로 쪼갭니다',
+    desc: '단파적외선(SWIR) 1625–1670 nm 구간을 150개 채널, 0.6 nm 간격으로 나눠 봅니다.',
+  },
+  {
+    num: '02',
+    title: '메탄이 삼킨 파장을 읽습니다',
+    desc: '메탄은 정해진 파장의 빛만 흡수합니다. 그 흡수 깊이로 농도를 계산합니다. 정밀도 50 ppb.',
+  },
+  {
+    num: '03',
+    title: '어느 시설인지 짚습니다',
+    desc: '함께 찍은 12.5 m 가시광 영상에 메탄 플룸을 겹쳐 배출 시설을 특정하고, 시간당 배출량을 추정합니다.',
+  },
+] as const;
+
+export const METHANE_ADVANTAGES = [
+  {
+    title: '시설 단위로 찾습니다',
+    desc: '시간당 100 kg 수준의 국지적 배출까지 탐지합니다. 넓은 메탄 구름이 아니라 의심 시설 하나로 좁혀 줍니다.',
+  },
+  {
+    title: '간헐적 누출도 놓치지 않습니다',
+    desc: '군집으로 같은 곳을 자주 봅니다. 목표는 하루 최대 5회 관측. 잠깐 샜다 멈추는 누출까지 따라갑니다.',
+  },
+  {
+    title: '도시부터 해상 플랫폼까지',
+    desc: '복잡한 산업단지와, 기존 위성이 보기 어려운 해상 플랫폼까지 관측 모드를 바꿔 가며 봅니다.',
+  },
+  {
+    title: '받자마자 쓸 수 있는 데이터',
+    desc: '위성에서 바로 구름을 걸러내고 압축해 내려보냅니다. 원시 영상이 아니라 분석 결과와 리포트로 받습니다.',
+  },
+] as const;
+
+export const METHANE_INDUSTRIES = [
+  {
+    id: 'energy',
+    title: '석유 · 가스 · 에너지',
+    problem: '넓게 퍼진 파이프라인과 설비의 누출은 제품 손실과 규제 위험으로 이어집니다.',
+    solution: '파이프라인, 벤팅, 플레어링 누출을 일찍 찾고 반복 관측으로 규제 기한 안에 고칠 수 있게 돕습니다.',
+  },
+  {
+    id: 'gov',
+    title: '지자체 · 스마트시티',
+    problem: '탄소중립을 선언해도 복잡한 도시와 산업단지의 실제 배출량은 기존 데이터로 잡기 어렵습니다.',
+    solution: '경기샛-2A·2B로 도시 규모 배출을 직접 관측하고, 독립적인 MRV 데이터를 만듭니다.',
+  },
+  {
+    id: 'finance',
+    title: '금융 · ESG 투자',
+    problem: '기업이 스스로 공시한 숫자만으로는 실제 환경 위험을 가늠하기 어렵습니다.',
+    solution: '제3자 위성 데이터로 실제 배출을 검증하고, 전 세계 가스 시설의 가동 변화를 먼저 읽습니다.',
+  },
+  {
+    id: 'waste',
+    title: '폐기물 · 매립지',
+    problem: '매립지 메탄은 민원과 규제 위험을 만들고, 기온과 날씨에 따라 계속 바뀝니다.',
+    solution: '매립지 안에서 메탄이 몰리는 구역을 찾아 포집 효율을 높이고, 연중 변화를 추적합니다.',
+  },
+] as const;
+
+export const METHANE_REGULATIONS = [
+  { value: '$1,500', label: '미국 메탄 배출 부과금 (2026년, 톤당)', detail: '2024년 $900 → 2025년 $1,200 → 2026년 $1,500' },
+  { value: 'MRV', label: 'EU 메탄 규제', detail: '석유·가스·석탄의 측정·보고·검증 의무, 수입분 포함' },
+  { value: '30%', label: '글로벌 메탄 서약', detail: '150개국 이상, 2030년까지 2020년 대비 30% 감축' },
+] as const;
+
+export const NARSHA_SPECS = [
+  { group: '플랫폼', rows: [
+    ['버스', '16U · 15 kg'],
+    ['탑재체', '10 kg 이하'],
+    ['궤도', '500–600 km (태양동기 · 중경사)'],
+    ['설계 수명', '3년 이상'],
+  ] },
+  { group: '탑재체', rows: [
+    ['SWIR', '150채널 · 1625–1670 nm · 분해능 0.6 nm'],
+    ['VNIR', '4밴드 (480 · 545 · 660 · 840 nm) · 12.5 m'],
+    ['신호 대 잡음비', '150 이상 (SWIR)'],
+    ['한 장면', '10 × 10 km 이상'],
+  ] },
+  { group: '성능 · 데이터', rows: [
+    ['탐지 하한', '100 kg/h (정밀도 50 ppb)'],
+    ['자세 지향', '±0.02° (3σ) · 경사 촬영 ±30°'],
+    ['다운링크', 'X밴드 최대 150 Mbps · 저장 240 GB'],
+    ['산출물', 'L1 · L2 · L4 · 온보드 구름 탐지'],
+  ] },
+] as const;
+
 /** 페이지 섹션 순서 = 로컬 내비 순서 = 솔루션 카드 순서 (링크가 항상 아래로 향하도록) */
 export const WARDEN_SECTIONS = [
   { id: 'agent', label: '재난 대응' },
-  { id: 'gyeonggisat', label: '메탄 위성' },
+  { id: 'gyeonggisat', label: '메탄 모니터링' },
   { id: 'compliance', label: 'EUDR' },
   { id: 'posts', label: '분석 사례' },
   { id: 'dashboards', label: '기후 지도' },
@@ -212,4 +314,11 @@ export const SOURCES = [
   { label: 'Transporter-18 발사', href: 'https://www.gktoday.in/spacex-launches-transporter-18-smallsat-rideshare-mission/' },
   { label: 'NarSha CEOS 등재', href: 'https://www.venturesquare.net/1040076/' },
   { label: '카자흐스탄 KGS 메탄 데이터 공급', href: 'https://www.venturesquare.net/1114931/' },
+  { label: 'IPCC AR6', href: 'https://www.ipcc.ch/assessment-report/ar6/' },
+  { label: 'IEA Global Methane Tracker', href: 'https://www.iea.org/reports/global-methane-tracker-2022/methane-and-climate-change' },
+  { label: '한국 메탄 전략 2023', href: 'https://content.forourclimate.org/files/research/6AjmFUe.pdf' },
+  { label: 'NOAA 메탄 순환', href: 'https://gml.noaa.gov/outreach/info_activities/pdfs/CTA_the_methane_cycle.pdf' },
+  { label: 'US EPA 메탄 부과금', href: 'https://www.epa.gov/newsreleases/epa-finalizes-rule-reduce-wasteful-methane-emissions-and-drive-innovation-oil-and-gas' },
+  { label: 'EU 메탄 규제', href: 'https://energy.ec.europa.eu/news/new-eu-methane-regulation-reduce-harmful-emissions-fossil-fuels-europe-and-abroad-2024-05-27_en' },
+  { label: 'Global Methane Pledge', href: 'https://www.globalmethanepledge.org/' },
 ] as const;
