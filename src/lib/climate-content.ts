@@ -233,7 +233,7 @@ export const FIRE_DEEP_DIVE: DeepDive = {
     },
     {
       type: 'formula',
-      lines: ['NBR = (NIR − SWIR) ÷ (NIR + SWIR)', 'dNBR = NBR화재 전 − NBR화재 후'],
+      lines: ['NBR = (NIR − SWIR) ÷ (NIR + SWIR)', 'dNBR = NBR(화재 전) − NBR(화재 후)'],
       caption: 'NIR: 근적외선 반사율 · SWIR: 단파적외선 반사율',
     },
     {

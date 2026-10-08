@@ -958,8 +958,10 @@
   background: var(--w-card-on-tile);
 }
 .articleFormula code {
-  font-family: var(--font-mono);
-  font-size: 16px;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0;
   color: var(--w-text);
   white-space: pre-wrap;
 }
