@@ -1,4 +1,6 @@
+import DeepDive from './DeepDive';
 import {
+  METHANE_DEEP_DIVE,
   METHANE_ADVANTAGES,
   METHANE_FACTS,
   METHANE_HOW,
@@ -208,9 +210,12 @@ export default function MethaneSection() {
         </div>
       </section>
 
-      {/* 인용 */}
+      {/* 자세히 보기 — 긴 글 */}
       <section className={s.tile}>
-        <figure className={`${s.narrow} ${s.center}`} style={{ margin: '0 auto', maxWidth: 860 }}>
+        <DeepDive article={METHANE_DEEP_DIVE} />
+
+        {/* 인용 — 긴 글 끝에 이어서 */}
+        <figure className={`${s.narrow} ${s.center}`} style={{ margin: '120px auto 0', maxWidth: 860 }}>
           {/* 스크롤에 따라 단어가 차례로 밝아짐 */}
           <blockquote
             className={`${s.quote} ${s.quoteWords}`}

@@ -1,8 +1,9 @@
 import Link from 'next/link';
-import { AGENT_FACTS, AGENT_STEPS } from '@/lib/climate-content';
+import { AGENT_FACTS, AGENT_STEPS, FIRE_DEEP_DIVE } from '@/lib/climate-content';
 import s from './climate.module.css';
 import { revealDelay } from './useScrollReveal';
 import CaseStudy from './CaseStudy';
+import DeepDive from './DeepDive';
 
 export default function AgentShowcase() {
   return (
@@ -23,6 +24,9 @@ export default function AgentShowcase() {
         </div>
 
         <CaseStudy />
+        <div style={{ marginBottom: 120 }}>
+          <DeepDive article={FIRE_DEEP_DIVE} />
+        </div>
 
         <div style={{ display: 'grid', gap: 72 }}>
           {AGENT_STEPS.map((step) => (
