@@ -4,6 +4,8 @@
 // 출처 (2026-10-08 확인):
 // - 경기샛-2A 발사·교신: 나라스페이스 보도자료 2026-10-02 「국내 최초 메탄 관측 위성 '경기샛-2A' 양방향 교신 성공」
 // - 경기샛 제원·임무: 경기기후위성 리플렛 A4 국문 최종 (2026-09-16)
+// - 경기샛-1 첫 영상·활용 분야, Observer-1A 포천 산사태: 보도자료 2026-03-16 「'경기샛-1' 위성영상 첫 공개」
+// - 위성 사진(observer-bus·cleanroom·mission-control): naraspace.com 메인 공개 이미지
 // - Transporter-18 / CEOS 등재 / 카자흐스탄 KGS 공급: 웹 보도 (gktoday, venturesquare 1040076·1114931)
 // - 메탄 모니터링: NarSha leaflet_en (2026-08) — 제원·강점·업종별 활용 / NarSha 홍보영상 스토리보드 (2026-06)
 //   메탄 통계·규제: WEF 매거진 기고문 (2025-06, 출처 링크 포함) / 1665.6 nm first light: 오형직 이사 발표 (2026-09)
@@ -33,6 +35,92 @@ export const GG2A_NOTES = [
   '캐나다·스페인·프랑스에 이어 세계 네 번째 메탄 관측 초소형위성 (나라스페이스 발표 기준)',
   '같은 플랫폼으로 자체 메탄 관측 군집 NarSha 구축 중',
   'NarSha: 2026.02 국내 민간 메탄 위성 최초 CEOS 공식 포털 등재, 카자흐스탄 국영우주공사(KGS) 메탄 MRV 데이터 공급 계약',
+] as const;
+
+// ── 위성 ─────────────────────────────
+
+export const FLEET = [
+  {
+    id: 'o1a',
+    name: 'Observer-1A',
+    type: '광학 · 16U',
+    launch: '2023.11',
+    status: 'live' as const,
+    statusLabel: '운용 중',
+    desc: '국내 최초 상업용 초소형 관측 위성. 포천 산사태 지역을 찍어 피해 범위와 복구 현황 파악에 썼습니다.',
+  },
+  {
+    id: 'gg1',
+    name: '경기샛-1',
+    type: '광학 · 1.5 m',
+    launch: '2025.11',
+    status: 'live' as const,
+    statusLabel: '운용 중',
+    desc: '지자체 최초 기후 위성. 고도 약 500 km에서 한 번에 14 × 40 km를 찍습니다. 2026년 3월 첫 영상 공개.',
+  },
+  {
+    id: 'gg2a',
+    name: '경기샛-2A',
+    type: '초분광 · 메탄',
+    launch: '2026.10',
+    status: 'new' as const,
+    statusLabel: '초기 운영 중',
+    desc: '국내 최초 메탄 관측 위성. 산업단지·발전소·매립지의 메탄 배출원을 찾습니다.',
+  },
+  {
+    id: 'gg2b',
+    name: '경기샛-2B',
+    type: '초분광 · 메탄',
+    launch: '2027',
+    status: 'planned' as const,
+    statusLabel: '발사 예정',
+    desc: '2A와 같은 곳을 더 자주 보도록 함께 돕니다.',
+  },
+  {
+    id: 'narsha',
+    name: 'NarSha',
+    type: '메탄 관측 군집',
+    launch: '구축 중',
+    status: 'planned' as const,
+    statusLabel: '군집 구축 중',
+    desc: '경기샛-2A·2B와 같은 플랫폼의 자체 메탄 군집. 2026.02 CEOS 공식 포털 등재.',
+  },
+] as const;
+
+export const BUILD_PHOTOS = [
+  {
+    src: '/climate/observer-bus.jpg',
+    alt: '나라스페이스 16U 초소형 관측 위성 실물',
+    title: '만듭니다',
+    desc: '16U 초소형 위성 버스를 직접 설계하고 조립합니다.',
+  },
+  {
+    src: '/climate/cleanroom.jpg',
+    alt: '클린룸에서 위성을 조립하는 연구원',
+    title: '시험합니다',
+    desc: '클린룸에서 조립하고, 발사 전 환경시험을 거칩니다.',
+  },
+  {
+    src: '/climate/mission-control.jpg',
+    alt: '나라스페이스 본사 위성관제센터',
+    title: '운용합니다',
+    desc: '본사 관제센터에서 위성과 교신하고 촬영 계획을 짭니다.',
+  },
+] as const;
+
+// ── 토지 변화 (경기샛-1 · Observer-1A) ─────────────────────────────
+
+export const LAND_USES = [
+  { title: '벼 재배지 모니터링', desc: '벼 재배지가 어디에 얼마나 있는지 계절마다 확인합니다.' },
+  { title: '개발제한구역 변화', desc: '개발제한구역의 불법 훼손과 휴경지를 찾아냅니다.' },
+  { title: '토지 이용 현황', desc: '도시 밀집 지역과 녹지, 항만과 해안선 구조를 구분합니다.' },
+  { title: '홍수 · 산사태 피해', desc: '같은 곳을 반복 촬영해 피해 범위와 복구 진행을 따라갑니다.' },
+] as const;
+
+export const LAND_FACTS = [
+  { value: '1.5', unit: 'm', label: '공간해상도' },
+  { value: '14×40', unit: 'km', label: '한 번에 찍는 면적' },
+  { value: '500', unit: 'km', label: '촬영 고도' },
 ] as const;
 
 // ── 메탄 모니터링 (NarSha) ─────────────────────────────
@@ -137,14 +225,21 @@ export const NARSHA_SPECS = [
 
 /** 페이지 섹션 순서 = 로컬 내비 순서 = 솔루션 카드 순서 (링크가 항상 아래로 향하도록) */
 export const CLIMATE_SECTIONS = [
+  { id: 'satellites', label: '위성' },
+  { id: 'methane', label: '메탄 모니터링' },
   { id: 'agent', label: '재난 대응' },
-  { id: 'gyeonggisat', label: '메탄 모니터링' },
-  { id: 'compliance', label: 'EUDR' },
+  { id: 'land', label: '토지 변화' },
   { id: 'posts', label: '분석 사례' },
   { id: 'dashboards', label: '기후 지도' },
 ] as const;
 
 export const SOLUTIONS = [
+  {
+    id: 'methane',
+    title: '메탄 · 온실가스 MRV',
+    desc: '산업단지, 발전소, 매립지에서 나오는 메탄을 시설 단위로 찾아 배출량을 잽니다. 통계 추정 대신 위성 관측값으로 검증합니다.',
+    link: { label: '경기샛-2A 보기', href: '#methane' },
+  },
   {
     id: 'disaster',
     title: '기후재난 대응',
@@ -152,22 +247,10 @@ export const SOLUTIONS = [
     link: { label: 'EP Agent 보기', href: '#agent' },
   },
   {
-    id: 'methane',
-    title: '메탄 · 온실가스 MRV',
-    desc: '산업단지, 발전소, 매립지에서 나오는 메탄을 시설 단위로 찾아 배출량을 잽니다. 통계 추정 대신 위성 관측값으로 검증합니다.',
-    link: { label: '경기샛-2A 보기', href: '#gyeonggisat' },
-  },
-  {
-    id: 'eudr',
-    title: 'EUDR 실사',
-    desc: '공급 농지를 등록하면 2020년 이후 산림을 훼손했는지 판정하고 TRACES에 낼 실사보고서(DDS)를 만듭니다.',
-    link: { label: 'EUDR 보기', href: '#compliance' },
-  },
-  {
     id: 'forest',
     title: '산림 · 토지 변화',
     desc: '산림 같은 탄소흡수원과 벼 재배지, 휴경지의 변화를 따라가고 개발제한구역 불법 훼손을 찾아냅니다.',
-    link: { label: '분석 사례 보기', href: '#posts' },
+    link: { label: '토지 변화 보기', href: '#land' },
   },
   {
     id: 'platform',

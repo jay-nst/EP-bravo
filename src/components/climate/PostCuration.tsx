@@ -17,7 +17,7 @@ export default function PostCuration() {
   const posts = filter === 'all' ? CURATED_POSTS : CURATED_POSTS.filter((p) => p.category === filter);
 
   return (
-    <section id="posts" className={s.tile}>
+    <section id="posts" className={`${s.tile} ${s.tileAlt}`}>
       <div className={s.inner}>
         <div className={s.center} data-reveal="">
           <h2 className={s.h2}>위성이 기록한 기후.</h2>

@@ -4,12 +4,12 @@ import { revealDelay } from './useScrollReveal';
 
 export default function SolutionMap() {
   return (
-    <section id="solutions" className={`${s.tile} ${s.tileAlt}`}>
+    <section id="solutions" className={s.tile}>
       <div className={s.inner}>
         <div className={s.center} style={{ marginBottom: 56 }} data-reveal="">
           <h2 className={s.h2}>관측에서 결정까지.</h2>
           <p className={`${s.lead} ${s.narrow}`}>
-            위성을 만들고, 띄우고, 데이터를 읽는 일까지 직접 합니다. 아래 순서대로 하나씩 소개합니다.
+            이 위성들로 무엇을 하는지, 아래 순서대로 하나씩 소개합니다.
           </p>
         </div>
         <div className={s.grid2}>

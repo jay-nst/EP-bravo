@@ -560,3 +560,77 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ── Hero notice strip (Apple 공지 띠) ─────────────────────────────── */
+.notice {
+  display: block;
+  text-align: center;
+  padding: 14px 24px;
+  background: var(--w-tile);
+  color: var(--w-text);
+  font-size: 14px;
+  text-decoration: none;
+  border-bottom: 1px solid var(--w-hair);
+}
+.notice span {
+  color: var(--w-accent);
+  margin-left: 6px;
+}
+.notice:hover span {
+  text-decoration: underline;
+}
+
+/* ── Satellites ─────────────────────────────── */
+.photo {
+  margin: 0;
+}
+.photo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+.photo figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.fleet {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid var(--w-hair);
+}
+.fleetRow {
+  display: grid;
+  grid-template-columns: 110px 1fr 140px;
+  gap: 24px;
+  align-items: baseline;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--w-hair);
+}
+.fleetLaunch {
+  font-size: 15px;
+  color: var(--w-muted);
+  font-variant-numeric: tabular-nums;
+}
+.fleetName {
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.fleetRow .status {
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .fleetRow {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .fleetRow .status {
+    text-align: left;
+  }
+}

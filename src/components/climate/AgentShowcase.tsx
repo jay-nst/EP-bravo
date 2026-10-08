@@ -5,7 +5,7 @@ import { revealDelay } from './useScrollReveal';
 
 export default function AgentShowcase() {
   return (
-    <section id="agent" className={s.tile}>
+    <section id="agent" className={`${s.tile} ${s.tileAlt}`}>
       <div className={s.inner}>
         <div className={s.center} style={{ marginBottom: 72 }} data-reveal="">
           <span className={s.eyebrow}>EP Agent</span>
