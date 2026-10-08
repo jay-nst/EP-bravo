@@ -1,75 +1,70 @@
 # Session Handoff
 
-> 생성: 2026-09-29 21:47
-> 프로젝트: C:\Users\jayoh\Documents\Claude Code\260619_Code\earthpaper
+> 생성: 2026-10-08 20:14
+> 프로젝트: C:\Users\jayoh\Documents\Claude Code\260619_Code\earthpaper-nds (git worktree, 메인 체크아웃은 ../earthpaper)
 
 ## 작업 요약
 
-Agent 튜토리얼 제안 페이지(`/proposals/agent-tutorial`)에 피그마 디자인 리뷰 피드백을 반영했다.
-피그마 파일 `039_EarthPaper_2026` (fileKey `1UjpfpibiqDUf2J1AB2082`)의 노드 23910:11393~11402에
-EUNJI CHOI가 2026-09-28에 남긴 미해결 댓글 9건 중 8건을 코드로 반영, 1건은 재캡쳐 필요로 보류.
-반영 상세는 `docs/AGENT_TUTORIAL_PROPOSAL_DESIGN.md`의 "디자인 리뷰 반영 (2026-09-28)" 섹션이 정본.
+EarthPaper 를 NDS(Naraspace Design System, `@naraspace-technology/nds`, GitHub Packages 비공개)로 전환했다.
 
-댓글 수집 방법: browse 쿠키 가져오기(DPAPI 실패)와 핸드오프 창(반복 사망) 모두 이 PC에서 실패 →
-사용자가 발급한 Figma PAT로 REST API(`GET /v1/files/:key/comments`) 호출. 메모리
-`feedback_figma-comments-via-rest.md`에 방법 기록됨.
+1. **1단계 (운영 배포 완료, master 597a0fd)** — NDS 설치 + EP 색 테마(`src/styles/nds/*.css`) + 코드모드(간격 ×4, radius 이름 변환) + 검증 스크립트. 화면 변화 없음.
+2. **2단계 (`feat/nds-phase2`, :3001 미리보기, master 미병합)** — 사용자 요청 "색 제외 싹다 한번에":
+   - 참조 구현 `LeadCaptureModal` (NDS Dialog/Field/Form anatomy)
+   - 전면 적용 1차(7e7c3d6): 타이포·아이콘·표면·컴포넌트 50파일
+   - 역할 기반 2차(d59e738): "바뀐애/안바뀐애 섞임" 지적 → 역할별 위계(h2=heading-2xl 등) + 텍스트 토큰
+   - Mapbox 컨트롤 NDS 아이콘(068b2a3, CSS mask 생성 스크립트)
+   - **색 복원 3차(47c586e)**: "버튼 색 날아감" 지적 → 사용자 결정 "3000(운영) 색 전부 복원" — 모양은 NDS, 색은 운영 EP 그대로(NDS 컴포넌트도 className 으로 색만 덮음)
+3. 지도 상단바(튜토리얼) 실서비스 정합 수정 edc415f — master 반영됨.
 
 ## 진행 중·미완료
 
-**모든 변경이 미커밋 상태다** (브랜치 `feat/gyeonggi-parks`, HEAD 5daa574 위 dirty).
-변경 파일 6개 — 아래 "변경된 파일" 표 참조. vitest 164개 통과, tsc/eslint 클린 확인 완료.
-
-- **브라우저 육안 확인 미실시** — 사용자가 bun/browse 사용 중단을 요청해 시각 검증을 못 했다.
-  특히 확인할 것: (1) 마지막 스텝(analysis-article) 팝오버가 `side: 'right'`인데 오른쪽 여백이
-  ~15.6%뿐이라 driver.js가 자동으로 위치를 뒤집을 수 있음, (2) 새 open-article 스텝의 민트 펄스가
-  driver 오버레이 컷아웃 안에서 제대로 보이는지, (3) X 버튼 34px 확대가 타이틀과 겹치지 않는지.
-- **피드백 1건 미반영**: "검색과 화재 전후 UI가 겹쳐 보임" (댓글 1943233805) — 스텝 3 캡쳐 PNG
-  (step2-result.png 및 COMPARE_ASSETS)에 구워진 실서비스 UI라 코드 수정 불가. agent.ep.naraspace.com
-  재캡쳐 필요. 캡쳐 절차·로그인 상태 파일 위치는 session-state.json의 2026-09-28 항목 참조.
+- `feat/nds-phase2` (HEAD 47c586e) 는 커밋·push 완료, **master 미병합 / 운영 미배포**. :3001 미리보기(서버 `/root/earthpaper-nds`, PM2 `earthpaper-nds`)에 최신 반영됨.
+- 사용자 육안 QA 대기. 열린 질문: 섹션 제목("서비스 영역", "최근 탐지", "역량" 등)이 NDS 22px 크기 + 운영의 흐린 회색 + 밑줄로 복원됨 → 다시 "예전 같다" 느낄 수 있음. 기본 글자색으로 할지 결정 필요.
+- warden/** · climate/** 는 다른 세션이 작업 중이라 NDS 2단계 미적용 (CSS 모듈 랜딩).
 
 ## 다음 단계
 
-1. `npm run dev` → `/proposals/agent-tutorial` 열어 새 6스텝 흐름 육안 QA (위 확인 포인트 3개)
-2. QA 통과 시 커밋 (예: `feat(proposals): apply Figma design review feedback to agent tutorial`)
-3. 피그마 댓글에 반영 완료 회신 / 해결 처리 (EUNJI CHOI에게 재리뷰 요청)
-4. (보류) step2-result.png 재캡쳐로 검색창/비교 바 겹침 해소
-5. (별개) gstack 업그레이드 대기 중 (1.60.1 → 1.91.6) — 원하면 `/gstack-upgrade`
+1. 사용자 :3001 QA 피드백 반영 (특히 섹션 제목 색)
+2. master 병합: `git fetch && git merge origin/master` (master 새 커밋은 이미 NDS 단위로 작성됨 → 코드모드 불필요, 단 새 코드의 색/타이포 규칙 확인) → tsc/vitest/build
+3. 운영 배포는 **사용자가 직접 실행** (자동 모드 분류기가 master push 를 막음):
+   `git -C ".../earthpaper-nds" push origin HEAD:master` → `ssh root@192.168.127.13 "cd /root/earthpaper && git pull origin master && npm ci && npm run build && pm2 restart earthpaper"`
+4. 배포 후 :3001 슬롯 정리 (`pm2 delete earthpaper-nds && pm2 save && rm -r /root/earthpaper-nds`)
+5. warden/climate 세션 종료 후 같은 규칙(§7 모양 + §8 색) 적용
+6. 정리 후보: EP 별칭 변수, typography/shadow 재등록 블록, 미사용 홈 컴포넌트(ComingSoonLane/CoreCTA/EPOriginal/PlatformBar), worktree 정리
 
 ## 참고 사항
 
-- **Figma PAT가 대화에 노출됐다** — 사용자에게 폐기(revoke) 권고했음. 토큰 값은 어디에도 저장 안 함.
-- 사용자 지시: **bun 데몬 그만 켜기** ("일단 bun 좀 그만켜"). 이 PC에서 browse 핸드오프 창이 반복적으로
-  죽는다 — 피그마 등 인증 필요한 사이트는 REST API 토큰 방식 우선.
-- 6스텝은 설계문서의 소프트 상한(5스텝, 초과 가능) 안의 의도적 결정 — 리뷰어 제안 반영.
-  테스트 상한도 6으로 갱신됨. 더 늘리면 완주율 벤치마크(6-8스텝 25%) 근거로 재검토.
-- 스텝 스펙에 `popoverSide`/`popoverAlign` 필드가 새로 생겼다 — driver.js `side`/`align`으로 전달됨.
-- 직접 클릭 핫스팟의 민트 펄스는 `ep-advance-pulse` 클래스 재사용 (AdvanceButton과 동일 효과).
+- **규칙 정본:** `docs/NDS_FULL_ADOPTION_RULES.md` — §0~6 기본, §7 역할 기반 위계, §8 색 복원(최신, §0-2/§0-3 색/§7-2 대체). `docs/NDS_MIGRATION.md` (설치·1단계·2단계 결정).
+- **사용자 결정 요약:** NDS = 모양(타이포 스케일·위계, 간격, radius, 아이콘, anatomy). 색 = 운영 EP 그대로. 작업 전 NDS `*.docs.mdx`/`*.examples.tsx` 먼저 확인. (메모리 `feedback_nds-max-fidelity`, `project_nds-design-system`)
+- **Tailwind 간격 단위 1px** (`p-16`=16px). `scripts/nds-codemod.mjs` 는 멱등 아님 — 변환 안 된 코드에만.
+- **`npx nds init` 금지** (globals.css 덮어씀).
+- GitHub Packages 토큰: PC `~/.npmrc`, 서버 `/root/.npmrc` 에 사용자가 등록 (값 기록 안 함).
+- 이 PC: browse/bun·claude-in-chrome 금지 → 시각 QA 는 사용자 육안.
+- master 는 다른 세션이 계속 push 중 (climate/warden). worktree 는 refs 공유 — fetch 결과가 즉시 반영됨.
+- NDS 문서 로컬 사본은 세션 scratchpad 에 있었음(휘발) — 필요 시 `gh api repos/Naraspace-Technology/nds/contents/src/lib/components/<name>/<Name>.docs.mdx` 로 재다운로드.
+- 모델: Opus 4.6 금지.
 
 ## 완료된 작업
 
-- 피그마 댓글 9건 수집·분류 (REST API, node_id 필터) + 노드 4개 스크린샷 대조
-- 스텝 분리: map-compare(action 'next'로 변경) + open-article(신규, 버튼 하이라이트 클릭,
-  loadingAfter 이관) → 총 6스텝
-- 팝오버 위치 지정: open-article 버튼 위(top/start), analysis-article PDF 저장 근처 오른쪽(right/start)
-- 팝오버 가독성: 이전 버튼 명도/hover 강화, 본문 `color-mix(in srgb, var(--text) 75%, var(--text-muted))`,
-  X 버튼 34px/20px, ▸ 아이콘 1.4em (span 분리)
-- 액션 유도 통일: 직접 클릭 핫스팟에 ep-advance-pulse 적용
-- 'next' 액션 스텝에도 힌트 문구 추가 ("체험해 본 뒤 아래 '다음' 버튼으로 진행하세요")
-- 인트로 카피 5스텝→6스텝, 테스트 소프트 상한 5→6, 설계문서에 리뷰 반영 섹션 추가
-- vitest 164/164 통과, tsc·eslint 클린, session-state.json 갱신
+- edc415f 지도 상단바 배지 색 반전 수정 + 라이브 px/SVG (master)
+- 78abc3e/268664b/597a0fd NDS 1단계 + warden 병합 (master, 운영 배포)
+- 08a99d3/dff450a 포털 isolate 래퍼 + LeadCaptureModal 참조 구현, Testing Library/jsdom 도입
+- 7e7c3d6 전면 NDS(색 제외) 50파일 / d59e738 역할 기반 위계 / 068b2a3 Mapbox 컨트롤 / 47c586e 운영 색 복원
+- 검증(최종): tsc ok, vitest 183/183, eslint 기존 7 errors 만, next build ok, :3001 17개 페이지 200
 
 ## 변경된 파일
 
 | 파일 | 변경 내용 |
 |------|-----------|
-| src/lib/agent-tutorial-steps.ts | PopoverSide/Align 타입 + popoverSide/Align 필드, map-compare→next 액션, open-article 스텝 신규, analysis-article 팝오버 위치 |
-| src/components/proposals/AgentTutorialDemo.tsx | 팝오버 side/align 전달, 힌트 문구 재구성(▸ span 분리, next 힌트 추가), 클릭 핫스팟 민트 펄스, 6스텝 카피 |
-| src/app/(main)/proposals/agent-tutorial/tutorial.css | 이전 버튼 가시성+hover, 본문 명도(color-mix), X 버튼 확대, ▸ 아이콘 확대 |
-| src/lib/agent-tutorial-steps.test.ts | 스텝 상한 5→6 (리뷰 근거 주석) |
-| docs/AGENT_TUTORIAL_PROPOSAL_DESIGN.md | 디자인 리뷰 반영 섹션 추가 (미반영 1건 포함) |
-| .claude/session-state.json | 2026-09-29 작업 항목 prepend |
+| src/styles/nds/*.css | NDS 테마(EP 색), mapbox-controls.css(자동 생성) |
+| src/app/globals.css, layout.tsx | NDS import, EP 별칭, IBM Plex 제거, isolate 래퍼 |
+| src/components/shared/LeadCaptureModal.tsx (+test) | NDS 참조 구현 + accentColor 색 복원 |
+| src/app/(main)/**, src/components/** (warden/climate 제외 ~50) | NDS 모양 + 운영 색 |
+| scripts/nds-codemod.mjs, nds-verify.mjs, gen-mapbox-controls-css.mjs | 변환·검증·생성 스크립트 |
+| docs/NDS_MIGRATION.md, NDS_FULL_ADOPTION_RULES.md, DESIGN.md, CLAUDE.md | 규칙·결정·참조 패턴 |
 
 ## 미해결 이슈
 
-- 스텝 3 캡쳐의 검색창/화재 전·후 비교 바 겹침 — PNG 재캡쳐 전까지 미해소 (댓글 1943233805)
-- 마지막 스텝 팝오버 오른쪽 배치가 좁은 여백에서 어떻게 동작하는지 미검증 (육안 QA 필요)
+- /seoul·/gyeonggi 데스크톱에서 사이드바가 상단 제목·LIVE 표시를 가림 (기존 레이아웃 버그, 미수정)
+- 서버 `npm ci` 가 sharp/unrs-resolver 설치 스크립트를 차단 (npm 11 allowScripts) — 이미지 문제 시 `npm install-scripts approve sharp`
+- NDS 에 없는 것: 인라인 텍스트 링크, 세그먼트 컨트롤, 종 아이콘(IconAlertOn 대체), Popover/Menu
