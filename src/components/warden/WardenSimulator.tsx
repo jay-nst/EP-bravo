@@ -330,8 +330,7 @@ export default function WardenSimulator() {
           textAlign: 'center',
         }}
       >
-        시뮬레이션 데이터입니다. 실 서비스에서는 Sentinel-2 위성영상 기반으로
-        분석됩니다.
+        시뮬레이션 데이터 · 실서비스는 Sentinel-2 위성영상 기반 분석
       </p>
 
       <style>{`

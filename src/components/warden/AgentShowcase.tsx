@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { AGENT_FACTS, AGENT_STEPS } from '@/lib/climate-intel';
 import s from './warden.module.css';
+import { revealDelay } from './useScrollReveal';
 
 export default function AgentShowcase() {
   return (
-    <section id="agent" className={`${s.tile} ${s.tileAlt}`}>
+    <section id="agent" className={s.tile}>
       <div className={s.inner}>
-        <div className={s.center} style={{ marginBottom: 72 }}>
+        <div className={s.center} style={{ marginBottom: 72 }} data-reveal="">
           <span className={s.eyebrow}>EP Agent</span>
           <h2 className={s.hero}>물어보면,<br />위성이 답합니다.</h2>
           <p className={`${s.lead} ${s.narrow}`}>
@@ -23,7 +24,7 @@ export default function AgentShowcase() {
 
         <div style={{ display: 'grid', gap: 72 }}>
           {AGENT_STEPS.map((step) => (
-            <figure key={step.num} className={s.shot}>
+            <figure key={step.num} className={s.shot} data-reveal="zoom">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={step.image} alt={step.alt} loading="lazy" />
               <figcaption>
@@ -35,8 +36,8 @@ export default function AgentShowcase() {
         </div>
 
         <div className={s.specs}>
-          {AGENT_FACTS.map((f) => (
-            <div key={f.label} className={s.spec}>
+          {AGENT_FACTS.map((f, i) => (
+            <div key={f.label} className={s.spec} data-reveal="" style={revealDelay(i * 120)}>
               <span className={s.specValue}>
                 {f.value}
                 <span className={s.specUnit}>{f.unit}</span>
@@ -46,7 +47,7 @@ export default function AgentShowcase() {
           ))}
         </div>
         <p className={`${s.fine} ${s.center}`} style={{ marginTop: 24 }}>
-          2026년 Santa Rosa Island 산불을 EP Agent로 분석한 결과입니다.
+          Santa Rosa Island 산불 (2026) · EP Agent 분석 결과
         </p>
       </div>
     </section>

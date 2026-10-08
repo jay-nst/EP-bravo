@@ -2,7 +2,7 @@
 //
 // 출처 (2026-10-08 확인):
 // - 경기샛-2A 발사·교신: 나라스페이스 보도자료 2026-10-02 「국내 최초 메탄 관측 위성 '경기샛-2A' 양방향 교신 성공」
-// - 경기샛 제원·임무: 경기기후위성 리플렛 A4 국문 최종 (2026-09-16). "세 개의 눈이 경기도를 지켜봅니다"도 리플렛 문구
+// - 경기샛 제원·임무: 경기기후위성 리플렛 A4 국문 최종 (2026-09-16)
 // - Transporter-18 / CEOS 등재 / 카자흐스탄 KGS 공급: 웹 보도 (gktoday, venturesquare 1040076·1114931)
 // - "세계 네 번째 메탄 관측 초소형위성"은 회사 발표 기준 — 페이지에 단서 표기
 // - EP Post: src/lib/mock-dashboard.ts 의 실제 ep.naraspace.com 링크만 사용 (link_url null 항목 제외)
@@ -25,49 +25,21 @@ export const LAUNCH_SEQUENCE = [
   { key: '지금', title: '점검과 검보정', detail: '본체와 탑재체를 점검하고 있습니다. 끝나면 본격적으로 메탄을 관측합니다.' },
 ] as const;
 
-export interface SatelliteSpec {
-  id: string;
-  name: string;
-  type: string;
-  status: 'operating' | 'commissioning' | 'planned';
-  statusLabel: string;
-  launch: string;
-  specs: string;
-  target: string;
-}
+export const GG2A_NOTES = [
+  '경기기후위성 사업 두 번째 위성 — 경기도·서울대 기후연구실 공동 추진',
+  '캐나다·스페인·프랑스에 이어 세계 네 번째 메탄 관측 초소형위성 (나라스페이스 발표 기준)',
+  '같은 플랫폼으로 자체 메탄 관측 군집 NarSha 구축 중',
+  'NarSha: 2026.02 국내 민간 메탄 위성 최초 CEOS 공식 포털 등재, 카자흐스탄 국영우주공사(KGS) 메탄 MRV 데이터 공급 계약',
+] as const;
 
-export const GYEONGGISAT_FLEET: SatelliteSpec[] = [
-  {
-    id: 'gg1',
-    name: '경기샛-1',
-    type: '광학',
-    status: 'operating',
-    statusLabel: '운용 중',
-    launch: '2025년 11월 발사',
-    specs: '해상도 1.5 m · 촬영 폭 14×40 km',
-    target: '경기도 전역의 토지 변화와 재난 현장을 찍습니다.',
-  },
-  {
-    id: 'gg2a',
-    name: '경기샛-2A',
-    type: '초분광 · 메탄',
-    status: 'commissioning',
-    statusLabel: '초기 운영 중',
-    launch: '2026년 10월 발사',
-    specs: '해상도 25 m · 촬영 폭 10×10 km',
-    target: '산업단지, 발전소, 매립지의 메탄을 봅니다.',
-  },
-  {
-    id: 'gg2b',
-    name: '경기샛-2B',
-    type: '초분광 · 메탄',
-    status: 'planned',
-    statusLabel: '2027년 발사 예정',
-    launch: '2027년 발사 예정',
-    specs: '해상도 25 m · 촬영 폭 10×10 km',
-    target: '2A와 함께 돌며 같은 곳을 더 자주 봅니다.',
-  },
-];
+/** 페이지 섹션 순서 = 로컬 내비 순서 = 솔루션 카드 순서 (링크가 항상 아래로 향하도록) */
+export const WARDEN_SECTIONS = [
+  { id: 'agent', label: '재난 대응' },
+  { id: 'gyeonggisat', label: '메탄 위성' },
+  { id: 'compliance', label: 'EUDR' },
+  { id: 'posts', label: '분석 사례' },
+  { id: 'dashboards', label: '기후 지도' },
+] as const;
 
 export const SOLUTIONS = [
   {
@@ -83,16 +55,16 @@ export const SOLUTIONS = [
     link: { label: '경기샛-2A 보기', href: '#gyeonggisat' },
   },
   {
-    id: 'forest',
-    title: '산림 · 토지 변화',
-    desc: '산림 같은 탄소흡수원과 벼 재배지, 휴경지의 변화를 따라가고 개발제한구역 불법 훼손을 찾아냅니다.',
-    link: { label: '분석 사례 보기', href: '#posts' },
-  },
-  {
     id: 'eudr',
     title: 'EUDR 실사',
     desc: '공급 농지를 등록하면 2020년 이후 산림을 훼손했는지 판정하고 TRACES에 낼 실사보고서(DDS)를 만듭니다.',
     link: { label: 'EUDR 보기', href: '#compliance' },
+  },
+  {
+    id: 'forest',
+    title: '산림 · 토지 변화',
+    desc: '산림 같은 탄소흡수원과 벼 재배지, 휴경지의 변화를 따라가고 개발제한구역 불법 훼손을 찾아냅니다.',
+    link: { label: '분석 사례 보기', href: '#posts' },
   },
   {
     id: 'platform',

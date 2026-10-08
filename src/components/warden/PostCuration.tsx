@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { CURATED_POSTS, POST_CATEGORY_LABELS, type PostCategory } from '@/lib/climate-intel';
 import s from './warden.module.css';
+import { revealDelay } from './useScrollReveal';
 
 type Filter = 'all' | PostCategory;
 
@@ -16,9 +17,9 @@ export default function PostCuration() {
   const posts = filter === 'all' ? CURATED_POSTS : CURATED_POSTS.filter((p) => p.category === filter);
 
   return (
-    <section id="posts" className={`${s.tile} ${s.tileAlt}`}>
+    <section id="posts" className={s.tile}>
       <div className={s.inner}>
-        <div className={s.center}>
+        <div className={s.center} data-reveal="">
           <h2 className={s.h2}>위성이 기록한 기후.</h2>
           <p className={`${s.lead} ${s.narrow}`}>
             EarthPaper가 직접 분석한 산불, 홍수, 산림, 식량 이야기입니다.
@@ -40,8 +41,8 @@ export default function PostCuration() {
         </div>
 
         <div className={s.grid3}>
-          {posts.map((p) => (
-            <a key={p.id} href={p.href} target="_blank" rel="noopener noreferrer" className={s.post}>
+          {posts.map((p, i) => (
+            <a key={p.id} href={p.href} target="_blank" rel="noopener noreferrer" className={s.post} data-reveal="" style={revealDelay((i % 3) * 100)}>
               <div className={s.postImg}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={p.thumbnail} alt="" loading="lazy" />
