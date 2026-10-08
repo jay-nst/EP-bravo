@@ -11,6 +11,7 @@ import SolutionMap from '@/components/climate/SolutionMap';
 import AgentShowcase from '@/components/climate/AgentShowcase';
 import LandSection from '@/components/climate/LandSection';
 import PostCuration from '@/components/climate/PostCuration';
+import RoadmapSection from '@/components/climate/RoadmapSection';
 import { CLIMATE_DASHBOARDS, SOURCES } from '@/lib/climate-content';
 import s from '@/components/climate/climate.module.css';
 import { revealDelay, useScrollReveal } from '@/components/climate/useScrollReveal';
@@ -78,8 +79,10 @@ export default function ClimatePage() {
         </div>
       </section>
 
+      <RoadmapSection />
+
       {/* Contact */}
-      <section id="contact" className={`${s.tile} ${s.tileAlt}`}>
+      <section id="contact" className={s.tile}>
         <div className={`${s.inner} ${s.center}`}>
           <h2 className={s.hero} data-reveal="">관측이 필요한 곳을<br />알려주세요.</h2>
           <p className={`${s.lead} ${s.narrow}`} data-reveal="" style={revealDelay(120)}>

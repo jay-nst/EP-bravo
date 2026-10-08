@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { AGENT_FACTS, AGENT_STEPS } from '@/lib/climate-content';
 import s from './climate.module.css';
 import { revealDelay } from './useScrollReveal';
+import CaseStudy from './CaseStudy';
 
 export default function AgentShowcase() {
   return (
@@ -20,6 +21,8 @@ export default function AgentShowcase() {
             </a>
           </div>
         </div>
+
+        <CaseStudy />
 
         <div style={{ display: 'grid', gap: 72 }}>
           {AGENT_STEPS.map((step) => (

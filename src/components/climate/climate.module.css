@@ -634,3 +634,60 @@
     text-align: left;
   }
 }
+
+/* ── Case study (긴 캡션 영상) ─────────────────────────────── */
+.caseStudy {
+  margin-bottom: 96px;
+}
+.caseHead {
+  margin-bottom: 24px;
+}
+.caseFrame {
+  margin: 0;
+}
+.caseFrame img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 640 / 484;
+  object-fit: cover;
+  border-radius: 20px;
+}
+.caseWide {
+  margin-top: 20px;
+}
+.caseWide img {
+  aspect-ratio: 16 / 9;
+}
+.caseFrame figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+  max-width: 640px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--w-muted);
+}
+.caseTag {
+  font-size: 13px;
+  color: var(--w-muted);
+}
+.caseTag strong {
+  color: var(--w-text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.timeline4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+@media (max-width: 834px) {
+  .timeline4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .timeline4 {
+    grid-template-columns: 1fr;
+  }
+}

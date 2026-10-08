@@ -6,6 +6,8 @@
 // - 경기샛 제원·임무: 경기기후위성 리플렛 A4 국문 최종 (2026-09-16)
 // - 경기샛-1 첫 영상·활용 분야, Observer-1A 포천 산사태: 보도자료 2026-03-16 「'경기샛-1' 위성영상 첫 공개」
 // - 위성 사진(observer-bus·cleanroom·mission-control): naraspace.com 메인 공개 이미지
+// - Santa Rosa 사례: EP Agent 실화면 캡처(proposals/agent-tutorial) 크롭 + EP Agent 분석 아티클(2026.09) 수치
+// - 로드맵: 보도자료 2026-10-02(검보정 후 정상 운용), 경기기후위성 리플렛(2B 2027, 경기기후플랫폼 연계)
 // - Transporter-18 / CEOS 등재 / 카자흐스탄 KGS 공급: 웹 보도 (gktoday, venturesquare 1040076·1114931)
 // - 메탄 모니터링: NarSha leaflet_en (2026-08) — 제원·강점·업종별 활용 / NarSha 홍보영상 스토리보드 (2026-06)
 //   메탄 통계·규제: WEF 매거진 기고문 (2025-06, 출처 링크 포함) / 1665.6 nm first light: 오형직 이사 발표 (2026-09)
@@ -106,6 +108,41 @@ export const BUILD_PHOTOS = [
     title: '운용',
     desc: '본사 관제센터에서 위성과 교신하고 촬영 계획을 수립합니다.',
   },
+] as const;
+
+// ── 사례: Santa Rosa Island 산불 (Muon Space FireSat 발표 페이지식 긴 캡션) ─────────────────────────────
+
+export const CASE_FRAMES = [
+  {
+    src: '/climate/santa-rosa-before.jpg',
+    alt: '화재 전 2026년 4월 20일 산타로사섬 위성영상',
+    date: '2026.04.20',
+    tag: '화재 전',
+    caption: '캘리포니아 채널 제도 국립공원의 산타로사섬. 섬 전체가 초지와 관목으로 덮여 있고 구름 일부가 섬 가운데에 걸려 있습니다.',
+  },
+  {
+    src: '/climate/santa-rosa-after.jpg',
+    alt: '화재 후 2026년 6월 9일 산타로사섬 위성영상',
+    date: '2026.06.09',
+    tag: '화재 후',
+    caption: '5월 15일 섬 남동부에서 시작된 산불은 강풍을 타고 번졌고 6월 4일에야 진화됐습니다. 섬 동쪽 절반이 짙은 갈색으로 그을린 모습이 그대로 보입니다.',
+  },
+  {
+    src: '/climate/santa-rosa-severity.jpg',
+    alt: '화재 전후 영상으로 계산한 dNBR 피해 등급 오버레이',
+    date: '04.20 → 06.09',
+    tag: '피해 등급 (dNBR)',
+    caption: '화재 전후 영상의 근적외선·단파적외선 반사 차이로 연소 강도를 계산했습니다. 색이 진할수록 고강도 피해입니다. 섬 면적의 약 3분의 1인 7,428.8 ha가 탔고, 그중 2,480.1 ha가 고강도 피해입니다.',
+  },
+] as const;
+
+// ── 로드맵 ─────────────────────────────
+
+export const ROADMAP = [
+  { when: '2026 4분기', title: '경기샛-2A 정상 운용 전환', desc: '본체·탑재체 점검과 검보정을 마친 뒤 메탄 관측을 시작합니다.' },
+  { when: '2027', title: '경기샛-2B 발사', desc: '2A와 함께 같은 지역을 더 자주 관측합니다.' },
+  { when: '2027~', title: '경기기후플랫폼 연계', desc: '경기샛 관측·분석 데이터를 경기기후플랫폼에 축적해 도민과 행정에 제공합니다.' },
+  { when: '구축 중', title: 'NarSha 메탄 군집', desc: '같은 플랫폼으로 위성을 늘려 국내외 배출원을 더 자주 관측합니다.' },
 ] as const;
 
 // ── 토지 변화 (경기샛-1 · Observer-1A) ─────────────────────────────
@@ -231,6 +268,7 @@ export const CLIMATE_SECTIONS = [
   { id: 'land', label: '토지 변화' },
   { id: 'posts', label: '분석 사례' },
   { id: 'dashboards', label: '기후 지도' },
+  { id: 'next', label: '로드맵' },
 ] as const;
 
 export const SOLUTIONS = [
