@@ -138,6 +138,7 @@ function main(argv) {
   console.log(`${dry ? '[dry] ' : ''}총 ${total}건 변환, 파일 ${files.length}개 검사`);
 }
 
-if (import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}` || process.argv[1]?.endsWith('nds-codemod.mjs')) {
+// CLI 로 실행될 때만 main — import(테스트·nds-verify) 시에는 실행하지 않는다
+if (process.argv[1]?.endsWith('nds-codemod.mjs')) {
   main(process.argv.slice(2));
 }

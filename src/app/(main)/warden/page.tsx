@@ -6,6 +6,7 @@ import Link from 'next/link';
 import OtherSolutions from '@/components/landing/OtherSolutions';
 import GyeonggisatSection from '@/components/warden/GyeonggisatSection';
 import LocalNav from '@/components/warden/LocalNav';
+import MethaneSection from '@/components/warden/MethaneSection';
 import SolutionMap from '@/components/warden/SolutionMap';
 import AgentShowcase from '@/components/warden/AgentShowcase';
 import PostCuration from '@/components/warden/PostCuration';
@@ -71,7 +72,10 @@ export default function WardenPage() {
       {/* 섹션 순서 = WARDEN_SECTIONS = 솔루션 카드 순서 */}
       <SolutionMap />
       <AgentShowcase />
-      <GyeonggisatSection alt />
+      <div id="gyeonggisat">
+        <GyeonggisatSection alt />
+        <MethaneSection />
+      </div>
 
       {/* Compliance (기존 Warden EUDR) */}
       <section id="compliance" className={`${s.tile} ${s.tileAlt}`}>

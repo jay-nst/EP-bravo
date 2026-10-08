@@ -10,7 +10,7 @@ function daysSinceLaunch() {
 }
 
 interface GyeonggisatSectionProps {
-  /** 발사 섹션 배경 (인용 섹션은 반대 톤) */
+  /** 배경 톤 (#161617) */
   alt?: boolean;
 }
 
@@ -19,7 +19,7 @@ export default function GyeonggisatSection({ alt = false }: GyeonggisatSectionPr
 
   return (
     <>
-      <section id="gyeonggisat" className={`${s.tile} ${alt ? s.tileAlt : ''}`}>
+      <section className={`${s.tile} ${alt ? s.tileAlt : ''}`}>
         <div className={`${s.inner} ${s.center}`}>
           <span className={s.eyebrow} data-reveal="">새 위성 · 궤도에서 {days}일째</span>
           <h2 className={s.hero} data-reveal="" style={revealDelay(100)}>
@@ -74,16 +74,6 @@ export default function GyeonggisatSection({ alt = false }: GyeonggisatSectionPr
         </div>
       </section>
 
-      <section className={`${s.tile} ${alt ? '' : s.tileAlt}`}>
-        <figure className={`${s.narrow} ${s.center}`} style={{ margin: '0 auto', maxWidth: 860 }}>
-          <blockquote className={s.quote} data-reveal="">
-            “최근 위성 기반 글로벌 메탄 배출량 데이터가 탄소 배출권 시장, 에너지 안보 측면에서 높은 가치와
-            희소성을 지니는 만큼, 경기샛과 향후 발사를 준비 중인 자체 메탄 관측 위성군 ‘나르샤(NarSha)’를 통해
-            우주 데이터 주권 확립과 환경 데이터 시장을 주도하는 데 기여할 것”
-          </blockquote>
-          <figcaption className={s.body}>박재필 · 나라스페이스 대표</figcaption>
-        </figure>
-      </section>
     </>
   );
 }

@@ -399,8 +399,7 @@
 :global(html):has(.page) {
   scroll-behavior: smooth;
 }
-.page section[id],
-.page [id='top'] {
+.page [id] {
   scroll-margin-top: calc(var(--header-height) + 52px);
 }
 .localNav {
@@ -495,5 +494,69 @@
 @media (prefers-reduced-motion: reduce) {
   :global(html):has(.page) {
     scroll-behavior: auto;
+  }
+}
+
+/* ── Methane section ─────────────────────────────── */
+.specs4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+.specSource {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #6e6e73;
+}
+.timeline3 {
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 56px;
+}
+.diagram {
+  margin: 56px auto 0;
+  max-width: 880px;
+}
+.diagram svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.specGroup {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--w-accent);
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--w-hair);
+  margin-bottom: 4px;
+}
+.specList {
+  margin: 0;
+}
+.specList > div {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--w-hair);
+}
+.specList dt {
+  font-size: 13px;
+  color: var(--w-muted);
+  margin-bottom: 4px;
+}
+.specList dd {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--w-text);
+}
+
+@media (max-width: 834px) {
+  .specs4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .timeline3 {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .specs4 {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
