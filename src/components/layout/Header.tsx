@@ -140,6 +140,21 @@ export default function Header() {
             </Link>
 
             <Link
+              href="/proposals/order-tutorial"
+              className="px-12 py-10 text-sm rounded-[6px] transition-colors"
+              style={{
+                color: pathname.startsWith('/proposals/order-tutorial')
+                  ? 'var(--accent)'
+                  : 'var(--text-muted)',
+                background: pathname.startsWith('/proposals/order-tutorial')
+                  ? 'var(--surface-elevated)'
+                  : 'transparent',
+              }}
+            >
+              EP Map Tutorial
+            </Link>
+
+            <Link
               href="/climate"
               className="px-12 py-10 text-sm rounded-[6px] transition-colors"
               style={{
@@ -222,6 +237,18 @@ export default function Header() {
               }}
             >
               EP Agent
+            </Link>
+
+            <Link
+              href="/proposals/order-tutorial"
+              className="flex items-center px-24 py-12 text-sm transition-colors"
+              style={{
+                color: pathname.startsWith('/proposals/order-tutorial')
+                  ? 'var(--accent)'
+                  : 'var(--text)',
+              }}
+            >
+              EP Map Tutorial
             </Link>
 
             <Link
