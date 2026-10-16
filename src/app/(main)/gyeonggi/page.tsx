@@ -22,8 +22,9 @@ import {
 } from '@/lib/gyeonggi-park-data';
 import { baseRadiusM } from '@/lib/park-accessibility';
 import { MAP_STYLES, DEFAULT_STYLE_IDS } from '@/components/map/EarthMap';
-import type { MapStyleId } from '@/components/map/EarthMap';
+import { useThemedMapStyle } from '@/components/map/useThemedMapStyle';
 import { fmtNum } from '@/lib/format';
+import { isLightBasemap, mapLabelPaint, mapMaskColor } from '@/lib/theme';
 import { trackEvent } from '@/lib/analytics';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
@@ -165,10 +166,15 @@ function areaLabel(areaM2: number): string {
 
 export default function GyeonggiPage() {
   const [layers, setLayers] = useState<GyeonggiLayer[]>(INITIAL_LAYERS);
-  const [mapStyleId, setMapStyleId] = useState<MapStyleId>('dark');
+  const [mapStyleId, setMapStyleId] = useThemedMapStyle();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const mapRef = useRef<mapboxgl.Map | null>(null);
+  // 레이어 생성 콜백이 stale closure 없이 현재 배경지도를 읽도록 ref 로 미러링한다.
+  const mapStyleRef = useRef(mapStyleId);
+  useEffect(() => {
+    mapStyleRef.current = mapStyleId;
+  }, [mapStyleId]);
   const enabledRef = useRef<Record<string, boolean>>({ 'access-contour': true, 'park-wms': true });
   const cacheRef = useRef<Record<string, GeoJSON.FeatureCollection>>({});
   // 배경지도를 바꾸면 setStyle 이 소스/레이어를 날리고 onMapReady 가 다시 불린다.
@@ -185,6 +191,7 @@ export default function GyeonggiPage() {
   );
 
   const addLayers = useCallback((map: mapboxgl.Map) => {
+    const labelPaint = mapLabelPaint(mapStyleRef.current);
     // ---- sources -------------------------------------------------------
     (['access-contour', 'emd-score'] as GyeonggiLayerId[]).forEach((id) => {
       if (map.getSource(LAYER_IDS[id].source)) return;
@@ -230,7 +237,7 @@ export default function GyeonggiPage() {
       id: 'gg-mask-fill',
       type: 'fill',
       source: 'gg-mask',
-      paint: { 'fill-color': '#08080A', 'fill-opacity': 0.45 },
+      paint: { 'fill-color': mapMaskColor(mapStyleRef.current), 'fill-opacity': 0.45 },
     });
 
     map.addLayer({
@@ -259,7 +266,9 @@ export default function GyeonggiPage() {
       layout: { visibility: 'none' },
       minzoom: 9.5,
       paint: {
-        'line-color': 'rgba(232,228,223,0.15)',
+        'line-color': isLightBasemap(mapStyleRef.current)
+          ? 'rgba(23,24,26,0.18)'
+          : 'rgba(232,228,223,0.15)',
         'line-width': 0.5,
       },
     });
@@ -336,8 +345,8 @@ export default function GyeonggiPage() {
         'text-allow-overlap': false,
       },
       paint: {
-        'text-color': '#E8E4DF',
-        'text-halo-color': 'rgba(14,14,16,0.85)',
+        'text-color': labelPaint.text,
+        'text-halo-color': labelPaint.halo,
         'text-halo-width': 1,
         'text-opacity': 0.8,
       },
@@ -381,7 +390,7 @@ export default function GyeonggiPage() {
         if (contourHits.length > 0) {
           const p = contourHits[0].properties as { label: string; min: number; max: number | null };
           sections.push(`
-            <div style="font-weight:600;margin-bottom:2px">공원 접근성 <b style="color:#7FE8D2">${p.label}</b></div>
+            <div style="font-weight:600;margin-bottom:2px">공원 접근성 <b style="color:var(--accent)">${p.label}</b></div>
             <div style="opacity:.7;font-size:12px">영향 지수 ${p.min}${p.max !== null ? `~${p.max}` : ' 이상'}</div>`);
         }
 
@@ -409,9 +418,9 @@ export default function GyeonggiPage() {
         if (sections.length === 0) return;
 
         const el = document.createElement('div');
-        el.style.cssText = 'font-size:13px;line-height:1.6;color:#E8E4DF';
+        el.style.cssText = 'font-size:13px;line-height:1.6;color:var(--text)';
         el.innerHTML = sections.join(
-          '<div style="border-top:1px solid rgba(232,228,223,0.12);margin:8px 0"></div>',
+          '<div style="border-top:1px solid var(--border);margin:8px 0"></div>',
         );
 
         void import('mapbox-gl').then((mod) => {
@@ -540,7 +549,7 @@ export default function GyeonggiPage() {
       <div
         className="absolute top-0 left-0 right-0 z-10 flex items-center gap-16 px-16 py-12 pointer-events-none"
         style={{
-          background: 'linear-gradient(to bottom, rgba(14,14,16,0.9), rgba(14,14,16,0))',
+          background: 'linear-gradient(to bottom, color-mix(in srgb, var(--bg) 90%, transparent), transparent)',
         }}
       >
         <div className="pointer-events-auto">
@@ -690,7 +699,7 @@ export default function GyeonggiPage() {
                   >
                     <span
                       className="text-xs font-mono w-20 text-right flex-shrink-0"
-                      style={{ color: i < 3 ? '#1bbfa8' : 'var(--text-muted)' }}
+                      style={{ color: i < 3 ? 'var(--accent)' : 'var(--text-muted)' }}
                     >
                       {i + 1}
                     </span>
@@ -711,7 +720,7 @@ export default function GyeonggiPage() {
 
           <div className="text-xs leading-relaxed space-y-4" style={{ color: 'var(--text-muted)' }}>
             <p>
-              <span style={{ color: '#1bbfa8' }}>LIVE</span> 공공 API 수신 ·{' '}
+              <span style={{ color: 'var(--accent)' }}>LIVE</span> 공공 API 수신 ·{' '}
               <span style={{ color: '#4A9E6B' }}>통계</span> 기준일 고정 공식 통계
             </p>
             <p>
@@ -729,7 +738,7 @@ export default function GyeonggiPage() {
         className="absolute bottom-0 right-0 z-10 max-w-full md:max-w-[60%] px-12 py-6 text-xs font-mono leading-relaxed text-right pointer-events-none"
         style={{
           color: 'var(--text-muted)',
-          background: 'linear-gradient(to top, rgba(14,14,16,0.85), rgba(14,14,16,0))',
+          background: 'linear-gradient(to top, color-mix(in srgb, var(--bg) 85%, transparent), transparent)',
         }}
       >
         출처: {GYEONGGI_SOURCE_PROVIDERS.join(' · ')} · 상세는 좌측 패널
@@ -738,7 +747,7 @@ export default function GyeonggiPage() {
       {sidebarOpen && (
         <button
           className="md:hidden absolute inset-0 z-10"
-          style={{ background: 'rgba(0,0,0,0.5)' }}
+          style={{ background: 'color-mix(in srgb, var(--bg) 50%, transparent)' }}
           onClick={() => setSidebarOpen(false)}
           aria-label="닫기"
         />

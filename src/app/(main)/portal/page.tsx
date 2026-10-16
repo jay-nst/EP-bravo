@@ -101,7 +101,7 @@ export default function PortalPage() {
           <a
             href="/map"
             className="inline-block text-sm px-20 py-10 rounded-sm font-medium transition-colors"
-            style={{ background: 'var(--accent)', color: '#0E0E10' }}
+            style={{ background: 'var(--accent)', color: 'var(--text-inverse)' }}
           >
             지도에서 영상 구매하기
           </a>
@@ -162,7 +162,7 @@ export default function PortalPage() {
                   <button
                     onClick={() => handleDownload(order.id)}
                     className="text-sm px-16 py-8 rounded-sm transition-colors"
-                    style={{ background: 'var(--accent)', color: '#0E0E10' }}
+                    style={{ background: 'var(--accent)', color: 'var(--text-inverse)' }}
                   >
                     다운로드
                   </button>

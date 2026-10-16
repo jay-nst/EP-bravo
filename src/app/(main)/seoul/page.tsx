@@ -14,8 +14,9 @@ import { buildHeatCrowdFC } from '@/lib/seoul-heat-crowd';
 import { SeoulAnimationController } from '@/lib/seoul-animations';
 import type { SeoulAnimationId } from '@/lib/seoul-animations';
 import { MAP_STYLES, DEFAULT_STYLE_IDS } from '@/components/map/EarthMap';
-import type { MapStyleId } from '@/components/map/EarthMap';
+import { useThemedMapStyle } from '@/components/map/useThemedMapStyle';
 import { fmtNum } from '@/lib/format';
+import { mapLabelPaint, mapMaskColor } from '@/lib/theme';
 import { trackEvent } from '@/lib/analytics';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
@@ -353,7 +354,7 @@ function buildDistrictFC(metric: 'ghg' | 'solar'): GeoJSON.FeatureCollection {
 
 export default function SeoulPage() {
   const [layers, setLayers] = useState<SeoulLayer[]>(INITIAL_LAYERS);
-  const [mapStyleId, setMapStyleId] = useState<MapStyleId>('dark');
+  const [mapStyleId, setMapStyleId] = useThemedMapStyle();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [liveAvgPm25, setLiveAvgPm25] = useState<number | null>(null);
   const [liveAvgTemp, setLiveAvgTemp] = useState<number | null>(null);
@@ -365,6 +366,11 @@ export default function SeoulPage() {
   const [countdown, setCountdown] = useState(REFRESH_SEC);
 
   const mapRef = useRef<mapboxgl.Map | null>(null);
+  // 레이어 생성 콜백이 stale closure 없이 현재 배경지도를 읽도록 ref 로 미러링한다.
+  const mapStyleRef = useRef(mapStyleId);
+  useEffect(() => {
+    mapStyleRef.current = mapStyleId;
+  }, [mapStyleId]);
   const animRef = useRef<SeoulAnimationController | null>(null);
   const enabledRef = useRef<Record<string, boolean>>({ 'air-quality': true });
   const cacheRef = useRef<Record<string, GeoJSON.FeatureCollection>>({});
@@ -387,6 +393,7 @@ export default function SeoulPage() {
   }, []);
 
   const addLayers = useCallback((map: mapboxgl.Map) => {
+    const labelPaint = mapLabelPaint(mapStyleRef.current);
     // ---- sources -------------------------------------------------------
     // satellite 은 래스터라 아래에서 따로 만든다. 여기서 geojson 으로 만들면
     // 같은 ID로 두 번 addSource 하게 되어 전체 addLayers 가 죽는다.
@@ -428,7 +435,7 @@ export default function SeoulPage() {
       type: 'fill',
       source: 'seoul-mask',
       paint: {
-        'fill-color': '#08080A',
+        'fill-color': mapMaskColor(mapStyleRef.current),
         'fill-opacity': 0.45,
       },
     });
@@ -560,7 +567,7 @@ export default function SeoulPage() {
           AIR_GRADE_COLORS.moderate,
         ],
         'circle-stroke-width': 1.5,
-        'circle-stroke-color': 'rgba(14,14,16,0.7)',
+        'circle-stroke-color': labelPaint.stroke,
         'circle-opacity': 0.9,
       },
     });
@@ -578,8 +585,8 @@ export default function SeoulPage() {
       },
       minzoom: 10,
       paint: {
-        'text-color': '#E8E4DF',
-        'text-halo-color': 'rgba(14,14,16,0.85)',
+        'text-color': labelPaint.text,
+        'text-halo-color': labelPaint.halo,
         'text-halo-width': 1,
       },
     });
@@ -639,8 +646,8 @@ export default function SeoulPage() {
         'text-anchor': 'center',
       },
       paint: {
-        'text-color': '#FFFFFF',
-        'text-halo-color': 'rgba(14,14,16,0.9)',
+        'text-color': labelPaint.text,
+        'text-halo-color': labelPaint.halo,
         'text-halo-width': 1.2,
       },
     });
@@ -658,8 +665,8 @@ export default function SeoulPage() {
       },
       minzoom: 10,
       paint: {
-        'text-color': '#E8E4DF',
-        'text-halo-color': 'rgba(14,14,16,0.85)',
+        'text-color': labelPaint.text,
+        'text-halo-color': labelPaint.halo,
         'text-halo-width': 1,
       },
     });
@@ -693,8 +700,8 @@ export default function SeoulPage() {
         'text-anchor': 'center',
       },
       paint: {
-        'text-color': '#FFFFFF',
-        'text-halo-color': 'rgba(14,14,16,0.9)',
+        'text-color': labelPaint.text,
+        'text-halo-color': labelPaint.halo,
         'text-halo-width': 1.2,
       },
     });
@@ -753,8 +760,8 @@ export default function SeoulPage() {
       },
       minzoom: 11,
       paint: {
-        'text-color': '#E8E4DF',
-        'text-halo-color': 'rgba(14,14,16,0.85)',
+        'text-color': labelPaint.text,
+        'text-halo-color': labelPaint.halo,
         'text-halo-width': 1,
       },
     });
@@ -802,8 +809,8 @@ export default function SeoulPage() {
         'text-anchor': 'top',
       },
       paint: {
-        'text-color': '#E8E4DF',
-        'text-halo-color': 'rgba(14,14,16,0.9)',
+        'text-color': labelPaint.text,
+        'text-halo-color': labelPaint.halo,
         'text-halo-width': 1.2,
       },
     });
@@ -839,8 +846,8 @@ export default function SeoulPage() {
         'text-anchor': 'center',
       },
       paint: {
-        'text-color': '#E8E4DF',
-        'text-halo-color': 'rgba(14,14,16,0.85)',
+        'text-color': labelPaint.text,
+        'text-halo-color': labelPaint.halo,
         'text-halo-width': 1.2,
       },
     });
@@ -876,8 +883,8 @@ export default function SeoulPage() {
         'text-anchor': 'center',
       },
       paint: {
-        'text-color': '#E8E4DF',
-        'text-halo-color': 'rgba(14,14,16,0.85)',
+        'text-color': labelPaint.text,
+        'text-halo-color': labelPaint.halo,
         'text-halo-width': 1.2,
       },
     });
@@ -990,7 +997,7 @@ export default function SeoulPage() {
         const coords = feature.geometry.coordinates as [number, number];
 
         const el = document.createElement('div');
-        el.style.cssText = 'font-size:13px;line-height:1.6;color:#E8E4DF';
+        el.style.cssText = 'font-size:13px;line-height:1.6;color:var(--text)';
         el.innerHTML = render(feature.properties ?? {});
 
         void import('mapbox-gl').then((mod) => {
@@ -1253,7 +1260,7 @@ export default function SeoulPage() {
       <div
         className="absolute top-0 left-0 right-0 z-10 flex items-center gap-16 px-16 py-12 pointer-events-none"
         style={{
-          background: 'linear-gradient(to bottom, rgba(14,14,16,0.9), rgba(14,14,16,0))',
+          background: 'linear-gradient(to bottom, color-mix(in srgb, var(--bg) 90%, transparent), transparent)',
         }}
       >
         <div className="pointer-events-auto">
@@ -1263,10 +1270,10 @@ export default function SeoulPage() {
           <p className="text-xs font-mono flex items-center gap-6 flex-wrap" style={{ color: 'var(--text-muted)' }}>
             <span
               className="inline-block w-6 h-6 rounded-full animate-pulse"
-              style={{ background: '#1bbfa8' }}
+              style={{ background: 'var(--accent)' }}
               aria-hidden
             />
-            <span style={{ color: '#1bbfa8' }}>LIVE</span>
+            <span style={{ color: 'var(--accent)' }}>LIVE</span>
             <span>· {activeCount} LAYERS</span>
             {lastUpdated && <span>· 갱신 {lastUpdated}</span>}
             <span>· 다음 {countdown}s</span>
@@ -1372,7 +1379,7 @@ export default function SeoulPage() {
 
           <div className="text-xs leading-relaxed space-y-4" style={{ color: 'var(--text-muted)' }}>
             <p>
-              <span style={{ color: '#1bbfa8' }}>LIVE</span> 공공 API 실시간 수신 ·{' '}
+              <span style={{ color: 'var(--accent)' }}>LIVE</span> 공공 API 실시간 수신 ·{' '}
               <span style={{ color: '#C8923A' }}>DEMO</span> 공개 통계 기반 데모
             </p>
             <p>
@@ -1393,7 +1400,7 @@ export default function SeoulPage() {
         className="absolute bottom-0 right-0 z-10 max-w-full md:max-w-[60%] px-12 py-6 text-xs font-mono leading-relaxed text-right pointer-events-none"
         style={{
           color: 'var(--text-muted)',
-          background: 'linear-gradient(to top, rgba(14,14,16,0.85), rgba(14,14,16,0))',
+          background: 'linear-gradient(to top, color-mix(in srgb, var(--bg) 85%, transparent), transparent)',
         }}
       >
         출처: {SEOUL_SOURCE_PROVIDERS.join(' · ')} · 상세는 좌측 패널
@@ -1402,7 +1409,7 @@ export default function SeoulPage() {
       {sidebarOpen && (
         <button
           className="md:hidden absolute inset-0 z-10"
-          style={{ background: 'rgba(0,0,0,0.5)' }}
+          style={{ background: 'color-mix(in srgb, var(--bg) 50%, transparent)' }}
           onClick={() => setSidebarOpen(false)}
           aria-label="닫기"
         />

@@ -97,7 +97,7 @@ export default function NotificationBell() {
                     className="px-16 py-12 transition-colors cursor-pointer"
                     style={{
                       borderBottom: '1px solid rgba(42, 42, 47, 0.5)',
-                      background: !n.read ? 'rgba(27, 191, 168, 0.05)' : 'transparent',
+                      background: !n.read ? 'color-mix(in srgb, var(--accent) 5%, transparent)' : 'transparent',
                     }}
                     onClick={() => {
                       if (!n.read) markAsRead(n.id);

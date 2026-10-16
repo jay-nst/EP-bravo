@@ -5,96 +5,97 @@
    - (EP) 표시 = 기존 DESIGN.md 토큰 그대로
    - (파생) 표시 = EP 에 대응 토큰이 없어 인접 EP 색 사이에서 보간한 값
    - 표시 없음 = NDS 기본값 유지 (status bold/subtle 등)
-   html 에 .dark 가 항상 붙어 있으므로 실제 화면은 .dark 블록이다.
+   라이트(:root)는 NDS 기본 라이트 값 그대로(2026-10-16 사용자 결정 — 강조색 보라 포함),
+   다크(.dark)는 EP 팔레트. .dark 는 next-themes 가 붙인다(기본 = 시스템 설정).
    ========================================================== */
 
 :root {
   --white: #fafafa;
   --black: #000000;
 
-  /* ── Text ── (EP light 모드) */
-  --text-primary: #1a1a1f; /* (EP) --text */
-  --text-secondary: #43403c; /* (파생) */
-  --text-tertiary: #6b6660; /* (EP) --text-muted */
-  --text-disabled: #9a958f; /* (파생) */
-  --text-inverse: #e8e4df;
+  /* ── Text ── */
+  --text-primary: #17181a;
+  --text-secondary: #303236;
+  --text-tertiary: #484b51;
+  --text-disabled: #5f636b;
+  --text-inverse: #fafafa;
 
-  --text-interactive-primary: #138f7e; /* (파생) accent 를 밝은 배경 대비용으로 어둡게 */
-  --text-interactive-primary-hover: #1bbfa8;
-  --text-interactive-secondary: #6b6660;
-  --text-interactive-secondary-hover: #43403c;
-  --text-interactive-selected: #138f7e;
+  --text-interactive-primary: #6f37bd;
+  --text-interactive-primary-hover: #926ee2;
+  --text-interactive-secondary: #5f636b;
+  --text-interactive-secondary-hover: #9ca0a6;
+  --text-interactive-selected: #622ca6;
 
   /* ── Background ── */
-  --bg-primary: #edeae5; /* (EP) --surface-elevated */
-  --bg-secondary: #ffffff; /* (EP) --surface */
-  --bg-tertiary: #f5f3ef; /* (EP) --bg */
-  --bg-disabled: #e2ded8;
-  --bg-disabled-subtle: #9a958f;
-  --bg-inverse: #1a1a1f;
+  --bg-primary: #eff0f1;
+  --bg-secondary: #fafafa;
+  --bg-tertiary: #ffffff;
+  --bg-disabled: #dddee1;
+  --bg-disabled-subtle: #7d828a;
+  --bg-inverse: #17181a;
 
-  --bg-interactive-primary: #1bbfa8; /* (EP) --accent */
-  --bg-interactive-primary-hover: #35d9c0; /* (EP) --accent-hover */
-  --bg-interactive-secondary: #ffffff;
-  --bg-interactive-secondary-hover: #edeae5;
-  --bg-interactive-selected: #cbf7f1;
-  --bg-interactive-selected-hover: #e8fcf9;
+  --bg-interactive-primary: #6f37bd;
+  --bg-interactive-primary-hover: #c7baf1;
+  --bg-interactive-secondary: #fafafa;
+  --bg-interactive-secondary-hover: #eff0f1;
+  --bg-interactive-selected: #e3dcf8;
+  --bg-interactive-selected-hover: #f5f0fc;
 
   /* ── Border ── */
-  --border-primary: #9a958f;
-  --border-secondary: #bdb8b1;
-  --border-tertiary: #d9d5cf; /* (EP) --border */
-  --border-focus-ring: #1bbfa8; /* (EP) :focus-visible outline = accent */
-  --border-disabled: #bdb8b1;
-  --border-inverse: #2a2a2f;
+  --border-primary: #9ca0a6;
+  --border-secondary: #bcbec3;
+  --border-tertiary: #dddee1;
+  --border-focus-ring: #ac95e9;
+  --border-disabled: #9ca0a6;
+  --border-inverse: #1f2124;
 
-  --border-interactive-primary: #1bbfa8;
-  --border-interactive-primary-hover: #35d9c0;
-  --border-interactive-secondary: #6b6660;
-  --border-interactive-secondary-hover: #43403c;
+  --border-interactive-primary: #6f37bd;
+  --border-interactive-primary-hover: #926ee2;
+  --border-interactive-secondary: #5f636b;
+  --border-interactive-secondary-hover: #7d828a;
 
   /* ── Icon ── */
-  --icon-primary: #1a1a1f;
-  --icon-secondary: #43403c;
-  --icon-tertiary: #6b6660;
-  --icon-brand: #1bbfa8;
-  --icon-disabled: #9a958f;
-  --icon-inverse: #e8e4df;
+  --icon-primary: #17181a;
+  --icon-secondary: #303236;
+  --icon-tertiary: #484b51;
+  --icon-brand: #6f37bd;
+  --icon-disabled: #5f636b;
+  --icon-inverse: #fafafa;
 
-  --icon-interactive-primary: #138f7e;
-  --icon-interactive-primary-hover: #1bbfa8;
-  --icon-interactive-selected: #138f7e;
-  --icon-interactive-secondary: #6b6660;
-  --icon-interactive-secondary-hover: #43403c;
+  --icon-interactive-primary: #6f37bd;
+  --icon-interactive-primary-hover: #926ee2;
+  --icon-interactive-selected: #622ca6;
+  --icon-interactive-secondary: #5f636b;
+  --icon-interactive-secondary-hover: #9ca0a6;
 
-  /* ── Status ── base 는 EP semantic, bold/subtle 은 NDS 기본 */
-  --status-info: #4a9ec4; /* (EP) --color-predict */
+  /* ── Status ── */
+  --status-info: #287efd;
   --status-info-bold: #0d336e;
   --status-info-subtle: #cce4fe;
-  --status-success: #4a9e6b; /* (EP) --success */
+  --status-success: #17b26b;
   --status-success-bold: #0a4d30;
   --status-success-subtle: #ccffec;
-  --status-danger: #c45c4a; /* (EP) --error */
+  --status-danger: #dc4646;
   --status-danger-bold: #791716;
   --status-danger-subtle: #f8d8d8;
-  --status-warning: #c8923a; /* (EP) --warning */
+  --status-warning: #ffbe18;
   --status-warning-bold: #4d3700;
   --status-warning-subtle: #ffe5a3;
   --status-alert: #ff8718;
   --status-alert-bold: #8f4300;
   --status-alert-subtle: #ffe7d1;
-  --status-brand: #1bbfa8;
-  --status-brand-bold: #cbf7f1;
-  --status-brand-subtle: #0b4a41;
+  --status-brand: #6f37bd;
+  --status-brand-bold: #e3dcf8;
+  --status-brand-subtle: #3f1575;
 
-  /* ── Chart ── accent 민트 스케일 */
-  --chart-100: #e8fcf9;
-  --chart-200: #cbf7f1;
-  --chart-300: #87edde;
-  --chart-400: #35d9c0;
-  --chart-500: #1bbfa8;
-  --chart-600: #138f7e;
-  --chart-700: #d9d5cf;
+  /* ── Chart ── */
+  --chart-100: #e3dcf8;
+  --chart-200: #c7baf1;
+  --chart-300: #ac95e9;
+  --chart-400: #926ee2;
+  --chart-500: #6f37bd;
+  --chart-600: #622ca6;
+  --chart-700: #dddee1;
 }
 
 /* ── Dark mode (EarthPaper 기본) ── */

@@ -34,11 +34,11 @@ const GROUP_ORDER: SeoulLayer['group'][] = [
 ];
 
 const SOURCE_BADGE: Record<DataSourceKind, { label: string; color: string }> = {
-  live: { label: 'LIVE', color: '#1bbfa8' },
+  live: { label: 'LIVE', color: 'var(--accent)' },
   demo: { label: 'DEMO', color: '#C8923A' },
   analysis: { label: '분석', color: '#C45C4A' },
   imagery: { label: '영상', color: '#4A9EC4' },
-  loading: { label: '···', color: '#8A8680' },
+  loading: { label: '···', color: 'var(--text-muted)' },
 };
 
 interface SeoulLayerPanelProps {

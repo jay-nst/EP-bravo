@@ -211,7 +211,7 @@ export default function ShipyardsInteractive() {
           background: 'repeating-linear-gradient(0deg, transparent, transparent 4px, rgba(27,191,168,0.015) 4px, rgba(27,191,168,0.015) 5px)',
         }} />
         <div className="absolute inset-0 pointer-events-none" style={{
-          background: 'radial-gradient(ellipse at 65% 30%, rgba(27,191,168,0.08), transparent 60%)',
+          background: 'radial-gradient(ellipse at 65% 30%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 60%)',
         }} />
 
         <div className="max-w-3xl mx-auto px-24 py-96 relative z-10">
@@ -311,7 +311,7 @@ export default function ShipyardsInteractive() {
                     {String(siteIndex + 1).padStart(2, '0')}
                   </span>
                   <span className="w-32 h-px" style={{ background: 'var(--accent)' }} />
-                  <span className="text-[10px] font-mono px-8 py-2 rounded-xs" style={{ background: 'rgba(27,191,168,0.15)', color: 'var(--accent)' }}>
+                  <span className="text-[10px] font-mono px-8 py-2 rounded-xs" style={{ background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)' }}>
                     {site.badge}
                   </span>
                 </div>
@@ -336,7 +336,7 @@ export default function ShipyardsInteractive() {
                       loading="lazy"
                     />
                     <div className="absolute top-12 left-12">
-                      <span className="text-[10px] font-mono px-8 py-2 rounded-xs" style={{ background: 'rgba(14,14,16,0.8)', color: 'var(--text-muted)', backdropFilter: 'blur(4px)' }}>
+                      <span className="dark text-[10px] font-mono px-8 py-2 rounded-xs" style={{ background: 'rgba(14,14,16,0.8)', color: 'var(--text-muted)', backdropFilter: 'blur(4px)' }}>
                         BEFORE · {site.dates.before}
                       </span>
                     </div>
@@ -349,7 +349,7 @@ export default function ShipyardsInteractive() {
                       loading="lazy"
                     />
                     <div className="absolute top-12 left-12">
-                      <span className="text-[10px] font-mono px-8 py-2 rounded-xs" style={{ background: 'rgba(14,14,16,0.8)', color: 'var(--accent)', backdropFilter: 'blur(4px)' }}>
+                      <span className="dark text-[10px] font-mono px-8 py-2 rounded-xs" style={{ background: 'rgba(14,14,16,0.8)', color: 'var(--accent)', backdropFilter: 'blur(4px)' }}>
                         AFTER · {site.dates.after}
                       </span>
                     </div>
@@ -364,7 +364,7 @@ export default function ShipyardsInteractive() {
                 </div>
 
                 {/* Key change callout */}
-                <div className="p-16 rounded-sm mb-32" style={{ background: 'rgba(27,191,168,0.06)', border: '1px solid rgba(27,191,168,0.2)' }}>
+                <div className="p-16 rounded-sm mb-32" style={{ background: 'color-mix(in srgb, var(--accent) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)' }}>
                   <p className="text-[10px] font-mono tracking-wider mb-4 uppercase" style={{ color: 'var(--accent)' }}>Key Change</p>
                   <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>{site.keyChange}</p>
                 </div>
@@ -410,7 +410,7 @@ export default function ShipyardsInteractive() {
               target="_blank"
               rel="noopener noreferrer"
               className="px-20 py-10 rounded-[6px] text-sm font-medium flex-shrink-0"
-              style={{ background: 'var(--accent)', color: '#0E0E10' }}
+              style={{ background: 'var(--accent)', color: 'var(--text-inverse)' }}
             >
               원문 보기 →
             </a>

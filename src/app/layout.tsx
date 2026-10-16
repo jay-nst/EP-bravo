@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import ThemeProvider from '@/components/theme/ThemeProvider';
 
 export const metadata: Metadata = {
   title: 'EarthPaper - 위성 영상 셀프서비스 포털',
@@ -12,7 +13,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0E0E10',
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#0E0E10' },
+    { media: '(prefers-color-scheme: light)', color: '#FFFFFF' },
+  ],
 };
 
 export default function RootLayout({
@@ -21,8 +25,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className="h-full dark" style={{ colorScheme: 'dark' }}>
-      <body suppressHydrationWarning>{children}</body>
+    // 테마 클래스(.dark)·color-scheme 은 next-themes 가 마운트 전 스크립트로 붙인다
+    <html lang="ko" className="h-full" suppressHydrationWarning>
+      <body suppressHydrationWarning>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }

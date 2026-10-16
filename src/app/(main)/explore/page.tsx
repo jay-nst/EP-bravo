@@ -37,7 +37,7 @@ export default function ExplorePage() {
             <div className="relative" style={{ background: 'var(--surface)' }}>
               <div className="grid grid-cols-2" style={{ minHeight: '300px' }}>
                 <div
-                  className="flex flex-col items-start justify-end p-20"
+                  className="dark flex flex-col items-start justify-end p-20"
                   style={{
                     background: 'linear-gradient(135deg, #1a1510 0%, #151210 50%, #1a1612 100%)',
                     clipPath: `inset(0 ${100 - sliderPos}% 0 0)`,
@@ -53,7 +53,7 @@ export default function ExplorePage() {
                     {selectedBA.beforeDate}
                   </span>
                 </div>
-                <div className="col-span-2 flex flex-col items-end justify-end p-20"
+                <div className="dark col-span-2 flex flex-col items-end justify-end p-20"
                   style={{ background: 'linear-gradient(135deg, #0a1a15 0%, #0d2216 50%, #0f1a12 100%)' }}
                 >
                   <span className="text-xs font-mono tracking-wider mb-4" style={{ color: 'var(--accent)' }}>
@@ -87,7 +87,7 @@ export default function ExplorePage() {
               <div className="flex items-center gap-12">
                 <span
                   className="text-xs font-medium px-8 py-2 rounded-xs"
-                  style={{ background: 'rgba(27, 191, 168, 0.12)', color: 'var(--accent)' }}
+                  style={{ background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)' }}
                 >
                   {selectedBA.changeType}
                 </span>
@@ -115,7 +115,7 @@ export default function ExplorePage() {
                   className="text-left rounded-sm p-16 transition-colors space-y-4"
                   style={{
                     border: isActive ? '1px solid var(--accent)' : '1px solid var(--border)',
-                    background: isActive ? 'rgba(27, 191, 168, 0.05)' : 'transparent',
+                    background: isActive ? 'color-mix(in srgb, var(--accent) 5%, transparent)' : 'transparent',
                   }}
                 >
                   <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>
@@ -148,7 +148,7 @@ export default function ExplorePage() {
           >
             <div
               className="w-96 h-96 rounded-full mx-auto flex items-center justify-center"
-              style={{ background: 'rgba(27, 191, 168, 0.1)', border: '2px solid var(--accent)' }}
+              style={{ background: 'color-mix(in srgb, var(--accent) 10%, transparent)', border: '2px solid var(--accent)' }}
             >
               <span className="text-3xl font-mono font-semibold" style={{ color: 'var(--accent)' }}>
                 72
@@ -208,7 +208,7 @@ export default function ExplorePage() {
             <Link
               href="/map"
               className="block px-16 py-12 rounded-sm text-sm transition-colors"
-              style={{ background: 'var(--accent)', color: '#0E0E10', textAlign: 'center' }}
+              style={{ background: 'var(--accent)', color: 'var(--text-inverse)', textAlign: 'center' }}
             >
               지도에서 탐색하기
             </Link>
@@ -232,7 +232,7 @@ function Badge({ icon, label, earned }: { icon: string; label: string; earned: b
       className="flex flex-col items-center gap-4 py-8 rounded-sm text-center"
       style={{
         opacity: earned ? 1 : 0.35,
-        background: earned ? 'rgba(27, 191, 168, 0.06)' : 'var(--surface)',
+        background: earned ? 'color-mix(in srgb, var(--accent) 6%, transparent)' : 'var(--surface)',
       }}
     >
       <span className="text-xl">{icon}</span>
@@ -258,8 +258,8 @@ function LeaderRow({
     <div
       className="flex items-center gap-12 px-12 py-8 rounded-sm text-sm"
       style={{
-        background: isMe ? 'rgba(27, 191, 168, 0.08)' : 'transparent',
-        border: isMe ? '1px solid rgba(27, 191, 168, 0.2)' : '1px solid transparent',
+        background: isMe ? 'color-mix(in srgb, var(--accent) 8%, transparent)' : 'transparent',
+        border: isMe ? '1px solid color-mix(in srgb, var(--accent) 20%, transparent)' : '1px solid transparent',
       }}
     >
       <span

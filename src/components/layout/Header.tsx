@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
+import ThemeToggle from '@/components/theme/ThemeToggle';
 
 const SERVICES = [
   { key: 'citadel', label: 'Citadel', desc: '재난 · 도시 관제', color: '#C45C4A', href: '/citadel' },
@@ -45,7 +46,7 @@ export default function Header() {
       style={{
         borderColor: 'var(--border)',
         height: 'var(--header-height)',
-        background: 'var(--glass-bg, rgba(14,14,16,0.88))',
+        background: 'var(--header-bg)',
         backdropFilter: 'blur(12px)',
       }}
     >
@@ -100,7 +101,7 @@ export default function Header() {
                     background: 'var(--surface)',
                     border: '1px solid var(--border)',
                     minWidth: 220,
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                    boxShadow: '0 8px 24px var(--overlay-shadow)',
                   }}
                 >
                   {SERVICES.map((s) => (
@@ -180,6 +181,8 @@ export default function Header() {
             로그인
           </Link>
 
+          <ThemeToggle />
+
           {/* Mobile hamburger */}
           <button
             className="md:hidden p-8 -mr-8 rounded-[6px]"
@@ -211,7 +214,7 @@ export default function Header() {
             right: 0,
             background: 'var(--surface)',
             borderBottom: '1px solid var(--border)',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+            boxShadow: '0 8px 24px var(--overlay-shadow)',
             maxHeight: 'calc(100dvh - var(--header-height))',
             overflowY: 'auto',
           }}

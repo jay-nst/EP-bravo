@@ -42,18 +42,18 @@ function SpectrumDiagram() {
   return (
     <figure className={s.diagram} data-reveal="">
       <svg viewBox={`0 0 ${W} ${H + 40}`} role="img" aria-label="메탄 흡수선 개념도: 1625에서 1670 나노미터 구간에서 메탄이 특정 파장의 빛을 흡수해 신호가 움푹 파인다">
-        <line x1={x0} x2={x1} y1={H + 4} y2={H + 4} stroke="rgba(255,255,255,0.15)" />
-        <polyline className={s.specLine} pathLength={1} points={pts.join(' ')} fill="none" stroke="#f5f5f7" strokeWidth="2" strokeLinejoin="round" />
-        <line className={s.specMark} x1={peakX} x2={peakX} y1={base - 10} y2={H + 4} stroke="#1bbfa8" strokeDasharray="3 4" />
-        <text className={s.specMark} x={peakX - 8} y={base - 18} textAnchor="end" fill="#1bbfa8" fontSize="15" fontWeight="600">
+        <line x1={x0} x2={x1} y1={H + 4} y2={H + 4} stroke="var(--w-chart-axis)" />
+        <polyline className={s.specLine} pathLength={1} points={pts.join(' ')} fill="none" stroke="var(--w-text)" strokeWidth="2" strokeLinejoin="round" />
+        <line className={s.specMark} x1={peakX} x2={peakX} y1={base - 10} y2={H + 4} stroke="var(--w-accent)" strokeDasharray="3 4" />
+        <text className={s.specMark} x={peakX - 8} y={base - 18} textAnchor="end" fill="var(--w-accent)" fontSize="15" fontWeight="600">
           1665.6 nm 메탄 흡수선
         </text>
         {[1625, 1640, 1655, 1670].map((nm) => (
-          <text key={nm} x={toX(nm)} y={H + 28} textAnchor={nm === 1625 ? 'start' : nm === 1670 ? 'end' : 'middle'} fill="#86868b" fontSize="13">
+          <text key={nm} x={toX(nm)} y={H + 28} textAnchor={nm === 1625 ? 'start' : nm === 1670 ? 'end' : 'middle'} fill="var(--w-muted)" fontSize="13">
             {nm} nm
           </text>
         ))}
-        <text x={x0} y={base - 18} fill="#86868b" fontSize="13">빛의 세기</text>
+        <text x={x0} y={base - 18} fill="var(--w-muted)" fontSize="13">빛의 세기</text>
       </svg>
       <figcaption className={s.fine} style={{ textAlign: 'center', marginTop: 8 }}>
         개념도 · 메탄이 흡수하는 파장에서 빛이 약해짐 · 실측 스펙트럼 아님

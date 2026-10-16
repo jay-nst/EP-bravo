@@ -180,7 +180,7 @@ export default function ChatPage() {
                 className="max-w-[70%] px-16 py-10 rounded-md text-sm leading-relaxed whitespace-pre-wrap"
                 style={{
                   background: msg.role === 'user' ? 'var(--accent)' : 'var(--surface)',
-                  color: msg.role === 'user' ? '#0E0E10' : 'var(--text)',
+                  color: msg.role === 'user' ? 'var(--text-inverse)' : 'var(--text)',
                 }}
               >
                 {msg.content}
@@ -218,7 +218,7 @@ export default function ChatPage() {
               className="px-16 py-12 rounded-[12px] text-sm font-medium transition-colors disabled:opacity-40"
               style={{
                 background: 'var(--accent)',
-                color: '#0E0E10',
+                color: 'var(--text-inverse)',
               }}
             >
               전송

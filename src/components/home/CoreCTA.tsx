@@ -10,7 +10,7 @@ export default function CoreCTA() {
       style={{ border: '1px solid var(--border)' }}
     >
       <div
-        className="relative h-144 flex items-end p-16"
+        className="dark relative h-144 flex items-end p-16"
         style={{
           background:
             'linear-gradient(135deg, #0a1a15 0%, #0d2216 30%, #0a1612 60%, #0E0E10 100%)',
@@ -44,7 +44,7 @@ export default function CoreCTA() {
           <span
             className="text-xs px-6 py-2 rounded-xs"
             style={{
-              background: 'rgba(27,191,168,0.08)',
+              background: 'color-mix(in srgb, var(--accent) 8%, transparent)',
               color: 'var(--accent)',
             }}
           >

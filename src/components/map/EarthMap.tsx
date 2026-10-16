@@ -27,9 +27,9 @@ export const MAP_STYLES: Record<MapStyleId, { url: string; label: string; icon: 
   light: { url: 'mapbox://styles/mapbox/light-v11', label: '라이트', icon: '☀️' },
 };
 
-/** Style switcher options. Light is Core-only — other pages stay dark-first. */
+/** Style switcher options. 라이트 모드에서 베이스맵이 light 로 바뀌므로 모든 페이지에 노출한다. */
 export const CORE_STYLE_IDS: MapStyleId[] = ['satellite', 'dark', 'night-nav', 'light'];
-export const DEFAULT_STYLE_IDS: MapStyleId[] = ['satellite', 'dark', 'night-nav'];
+export const DEFAULT_STYLE_IDS: MapStyleId[] = ['satellite', 'dark', 'night-nav', 'light'];
 
 interface EarthMapProps {
   onAoiChange?: (aoi: AoiSelection | null) => void;

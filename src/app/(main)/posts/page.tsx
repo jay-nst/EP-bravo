@@ -35,7 +35,7 @@ export default function PostsPage() {
               className="px-12 py-6 text-sm rounded-sm whitespace-nowrap transition-colors"
               style={{
                 background: isActive ? 'var(--accent)' : 'var(--surface)',
-                color: isActive ? '#0E0E10' : 'var(--text-muted)',
+                color: isActive ? 'var(--text-inverse)' : 'var(--text-muted)',
                 border: isActive ? 'none' : '1px solid var(--border)',
               }}
             >
@@ -53,7 +53,7 @@ export default function PostsPage() {
         >
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div
-              className="aspect-[16/9] lg:aspect-auto flex items-center justify-center relative overflow-hidden"
+              className="dark aspect-[16/9] lg:aspect-auto flex items-center justify-center relative overflow-hidden"
               style={{ background: 'linear-gradient(135deg, #0a1a15 0%, #0d2818 30%, #0a1612 60%, #111a14 100%)', minHeight: '240px' }}
             >
               <div
@@ -108,7 +108,7 @@ export default function PostsPage() {
             style={{ border: '1px solid var(--border)' }}
           >
             <div
-              className="aspect-[16/9] flex items-center justify-center relative overflow-hidden"
+              className="dark aspect-[16/9] flex items-center justify-center relative overflow-hidden"
               style={{ background: 'linear-gradient(135deg, #0a1a15 0%, #0d2216 40%, #0f1a12 100%)' }}
             >
               <div

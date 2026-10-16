@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { fmtNum } from '@/lib/format';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), { ssr: false });
+import { useThemedMapStyle } from '@/components/map/useThemedMapStyle';
 
 interface AoiSelection {
   polygon: GeoJSON.Polygon;
@@ -35,6 +36,7 @@ const STATUS_LABELS: Record<string, { text: string; color: string }> = {
 
 export default function TaskingPage() {
   const [requests, setRequests] = useState<TaskingRequest[]>([]);
+  const [mapStyleId] = useThemedMapStyle();
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -118,7 +120,7 @@ export default function TaskingPage() {
         <button
           onClick={() => setShowForm(!showForm)}
           className="px-16 py-8 text-sm rounded-sm transition-colors"
-          style={{ background: 'var(--accent)', color: '#0E0E10' }}
+          style={{ background: 'var(--accent)', color: 'var(--text-inverse)' }}
         >
           {showForm ? '취소' : '+ 새 요청'}
         </button>
@@ -166,7 +168,7 @@ export default function TaskingPage() {
           >
             <EarthMap
               onAoiChange={setAoi}
-              initialStyle="dark"
+              mapStyleId={mapStyleId}
             />
           </div>
 
@@ -275,7 +277,7 @@ export default function TaskingPage() {
             type="submit"
             disabled={submitting || !contactEmail || !aoi || !!aoi.validationError}
             className="w-full py-10 rounded-sm text-sm font-medium transition-colors disabled:opacity-40"
-            style={{ background: 'var(--accent)', color: '#0E0E10' }}
+            style={{ background: 'var(--accent)', color: 'var(--text-inverse)' }}
           >
             {submitting ? '제출 중...' : !aoi ? '영역을 먼저 그려주세요' : '촬영 요청 제출'}
           </button>

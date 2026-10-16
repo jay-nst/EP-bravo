@@ -249,7 +249,7 @@ export default function AgentTutorialDemo() {
       <div
         className={
           fullscreen
-            ? 'fixed inset-0 z-[100] flex flex-col px-24 py-16'
+            ? 'dark fixed inset-0 z-[100] flex flex-col px-24 py-16'
             : ''
         }
         style={fullscreen ? { background: 'rgba(10, 10, 12, 0.98)' } : undefined}
@@ -266,7 +266,7 @@ export default function AgentTutorialDemo() {
                   className="flex items-center justify-center w-28 h-28 rounded-full text-sm font-mono transition-colors"
                   style={{
                     background: active ? 'var(--accent)' : passed ? 'var(--surface-elevated)' : 'transparent',
-                    color: active ? '#0E0E10' : passed ? 'var(--text)' : 'var(--text-muted)',
+                    color: active ? 'var(--text-inverse)' : passed ? 'var(--text)' : 'var(--text-muted)',
                     border: active ? 'none' : '1px solid var(--border)',
                   }}
                   aria-current={active ? 'step' : undefined}
@@ -297,7 +297,7 @@ export default function AgentTutorialDemo() {
       <div className={fullscreen ? 'flex-1 flex items-center justify-center min-h-0' : ''}>
       <div
         ref={stageRef}
-        className="relative w-full overflow-hidden select-none"
+        className="dark relative w-full overflow-hidden select-none"
         style={{
           aspectRatio: `${CAPTURE_WIDTH} / ${CAPTURE_HEIGHT}`,
           border: '1px solid var(--border)',
@@ -407,7 +407,7 @@ export default function AgentTutorialDemo() {
             <button
               onClick={startTour}
               className="px-28 py-14 rounded-[6px] text-base font-semibold transition-opacity hover:opacity-85"
-              style={{ background: 'var(--accent)', color: '#0E0E10' }}
+              style={{ background: 'var(--accent)', color: 'var(--text-inverse)' }}
             >
               {phase === 'idle' ? '데모 시작하기' : '데모 다시 보기'}
             </button>

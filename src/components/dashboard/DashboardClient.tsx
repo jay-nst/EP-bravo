@@ -193,7 +193,7 @@ export default function DashboardClient() {
 
       {/* ===== FEATURED HERO (Bloomberg-style) ===== */}
       <section
-        className="relative overflow-hidden cursor-pointer min-h-[280px] md:min-h-[400px]"
+        className="dark relative overflow-hidden cursor-pointer min-h-[280px] md:min-h-[400px]"
         style={{
           background: 'var(--surface)',
           borderBottom: '1px solid var(--border)',

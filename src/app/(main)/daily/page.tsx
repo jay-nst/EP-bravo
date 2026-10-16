@@ -53,7 +53,7 @@ export default function DailyEarthPage() {
   };
 
   return (
-    <div className="relative" style={{ height: 'calc(100vh - var(--header-height))' }}>
+    <div className="dark relative" style={{ height: 'calc(100vh - var(--header-height))' }}>
       <div ref={containerRef} className="cinematic-scroll h-full">
         {DAILY_EARTH.map((item, i) => {
           const isVisible = visible.has(i);
@@ -195,7 +195,7 @@ export default function DailyEarthPage() {
                   <Link
                     href="/map"
                     className="inline-block px-24 py-10 rounded-sm text-sm font-medium transition-colors"
-                    style={{ background: 'var(--accent)', color: '#0E0E10' }}
+                    style={{ background: 'var(--accent)', color: 'var(--text-inverse)' }}
                   >
                     이 지역 지도에서 보기
                   </Link>

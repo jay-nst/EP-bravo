@@ -289,7 +289,7 @@ export default function PredictSimulator() {
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       padding: '6px 0',
-                      borderBottom: '1px solid rgba(255,255,255,0.05)',
+                      borderBottom: '1px solid var(--border)',
                     }}
                   >
                     <span

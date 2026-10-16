@@ -144,14 +144,14 @@ export default function BeforeAfterSlider({
       {/* 핸들 라인 + 그립 (실서비스 compare-swiper 재현) */}
       <div
         className="absolute top-0 bottom-0 pointer-events-none"
-        style={{ left: `${pct}%`, width: '2px', background: '#1bbfa8', marginLeft: '-1px' }}
+        style={{ left: `${pct}%`, width: '2px', background: 'var(--accent)', marginLeft: '-1px' }}
         aria-hidden
       >
         <div
           className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 left-1/2 w-36 h-36 rounded-full flex items-center justify-center text-sm font-semibold shadow-lg${
             handleHinted && hintsEnabled ? ' ep-hint-blink' : ''
           }`}
-          style={{ background: '#1bbfa8', color: '#0E0E10' }}
+          style={{ background: 'var(--accent)', color: 'var(--text-inverse)' }}
         >
           ↔
         </div>

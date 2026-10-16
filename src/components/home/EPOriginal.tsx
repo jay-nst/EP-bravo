@@ -26,7 +26,7 @@ export default function EPOriginal() {
           style={{ background: 'var(--surface)' }}
         >
           <div
-            className="w-40 h-40 rounded-[6px] flex items-center justify-center flex-shrink-0 relative overflow-hidden"
+            className="dark w-40 h-40 rounded-[6px] flex items-center justify-center flex-shrink-0 relative overflow-hidden"
             style={{
               background:
                 'linear-gradient(135deg, #0a1a15 0%, #0d2818 50%, #0a1612 100%)',
@@ -73,7 +73,7 @@ export default function EPOriginal() {
         >
           <div
             className="w-40 h-40 rounded-[6px] flex items-center justify-center flex-shrink-0"
-            style={{ background: 'rgba(27,191,168,0.08)' }}
+            style={{ background: 'color-mix(in srgb, var(--accent) 8%, transparent)' }}
           >
             <span className="text-lg" style={{ color: 'var(--accent)' }}>
               &#128752;

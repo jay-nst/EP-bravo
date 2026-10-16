@@ -259,7 +259,7 @@ export default function CitadelSimulator() {
                     key={item.label}
                     style={{
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.05)',
+                      padding: '6px 0', borderBottom: '1px solid var(--border)',
                     }}
                   >
                     <span

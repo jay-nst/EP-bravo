@@ -47,7 +47,7 @@ export default function WardenPage() {
   useScrollReveal(rootRef);
 
   return (
-    <div ref={rootRef} className={s.page} style={{ minHeight: '100vh' }}>
+    <div ref={rootRef} className={`dark ${s.page}`} style={{ minHeight: '100vh' }}>
       <LocalNav />
 
       {/* Hero */}

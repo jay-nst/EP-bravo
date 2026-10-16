@@ -83,7 +83,7 @@ export default function QuizPage() {
             </h1>
             <span
               className="text-xs font-mono px-8 py-2 rounded-full"
-              style={{ background: 'rgba(27,191,168,0.1)', color: 'var(--accent)' }}
+              style={{ background: 'color-mix(in srgb, var(--accent) 10%, transparent)', color: 'var(--accent)' }}
             >
               DAILY
             </span>
@@ -113,7 +113,7 @@ export default function QuizPage() {
         style={{ border: '1px solid var(--border)' }}
       >
         <div
-          className="aspect-[16/10] flex flex-col items-center justify-center p-32 text-center relative overflow-hidden"
+          className="dark aspect-[16/10] flex flex-col items-center justify-center p-32 text-center relative overflow-hidden"
           style={{ background: 'linear-gradient(135deg, #0a1a15 0%, #0d2818 30%, #0a1612 60%, #111a14 100%)' }}
         >
           <div
@@ -156,7 +156,7 @@ export default function QuizPage() {
           if (revealed) {
             if (i === quiz.answer) {
               borderColor = 'var(--accent)';
-              bg = 'rgba(27,191,168,0.08)';
+              bg = 'color-mix(in srgb, var(--accent) 8%, transparent)';
               textColor = 'var(--accent)';
             } else if (i === selected && i !== quiz.answer) {
               borderColor = 'var(--error)';
@@ -202,8 +202,8 @@ export default function QuizPage() {
         <div
           className="rounded-[12px] p-24 space-y-16"
           style={{
-            border: `1px solid ${isCorrect ? 'rgba(27,191,168,0.3)' : 'rgba(196,92,74,0.3)'}`,
-            background: isCorrect ? 'rgba(27,191,168,0.04)' : 'rgba(196,92,74,0.04)',
+            border: `1px solid ${isCorrect ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'rgba(196,92,74,0.3)'}`,
+            background: isCorrect ? 'color-mix(in srgb, var(--accent) 4%, transparent)' : 'rgba(196,92,74,0.04)',
           }}
         >
           <div className="flex items-center gap-8">
@@ -216,7 +216,7 @@ export default function QuizPage() {
             {isCorrect && streak > 1 && (
               <span
                 className="text-xs font-mono px-8 py-2 rounded-full"
-                style={{ background: 'rgba(27,191,168,0.1)', color: 'var(--accent)' }}
+                style={{ background: 'color-mix(in srgb, var(--accent) 10%, transparent)', color: 'var(--accent)' }}
               >
                 {streak}일 연속 정답
               </span>
@@ -234,7 +234,7 @@ export default function QuizPage() {
             <Link
               href="/map"
               className="px-16 py-8 rounded-sm text-sm font-medium transition-colors"
-              style={{ background: 'var(--accent)', color: '#0E0E10' }}
+              style={{ background: 'var(--accent)', color: 'var(--text-inverse)' }}
             >
               지도에서 보기
             </Link>

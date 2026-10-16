@@ -70,7 +70,7 @@ export default function SignupConversionModal({
           <button
             onClick={() => setCtaHint(true)}
             className="w-full py-12 rounded-[6px] text-sm font-semibold transition-opacity hover:opacity-85"
-            style={{ background: 'var(--accent)', color: '#0E0E10' }}
+            style={{ background: 'var(--accent)', color: 'var(--text-inverse)' }}
           >
             회원가입하고 시작하기
           </button>

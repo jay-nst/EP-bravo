@@ -42,7 +42,7 @@ export default function LoginPage() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage: 'radial-gradient(rgba(27,191,168,0.04) 1px, transparent 1px)',
+          backgroundImage: 'radial-gradient(color-mix(in srgb, var(--accent) 4%, transparent) 1px, transparent 1px)',
           backgroundSize: '40px 40px',
         }}
       />
@@ -130,7 +130,7 @@ export default function LoginPage() {
             type="submit"
             disabled={loading}
             className="w-full py-8 rounded-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ background: 'var(--accent)', color: '#0E0E10' }}
+            style={{ background: 'var(--accent)', color: 'var(--text-inverse)' }}
           >
             {loading ? '로그인 중...' : '로그인'}
           </button>

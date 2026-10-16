@@ -1,5 +1,6 @@
 /* 기후 인텔리전스 (/climate) — Apple dark-pro 톤 (2026-10-08 사용자 승인으로 DESIGN.md에서 이 페이지만 예외)
-   규칙: 강조색은 민트 하나, 섹션 구분은 배경색 교차(#000 ↔ #161617), 그림자는 위성 렌더에만. */
+   규칙: 강조색은 민트 하나, 섹션 구분은 배경색 교차(#000 ↔ #161617), 그림자는 위성 렌더에만.
+   라이트 모드(html 에 .dark 없음)는 아래 :global(html:not(.dark)) .page 에서 Apple 라이트 톤으로 덮는다. */
 
 .page {
   --w-black: #000000;
@@ -10,10 +11,34 @@
   --w-muted: #86868b;
   --w-hair: rgba(255, 255, 255, 0.1);
   --w-accent: #1bbfa8;
+  --w-on-text: #000000; /* --w-text 배경 위 글자 */
+  --w-faint: #6e6e73;
+  --w-body: #c7c7cc;
+  --w-placeholder: #2a2a2c;
+  --w-nav-bg: rgba(22, 22, 23, 0.8);
+  --w-chart-axis: rgba(255, 255, 255, 0.15);
 
   background: var(--w-black);
   color: var(--w-text);
   letter-spacing: -0.01em;
+}
+
+/* 라이트 — 변수 이름(--w-black 등)은 역할 이름으로 쓰고 값만 바꾼다 */
+:global(html:not(.dark)) .page {
+  --w-black: #ffffff;
+  --w-tile: #f5f5f7;
+  --w-card: #f5f5f7;
+  --w-card-on-tile: #ffffff;
+  --w-text: #1d1d1f;
+  --w-muted: #6e6e73;
+  --w-hair: rgba(0, 0, 0, 0.1);
+  --w-accent: #138f7e; /* EP 라이트 --text-interactive-primary (흰 배경 대비) */
+  --w-on-text: #ffffff;
+  --w-faint: #86868b;
+  --w-body: #424245;
+  --w-placeholder: #e8e8ed;
+  --w-nav-bg: rgba(255, 255, 255, 0.8);
+  --w-chart-axis: rgba(0, 0, 0, 0.15);
 }
 
 /* ── Tiles ─────────────────────────────── */
@@ -306,10 +331,10 @@
 .chipOn {
   background: var(--w-text);
   border-color: var(--w-text);
-  color: #000;
+  color: var(--w-on-text);
 }
 .chipOn:hover {
-  color: #000;
+  color: var(--w-on-text);
 }
 
 /* ── Post cards ─────────────────────────────── */
@@ -328,7 +353,7 @@
 }
 .postImg {
   aspect-ratio: 16 / 10;
-  background: #2a2a2c;
+  background: var(--w-placeholder);
 }
 .postImg img {
   width: 100%;
@@ -603,7 +628,7 @@
   position: sticky;
   top: var(--header-height);
   z-index: 40;
-  background: rgba(22, 22, 23, 0.8);
+  background: var(--w-nav-bg);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--w-hair);
@@ -702,7 +727,7 @@
   display: block;
   margin-top: 6px;
   font-size: 12px;
-  color: #6e6e73;
+  color: var(--w-faint);
 }
 .timeline3 {
   grid-template-columns: repeat(3, 1fr);
@@ -926,7 +951,7 @@
 .articleP {
   font-size: 18px;
   line-height: 1.8;
-  color: #c7c7cc;
+  color: var(--w-body);
   margin-bottom: 18px;
 }
 .articleQuote {
@@ -999,7 +1024,7 @@
 }
 .exampleCredit {
   font-size: 12px;
-  color: #6e6e73;
+  color: var(--w-faint);
 }
 
 /* ── First light (항공시험) ─────────────────────────────── */

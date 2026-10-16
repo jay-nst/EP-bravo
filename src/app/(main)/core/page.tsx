@@ -15,7 +15,8 @@ import { requestTossPayment } from '@/lib/toss/widget';
 import { trackEvent } from '@/lib/analytics';
 import type { PublicLayerId } from '@/types/public-data';
 import { MAP_STYLES, CORE_STYLE_IDS } from '@/components/map/EarthMap';
-import type { MapStyleId } from '@/components/map/EarthMap';
+import { useThemedMapStyle } from '@/components/map/useThemedMapStyle';
+import { isLightBasemap, mapLabelPaint } from '@/lib/theme';
 import { LayerAnimationController, LAYER_ANIMATION_MAP } from '@/lib/layer-animations';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
@@ -206,7 +207,9 @@ export default function CorePage() {
   const [catalogItemId, setCatalogItemId] = useState<string | null>(null);
   const [layers, setLayers] = useState<OverlayLayer[]>(INITIAL_LAYERS);
   const [sidebarTab, setSidebarTab] = useState<'layers' | 'purchase'>('layers');
-  const [mapStyleId, setMapStyleId] = useState<MapStyleId>('dark');
+  const [mapStyleId, setMapStyleId] = useThemedMapStyle();
+  const mapStyleRef = useRef(mapStyleId);
+  useEffect(() => { mapStyleRef.current = mapStyleId; }, [mapStyleId]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const animRef = useRef<LayerAnimationController | null>(null);
@@ -232,6 +235,7 @@ export default function CorePage() {
   }, []);
 
   const addPublicDataLayers = useCallback((map: mapboxgl.Map) => {
+    const labelPaint = mapLabelPaint(mapStyleRef.current);
     map.addSource(PUBLIC_LAYER_IDS['air-quality'].source, { type: 'geojson', data: EMPTY_FC });
     map.addSource(PUBLIC_LAYER_IDS['aws-weather'].source, { type: 'geojson', data: EMPTY_FC });
     map.addSource(PUBLIC_LAYER_IDS['traffic'].source, { type: 'geojson', data: EMPTY_FC });
@@ -302,7 +306,7 @@ export default function CorePage() {
           AIR_QUALITY_COLORS.moderate,
         ],
         'circle-stroke-width': 1.5,
-        'circle-stroke-color': 'rgba(14,14,16,0.7)',
+        'circle-stroke-color': labelPaint.stroke,
         'circle-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0, 10, 0.9],
       },
     });
@@ -320,8 +324,8 @@ export default function CorePage() {
       },
       minzoom: 10,
       paint: {
-        'text-color': '#E8E4DF',
-        'text-halo-color': 'rgba(14,14,16,0.8)',
+        'text-color': labelPaint.text,
+        'text-halo-color': labelPaint.halo,
         'text-halo-width': 1,
       },
     });
@@ -335,7 +339,7 @@ export default function CorePage() {
         'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 4, 10, 8, 14, 14],
         'circle-color': '#29B6F6',
         'circle-stroke-width': 2,
-        'circle-stroke-color': 'rgba(14,14,16,0.7)',
+        'circle-stroke-color': labelPaint.stroke,
       },
     });
 
@@ -353,8 +357,8 @@ export default function CorePage() {
       },
       minzoom: 7,
       paint: {
-        'text-color': '#E8E4DF',
-        'text-halo-color': 'rgba(14,14,16,0.8)',
+        'text-color': labelPaint.text,
+        'text-halo-color': labelPaint.halo,
         'text-halo-width': 1,
       },
     });
@@ -454,7 +458,7 @@ export default function CorePage() {
           SKY_COLORS.partly_cloudy,
         ],
         'circle-stroke-width': 2,
-        'circle-stroke-color': 'rgba(14,14,16,0.7)',
+        'circle-stroke-color': labelPaint.stroke,
         'circle-opacity': 0.85,
       },
     });
@@ -534,7 +538,7 @@ export default function CorePage() {
           WILDFIRE_STATUS_COLORS.active,
         ],
         'circle-stroke-width': 2,
-        'circle-stroke-color': 'rgba(14,14,16,0.7)',
+        'circle-stroke-color': labelPaint.stroke,
         'circle-opacity': [
           'match', ['get', 'status'],
           'active', 0.9,
@@ -559,8 +563,8 @@ export default function CorePage() {
       },
       minzoom: 7,
       paint: {
-        'text-color': '#E8E4DF',
-        'text-halo-color': 'rgba(14,14,16,0.8)',
+        'text-color': labelPaint.text,
+        'text-halo-color': labelPaint.halo,
         'text-halo-width': 1,
       },
     });
@@ -611,7 +615,7 @@ export default function CorePage() {
           5.0, '#B71C1C',
         ],
         'circle-stroke-width': 2,
-        'circle-stroke-color': 'rgba(14,14,16,0.7)',
+        'circle-stroke-color': labelPaint.stroke,
         'circle-opacity': 0.8,
       },
     });
@@ -645,7 +649,7 @@ export default function CorePage() {
         layout: { visibility: 'none' },
         minzoom: 14,
         paint: {
-          'fill-extrusion-color': '#1a1a1f',
+          'fill-extrusion-color': isLightBasemap(mapStyleRef.current) ? '#d4d4da' : '#1a1a1f',
           'fill-extrusion-height': ['get', 'height'],
           'fill-extrusion-base': ['get', 'min_height'],
           'fill-extrusion-opacity': 0.7,
@@ -670,19 +674,19 @@ export default function CorePage() {
           <div style="padding:8px;">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
               <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${gradeColor}"></span>
-              <span style="font-size:13px;font-weight:600;color:#E8E4DF;">${props.name}</span>
+              <span style="font-size:13px;font-weight:600;color:var(--text);">${props.name}</span>
             </div>
-            <div style="font-size:11px;color:#8A8680;line-height:1.8;">
+            <div style="font-size:11px;color:var(--text-muted);line-height:1.8;">
               <span style="color:${gradeColor};font-weight:500;">${gradeLabel[props.grade] ?? props.grade}</span><br/>
-              PM2.5 <b style="color:#E8E4DF">${props.pm25 ?? '-'}</b> ㎍/㎥ · PM10 <b style="color:#E8E4DF">${props.pm10 ?? '-'}</b> ㎍/㎥
+              PM2.5 <b style="color:var(--text)">${props.pm25 ?? '-'}</b> ㎍/㎥ · PM10 <b style="color:var(--text)">${props.pm10 ?? '-'}</b> ㎍/㎥
             </div>
           </div>
         `;
       } else {
         popupEl.innerHTML = `
           <div style="padding:8px;">
-            <p style="font-size:13px;font-weight:600;color:#E8E4DF;margin:0 0 6px;">${props.name}</p>
-            <div style="font-size:11px;color:#8A8680;line-height:1.8;font-family:'IBM Plex Mono',monospace;">
+            <p style="font-size:13px;font-weight:600;color:var(--text);margin:0 0 6px;">${props.name}</p>
+            <div style="font-size:11px;color:var(--text-muted);line-height:1.8;font-family:'IBM Plex Mono',monospace;">
               🌡️ ${props.temp ?? '-'}°C · 💧 ${props.humidity ?? '-'}%<br/>
               💨 ${props.windSpeed ?? '-'} m/s · 🌧️ ${props.rainfall1h ?? '0'} mm
             </div>
@@ -715,11 +719,11 @@ export default function CorePage() {
         <div style="padding:8px;">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
             <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${skyColor}"></span>
-            <span style="font-size:13px;font-weight:600;color:#E8E4DF;">${props.name}</span>
+            <span style="font-size:13px;font-weight:600;color:var(--text);">${props.name}</span>
           </div>
-          <div style="font-size:11px;color:#8A8680;line-height:1.8;">
+          <div style="font-size:11px;color:var(--text-muted);line-height:1.8;">
             <span style="color:${skyColor};font-weight:500;">${skyLabel}</span>${precipLabel ? ` · ${precipLabel}` : ''}<br/>
-            🌡️ <b style="color:#E8E4DF">${props.temperature ?? '-'}°C</b> · 💧 ${props.humidity ?? '-'}%<br/>
+            🌡️ <b style="color:var(--text)">${props.temperature ?? '-'}°C</b> · 💧 ${props.humidity ?? '-'}%<br/>
             💨 ${props.windSpeed ?? '-'} m/s${props.precipAmount > 0 ? ` · 🌧️ ${props.precipAmount} mm` : ''}
           </div>
         </div>
@@ -746,9 +750,9 @@ export default function CorePage() {
             <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${statusColor}"></span>
             <span style="font-size:11px;font-weight:500;color:${statusColor};">${statusLabel}</span>
           </div>
-          <p style="font-size:13px;font-weight:600;color:#E8E4DF;margin:0 0 4px;">${props.name}</p>
-          <p style="font-size:11px;color:#8A8680;margin:0 0 6px;line-height:1.5;">${props.description ?? ''}</p>
-          <div style="font-size:11px;color:#8A8680;font-family:'IBM Plex Mono',monospace;">
+          <p style="font-size:13px;font-weight:600;color:var(--text);margin:0 0 4px;">${props.name}</p>
+          <p style="font-size:11px;color:var(--text-muted);margin:0 0 6px;line-height:1.5;">${props.description ?? ''}</p>
+          <div style="font-size:11px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;">
             피해면적 ${props.affectedArea} ha · ${props.startedAt?.slice(0, 10) ?? ''}
           </div>
         </div>
@@ -773,8 +777,8 @@ export default function CorePage() {
             <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#D32F2F"></span>
             <span style="font-size:11px;font-weight:500;color:#EF5350;">규모 ${props.magnitude} · 진도 ${props.maxIntensity}</span>
           </div>
-          <p style="font-size:13px;font-weight:600;color:#E8E4DF;margin:0 0 4px;">${props.location}</p>
-          <div style="font-size:11px;color:#8A8680;font-family:'IBM Plex Mono',monospace;line-height:1.8;">
+          <p style="font-size:13px;font-weight:600;color:var(--text);margin:0 0 4px;">${props.location}</p>
+          <div style="font-size:11px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;line-height:1.8;">
             깊이 ${props.depth} km<br/>
             ${props.occurredAt?.replace('T', ' ') ?? ''}
           </div>
@@ -805,6 +809,7 @@ export default function CorePage() {
   }, []);
 
   const addCitadelOverlay = useCallback((map: mapboxgl.Map) => {
+    const labelPaint = mapLabelPaint(mapStyleRef.current);
     const polygons: GeoJSON.FeatureCollection = {
       type: 'FeatureCollection',
       features: CITADEL_GEOJSON.features.filter(
@@ -885,7 +890,7 @@ export default function CorePage() {
           SEVERITY_COLORS.moderate,
         ],
         'circle-stroke-width': 2,
-        'circle-stroke-color': 'rgba(14,14,16,0.6)',
+        'circle-stroke-color': labelPaint.stroke,
       },
     });
 
@@ -901,8 +906,8 @@ export default function CorePage() {
         'text-max-width': 14,
       },
       paint: {
-        'text-color': '#E8E4DF',
-        'text-halo-color': 'rgba(14,14,16,0.8)',
+        'text-color': labelPaint.text,
+        'text-halo-color': labelPaint.halo,
         'text-halo-width': 1,
       },
     });
@@ -920,11 +925,11 @@ export default function CorePage() {
         <div style="padding:8px;">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
             <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${sevColor}"></span>
-            <span style="font-size:11px;font-weight:500;color:#E8E4DF;">${props.severity} · ${props.event_type}</span>
+            <span style="font-size:11px;font-weight:500;color:var(--text);">${props.severity} · ${props.event_type}</span>
           </div>
-          <p style="font-size:13px;font-weight:600;color:#E8E4DF;margin:0 0 4px;">${props.title}</p>
-          <p style="font-size:11px;color:#8A8680;margin:0 0 6px;line-height:1.5;">${props.description ?? ''}</p>
-          <div style="font-size:11px;color:#8A8680;font-family:'IBM Plex Mono',monospace;">
+          <p style="font-size:13px;font-weight:600;color:var(--text);margin:0 0 4px;">${props.title}</p>
+          <p style="font-size:11px;color:var(--text-muted);margin:0 0 6px;line-height:1.5;">${props.description ?? ''}</p>
+          <div style="font-size:11px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;">
             ${props.location_name} · ${props.source ?? ''}
           </div>
         </div>
@@ -1106,7 +1111,7 @@ export default function CorePage() {
         <button
           className="md:hidden absolute top-12 right-12 z-20 p-10 rounded-sm"
           style={{
-            background: 'rgba(14,14,16,0.85)',
+            background: 'color-mix(in srgb, var(--panel-bg) 85%, transparent)',
             backdropFilter: 'blur(8px)',
             border: '1px solid var(--border)',
             color: sidebarOpen ? 'var(--accent)' : 'var(--text-muted)',
@@ -1123,7 +1128,7 @@ export default function CorePage() {
         <div
           className="absolute bottom-16 left-16 md:left-auto md:right-16 flex gap-4 p-4 rounded-sm z-10"
           style={{
-            background: 'rgba(14,14,16,0.85)',
+            background: 'color-mix(in srgb, var(--panel-bg) 85%, transparent)',
             backdropFilter: 'blur(8px)',
             border: '1px solid var(--border)',
           }}
@@ -1164,7 +1169,7 @@ export default function CorePage() {
                 key={l.id}
                 className="flex items-center gap-6 px-10 py-6 rounded-full text-xs"
                 style={{
-                  background: 'rgba(14,14,16,0.85)',
+                  background: 'color-mix(in srgb, var(--panel-bg) 85%, transparent)',
                   backdropFilter: 'blur(8px)',
                   color: 'var(--text)',
                   border: `1px solid ${l.color}33`,
@@ -1201,7 +1206,7 @@ export default function CorePage() {
           ${sidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
         `}
         style={{
-          background: 'rgba(14,14,16,0.95)',
+          background: 'var(--panel-bg)',
           backdropFilter: 'blur(12px)',
           borderColor: 'var(--border)',
           top: 'var(--header-height)',
