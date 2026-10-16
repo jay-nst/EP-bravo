@@ -2,6 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { Form } from '@base-ui/react/form';
+import {
+  Button,
+  Card,
+  Field,
+  Input,
+  Separator,
+  Spinner,
+  StatusChip,
+  Textarea,
+  type StatusChipProps,
+} from '@naraspace-technology/nds/components';
+import { IconPlus } from '@naraspace-technology/nds/icons';
 import { createClient } from '@/lib/supabase/client';
 import { fmtNum } from '@/lib/format';
 
@@ -26,13 +39,23 @@ interface TaskingRequest {
   created_at: string;
 }
 
-const STATUS_LABELS: Record<string, { text: string; color: string }> = {
-  received: { text: '접수됨', color: 'var(--warning)' },
-  reviewing: { text: '검토중', color: 'var(--accent)' },
-  quoted: { text: '견적 발송', color: 'var(--secondary)' },
-  accepted: { text: '수락됨', color: 'var(--success)' },
-  rejected: { text: '거절됨', color: 'var(--error)' },
+// 요청 상태 → NDS StatusChip status (기존 색 의미: warning·accent·secondary·success·error)
+// cls: 색 기준 78e9433 — 배경 없이 상태 색 글자
+const STATUS_LABELS: Record<string, { text: string; status: StatusChipProps['status']; cls: string }> = {
+  received: { text: '접수됨', status: 'warning', cls: 'bg-transparent text-status-warning [&>svg]:text-status-warning' },
+  reviewing: { text: '검토중', status: 'brand', cls: 'bg-transparent text-text-interactive-primary [&>svg]:text-text-interactive-primary' },
+  quoted: { text: '견적 발송', status: 'information', cls: 'bg-transparent text-[#5B8C6F] [&>svg]:text-[#5B8C6F]' },
+  accepted: { text: '수락됨', status: 'success', cls: 'bg-transparent text-status-success [&>svg]:text-status-success' },
+  rejected: { text: '거절됨', status: 'error', cls: 'bg-transparent text-status-danger [&>svg]:text-status-danger' },
 };
+
+/** 민트 CTA (accent 배경 + 어두운 글자, 테두리 없음), disabled 는 accent 40% */
+const MINT_CTA =
+  'bg-bg-interactive-primary text-text-inverse [&_svg]:text-text-inverse inset-ring-transparent not-data-disabled:data-active:not-hover:text-text-inverse not-data-disabled:data-active:not-hover:[&_svg]:text-text-inverse data-disabled:bg-bg-interactive-primary data-disabled:text-text-inverse data-disabled:opacity-40';
+/** 폼 라벨: muted 글자 */
+const LABEL_CLS = 'text-text-tertiary';
+/** 입력칸: surface 배경 + border 테두리 */
+const FIELD_CLS = 'bg-bg-secondary';
 
 export default function TaskingPage() {
   const [requests, setRequests] = useState<TaskingRequest[]>([]);
@@ -63,8 +86,8 @@ export default function TaskingPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Form 이 필드 검증(이메일 required·type=email)을 통과시켰을 때만 호출된다
+  const handleSubmit = async () => {
     if (!aoi) return;
     setSubmitting(true);
     setError(null);
@@ -105,35 +128,26 @@ export default function TaskingPage() {
     }
   };
 
-  const inputStyle = {
-    background: 'var(--surface)',
-    border: '1px solid var(--border)',
-    color: 'var(--text)',
-  };
-
   return (
-    <div className="max-w-4xl mx-auto px-16 py-32 w-full">
-      <div className="flex items-center justify-between mb-24">
-        <h1 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
+    <div className="mx-auto w-full max-w-4xl px-16 py-32">
+      <div className="mb-24 flex items-center justify-between">
+        <h1 className="text-heading-3xl text-text-primary md:text-display-md">
           촬영 요청
         </h1>
-        <button
+        <Button
+          variant={showForm ? 'outline' : 'solid'}
+          leftIcon={showForm ? undefined : <IconPlus />}
           onClick={() => setShowForm(!showForm)}
-          className="px-16 py-8 text-sm rounded-sm transition-colors"
-          style={{ background: 'var(--accent)', color: 'var(--text-inverse)' }}
+          className={MINT_CTA}
         >
-          {showForm ? '취소' : '+ 새 요청'}
-        </button>
+          {showForm ? '취소' : '새 요청'}
+        </Button>
       </div>
 
       {success && (
         <div
-          className="mb-16 px-16 py-12 rounded-sm text-sm"
-          style={{
-            background: 'rgba(74, 158, 107, 0.15)',
-            border: '1px solid rgba(74, 158, 107, 0.3)',
-            color: 'var(--success)',
-          }}
+          role="status"
+          className="mb-16 rounded-md bg-[rgba(74,158,107,0.15)] px-16 py-12 text-body-sm-regular text-status-success inset-ring-1 inset-ring-[rgba(74,158,107,0.3)]"
         >
           촬영 요청이 접수되었습니다. 검토 후 연락드리겠습니다.
         </div>
@@ -141,31 +155,24 @@ export default function TaskingPage() {
 
       {error && (
         <div
-          className="mb-16 px-16 py-12 rounded-sm text-sm"
-          style={{
-            background: 'rgba(196, 92, 74, 0.15)',
-            border: '1px solid rgba(196, 92, 74, 0.3)',
-            color: 'var(--error)',
-          }}
+          role="alert"
+          className="mb-16 rounded-md bg-[rgba(196,92,74,0.15)] px-16 py-12 text-body-sm-regular text-status-danger inset-ring-1 inset-ring-[rgba(196,92,74,0.3)]"
         >
           {error}
         </div>
       )}
 
       {showForm && (
-        <form
-          onSubmit={handleSubmit}
-          className="mb-32 rounded-[12px] p-24 space-y-16"
-          style={{ border: '1px solid var(--border)' }}
+        <Form
+          onFormSubmit={handleSubmit}
+          className="mb-32 flex flex-col gap-16 rounded-lg bg-bg-tertiary p-24 inset-ring-1 inset-ring-border-tertiary"
         >
-          <p className="text-sm mb-8" style={{ color: 'var(--text-muted)' }}>
+          <p className="mb-8 text-body-md-regular text-text-tertiary">
             지도에서 촬영할 영역을 그려주세요. 왼쪽 상단의 폴리곤 도구를 사용하세요.
           </p>
 
-          <div
-            className="rounded-sm overflow-hidden"
-            style={{ height: '400px', border: '1px solid var(--border)' }}
-          >
+          {/* 지도가 가장자리까지 차서 inset-ring 대신 border 로 테두리 */}
+          <div className="h-400 overflow-hidden rounded-md border border-border-tertiary">
             <EarthMap
               onAoiChange={setAoi}
               mapStyleId={mapStyleId}
@@ -173,30 +180,24 @@ export default function TaskingPage() {
           </div>
 
           {aoi && (
-            <div
-              className="flex items-center justify-between px-16 py-12 rounded-sm"
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-            >
+            <div className="flex items-center justify-between rounded-md bg-bg-secondary px-16 py-12 inset-ring-1 inset-ring-border-tertiary">
               <div className="flex items-center gap-16">
                 <div>
-                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>면적</span>
-                  <p className="text-sm font-mono font-medium" style={{ color: 'var(--text)' }}>
+                  <span className="text-body-xs-regular text-text-tertiary">면적</span>
+                  <p className="text-body-sm-medium tabular-nums text-text-primary">
                     {fmtNum(aoi.areaKm2, 1)} km²
                   </p>
                 </div>
-                <div
-                  className="w-px h-32"
-                  style={{ background: 'var(--border)' }}
-                />
+                <Separator orientation="vertical" className="h-32 bg-border-tertiary" />
                 <div>
-                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>예상 가격</span>
-                  <p className="text-sm font-mono font-medium" style={{ color: 'var(--accent)' }}>
+                  <span className="text-body-xs-regular text-text-tertiary">예상 가격</span>
+                  <p className="text-body-sm-medium tabular-nums text-text-interactive-primary">
                     ${fmtNum(aoi.price, 2)}
                   </p>
                 </div>
               </div>
               {aoi.validationError && (
-                <span className="text-xs" style={{ color: 'var(--error)' }}>
+                <span className="text-body-xs-regular text-status-danger">
                   {aoi.validationError}
                 </span>
               )}
@@ -204,92 +205,83 @@ export default function TaskingPage() {
           )}
 
           <div className="grid grid-cols-2 gap-16">
-            <div>
-              <label className="block text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
-                희망 촬영 시작일
-              </label>
-              <input
+            <Field.Root name="preferred_date_from">
+              <Field.Label className={LABEL_CLS}>희망 촬영 시작일</Field.Label>
+              <Input
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
-                className="w-full rounded-sm px-12 py-8 text-sm focus:outline-none"
-                style={inputStyle}
+                className={FIELD_CLS}
               />
-            </div>
-            <div>
-              <label className="block text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
-                희망 촬영 종료일
-              </label>
-              <input
+            </Field.Root>
+            <Field.Root name="preferred_date_to">
+              <Field.Label className={LABEL_CLS}>희망 촬영 종료일</Field.Label>
+              <Input
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
-                className="w-full rounded-sm px-12 py-8 text-sm focus:outline-none"
-                style={inputStyle}
+                className={FIELD_CLS}
               />
-            </div>
+            </Field.Root>
           </div>
 
-          <div>
-            <label className="block text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
-              연락처 이메일 *
-            </label>
-            <input
+          {/* 선택 항목이 대부분이라 필수 항목(이메일)에만 Field.Required */}
+          <Field.Root name="contact_email">
+            <Field.Label className={LABEL_CLS}>연락처 이메일<Field.Required className="text-text-tertiary" /></Field.Label>
+            <Input
               type="email"
               value={contactEmail}
               onChange={(e) => setContactEmail(e.target.value)}
               required
-              className="w-full rounded-sm px-12 py-8 text-sm focus:outline-none"
-              style={inputStyle}
+              className={FIELD_CLS}
             />
-          </div>
+            <Field.Error />
+          </Field.Root>
 
-          <div>
-            <label className="block text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
-              연락처 전화번호
-            </label>
-            <input
+          <Field.Root name="contact_phone">
+            <Field.Label className={LABEL_CLS}>연락처 전화번호</Field.Label>
+            <Input
               type="tel"
               value={contactPhone}
               onChange={(e) => setContactPhone(e.target.value)}
               placeholder="010-0000-0000"
-              className="w-full rounded-sm px-12 py-8 text-sm focus:outline-none"
-              style={inputStyle}
+              className={FIELD_CLS}
             />
-          </div>
+          </Field.Root>
 
-          <div>
-            <label className="block text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
-              요청 사항
-            </label>
-            <textarea
+          <Field.Root name="notes">
+            <Field.Label className={LABEL_CLS}>요청 사항</Field.Label>
+            <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
               maxLength={1000}
               placeholder="촬영 목적, 해상도 요구사항 등"
-              className="w-full rounded-sm px-12 py-8 text-sm resize-none focus:outline-none"
-              style={inputStyle}
+              className={FIELD_CLS}
             />
-          </div>
+          </Field.Root>
 
-          <button
+          <Button
             type="submit"
+            display="block"
+            loading={submitting}
             disabled={submitting || !contactEmail || !aoi || !!aoi.validationError}
-            className="w-full py-10 rounded-sm text-sm font-medium transition-colors disabled:opacity-40"
-            style={{ background: 'var(--accent)', color: 'var(--text-inverse)' }}
+            className={MINT_CTA}
           >
             {submitting ? '제출 중...' : !aoi ? '영역을 먼저 그려주세요' : '촬영 요청 제출'}
-          </button>
-        </form>
+          </Button>
+        </Form>
       )}
 
       {loading ? (
-        <p className="text-center py-32" style={{ color: 'var(--text-muted)' }}>로딩 중...</p>
+        <div className="flex items-center justify-center gap-8 py-32">
+          <Spinner size="sm" aria-label="로딩 중" className="text-text-interactive-primary" />
+          <p className="text-body-md-regular text-text-tertiary">로딩 중...</p>
+        </div>
       ) : requests.length === 0 ? (
-        <div className="text-center py-64">
-          <p className="mb-8" style={{ color: 'var(--text-muted)' }}>촬영 요청 내역이 없습니다</p>
-          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+        <div className="py-64 text-center">
+          <p className="mb-8 text-heading-lg text-text-tertiary">촬영 요청 내역이 없습니다</p>
+          <p className="text-body-md-regular text-text-tertiary">
             새 요청을 만들어 원하는 지역의 위성 촬영을 신청하세요
           </p>
         </div>
@@ -298,45 +290,41 @@ export default function TaskingPage() {
           {requests.map((req) => {
             const status = STATUS_LABELS[req.status] ?? {
               text: req.status,
-              color: 'var(--text-muted)',
+              status: 'neutral',
+              cls: 'bg-transparent text-text-tertiary [&>svg]:text-text-tertiary',
             };
             return (
-              <div
-                key={req.id}
-                className="rounded-[12px] p-20 space-y-8"
-                style={{ border: '1px solid var(--border)' }}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="space-y-4">
-                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                      요청번호:{' '}
-                      <span className="font-mono text-xs" style={{ color: 'var(--text)' }}>
-                        {req.id.slice(0, 8)}
-                      </span>
-                    </p>
-                    {(req.preferred_date_from || req.preferred_date_to) && (
-                      <p className="text-sm" style={{ color: 'var(--text)' }}>
-                        희망 기간: {req.preferred_date_from || '?'} ~{' '}
-                        {req.preferred_date_to || '?'}
+              <Card.Root key={req.id}>
+                <Card.Body className="gap-8">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-4">
+                      <p className="text-body-sm-regular text-text-tertiary">
+                        요청번호:{' '}
+                        <span className="text-body-sm-medium tabular-nums text-text-primary">
+                          {req.id.slice(0, 8)}
+                        </span>
                       </p>
-                    )}
-                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                      {new Date(req.created_at).toLocaleString('ko-KR')}
-                    </p>
+                      {(req.preferred_date_from || req.preferred_date_to) && (
+                        <p className="text-body-sm-regular tabular-nums text-text-primary">
+                          희망 기간: {req.preferred_date_from || '?'} ~{' '}
+                          {req.preferred_date_to || '?'}
+                        </p>
+                      )}
+                      <p className="text-body-xs-regular tabular-nums text-text-tertiary">
+                        {new Date(req.created_at).toLocaleString('ko-KR')}
+                      </p>
+                    </div>
+                    <StatusChip status={status.status} className={status.cls}>
+                      {status.text}
+                    </StatusChip>
                   </div>
-                  <span className="text-sm font-medium" style={{ color: status.color }}>
-                    {status.text}
-                  </span>
-                </div>
-                {req.notes && (
-                  <p
-                    className="text-xs px-12 py-8 rounded-xs"
-                    style={{ background: 'var(--surface)', color: 'var(--text-muted)' }}
-                  >
-                    {req.notes}
-                  </p>
-                )}
-              </div>
+                  {req.notes && (
+                    <p className="rounded-md bg-bg-secondary px-12 py-8 text-body-sm-regular text-text-tertiary">
+                      {req.notes}
+                    </p>
+                  )}
+                </Card.Body>
+              </Card.Root>
             );
           })}
         </div>

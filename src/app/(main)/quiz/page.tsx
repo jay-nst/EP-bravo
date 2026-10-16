@@ -2,7 +2,19 @@
 
 import Link from 'next/link';
 import { useState, useEffect, useMemo } from 'react';
+import { Button, StatusChip } from '@naraspace-technology/nds/components';
+import { IconSatellite } from '@naraspace-technology/nds/icons';
 import { DAILY_QUIZZES } from '@/lib/sample-data';
+
+// 색 기준 78e9433 — NDS 컴포넌트 색만 원래 값으로 덮는다
+/** accent 10% 틴트 알약 (DAILY, N일 연속 정답) */
+const ACCENT_PILL_CLS = 'bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] text-text-interactive-primary';
+/** 민트 CTA (accent 배경 + 어두운 글자) */
+const MINT_CTA =
+  'bg-bg-interactive-primary text-text-inverse [&_svg]:text-text-inverse not-data-disabled:data-active:not-hover:text-text-inverse not-data-disabled:data-active:not-hover:[&_svg]:text-text-inverse';
+/** 보조 링크: border 테두리 + muted 글자 (hover 색 변화 없음) */
+const GHOST_LINK_CLS =
+  'text-text-tertiary [&_svg]:text-text-tertiary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-transparent not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary';
 
 function getTodayQuiz() {
   const today = new Date();
@@ -73,97 +85,90 @@ export default function QuizPage() {
   const isCorrect = selected === quiz.answer;
 
   return (
-    <div className="max-w-2xl mx-auto px-16 py-32 w-full">
+    <div className="mx-auto w-full max-w-2xl px-16 py-32">
       {/* Header */}
-      <div className="flex items-center justify-between mb-32">
+      <div className="mb-32 flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-8 mb-4">
-            <h1 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
+          <div className="mb-4 flex items-center gap-8">
+            <h1 className="text-heading-3xl text-text-primary md:text-display-md">
               오늘의 퀴즈
             </h1>
-            <span
-              className="text-xs font-mono px-8 py-2 rounded-full"
-              style={{ background: 'color-mix(in srgb, var(--accent) 10%, transparent)', color: 'var(--accent)' }}
-            >
+            <StatusChip status="brand" showIcon={false} className={ACCENT_PILL_CLS}>
               DAILY
-            </span>
+            </StatusChip>
           </div>
-          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-body-md-regular text-text-tertiary">
             위성 영상을 보고 장소를 맞혀보세요
           </p>
         </div>
         {/* Streak */}
         <div className="text-center">
           <div
-            className="w-48 h-48 rounded-full flex items-center justify-center text-lg font-mono font-semibold"
-            style={{
-              border: streak > 0 ? '2px solid var(--accent)' : '2px solid var(--border)',
-              color: streak > 0 ? 'var(--accent)' : 'var(--text-muted)',
-            }}
+            className={`flex size-48 items-center justify-center rounded-full text-heading-xl tabular-nums ${
+              streak > 0
+                ? 'text-text-interactive-primary inset-ring-2 inset-ring-border-interactive-primary'
+                : 'text-text-tertiary inset-ring-2 inset-ring-border-tertiary'
+            }`}
           >
             {streak}
           </div>
-          <p className="text-xs mt-4" style={{ color: 'var(--text-muted)' }}>연속</p>
+          <p className="mt-4 text-body-xs-regular text-text-tertiary">연속</p>
         </div>
       </div>
 
-      {/* Image / Hint area */}
-      <div
-        className="rounded-[12px] overflow-hidden mb-24"
-        style={{ border: '1px solid var(--border)' }}
-      >
+      {/* Image / Hint area — 자식 배경이 가장자리까지 차서 inset-ring 대신 border 로 테두리.
+          그라데이션(style background)은 위성 영상 자리 일러스트 배경 (§7-2 일러스트 예외) */}
+      <div className="mb-24 overflow-hidden rounded-lg border border-border-tertiary">
         <div
-          className="dark aspect-[16/10] flex flex-col items-center justify-center p-32 text-center relative overflow-hidden"
+          className="dark relative flex aspect-[16/10] flex-col items-center justify-center overflow-hidden p-32 text-center"
           style={{ background: 'linear-gradient(135deg, #0a1a15 0%, #0d2818 30%, #0a1612 60%, #111a14 100%)' }}
         >
           <div
-            className="absolute inset-0 pointer-events-none"
+            className="pointer-events-none absolute inset-0"
             style={{
-              backgroundImage: 'linear-gradient(rgba(27,191,168,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(27,191,168,0.05) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(color-mix(in srgb, var(--accent) 5%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--accent) 5%, transparent) 1px, transparent 1px)',
               backgroundSize: '20px 20px',
             }}
           />
-          <div
-            className="w-64 h-64 rounded-full flex items-center justify-center text-3xl mb-16 relative z-10"
-            style={{ background: 'rgba(27,191,168,0.08)' }}
-          >
-            <span style={{ color: 'var(--accent)' }}>&#128752;</span>
+          <div className="relative z-10 mb-16 flex size-64 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]">
+            <IconSatellite className="size-24 text-text-interactive-primary" />
           </div>
-          <p
-            className="text-sm leading-relaxed max-w-md relative z-10"
-            style={{ color: 'var(--text-muted)' }}
-          >
+          <p className="relative z-10 max-w-md text-body-md-regular text-text-tertiary">
             {quiz.imageHint}
           </p>
-          <p className="text-xs font-mono mt-12 relative z-10" style={{ color: 'var(--text-muted)', opacity: 0.5 }}>
+          <p className="relative z-10 mt-12 text-body-xs-regular text-text-tertiary opacity-50">
             실제 위성 영상이 여기에 표시됩니다
           </p>
         </div>
       </div>
 
       {/* Question */}
-      <h2 className="text-lg font-semibold mb-16" style={{ color: 'var(--text)' }}>
+      <h2 className="mb-16 text-heading-2xl text-text-primary">
         {quiz.question}
       </h2>
 
-      {/* Choices */}
-      <div className="space-y-10 mb-32">
+      {/* Choices — 정답/오답 상태를 보여주는 선택지 타일.
+          NDS 에 맞는 부품이 없어(Radio 는 선택 표시만, Card 는 선택·정오 상태 없음) 네이티브 button 유지.
+          색은 78e9433 기준: 기본 = border 테두리, 정답 = accent, 오답 = error (틴트 8%), "정답" 표시 = StatusChip */}
+      <div className="mb-32 space-y-10">
         {quiz.choices.map((choice, i) => {
-          let borderColor = 'var(--border)';
-          let bg = 'transparent';
-          let textColor = 'var(--text)';
+          let surfaceClass = 'bg-transparent inset-ring-1 inset-ring-border-tertiary';
+          let markClass = 'inset-ring-1 inset-ring-border-tertiary text-text-primary';
+          let textClass = 'text-text-primary';
 
           if (revealed) {
             if (i === quiz.answer) {
-              borderColor = 'var(--accent)';
-              bg = 'color-mix(in srgb, var(--accent) 8%, transparent)';
-              textColor = 'var(--accent)';
+              surfaceClass = 'bg-[color-mix(in_srgb,var(--accent)_8%,transparent)] inset-ring-1 inset-ring-border-interactive-primary';
+              markClass = 'inset-ring-1 inset-ring-border-interactive-primary text-text-interactive-primary';
+              textClass = 'text-text-interactive-primary';
             } else if (i === selected && i !== quiz.answer) {
-              borderColor = 'var(--error)';
-              bg = 'rgba(196,92,74,0.08)';
-              textColor = 'var(--error)';
+              surfaceClass = 'bg-[rgba(196,92,74,0.08)] inset-ring-1 inset-ring-status-danger';
+              markClass = 'inset-ring-1 inset-ring-status-danger text-status-danger';
+              textClass = 'text-status-danger';
             } else {
-              textColor = 'var(--text-muted)';
+              surfaceClass = 'bg-transparent inset-ring-1 inset-ring-border-tertiary';
+              markClass = 'inset-ring-1 inset-ring-border-tertiary text-text-tertiary';
+              textClass = 'text-text-tertiary';
             }
           }
 
@@ -172,25 +177,20 @@ export default function QuizPage() {
               key={i}
               onClick={() => handleSelect(i)}
               disabled={revealed}
-              className="w-full text-left rounded-[12px] px-20 py-16 transition-all flex items-center gap-12"
-              style={{ border: `1px solid ${borderColor}`, background: bg }}
+              className={`flex w-full items-center gap-12 rounded-md px-20 py-16 text-left outline-offset-2 transition-colors focus-visible:outline focus-visible:outline-border-focus-ring ${surfaceClass}`}
             >
               <span
-                className="w-28 h-28 rounded-full flex items-center justify-center text-xs font-mono font-semibold flex-shrink-0"
-                style={{
-                  border: `1.5px solid ${borderColor}`,
-                  color: textColor,
-                }}
+                className={`flex size-28 shrink-0 items-center justify-center rounded-full text-body-sm-medium tabular-nums ${markClass}`}
               >
                 {String.fromCharCode(65 + i)}
               </span>
-              <span className="text-sm" style={{ color: textColor }}>
+              <span className={`text-body-md-regular ${textClass}`}>
                 {choice}
               </span>
               {revealed && i === quiz.answer && (
-                <span className="ml-auto text-xs font-medium" style={{ color: 'var(--accent)' }}>
+                <StatusChip status="success" className="ml-auto bg-transparent text-text-interactive-primary [&>svg]:text-text-interactive-primary">
                   정답
-                </span>
+                </StatusChip>
               )}
             </button>
           );
@@ -200,62 +200,50 @@ export default function QuizPage() {
       {/* Result */}
       {revealed && (
         <div
-          className="rounded-[12px] p-24 space-y-16"
-          style={{
-            border: `1px solid ${isCorrect ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'rgba(196,92,74,0.3)'}`,
-            background: isCorrect ? 'color-mix(in srgb, var(--accent) 4%, transparent)' : 'rgba(196,92,74,0.04)',
-          }}
+          className={`space-y-16 rounded-lg p-24 inset-ring-1 ${
+            isCorrect
+              ? 'bg-[color-mix(in_srgb,var(--accent)_4%,transparent)] inset-ring-[color-mix(in_srgb,var(--accent)_30%,transparent)]'
+              : 'bg-[rgba(196,92,74,0.04)] inset-ring-[rgba(196,92,74,0.3)]'
+          }`}
         >
           <div className="flex items-center gap-8">
             <span
-              className="text-sm font-semibold"
-              style={{ color: isCorrect ? 'var(--accent)' : 'var(--error)' }}
+              className={`text-heading-lg ${isCorrect ? 'text-text-interactive-primary' : 'text-status-danger'}`}
             >
               {isCorrect ? '정답입니다!' : '아쉽네요!'}
             </span>
             {isCorrect && streak > 1 && (
-              <span
-                className="text-xs font-mono px-8 py-2 rounded-full"
-                style={{ background: 'color-mix(in srgb, var(--accent) 10%, transparent)', color: 'var(--accent)' }}
-              >
+              <StatusChip status="brand" showIcon={false} className={ACCENT_PILL_CLS}>
                 {streak}일 연속 정답
-              </span>
+              </StatusChip>
             )}
           </div>
-          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-body-md-regular text-text-tertiary">
             {quiz.explanation}
           </p>
-          <div className="flex items-center gap-16 text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
+          <div className="flex items-center gap-16 text-body-xs-regular tabular-nums text-text-tertiary">
             <span>{quiz.location}</span>
-            <span style={{ color: 'var(--border)' }}>&middot;</span>
+            <span aria-hidden className="text-border-tertiary">&middot;</span>
             <span>{quiz.coordinates}</span>
           </div>
           <div className="flex gap-12 pt-8">
-            <Link
-              href="/map"
-              className="px-16 py-8 rounded-sm text-sm font-medium transition-colors"
-              style={{ background: 'var(--accent)', color: 'var(--text-inverse)' }}
-            >
+            <Button render={<Link href="/map" />} nativeButton={false} className={MINT_CTA}>
               지도에서 보기
-            </Link>
-            <Link
-              href="/explore"
-              className="px-16 py-8 rounded-sm text-sm transition-colors"
-              style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
-            >
+            </Button>
+            <Button variant="outline" render={<Link href="/explore" />} nativeButton={false} className={GHOST_LINK_CLS}>
               탐색하기
-            </Link>
+            </Button>
           </div>
         </div>
       )}
 
       {/* Tomorrow teaser */}
       {revealed && (
-        <div className="mt-32 text-center py-24" style={{ borderTop: '1px solid var(--border)' }}>
-          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+        <div className="mt-32 border-t border-border-tertiary py-24 text-center">
+          <p className="text-body-md-regular text-text-tertiary">
             내일 새로운 퀴즈가 공개됩니다
           </p>
-          <p className="text-xs font-mono mt-4" style={{ color: 'var(--text-muted)', opacity: 0.5 }}>
+          <p className="mt-4 text-body-xs-regular text-text-tertiary opacity-50">
             매일 자정 업데이트
           </p>
         </div>

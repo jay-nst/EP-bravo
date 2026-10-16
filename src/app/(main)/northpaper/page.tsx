@@ -1,6 +1,8 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { Button, Card, StatusChip } from '@naraspace-technology/nds/components';
+import { IconArrowRight } from '@naraspace-technology/nds/icons';
 import OtherSolutions from '@/components/landing/OtherSolutions';
 
 const NorthpaperSimulator = dynamic(
@@ -27,367 +29,167 @@ const CAPABILITIES = [
   },
 ];
 
+// 운영 색 복원 (NDS_FULL_ADOPTION_RULES §8) — 색만 덮고 크기·모서리·패딩은 NDS 그대로
+const CTA_SOLID_CLASS =
+  'bg-[#3D5A80] text-white [&_svg]:text-white not-data-disabled:not-aria-invalid:hover:bg-[#3D5A80] hover:opacity-85';
+const CTA_TEXT_CLASS =
+  'text-[#3D5A80] [&_svg]:text-[#3D5A80] not-data-disabled:not-aria-invalid:hover:text-[#3D5A80] not-data-disabled:not-aria-invalid:hover:[&_svg]:text-[#3D5A80] hover:opacity-85';
+
 export default function NorthpaperPage() {
   return (
-    <div className="ep-page" style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-      <section
-        style={{
-          padding: '120px 24px 80px',
-          maxWidth: 640,
-          margin: '0 auto',
-        }}
-      >
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '4px 12px',
-            borderRadius: 4,
-            background: 'rgba(61, 90, 128, 0.12)',
-            marginBottom: 24,
-          }}
-        >
-          <span style={{ width: 8, height: 8, borderRadius: 2, background: '#3D5A80' }} />
-          <span
-            style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 11,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase' as const,
-              color: 'var(--text-muted)',
-              fontWeight: 400,
-            }}
+    <div className="min-h-screen bg-bg-tertiary">
+      {/* Hero */}
+      <section className="mx-auto max-w-960 px-16 pb-48 pt-48 sm:px-24 sm:pb-64 sm:pt-80">
+        <div className="mb-20">
+          <StatusChip
+            status="neutral"
+            className="bg-[rgba(61,90,128,0.12)] text-text-tertiary"
+            icon={<span aria-hidden className="size-8 shrink-0 rounded-[2px] bg-[#3D5A80]" />}
           >
-            EarthPaper ·
-          </span>
-          <span
-            style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 11,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase' as const,
-              color: '#3D5A80',
-              fontWeight: 600,
-            }}
-          >
-            Northpaper
-          </span>
+            EarthPaper · <span className="text-[#3D5A80]">Northpaper</span>
+          </StatusChip>
         </div>
 
-        <h1
-          style={{
-            fontSize: 'clamp(28px, 4vw, 36px)',
-            fontWeight: 600,
-            lineHeight: 1.3,
-            color: 'var(--text)',
-            marginBottom: 16,
-          }}
-        >
+        <h1 className="mb-16 text-heading-3xl text-text-primary md:text-display-md">
           국방 · 안보
         </h1>
 
-        <p
-          style={{
-            fontSize: 16,
-            lineHeight: 1.7,
-            color: 'var(--text-muted)',
-            maxWidth: '48ch',
-            marginBottom: 48,
-          }}
-        >
+        <p className="max-w-[52ch] text-body-md-regular text-text-tertiary">
           보안 요건에 따라 본 페이지에서는 역량 개요만 안내합니다.
           상세 사항은 별도 채널을 통해 문의해 주시기 바랍니다.
         </p>
+      </section>
 
-        {/* Use Case */}
-        <div style={{ borderTop: '1px solid var(--border)', paddingTop: 32 }}>
-          <span
-            style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 11,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase' as const,
-              color: 'var(--text-muted)',
-              display: 'block',
-              marginBottom: 16,
-            }}
-          >
-            Use Case
-          </span>
-
-          <h2
-            style={{
-              fontSize: 20,
-              fontWeight: 600,
-              color: 'var(--text)',
-              marginBottom: 8,
-            }}
-          >
+      {/* Use Case */}
+      <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
+        <div className="mb-24 flex flex-col items-start gap-8 border-t border-border-tertiary pt-32">
+          <StatusChip status="neutral" showIcon={false} className="text-text-tertiary">Use Case</StatusChip>
+          <h2 className="text-heading-2xl text-text-primary">
             개성공단 무단 가동 탐지
           </h2>
-          <p
-            style={{
-              fontSize: 14,
-              lineHeight: 1.7,
-              color: 'var(--text-muted)',
-              marginBottom: 28,
-            }}
-          >
+          <p className="max-w-[60ch] text-body-md-regular text-text-tertiary">
             2016년 공식 폐쇄된 개성공단. 북한의 무단 사용 정황을 다중 위성 분석으로 포착한
             실제 분석 시나리오입니다.
           </p>
-
-          <div
-            className="ep-cols-2"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: 12,
-            }}
-          >
-            {[
-              {
-                no: '01',
-                title: '광역 스크리닝',
-                desc: '열적외선 위성으로 공단 내 비정상 열원(핫스팟) 포착',
-              },
-              {
-                no: '02',
-                title: '고해상도 확인',
-                desc: '의심 구역을 옵저버 고해상도 영상으로 정밀 분석',
-              },
-              {
-                no: '03',
-                title: '변화 탐지',
-                desc: '버스 290대 차고지 시계열 분석 — 122대 위치 변화 포착',
-              },
-              {
-                no: '04',
-                title: '인텔리전스 리포트',
-                desc: '무단 가동 정황 종합 판정, 정책 의사결정 근거 제공',
-              },
-            ].map((step) => (
-              <div
-                key={step.no}
-                style={{
-                  padding: '20px',
-                  borderRadius: 8,
-                  border: '1px solid var(--border)',
-                  background: 'var(--surface)',
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: 13,
-                    fontWeight: 600,
-                    letterSpacing: '0.08em',
-                    color: '#3D5A80',
-                    display: 'block',
-                    marginBottom: 12,
-                  }}
-                >
-                  {step.no}
-                </span>
-                <h3
-                  style={{
-                    fontSize: 15,
-                    fontWeight: 600,
-                    color: 'var(--text)',
-                    marginBottom: 6,
-                  }}
-                >
-                  {step.title}
-                </h3>
-                <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                  {step.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <a
-            href="https://ep.naraspace.com/ko/post/contents/unauthorized-operation-caught-at-kaesong-industrial-complex_-along-with-disappeared-buses"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-block',
-              marginTop: 20,
-              fontSize: 14,
-              fontWeight: 500,
-              color: '#3D5A80',
-              textDecoration: 'none',
-            }}
-          >
-            이 분석의 상세 내용을 확인하세요 →
-          </a>
-
-          <p
-            style={{
-              marginTop: 16,
-              padding: '14px 16px',
-              borderRadius: 8,
-              background: 'rgba(61, 90, 128, 0.08)',
-              fontSize: 12,
-              lineHeight: 1.6,
-              color: 'var(--text-muted)',
-            }}
-          >
-            북한 지역 상시 모니터링 데이터셋 — 글로벌 경쟁사가 복제할 수 없는 차별점
-          </p>
         </div>
 
-        {/* Interactive Simulator */}
-        <div style={{ marginTop: 48, borderTop: '1px solid var(--border)', paddingTop: 32 }}>
-          <NorthpaperSimulator />
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-12">
+          {[
+            {
+              no: '01',
+              title: '광역 스크리닝',
+              desc: '열적외선 위성으로 공단 내 비정상 열원(핫스팟) 포착',
+            },
+            {
+              no: '02',
+              title: '고해상도 확인',
+              desc: '의심 구역을 옵저버 고해상도 영상으로 정밀 분석',
+            },
+            {
+              no: '03',
+              title: '변화 탐지',
+              desc: '버스 290대 차고지 시계열 분석 — 122대 위치 변화 포착',
+            },
+            {
+              no: '04',
+              title: '인텔리전스 리포트',
+              desc: '무단 가동 정황 종합 판정, 정책 의사결정 근거 제공',
+            },
+          ].map((step) => (
+            <Card.Root key={step.no} className="bg-bg-secondary">
+              <Card.Body className="gap-8">
+                <span className="text-body-xs-regular tabular-nums text-[#3D5A80]">{step.no}</span>
+                <Card.Title>{step.title}</Card.Title>
+                <p className="text-body-sm-regular text-text-tertiary">{step.desc}</p>
+              </Card.Body>
+            </Card.Root>
+          ))}
         </div>
 
-        <div
-          style={{
-            marginTop: 48,
-            borderTop: '1px solid var(--border)',
-            paddingTop: 32,
-          }}
+        <Button
+          variant="text"
+          className={`mt-16 ${CTA_TEXT_CLASS}`}
+          rightIcon={<IconArrowRight />}
+          render={
+            <a
+              href="https://ep.naraspace.com/ko/post/contents/unauthorized-operation-caught-at-kaesong-industrial-complex_-along-with-disappeared-buses"
+              target="_blank"
+              rel="noopener noreferrer"
+            />
+          }
+          nativeButton={false}
         >
-          <span
-            style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 11,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase' as const,
-              color: 'var(--text-muted)',
-              display: 'block',
-              marginBottom: 20,
-            }}
-          >
-            역량
-          </span>
+          이 분석의 상세 내용을 확인하세요
+        </Button>
 
-          <div style={{ display: 'grid', gap: 12 }}>
-            {CAPABILITIES.map((c) => (
-              <div
-                key={c.title}
-                style={{
-                  display: 'flex',
-                  gap: 16,
-                  alignItems: 'flex-start',
-                  padding: '16px 20px',
-                  borderRadius: 8,
-                  border: '1px solid var(--border)',
-                  background: 'var(--surface)',
-                }}
-              >
-                <div>
-                  <h3
-                    style={{
-                      fontSize: 15,
-                      fontWeight: 600,
-                      color: '#3D5A80',
-                      marginBottom: 4,
-                    }}
-                  >
-                    {c.title}
-                  </h3>
-                  <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                    {c.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+        <p className="mt-16 rounded-sm bg-[rgba(61,90,128,0.08)] px-16 py-14 text-body-xs-regular text-text-tertiary">
+          북한 지역 상시 모니터링 데이터셋 — 글로벌 경쟁사가 복제할 수 없는 차별점
+        </p>
+      </section>
+
+      {/* Interactive Simulator */}
+      <NorthpaperSimulator />
+
+      {/* Capabilities */}
+      <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
+        <div className="mb-24 flex flex-col items-start gap-8 border-t border-border-tertiary pt-32">
+          <h2 className="text-heading-2xl text-text-tertiary">역량</h2>
         </div>
 
-        {/* Public Analysis */}
-        <div style={{ marginTop: 48, borderTop: '1px solid var(--border)', paddingTop: 32 }}>
-          <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: 'var(--text-muted)', display: 'block', marginBottom: 20 }}>
-            공개 분석
-          </span>
-          <div style={{ display: 'grid', gap: 12 }}>
-            {[
-              { title: '위성이 포착한 북한 5대 조선소 구조 변화', location: 'North Korea', href: 'https://ep.naraspace.com/ko/post/contents/satellite-imagery-changes-five-major-north-korean-shipyards-ports' },
-              { title: '이란 핵시설 공습 피해 위성영상 분석', location: 'Iran', href: 'https://ep.naraspace.com/ko/post/contents/airstrike-damage-to-irans-nuclear-facilities-the-truth-seen-from-satellite-imagery' },
-              { title: '금강산 관광지구 철거 현황과 전망', location: 'North Korea', href: 'https://ep.naraspace.com/ko/post/contents/kumgangsan-tourist-area-demolition-status-and-outlook' },
-            ].map((post) => (
-              <a
-                key={post.href}
-                href={post.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'flex',
-                  gap: 16,
-                  alignItems: 'flex-start',
-                  padding: '16px 20px',
-                  borderRadius: 8,
-                  border: '1px solid var(--border)',
-                  background: 'var(--surface)',
-                  textDecoration: 'none',
-                  transition: 'border-color 0.2s ease-out',
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--text-muted)'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; }}
-              >
-                <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: 15, fontWeight: 600, color: '#3D5A80', marginBottom: 4 }}>{post.title}</p>
-                  <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: 'var(--text-muted)' }}>{post.location} · ep.naraspace.com</span>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
-
-        {/* Contact */}
-        <div
-          style={{
-            marginTop: 48,
-            padding: 32,
-            borderRadius: 8,
-            border: '1px solid var(--border)',
-            background: 'var(--surface)',
-            textAlign: 'center' as const,
-          }}
-        >
-          <p
-            style={{
-              fontSize: 14,
-              color: 'var(--text-muted)',
-              marginBottom: 20,
-            }}
-          >
-            국방·안보 관련 문의는 별도 채널로 안내합니다.
-          </p>
-          <a
-            href="mailto:defense@naraspace.com"
-            className="ep-cta"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '12px 28px',
-              borderRadius: 8,
-              background: '#3D5A80',
-              color: '#fff',
-              fontSize: 14,
-              fontWeight: 500,
-              textDecoration: 'none',
-            }}
-          >
-            문의하기
-          </a>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-12">
+          {CAPABILITIES.map((c) => (
+            <Card.Root key={c.title} className="bg-bg-secondary">
+              <Card.Body className="gap-8">
+                <Card.Title className="text-[#3D5A80]">{c.title}</Card.Title>
+                <p className="text-body-sm-regular text-text-tertiary">{c.desc}</p>
+              </Card.Body>
+            </Card.Root>
+          ))}
         </div>
       </section>
 
-      <OtherSolutions current="northpaper" />
+      {/* Public Analysis */}
+      <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
+        <div className="mb-24 flex flex-col items-start gap-8 border-t border-border-tertiary pt-32">
+          <h2 className="text-heading-2xl text-text-tertiary">공개 분석</h2>
+        </div>
 
-      <style>{`
-        @media (max-width: 640px) {
-          .ep-page > section { padding-left: 16px !important; padding-right: 16px !important; }
-          .ep-page > section:first-of-type { padding-top: 48px !important; padding-bottom: 32px !important; }
-          .ep-cols-2 { grid-template-columns: 1fr !important; }
-          .ep-cta { min-height: 48px !important; }
-        }
-      `}</style>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-12">
+          {[
+            { title: '위성이 포착한 북한 5대 조선소 구조 변화', location: 'North Korea', href: 'https://ep.naraspace.com/ko/post/contents/satellite-imagery-changes-five-major-north-korean-shipyards-ports' },
+            { title: '이란 핵시설 공습 피해 위성영상 분석', location: 'Iran', href: 'https://ep.naraspace.com/ko/post/contents/airstrike-damage-to-irans-nuclear-facilities-the-truth-seen-from-satellite-imagery' },
+            { title: '금강산 관광지구 철거 현황과 전망', location: 'North Korea', href: 'https://ep.naraspace.com/ko/post/contents/kumgangsan-tourist-area-demolition-status-and-outlook' },
+          ].map((post) => (
+            <Card.Root
+              key={post.href}
+              interactive
+              className="bg-bg-secondary hover:inset-ring-text-tertiary"
+              render={<a href={post.href} target="_blank" rel="noopener noreferrer" />}
+            >
+              <Card.Body className="gap-8">
+                <Card.Title render={<p />} className="text-[#3D5A80]">{post.title}</Card.Title>
+                <span className="text-body-xs-regular text-text-tertiary">{post.location} · ep.naraspace.com</span>
+              </Card.Body>
+            </Card.Root>
+          ))}
+        </div>
+      </section>
+
+      {/* Contact */}
+      <section className="mx-auto max-w-960 px-16 pb-80 sm:px-24">
+        <Card.Root className="bg-bg-secondary">
+          <Card.Body className="items-center gap-8 py-32 text-center">
+            <p className="mb-16 max-w-[44ch] text-body-md-regular text-text-tertiary">
+              국방·안보 관련 문의는 별도 채널로 안내합니다.
+            </p>
+            <Button size="lg" className={CTA_SOLID_CLASS} render={<a href="mailto:defense@naraspace.com" />} nativeButton={false}>
+              문의하기
+            </Button>
+          </Card.Body>
+        </Card.Root>
+      </section>
+
+      <OtherSolutions current="northpaper" />
     </div>
   );
 }

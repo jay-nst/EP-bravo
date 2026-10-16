@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import type mapboxgl from 'mapbox-gl';
+import { Button, Separator, Spinner } from '@naraspace-technology/nds/components';
 import { addNorthpaperOverlay, removeSimulatorOverlay } from '@/lib/simulator-overlays';
 import { trackEvent } from '@/lib/analytics';
 import { fmtNum } from '@/lib/format';
@@ -11,17 +12,8 @@ import LeadCaptureModal from '@/components/shared/LeadCaptureModal';
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
   loading: () => (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--bg)',
-      }}
-    >
-      <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>지도 로딩 중...</p>
+    <div className="flex size-full items-center justify-center bg-bg-tertiary">
+      <p className="text-body-sm-regular text-text-tertiary">지도 로딩 중...</p>
     </div>
   ),
 });
@@ -61,10 +53,31 @@ function generateChangeDetection(areaKm2: number): ChangeDetectionResult {
 
 type Phase = 'draw' | 'analyzing' | 'result';
 
-const CONFIDENCE_COLORS = {
-  high: '#C45C4A',
-  medium: '#C8923A',
-  low: '#4A9E6B',
+type Tone = 'danger' | 'warning' | 'success';
+
+// 결과 값의 의미 색 — 운영 버전(78e9433) 색 그대로 (NDS_FULL_ADOPTION_RULES §8)
+const TONE_CLASS: Record<Tone, string> = {
+  danger: 'text-[#C45C4A]',
+  warning: 'text-[#C8923A]',
+  success: 'text-[#4A9E6B]',
+};
+
+// 운영 색 복원 — 색만 덮고 크기·모서리·패딩은 NDS 그대로
+const CTA_SOLID_CLASS =
+  'bg-[#3D5A80] text-white [&_svg]:text-white not-data-disabled:not-aria-invalid:hover:bg-[#3D5A80] hover:opacity-85';
+const RESET_TEXT_CLASS =
+  'text-text-tertiary not-data-disabled:not-aria-invalid:hover:text-text-tertiary hover:opacity-85';
+
+interface ResultRow {
+  label: string;
+  value: string;
+  tone?: Tone;
+}
+
+const CONFIDENCE_TONE: Record<ChangeDetectionResult['confidenceLevel'], Tone> = {
+  high: 'danger',
+  medium: 'warning',
+  low: 'success',
 };
 
 const CONFIDENCE_LABELS = {
@@ -130,30 +143,13 @@ export default function NorthpaperSimulator() {
   }, [clearOverlay]);
 
   return (
-    <section style={{ padding: '0 24px 64px', maxWidth: 960, margin: '0 auto' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-        <span
-          style={{
-            fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: 13,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: 'var(--text-muted)',
-          }}
-        >
-          변화 탐지 체험
-        </span>
+    <section className="mx-auto max-w-960 px-16 pb-64 sm:px-24">
+      <div className="mb-24 flex flex-col items-start gap-8 border-t border-border-tertiary pt-32">
+        <h2 className="text-heading-2xl text-text-tertiary">변화 탐지 체험</h2>
       </div>
 
-      <div
-        className="h-[320px] md:h-[480px]"
-        style={{
-          position: 'relative',
-          borderRadius: 8,
-          overflow: 'hidden',
-          border: '1px solid var(--border)',
-        }}
-      >
+      {/* 지도 캔버스가 컨테이너를 꽉 채워 inset-ring 을 가리므로 지도 프레임만 border 로 그린다 */}
+      <div className="relative h-320 overflow-hidden rounded-lg border border-border-tertiary md:h-480">
         <EarthMap
           onAoiChange={handleAoiChange}
           onMapReady={handleMapReady}
@@ -162,210 +158,85 @@ export default function NorthpaperSimulator() {
           zoom={12}
         />
 
-        <div
-          className="absolute bottom-0 left-0 right-0 max-h-[75%] overflow-y-auto rounded-t-sm md:bottom-auto md:left-auto md:right-12 md:top-12 md:w-[280px] md:max-h-[calc(100%-24px)] md:overflow-y-auto md:rounded-sm"
-          style={{
-            background: 'var(--panel-bg)',
-            backdropFilter: 'blur(12px)',
-            border: '1px solid var(--border)',
-            pointerEvents: 'auto',
-          }}
-        >
+        <div className="pointer-events-auto absolute bottom-0 left-0 right-0 max-h-[75%] overflow-y-auto rounded-t-lg bg-panel-bg backdrop-blur-[12px] inset-ring-1 inset-ring-border-tertiary md:bottom-auto md:left-auto md:right-12 md:top-12 md:max-h-[calc(100%-24px)] md:w-280 md:rounded-lg">
           {phase === 'draw' && (
             <div className="p-16 md:p-20">
-              <h3
-                style={{
-                  fontSize: 16,
-                  fontWeight: 600,
-                  color: 'var(--text)',
-                  marginBottom: 8,
-                }}
-              >
-                변화 탐지
-              </h3>
-              <p
-                style={{
-                  fontSize: 13,
-                  lineHeight: 1.6,
-                  color: 'var(--text-muted)',
-                  marginBottom: 16,
-                }}
-              >
+              <h3 className="mb-8 text-heading-lg text-text-primary">변화 탐지</h3>
+              <p className="mb-16 text-body-sm-regular text-text-tertiary">
                 관심 구역을 지정하세요. 시계열 위성영상 기반 변화 탐지가
                 시뮬레이션됩니다.
               </p>
-              <div
-                style={{
-                  padding: '8px 12px',
-                  borderRadius: 6,
-                  background: 'rgba(61, 90, 128, 0.12)',
-                  fontSize: 12,
-                  color: '#3D5A80',
-                  fontFamily: "'IBM Plex Mono', monospace",
-                }}
-              >
+              <div className="rounded-md bg-[rgba(61,90,128,0.12)] px-12 py-8 text-body-sm-regular text-[#3D5A80]">
                 왼쪽 상단 도구로 관심 구역을 그리세요
               </div>
             </div>
           )}
 
           {phase === 'analyzing' && (
-            <div className="p-16 md:p-20" style={{ textAlign: 'center' }}>
-              <div
-                style={{
-                  width: 32,
-                  height: 32,
-                  margin: '0 auto 12px',
-                  border: '2px solid var(--border)',
-                  borderTopColor: '#3D5A80',
-                  borderRadius: '50%',
-                  animation: 'northpaper-spin 1s linear infinite',
-                }}
-              />
-              <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>
-                시계열 분석 중...
-              </p>
+            <div className="flex flex-col items-center gap-12 p-16 text-center md:p-20">
+              <Spinner className="text-[#3D5A80]" />
+              <p className="text-body-sm-regular text-text-tertiary">시계열 분석 중...</p>
             </div>
           )}
 
           {phase === 'result' && result && (
             <div>
-              <div
-                style={{
-                  padding: '12px 16px',
-                  borderBottom: '1px solid var(--border)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: 12,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    color: '#3D5A80',
-                    fontWeight: 600,
-                  }}
-                >
-                  변화 탐지 결과
-                </span>
-                <button
-                  onClick={handleReset}
-                  style={{
-                    fontSize: 12,
-                    color: 'var(--text-muted)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: '4px 8px',
-                  }}
-                >
+              <div className="flex items-center justify-between py-8 pl-16 pr-8">
+                <h3 className="text-heading-lg text-[#3D5A80]">변화 탐지 결과</h3>
+                <Button variant="text" size="sm" className={RESET_TEXT_CLASS} onClick={handleReset}>
                   초기화
-                </button>
+                </Button>
               </div>
+              <Separator className="bg-border-tertiary" />
 
-              <div style={{ position: 'relative', height: 100, overflow: 'hidden' }}>
+              <div className="relative h-100 overflow-hidden">
                 <img
                   src="https://earthpaper.s3.ap-northeast-2.amazonaws.com/post/v2/editor/48/Thumbnail-satellite-imagery-changes-five-major-north-korean-shipyards-ports_.png"
                   alt="변화 탐지 위성영상"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  className="size-full object-cover"
                 />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--surface) 0%, transparent 60%)' }} />
+                <div className="absolute inset-0 bg-linear-to-t from-bg-secondary to-transparent to-60%" />
               </div>
 
-              <div style={{ padding: 16 }}>
-                {[
+              <div className="p-16">
+                {([
                   { label: '분석 면적', value: `${fmtNum(result.areaKm2, 1)} km²` },
                   { label: '분석 기간', value: result.assessmentPeriod },
                   { label: '관측 횟수', value: `${result.observationCount}회` },
-                  { label: '변화 구역', value: `${result.changedZones}개`, color: '#C8923A' },
-                  { label: '신규 구조물', value: `${result.newStructures}개`, color: result.newStructures > 0 ? '#C45C4A' : undefined },
-                  { label: '차량 활동', value: result.vehicleActivity, color: result.vehicleActivity === '증가 추세' ? '#C8923A' : undefined },
-                  { label: '열원 이상', value: `${result.thermalAnomalies}건`, color: '#C45C4A' },
-                  { label: '신뢰도', value: CONFIDENCE_LABELS[result.confidenceLevel], color: CONFIDENCE_COLORS[result.confidenceLevel] },
+                  { label: '변화 구역', value: `${result.changedZones}개`, tone: 'warning' },
+                  { label: '신규 구조물', value: `${result.newStructures}개`, tone: result.newStructures > 0 ? 'danger' : undefined },
+                  { label: '차량 활동', value: result.vehicleActivity, tone: result.vehicleActivity === '증가 추세' ? 'warning' : undefined },
+                  { label: '열원 이상', value: `${result.thermalAnomalies}건`, tone: 'danger' },
+                  { label: '신뢰도', value: CONFIDENCE_LABELS[result.confidenceLevel], tone: CONFIDENCE_TONE[result.confidenceLevel] },
                   { label: '마지막 관측', value: result.lastObservation },
-                ].map((item) => (
+                ] satisfies ResultRow[]).map((item) => (
                   <div
                     key={item.label}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '6px 0',
-                      borderBottom: '1px solid var(--border)',
-                    }}
+                    className="flex items-center justify-between border-b border-border py-6"
                   >
-                    <span
-                      style={{
-                        fontFamily: "'IBM Plex Mono', monospace",
-                        fontSize: 12,
-                        color: 'var(--text-muted)',
-                        letterSpacing: '0.04em',
-                      }}
-                    >
-                      {item.label}
-                    </span>
-                    <span
-                      style={{
-                        fontSize: 14,
-                        fontWeight: 500,
-                        color: item.color || 'var(--text)',
-                      }}
-                    >
+                    <span className="text-body-xs-regular text-text-tertiary">{item.label}</span>
+                    <span className={`text-body-sm-medium tabular-nums ${item.tone ? TONE_CLASS[item.tone] : 'text-text-primary'}`}>
                       {item.value}
                     </span>
                   </div>
                 ))}
 
-                <button
+                <Button
+                  display="block"
+                  className={`mt-16 ${CTA_SOLID_CLASS}`}
                   onClick={() => { trackEvent('simulator_event', 'lead_form_opened', { vertical: 'northpaper' }); setShowLeadForm(true); }}
-                  style={{
-                    width: '100%',
-                    marginTop: 16,
-                    padding: '10px',
-                    minHeight: 48,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 6,
-                    background: '#3D5A80',
-                    color: '#fff',
-                    fontSize: 14,
-                    fontWeight: 500,
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'opacity var(--duration-short) var(--ease-enter)',
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
                 >
                   인텔리전스 리포트 요청
-                </button>
+                </Button>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      <p
-        style={{
-          fontFamily: "'IBM Plex Mono', monospace",
-          fontSize: 12,
-          color: 'var(--text-muted)',
-          marginTop: 12,
-          letterSpacing: '0.04em',
-        }}
-      >
+      <p className="mt-12 text-body-xs-regular text-text-tertiary">
         시뮬레이션 데이터입니다. 실 서비스에서는 다중 위성 시계열 분석이 적용됩니다.
       </p>
-
-      <style>{`
-        @keyframes northpaper-spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
 
       <LeadCaptureModal
         open={showLeadForm}

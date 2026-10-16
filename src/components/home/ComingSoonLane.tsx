@@ -1,24 +1,22 @@
 'use client';
 
+import { Button, Card, StatusChip } from '@naraspace-technology/nds/components';
 import { trackEvent } from '@/lib/analytics';
 
 const PLATFORM_META = {
   predict: {
     name: 'Predict',
     color: 'var(--color-predict)',
-    hex: '#4A9EC4',
     description: '시장 인텔리전스 — 위성 데이터 기반 농업·시장 예측 분석',
   },
   warden: {
     name: 'Warden',
     color: 'var(--color-warden)',
-    hex: '#6B8A5E',
     description: '방위 인텔리전스 — 위성 변화 탐지 및 모니터링',
   },
   nexus: {
     name: 'Nexus',
     color: 'var(--color-nexus)',
-    hex: '#C8923A',
     description: '도시 인텔리전스 — 열섬·확장·인프라 분석',
   },
 } as const;
@@ -30,51 +28,37 @@ export default function ComingSoonLane({ platform }: { platform: PlatformKey }) 
 
   return (
     <section id={`lane-${platform}`} className="scroll-mt-96">
-      <div className="flex items-center gap-8 mb-12">
+      <div className="flex items-center gap-8 mb-16">
+        {/* 플랫폼 마크(점)·제목 — 플랫폼 색 (운영 색, §8) */}
         <span
           className="inline-block w-8 h-8 rounded-full"
           style={{ background: meta.color }}
         />
-        <h2
-          className="text-base font-semibold"
-          style={{ color: meta.color }}
-        >
+        <h2 className="text-heading-2xl" style={{ color: meta.color }}>
           {meta.name}
         </h2>
-        <span
-          className="text-xs px-8 py-2 rounded-full"
-          style={{
-            background: 'var(--surface-elevated)',
-            color: 'var(--text-muted)',
-          }}
-        >
+        <StatusChip status="neutral" showIcon={false} className="bg-bg-primary text-text-tertiary">
           Coming Soon
-        </span>
+        </StatusChip>
       </div>
-      <div
-        className="rounded-sm p-24 text-center"
-        style={{
-          background: `color-mix(in srgb, ${meta.hex} 5%, var(--surface))`,
-          border: '1px solid var(--border)',
-        }}
+      {/* 플랫폼 틴트 박스 (운영 색, §8) */}
+      <Card.Root
+        className="inset-ring-border-tertiary"
+        style={{ background: `color-mix(in srgb, ${meta.color} 5%, var(--surface))` }}
       >
-        <p className="text-sm font-medium mb-4" style={{ color: meta.color }}>
-          {meta.name}
-        </p>
-        <p className="text-xs mb-16" style={{ color: 'var(--text-muted)' }}>
-          {meta.description}
-        </p>
-        <button
-          onClick={() => trackEvent('cta_click', 'coming_soon_notify', { platform })}
-          className="text-xs px-16 py-8 rounded-[6px] transition-colors"
-          style={{
-            border: '1px solid var(--accent)',
-            color: 'var(--accent)',
-          }}
-        >
-          출시 알림 받기
-        </button>
-      </div>
+        <Card.Body className="gap-8 items-center text-center">
+          <Card.Title style={{ color: meta.color }}>{meta.name}</Card.Title>
+          <Card.Content className="text-text-tertiary">{meta.description}</Card.Content>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-8 text-text-interactive-primary inset-ring-border-interactive-primary! hover:bg-transparent!"
+            onClick={() => trackEvent('cta_click', 'coming_soon_notify', { platform })}
+          >
+            출시 알림 받기
+          </Button>
+        </Card.Body>
+      </Card.Root>
     </section>
   );
 }

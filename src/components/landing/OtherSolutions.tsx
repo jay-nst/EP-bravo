@@ -1,7 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { Card } from '@naraspace-technology/nds/components';
 
+// color = 플랫폼 색 — 마크(점)와 이름 글자 (운영 색, §8)
 const SOLUTIONS = [
   { key: 'citadel', label: 'Citadel', desc: '재난 · 도시 관제', color: '#C45C4A', href: '/citadel' },
   { key: 'predict', label: 'Predict', desc: '자산 검증 · 금융', color: '#4A9EC4', href: '/predict' },
@@ -19,53 +21,28 @@ export default function OtherSolutions({ current }: OtherSolutionsProps) {
   const others = SOLUTIONS.filter((s) => s.key !== current);
 
   return (
-    <section className="px-16 md:px-24 pb-48 md:pb-80" style={{ maxWidth: 960, margin: '0 auto' }}>
-      <div
-        style={{
-          borderTop: '1px solid var(--border)',
-          paddingTop: 32,
-        }}
-      >
-        <span
-          style={{
-            fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: 11,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase' as const,
-            color: 'var(--text-muted)',
-            display: 'block',
-            marginBottom: 16,
-          }}
-        >
+    <section className="max-w-960 mx-auto px-16 md:px-24 pb-48 md:pb-80">
+      <div className="border-t border-border-tertiary pt-32">
+        {/* eyebrow 라벨 → 진짜 h2 섹션 제목 (§7-1) */}
+        <h2 className="mb-16 text-heading-2xl text-text-tertiary">
           EarthPaper의 다른 솔루션
-        </span>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
+        </h2>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-12">
           {others.map((s) => (
-            <Link
+            <Card.Root
               key={s.key}
-              href={s.href}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '14px 16px',
-                borderRadius: 8,
-                border: '1px solid var(--border)',
-                background: 'var(--surface)',
-                textDecoration: 'none',
-                transition: 'border-color 0.15s',
-              }}
+              interactive
+              className="bg-bg-secondary hover:bg-bg-secondary hover:inset-ring-border-tertiary"
+              render={<Link href={s.href} />}
             >
-              <span className="w-8 h-8 rounded-full flex-shrink-0" style={{ background: s.color }} />
-              <div>
-                <span style={{ fontSize: 14, fontWeight: 600, color: s.color, display: 'block' }}>
+              <Card.Body className="gap-4">
+                <Card.Title className="flex items-center gap-8" style={{ color: s.color }}>
+                  <span className="w-8 h-8 rounded-full shrink-0" style={{ background: s.color }} />
                   {s.label}
-                </span>
-                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                  {s.desc}
-                </span>
-              </div>
-            </Link>
+                </Card.Title>
+                <p className="text-body-xs-regular text-text-tertiary">{s.desc}</p>
+              </Card.Body>
+            </Card.Root>
           ))}
         </div>
       </div>

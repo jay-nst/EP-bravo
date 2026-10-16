@@ -1,16 +1,27 @@
+import { Card, StatusChip } from '@naraspace-technology/nds/components';
+import { IconArrowRight } from '@naraspace-technology/nds/icons';
 import TrackedLink from '@/components/ui/TrackedLink';
+
+// 위성 지도 느낌의 격자 — 일러스트 (운영 색, §8)
+const GRID_LINE = 'rgba(27,191,168,0.04)';
 
 export default function CoreCTA() {
   return (
-    <TrackedLink
-      href="/core"
-      eventName="core_cta"
-      eventProperties={{ source: 'homepage_sidebar' }}
-      className="block rounded-sm overflow-hidden transition-colors group"
-      style={{ border: '1px solid var(--border)' }}
+    <Card.Root
+      interactive
+      className="bg-bg-secondary hover:bg-bg-secondary hover:inset-ring-border-tertiary"
+      render={
+        <TrackedLink
+          href="/core"
+          eventName="core_cta"
+          eventProperties={{ source: 'homepage_sidebar' }}
+        />
+      }
     >
+      {/* 일러스트 배경 (그라데이션·격자) — 인라인 유지 */}
       <div
-        className="dark relative h-144 flex items-end p-16"
+        aria-hidden
+        className="dark relative h-144 rounded-md overflow-hidden"
         style={{
           background:
             'linear-gradient(135deg, #0a1a15 0%, #0d2216 30%, #0a1612 60%, #0E0E10 100%)',
@@ -19,48 +30,32 @@ export default function CoreCTA() {
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            backgroundImage:
-              'linear-gradient(rgba(27,191,168,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(27,191,168,0.04) 1px, transparent 1px)',
+            backgroundImage: `linear-gradient(${GRID_LINE} 1px, transparent 1px), linear-gradient(90deg, ${GRID_LINE} 1px, transparent 1px)`,
             backgroundSize: '20px 20px',
           }}
         />
-        <div className="relative z-10">
-          <p
-            className="text-xs font-mono tracking-wider uppercase mb-4"
-            style={{ color: 'var(--accent)', opacity: 0.7 }}
-          >
-            Core Map
-          </p>
-          <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
-            위성 지도에서 탐색 &rarr;
-          </p>
-        </div>
       </div>
-      <div className="p-12 space-y-8" style={{ background: 'var(--surface)' }}>
-        <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+      <Card.Body className="gap-8">
+        {/* kicker → NDS StatusChip neutral (§7-1), 색은 운영 그대로 (accent 70%) */}
+        <StatusChip status="neutral" showIcon={false} className="self-start bg-transparent text-text-interactive-primary/70">
+          Core Map
+        </StatusChip>
+        <Card.Title className="flex items-center gap-4">
+          위성 지도에서 탐색
+          <IconArrowRight className="size-16 text-text-primary" />
+        </Card.Title>
+        <Card.Content className="text-text-tertiary">
           데이터 오버레이 시각화, 분석 도구, 영상 구매를 하나의 지도에서.
-        </p>
+        </Card.Content>
         <div className="flex gap-8">
-          <span
-            className="text-xs px-6 py-2 rounded-xs"
-            style={{
-              background: 'color-mix(in srgb, var(--accent) 8%, transparent)',
-              color: 'var(--accent)',
-            }}
-          >
+          <StatusChip status="neutral" showIcon={false} className="bg-[color-mix(in_srgb,var(--accent)_8%,transparent)] text-text-interactive-primary">
             데이터 오버레이
-          </span>
-          <span
-            className="text-xs px-6 py-2 rounded-xs"
-            style={{
-              background: 'var(--surface-elevated)',
-              color: 'var(--text-muted)',
-            }}
-          >
+          </StatusChip>
+          <StatusChip status="neutral" showIcon={false} className="bg-bg-primary text-text-tertiary">
             영상 구매
-          </span>
+          </StatusChip>
         </div>
-      </div>
-    </TrackedLink>
+      </Card.Body>
+    </Card.Root>
   );
 }

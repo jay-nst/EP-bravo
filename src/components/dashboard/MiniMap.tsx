@@ -5,12 +5,14 @@ import mapboxgl from 'mapbox-gl';
 import { useTheme } from 'next-themes';
 import { toResolvedTheme } from '@/lib/theme';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { Spinner } from '@naraspace-technology/nds/components';
 
 const STYLE_URL = {
   dark: 'mapbox://styles/mapbox/dark-v11',
   light: 'mapbox://styles/mapbox/light-v11',
 } as const;
 
+// 이벤트 마커 색 — 지도 데이터 시각화 (마커 배경, 글자 색 아님)
 const EVENTS = [
   { lng: 129.3, lat: 35.5, color: '#1bbfa8', label: '울산 메탄' },
   { lng: 126.1, lat: 37.4, color: '#C45C4A', label: '수도권 대기' },
@@ -83,22 +85,16 @@ export default function MiniMap() {
         }
         .minimap-container .mapboxgl-canvas { border-radius: 8px; }
       `}</style>
-      <div
-        className="minimap-container rounded-sm overflow-hidden relative"
-        style={{ height: 120, background: 'var(--surface)' }}
-      >
-        <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
+      <div className="minimap-container relative h-120 overflow-hidden rounded-sm bg-bg-secondary">
+        <div ref={containerRef} className="h-full w-full" />
         {!ready && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>
-              loading...
-            </span>
+          <div className="absolute inset-0 flex items-center justify-center gap-8">
+            <Spinner size="sm" aria-label="지도 로딩 중" />
+            <span className="text-body-xs-regular text-text-tertiary">loading...</span>
           </div>
         )}
-        <div
-          className="absolute top-8 left-8 text-[10px] font-mono"
-          style={{ color: 'var(--text-muted)', textShadow: '0 1px 3px color-mix(in srgb, var(--bg) 80%, transparent)' }}
-        >
+        {/* 지도 위 좌표 캡션 — 지도 타일 위 가독성용 그림자 */}
+        <div className="absolute top-8 left-8 text-body-xs-regular text-text-tertiary tabular-nums [text-shadow:0_1px_3px_color-mix(in_srgb,var(--bg)_80%,transparent)]">
           36.5°N 127.5°E
         </div>
       </div>

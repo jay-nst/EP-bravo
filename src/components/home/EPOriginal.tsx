@@ -1,5 +1,12 @@
 import Link from 'next/link';
+import { Card } from '@naraspace-technology/nds/components';
+import { IconSatellite } from '@naraspace-technology/nds/icons';
 import { DAILY_EARTH, DAILY_QUIZZES } from '@/lib/sample-data';
+
+// 썸네일 격자 — 일러스트 (운영 색, §8)
+const GRID_LINE = 'rgba(27,191,168,0.06)';
+// 운영: surface 박스 + border 테두리, hover 색 변화 없음 (§8)
+const CARD_COLOR = 'bg-bg-secondary hover:bg-bg-secondary hover:inset-ring-border-tertiary';
 
 export default function EPOriginal() {
   const today = DAILY_EARTH[0];
@@ -8,90 +15,52 @@ export default function EPOriginal() {
 
   return (
     <div className="space-y-16">
-      <h3
-        className="text-xs font-mono tracking-wider uppercase"
-        style={{ color: 'var(--text-muted)' }}
-      >
+      {/* eyebrow → 사이드바 블록 제목 (대시보드 사이드바 패널 제목과 같은 역할·클래스, §7-1) */}
+      <h3 className="text-heading-lg text-text-tertiary">
         EP Original
       </h3>
 
       {/* Daily Earth */}
-      <Link
-        href="/daily"
-        className="block rounded-sm overflow-hidden transition-colors"
-        style={{ border: '1px solid var(--border)' }}
-      >
+      <Card.Root interactive orientation="horizontal" className={CARD_COLOR} render={<Link href="/daily" />}>
+        {/* 일러스트 썸네일 (그라데이션·격자) — 인라인 유지 */}
         <div
-          className="p-12 flex items-center gap-12"
-          style={{ background: 'var(--surface)' }}
+          className="dark size-40 self-center rounded-md flex items-center justify-center shrink-0 relative overflow-hidden"
+          style={{
+            background:
+              'linear-gradient(135deg, #0a1a15 0%, #0d2818 50%, #0a1612 100%)',
+          }}
         >
           <div
-            className="dark w-40 h-40 rounded-[6px] flex items-center justify-center flex-shrink-0 relative overflow-hidden"
+            className="absolute inset-0 pointer-events-none"
             style={{
-              background:
-                'linear-gradient(135deg, #0a1a15 0%, #0d2818 50%, #0a1612 100%)',
+              backgroundImage: `linear-gradient(${GRID_LINE} 1px, transparent 1px), linear-gradient(90deg, ${GRID_LINE} 1px, transparent 1px)`,
+              backgroundSize: '8px 8px',
             }}
-          >
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                backgroundImage:
-                  'linear-gradient(rgba(27,191,168,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(27,191,168,0.06) 1px, transparent 1px)',
-                backgroundSize: '8px 8px',
-              }}
-            />
-            <span
-              className="text-xs font-mono relative z-10"
-              style={{ color: 'var(--accent)', opacity: 0.7 }}
-            >
-              DE
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p
-              className="text-xs font-medium truncate"
-              style={{ color: 'var(--text)' }}
-            >
-              {today.title}
-            </p>
-            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              {today.date} &middot; {today.location}
-            </p>
-          </div>
+          />
+          <span className="text-body-xs-regular text-text-interactive-primary/70 relative z-10">
+            DE
+          </span>
         </div>
-      </Link>
+        <Card.Body className="flex-1 min-w-0 gap-4">
+          <Card.Title className="truncate">{today.title}</Card.Title>
+          <p className="text-body-xs-regular text-text-tertiary">
+            {today.date} &middot; {today.location}
+          </p>
+        </Card.Body>
+      </Card.Root>
 
       {/* Quiz */}
-      <Link
-        href="/quiz"
-        className="block rounded-sm overflow-hidden transition-colors"
-        style={{ border: '1px solid var(--border)' }}
-      >
-        <div
-          className="p-12 flex items-center gap-12"
-          style={{ background: 'var(--surface)' }}
-        >
-          <div
-            className="w-40 h-40 rounded-[6px] flex items-center justify-center flex-shrink-0"
-            style={{ background: 'color-mix(in srgb, var(--accent) 8%, transparent)' }}
-          >
-            <span className="text-lg" style={{ color: 'var(--accent)' }}>
-              &#128752;
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p
-              className="text-xs font-medium truncate"
-              style={{ color: 'var(--text)' }}
-            >
-              {quiz.question}
-            </p>
-            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              오늘의 퀴즈
-            </p>
-          </div>
+      <Card.Root interactive orientation="horizontal" className={CARD_COLOR} render={<Link href="/quiz" />}>
+        <div className="size-40 self-center rounded-md flex items-center justify-center shrink-0 bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]">
+          <IconSatellite className="size-20 text-icon-interactive-primary" />
         </div>
-      </Link>
+        <Card.Body className="flex-1 min-w-0 gap-4">
+          <Card.Title className="truncate">{quiz.question}</Card.Title>
+          <p className="text-body-xs-regular text-text-tertiary">
+            오늘의 퀴즈
+          </p>
+        </Card.Body>
+      </Card.Root>
     </div>
   );
 }

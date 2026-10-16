@@ -275,7 +275,9 @@ export const MAP_TOP_BARS = {
     text: '#eff0f1',
     iconPrimary: '#eff0f1',
     border: '#24405b',
-    placeholder: 'rgba(125, 130, 138, 0.7)',
+    /** text-tertiary — NDS Input 의 placeholder 는 text-text-tertiary/70 */
+    textTertiary: '#7d828a',
+    placeholder: 'rgba(125, 130, 138, 0.7)', // 라이브 복제: 실측
     searchShadow: '0 4px 10px 0 #00000052, 0 0 2px 0 #0000005c',
   },
 } as const;

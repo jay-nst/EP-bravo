@@ -1,6 +1,22 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { Form } from '@base-ui/react/form';
+import { Button, Textarea } from '@naraspace-technology/nds/components';
+import { IconPlus } from '@naraspace-technology/nds/icons';
+
+// 색 기준 78e9433 — NDS Button 의 색만 원래 값으로 덮는다 (hover 때 바뀌던 색이 없던 것은 hover 도 고정)
+const HOVER_KEEP = 'not-data-disabled:not-aria-invalid:hover:';
+/** + 새 대화: surface-elevated 배경, text 글자, 테두리 없음 */
+const NEW_SESSION_CLS = `bg-bg-primary text-text-primary inset-ring-transparent ${HOVER_KEEP}bg-bg-primary ${HOVER_KEEP}inset-ring-transparent`;
+/** 세션 목록: 선택 = accent 글자 + surface-elevated 배경, 나머지 = muted 글자 */
+const SESSION_ACTIVE_CLS = `bg-bg-primary text-text-interactive-primary [&_svg]:text-text-interactive-primary not-data-disabled:data-active:not-hover:text-text-interactive-primary ${HOVER_KEEP}text-text-interactive-primary`;
+const SESSION_IDLE_CLS = `text-text-tertiary [&_svg]:text-text-tertiary ${HOVER_KEEP}text-text-tertiary`;
+/** 추천 질문 칩: surface 배경, muted 글자, border 테두리 */
+const SUGGEST_CLS = `bg-bg-secondary text-text-tertiary inset-ring-border-tertiary ${HOVER_KEEP}bg-bg-secondary ${HOVER_KEEP}inset-ring-border-tertiary`;
+/** 전송: 민트 CTA (accent 배경 + 어두운 글자), disabled 는 accent 40% */
+const SEND_CLS =
+  'bg-bg-interactive-primary text-text-inverse not-data-disabled:data-active:not-hover:text-text-inverse data-disabled:bg-bg-interactive-primary data-disabled:text-text-inverse data-disabled:opacity-40';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -108,64 +124,47 @@ export default function ChatPage() {
 
   return (
     <div className="flex" style={{ height: 'calc(100vh - var(--header-height))' }}>
-      <aside
-        className="w-240 flex flex-col"
-        style={{ borderRight: '1px solid var(--border)', background: 'var(--surface)' }}
-      >
+      <aside className="flex w-240 flex-col border-r border-border-tertiary bg-bg-secondary">
         <div className="p-12">
-          <button
-            onClick={createSession}
-            className="w-full px-12 py-8 text-sm rounded-[6px] transition-colors"
-            style={{ background: 'var(--surface-elevated)', color: 'var(--text)' }}
-          >
-            + 새 대화
-          </button>
+          <Button variant="outline" display="block" leftIcon={<IconPlus />} onClick={createSession} className={NEW_SESSION_CLS}>
+            새 대화
+          </Button>
         </div>
-        <div className="flex-1 overflow-y-auto px-8">
+        <div className="flex flex-1 flex-col gap-2 overflow-y-auto px-8">
           {sessions.map((s) => (
-            <button
+            <Button
               key={s.id}
+              variant="text"
+              display="block"
+              active={sessionId === s.id}
               onClick={() => {
                 setSessionId(s.id);
                 setMessages([]);
               }}
-              className="w-full text-left px-12 py-8 text-sm rounded-[6px] mb-2 truncate transition-colors"
-              style={{
-                color: sessionId === s.id ? 'var(--accent)' : 'var(--text-muted)',
-                background: sessionId === s.id ? 'var(--surface-elevated)' : 'transparent',
-              }}
+              className={`justify-start ${sessionId === s.id ? SESSION_ACTIVE_CLS : SESSION_IDLE_CLS}`}
             >
-              {s.title}
-            </button>
+              <span className="truncate">{s.title}</span>
+            </Button>
           ))}
         </div>
       </aside>
 
-      <main className="flex-1 flex flex-col">
-        <div className="flex-1 overflow-y-auto p-16 space-y-16">
+      <main className="flex flex-1 flex-col">
+        <div className="flex-1 space-y-16 overflow-y-auto p-16">
           {messages.length === 0 && (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center space-y-12">
-                <p className="text-lg font-medium" style={{ color: 'var(--text-muted)' }}>
+            <div className="flex h-full items-center justify-center">
+              <div className="space-y-12 text-center">
+                <p className="text-heading-lg text-text-tertiary">
                   위성 영상 전문 어시스턴트
                 </p>
-                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                <p className="text-body-md-regular text-text-tertiary">
                   위성 영상 촬영, 가격, 해상도 등에 대해 질문하세요
                 </p>
-                <div className="flex flex-wrap gap-8 justify-center pt-8">
+                <div className="flex flex-wrap justify-center gap-8 pt-8">
                   {['해상도 비교', '가격 안내', '촬영 요청 방법'].map((q) => (
-                    <button
-                      key={q}
-                      onClick={() => sendMessage(q)}
-                      className="px-12 py-6 text-xs rounded-sm transition-colors"
-                      style={{
-                        background: 'var(--surface)',
-                        color: 'var(--text-muted)',
-                        border: '1px solid var(--border)',
-                      }}
-                    >
+                    <Button key={q} variant="outline" size="sm" onClick={() => sendMessage(q)} className={SUGGEST_CLS}>
                       {q}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -177,18 +176,15 @@ export default function ChatPage() {
               className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className="max-w-[70%] px-16 py-10 rounded-md text-sm leading-relaxed whitespace-pre-wrap"
-                style={{
-                  background: msg.role === 'user' ? 'var(--accent)' : 'var(--surface)',
-                  color: msg.role === 'user' ? 'var(--text-inverse)' : 'var(--text)',
-                }}
+                className={`max-w-[70%] whitespace-pre-wrap rounded-md px-16 py-10 text-body-sm-regular ${
+                  msg.role === 'user'
+                    ? 'bg-bg-interactive-primary text-text-inverse'
+                    : 'bg-bg-secondary text-text-primary'
+                }`}
               >
                 {msg.content}
                 {msg.role === 'assistant' && !msg.content && streaming && (
-                  <span
-                    className="inline-block w-8 h-16 animate-pulse"
-                    style={{ background: 'var(--accent)' }}
-                  />
+                  <span className="inline-block h-16 w-8 animate-pulse bg-bg-interactive-primary" />
                 )}
               </div>
             </div>
@@ -196,34 +192,22 @@ export default function ChatPage() {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="p-16" style={{ borderTop: '1px solid var(--border)' }}>
-          <div className="max-w-3xl mx-auto flex gap-8">
-            <textarea
+        <div className="border-t border-border-tertiary p-16">
+          <Form onFormSubmit={() => sendMessage()} className="mx-auto flex max-w-3xl gap-8">
+            <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="메시지를 입력하세요..."
+              aria-label="메시지"
               rows={1}
-              className="flex-1 px-16 py-12 text-sm resize-none rounded-[12px] focus:outline-none"
-              style={{
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                color: 'var(--text)',
-              }}
+              className="flex-1 bg-bg-secondary data-disabled:bg-bg-secondary data-disabled:inset-ring-border-tertiary"
               disabled={streaming}
             />
-            <button
-              onClick={() => sendMessage()}
-              disabled={streaming || !input.trim()}
-              className="px-16 py-12 rounded-[12px] text-sm font-medium transition-colors disabled:opacity-40"
-              style={{
-                background: 'var(--accent)',
-                color: 'var(--text-inverse)',
-              }}
-            >
+            <Button type="submit" disabled={streaming || !input.trim()} className={SEND_CLS}>
               전송
-            </button>
-          </div>
+            </Button>
+          </Form>
         </div>
       </main>
     </div>

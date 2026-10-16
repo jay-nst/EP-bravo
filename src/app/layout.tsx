@@ -28,7 +28,11 @@ export default function RootLayout({
     // 테마 클래스(.dark)·color-scheme 은 next-themes 가 마운트 전 스크립트로 붙인다
     <html lang="ko" className="h-full" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {/* NDS 포털(Dialog·Select·Tooltip)이 항상 앱 위에 뜨도록 독립 스태킹 컨텍스트.
+              body 가 세로 flex 이므로 래퍼도 같은 flex 를 이어받는다 */}
+          <div className="isolate flex flex-1 flex-col">{children}</div>
+        </ThemeProvider>
       </body>
     </html>
   );

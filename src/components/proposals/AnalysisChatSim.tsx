@@ -141,13 +141,13 @@ export default function AnalysisChatSim({ sim, onDone, exiting }: AnalysisChatSi
         width: `${COLUMN.w}%`,
         height: `${COLUMN.h}%`,
         background: CHAT_COLORS.bg,
-        // 실서비스 타이포 실측값: pretendard, body 14px / line-height 1.7 / -0.2px
-        // (agent.ep.naraspace.com CSS 확인, 2026-09-28). 14px 은 1600px 스테이지 기준
-        // 이므로 cqw 로 스테이지 폭에 비례 스케일한다: 14/1600 = 0.875cqw.
-        fontFamily: 'var(--font-body)',
+        // 실서비스 타이포 = NDS text-body-sm-regular (14px / 24px / -0.2px, Pretendard 상속).
+        // 14px 은 1600px 스테이지 기준이라 NDS 클래스(rem 고정)를 그대로 쓰지 못하고
+        // cqw 로 스테이지 폭에 비례 스케일한다: 14/1600 = 0.875cqw. 줄높이·자간은 NDS 토큰.
+        // 아래 em 단위 간격·radius 도 같은 이유로 캡쳐 실측값을 em 으로 유지한다.
         fontSize: '0.875cqw',
-        lineHeight: 1.7,
-        letterSpacing: '-0.2px',
+        lineHeight: 'var(--text-body-sm-regular--line-height)',
+        letterSpacing: 'var(--text-body-sm-regular--letter-spacing)',
       }}
       role="log"
       aria-live="polite"
@@ -210,8 +210,9 @@ export default function AnalysisChatSim({ sim, onDone, exiting }: AnalysisChatSi
             draggable={false}
           />
           <div
+            // 라이브 복제(§7 예외): 실서비스 "분석 중" 말풍선 배경 실측값 (agentText 8%)
             style={{
-              background: 'rgba(231,235,239,0.08)',
+              background: 'rgba(231,235,239,0.08)', // 라이브 복제: 실측
               color: CHAT_COLORS.agentText,
               padding: '0.45em 1em',
               borderRadius: '0.8em',
@@ -268,6 +269,7 @@ function AgentRow({ text, wiggle, caret }: { text: string; wiggle: boolean; care
         style={{ width: '2.2em', marginTop: '0.1em' }}
         draggable={false}
       />
+      {/* 라이브 복제(§7 예외): 실서비스 에이전트 메시지 글자색 실측값 */}
       <p className="whitespace-pre-wrap" style={{ color: CHAT_COLORS.agentText }}>
         {text}
         {caret && <span className="ep-typing-caret" aria-hidden />}

@@ -26,22 +26,27 @@ import { useThemedMapStyle } from '@/components/map/useThemedMapStyle';
 import { fmtNum } from '@/lib/format';
 import { isLightBasemap, mapLabelPaint, mapMaskColor } from '@/lib/theme';
 import { trackEvent } from '@/lib/analytics';
+import { Button, Spinner, StatusChip } from '@naraspace-technology/nds/components';
+import { IconLayers } from '@naraspace-technology/nds/icons';
+
+// 운영 색 복원 (docs/NDS_FULL_ADOPTION_RULES.md §8) — NDS Button 의 색만 덮는다 (크기·모서리·패딩은 그대로).
+// tailwind-merge 가 기본 색을 대체하도록 NDS 와 같은 modifier 체인을 쓴다.
+// 모바일 '레이어' 버튼: surface 배경 + text, 테두리·hover 변화 없음
+const MOBILE_LAYER_BTN_COLOR =
+  'bg-bg-secondary text-text-primary inset-ring-transparent [&_svg]:text-text-primary not-data-disabled:not-aria-invalid:hover:bg-bg-secondary not-data-disabled:not-aria-invalid:hover:inset-ring-transparent';
+// 배경 지도 선택: 선택 = surface 배경 + text, 미선택 = 투명 + text-muted, 테두리는 항상 border
+const MAP_STYLE_BTN_ON =
+  'bg-bg-secondary text-text-primary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-bg-secondary not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary not-data-disabled:data-active:not-hover:bg-bg-secondary not-data-disabled:data-active:not-hover:inset-ring-border-tertiary not-data-disabled:data-active:not-hover:text-text-primary';
+const MAP_STYLE_BTN_OFF =
+  'bg-transparent text-text-tertiary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-transparent not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary';
 
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
   loading: () => (
-    <div
-      className="w-full h-full flex items-center justify-center"
-      style={{ background: 'var(--bg)' }}
-    >
-      <div className="text-center">
-        <div
-          className="w-32 h-32 rounded-full border-2 border-t-transparent animate-spin mx-auto mb-12"
-          style={{ borderColor: 'var(--border)', borderTopColor: 'transparent' }}
-        />
-        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-          지도 로딩 중...
-        </p>
+    <div className="flex size-full items-center justify-center bg-bg-tertiary">
+      <div className="flex flex-col items-center gap-12">
+        <Spinner size="md" aria-label="지도 로딩 중" className="text-border-tertiary" />
+        <p className="text-body-sm-regular text-text-tertiary">지도 로딩 중...</p>
       </div>
     </div>
   ),
@@ -66,6 +71,7 @@ const EMD_SCORE_STOPS: [number, string][] = [
   [68, '#1bbfa8'],
 ];
 
+// color: 레이어 고유색 — 지도 레이어·범례 스와치에만 쓰는 데이터 시각화 색 (글자 색 아님, §7-2 예외)
 const INITIAL_LAYERS: GyeonggiLayer[] = [
   {
     id: 'access-contour',
@@ -374,10 +380,10 @@ export default function GyeonggiPage() {
               if (p) {
                 const radius = baseRadiusM({ sclsfNm: p.sclsfNm, areaM2: p.areaM2 });
                 sections.push(`
-                  <div style="font-weight:600;margin-bottom:6px">${p.sclsfNm} <span style="opacity:.6;font-weight:400">${p.sggNm}</span></div>
-                  <div>면적 <b>${areaLabel(p.areaM2)}</b></div>
-                  <div>기본 서비스 반경 <b>${fmtNum(radius)}</b> m <span style="opacity:.6">(평가 가중 전)</span></div>
-                  <div style="opacity:.6;margin-top:4px;font-size:11px">${p.uid}</div>`);
+                  <div class="mb-6 text-body-sm-medium text-text-primary">${p.sclsfNm} <span class="text-body-xs-regular text-text-primary/60">${p.sggNm}</span></div>
+                  <div>면적 <span class="text-body-sm-medium text-text-primary tabular-nums">${areaLabel(p.areaM2)}</span></div>
+                  <div>기본 서비스 반경 <span class="text-body-sm-medium text-text-primary tabular-nums">${fmtNum(radius)}</span> m <span class="text-text-primary/60">(평가 가중 전)</span></div>
+                  <div class="mt-4 text-body-xs-regular text-text-primary/60">${p.uid}</div>`);
               }
             }
           } catch {
@@ -390,8 +396,8 @@ export default function GyeonggiPage() {
         if (contourHits.length > 0) {
           const p = contourHits[0].properties as { label: string; min: number; max: number | null };
           sections.push(`
-            <div style="font-weight:600;margin-bottom:2px">공원 접근성 <b style="color:var(--accent)">${p.label}</b></div>
-            <div style="opacity:.7;font-size:12px">영향 지수 ${p.min}${p.max !== null ? `~${p.max}` : ' 이상'}</div>`);
+            <div class="mb-2 text-body-sm-medium text-text-primary">공원 접근성 <span class="text-body-sm-medium text-accent">${p.label}</span></div>
+            <div class="text-body-xs-regular text-text-primary/70">영향 지수 ${p.min}${p.max !== null ? `~${p.max}` : ' 이상'}</div>`);
         }
 
         // 읍면동 평가
@@ -408,19 +414,20 @@ export default function GyeonggiPage() {
             benefitRate: number;
           };
           sections.push(`
-            <div style="font-weight:600;margin-bottom:6px">${p.sigunNm}${p.sggNm ? ` ${p.sggNm}` : ''} ${p.emdNm}</div>
-            <div>종합평가 <b>${p.score}</b>점 · <b>${p.rank}</b>위/${EMD_COUNT}</div>
-            <div>1인당 공원녹지 <b>${p.perCapita}</b> ㎡</div>
-            <div>공원녹지율 <b>${p.greenRate}</b> %</div>
-            <div>서비스 수혜인구 <b>${p.benefitRate}</b> %</div>`);
+            <div class="mb-6 text-body-sm-medium text-text-primary">${p.sigunNm}${p.sggNm ? ` ${p.sggNm}` : ''} ${p.emdNm}</div>
+            <div>종합평가 <span class="text-body-sm-medium text-text-primary tabular-nums">${p.score}</span>점 · <span class="text-body-sm-medium text-text-primary tabular-nums">${p.rank}</span>위/${EMD_COUNT}</div>
+            <div>1인당 공원녹지 <span class="text-body-sm-medium text-text-primary tabular-nums">${p.perCapita}</span> ㎡</div>
+            <div>공원녹지율 <span class="text-body-sm-medium text-text-primary tabular-nums">${p.greenRate}</span> %</div>
+            <div>서비스 수혜인구 <span class="text-body-sm-medium text-text-primary tabular-nums">${p.benefitRate}</span> %</div>`);
         }
 
         if (sections.length === 0) return;
 
         const el = document.createElement('div');
-        el.style.cssText = 'font-size:13px;line-height:1.6;color:var(--text)';
+        // 팝업 글자색은 테마 토큰(--text)을 따른다
+        el.className = 'text-body-sm-regular text-text-primary';
         el.innerHTML = sections.join(
-          '<div style="border-top:1px solid var(--border);margin:8px 0"></div>',
+          '<div class="my-8 border-t border-border"></div>',
         );
 
         void import('mapbox-gl').then((mod) => {
@@ -547,30 +554,20 @@ export default function GyeonggiPage() {
 
       {/* 상단 헤더 */}
       <div
-        className="absolute top-0 left-0 right-0 z-10 flex items-center gap-16 px-16 py-12 pointer-events-none"
-        style={{
-          background: 'linear-gradient(to bottom, color-mix(in srgb, var(--bg) 90%, transparent), transparent)',
-        }}
+        className="pointer-events-none absolute top-0 right-0 left-0 z-10 flex items-center gap-16 bg-linear-to-b from-[color-mix(in_srgb,var(--bg)_90%,transparent)] to-transparent px-16 py-12"
       >
         <div className="pointer-events-auto">
-          <h1 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
-            경기 공원 접근성 지도
-          </h1>
-          <p
-            className="text-xs font-mono flex items-center gap-6 flex-wrap"
-            style={{ color: 'var(--text-muted)' }}
-          >
-            <span
-              className="inline-block w-6 h-6 rounded-full"
-              style={{ background: '#4A9E6B' }}
-              aria-hidden
-            />
-            <span style={{ color: '#4A9E6B' }}>평가 기준 {CRTR_LABEL}</span>
+          <h1 className="text-heading-3xl text-text-primary">경기 공원 접근성 지도</h1>
+          <p className="mt-2 flex flex-wrap items-center gap-6 text-body-xs-regular text-text-tertiary tabular-nums">
+            {/* 기준일 고정 공식 통계 — 운영처럼 '통계' 배지 색(#4A9E6B) 글자 */}
+            <StatusChip status="information" className="bg-transparent text-[#4A9E6B] [&>svg]:text-[#4A9E6B]">
+              평가 기준 {CRTR_LABEL}
+            </StatusChip>
             <span>· {activeCount} LAYERS</span>
           </p>
         </div>
 
-        <div className="hidden md:flex items-center gap-20 ml-auto pointer-events-auto">
+        <div className="pointer-events-auto ml-auto hidden items-center gap-20 md:flex">
           <Stat label="공원 폴리곤" value={fmtNum(PARK_FEATURE_COUNT)} unit="개" />
           <Stat label="공원 총면적" value={fmtNum(Math.round(PARK_TOTAL_AREA_KM2))} unit="km²" />
           <Stat label="평가 구역" value={fmtNum(EMD_COUNT)} unit="읍면동" />
@@ -579,79 +576,65 @@ export default function GyeonggiPage() {
           </div>
         </div>
 
-        <button
+        <Button
+          variant="outline"
+          size="sm"
+          leftIcon={<IconLayers />}
           onClick={() => setSidebarOpen((v) => !v)}
-          className="md:hidden ml-auto px-12 py-8 rounded-[6px] text-sm pointer-events-auto"
-          style={{ background: 'var(--surface)', color: 'var(--text)' }}
+          className={`pointer-events-auto ml-auto md:hidden ${MOBILE_LAYER_BTN_COLOR}`}
           aria-label="레이어 패널 열기"
         >
           레이어
-        </button>
+        </Button>
       </div>
 
-      {/* 사이드바 */}
+      {/* 사이드바 — 지도 위 글래스 패널. 반투명 배경(--panel-bg)은 색이라 유지 */}
       <aside
-        className={`absolute top-0 bottom-0 left-0 z-20 w-288 overflow-y-auto transition-transform md:translate-x-0 ${
+        className={`absolute top-0 bottom-0 left-0 z-20 w-288 overflow-y-auto border-r border-border-tertiary bg-panel-bg pt-72 backdrop-blur-[12px] transition-transform md:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
-        style={{
-          background: 'var(--panel-bg)',
-          backdropFilter: 'blur(12px)',
-          borderRight: '1px solid var(--border)',
-          paddingTop: '72px',
-        }}
       >
-        <div className="px-16 pb-24 space-y-20">
+        <div className="space-y-20 px-16 pb-24">
           <GyeonggiLayerPanel layers={layers} onToggle={handleToggle} />
 
-          <div className="pt-16" style={{ borderTop: '1px solid var(--border)' }}>
-            <h3
-              className="text-xs font-mono tracking-wider uppercase mb-8"
-              style={{ color: 'var(--text-muted)' }}
-            >
-              배경 지도
-            </h3>
+          <div className="border-t border-border-tertiary pt-16">
+            <h3 className="mb-8 text-body-sm-medium text-text-tertiary">배경 지도</h3>
             <div className="flex gap-6">
               {DEFAULT_STYLE_IDS.map((id) => (
-                <button
+                <Button
                   key={id}
+                  variant="outline"
+                  size="sm"
+                  active={mapStyleId === id}
+                  aria-pressed={mapStyleId === id}
                   onClick={() => setMapStyleId(id)}
-                  className="flex-1 px-8 py-6 rounded-xs text-xs transition-colors"
-                  style={{
-                    background: mapStyleId === id ? 'var(--surface)' : 'transparent',
-                    color: mapStyleId === id ? 'var(--text)' : 'var(--text-muted)',
-                    border: '1px solid var(--border)',
-                  }}
+                  className={`flex-1 ${mapStyleId === id ? MAP_STYLE_BTN_ON : MAP_STYLE_BTN_OFF}`}
                 >
                   {MAP_STYLES[id].label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
 
           {showContourLegend && (
-            <div className="pt-16" style={{ borderTop: '1px solid var(--border)' }}>
-              <h3
-                className="text-xs font-mono tracking-wider uppercase mb-8"
-                style={{ color: 'var(--text-muted)' }}
-              >
-                접근성 등급
-              </h3>
+            <div className="border-t border-border-tertiary pt-16">
+              <h3 className="mb-8 text-body-sm-medium text-text-tertiary">접근성 등급</h3>
               <div className="space-y-4">
                 {ACCESS_LEVELS.map((lv, i) => (
                   <div key={lv.label} className="flex items-center gap-8">
+                    {/* 범례 스와치 — 지도 데이터 색 */}
                     <span
-                      className="w-10 h-10 rounded-xs flex-shrink-0"
+                      className="size-10 shrink-0 rounded-xs"
                       style={{ background: CONTOUR_COLORS[i] }}
                     />
-                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                    <span className="text-body-xs-regular text-text-tertiary">
                       {lv.label}
-                      <span className="font-mono opacity-70"> ≥ {lv.min}</span>
+                      <span className="text-text-tertiary/70 tabular-nums"> ≥ {lv.min}</span>
                     </span>
                   </div>
                 ))}
               </div>
-              <p className="text-xs mt-8 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+              <p className="mt-8 text-body-xs-regular text-text-tertiary">
                 공원 유형·면적 기반 서비스 반경에 읍면동 평가점수를 가중해 중첩한 영향
                 지수입니다. 평가가 좋은 지역의 공원일수록 넓은 범위에 영향을 줍니다.
               </p>
@@ -659,23 +642,16 @@ export default function GyeonggiPage() {
           )}
 
           {showEmdLegend && (
-            <div className="pt-16" style={{ borderTop: '1px solid var(--border)' }}>
-              <h3
-                className="text-xs font-mono tracking-wider uppercase mb-8"
-                style={{ color: 'var(--text-muted)' }}
-              >
-                읍면동 종합점수
-              </h3>
+            <div className="border-t border-border-tertiary pt-16">
+              <h3 className="mb-8 text-body-sm-medium text-text-tertiary">읍면동 종합점수</h3>
+              {/* 범례 램프 — 지도 데이터 색 */}
               <div
-                className="h-8 rounded-xs mb-4"
+                className="mb-4 h-8 rounded-xs"
                 style={{
                   background: `linear-gradient(to right, ${EMD_SCORE_STOPS.map(([, c]) => c).join(', ')})`,
                 }}
               />
-              <div
-                className="flex justify-between text-xs font-mono"
-                style={{ color: 'var(--text-muted)' }}
-              >
+              <div className="flex justify-between text-body-xs-regular text-text-tertiary tabular-nums">
                 <span>{EMD_SCORE_STOPS[0][0]}점</span>
                 <span>{EMD_SCORE_STOPS[EMD_SCORE_STOPS.length - 1][0]}점</span>
               </div>
@@ -683,49 +659,63 @@ export default function GyeonggiPage() {
           )}
 
           {/* 시군 순위표 */}
-          <div className="pt-16" style={{ borderTop: '1px solid var(--border)' }}>
-            <h3
-              className="text-xs font-mono tracking-wider uppercase mb-8"
-              style={{ color: 'var(--text-muted)' }}
-            >
-              시군 평가 순위
-            </h3>
-            <ol className="space-y-2 max-h-224 overflow-y-auto pr-4">
+          <div className="border-t border-border-tertiary pt-16">
+            <h3 className="mb-8 text-body-sm-medium text-text-tertiary">시군 평가 순위</h3>
+            <ol className="max-h-224 space-y-2 overflow-y-auto pr-4">
               {SIGUN_PARK_SCORES.map((s, i) => (
                 <li key={s.code}>
-                  <button
+                  {/* 행 이동 버튼 — 도구성이라 text variant. 글자 크기는 Button size 가 정한다 */}
+                  <Button
+                    variant="text"
+                    size="sm"
+                    display="block"
                     onClick={() => flyToSigun(s.lng, s.lat)}
-                    className="w-full flex items-center gap-8 px-6 py-4 rounded-xs text-left transition-colors hover:bg-[var(--surface)]"
+                    // 운영 색 (§8): hover 때 글자색 대신 surface 배경
+                    className="not-data-disabled:not-aria-invalid:hover:text-text-primary hover:bg-bg-secondary"
                   >
-                    <span
-                      className="text-xs font-mono w-20 text-right flex-shrink-0"
-                      style={{ color: i < 3 ? 'var(--accent)' : 'var(--text-muted)' }}
-                    >
-                      {i + 1}
+                    <span className="flex w-full items-center gap-8 text-left tabular-nums">
+                      <span
+                        className={`w-20 shrink-0 text-right ${i < 3 ? 'text-accent' : 'text-text-tertiary'}`}
+                      >
+                        {i + 1}
+                      </span>
+                      <span className="flex-1 truncate text-text-primary">{s.name}</span>
+                      <span className="text-text-tertiary">{s.score.toFixed(1)}</span>
                     </span>
-                    <span className="flex-1 text-xs truncate" style={{ color: 'var(--text)' }}>
-                      {s.name}
-                    </span>
-                    <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
-                      {s.score.toFixed(1)}
-                    </span>
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ol>
-            <p className="text-xs mt-8 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+            <p className="mt-8 text-body-xs-regular text-text-tertiary">
               공원 서비스 종합평가 점수(0~100). 행을 누르면 해당 시군으로 이동합니다.
             </p>
           </div>
 
-          <div className="text-xs leading-relaxed space-y-4" style={{ color: 'var(--text-muted)' }}>
-            <p>
-              <span style={{ color: 'var(--accent)' }}>LIVE</span> 공공 API 수신 ·{' '}
-              <span style={{ color: '#4A9E6B' }}>통계</span> 기준일 고정 공식 통계
+          {/* 배지 범례 — 운영처럼 배경 없이 배지 색 글자 */}
+          <div className="space-y-6 text-body-xs-regular text-text-tertiary">
+            <p className="flex items-center gap-6">
+              <StatusChip status="success" showIcon={false} className="bg-transparent text-accent">
+                LIVE
+              </StatusChip>
+              공공 API 수신
             </p>
-            <p>
-              <span style={{ color: '#C45C4A' }}>분석</span> EarthPaper 자체 모델 ·{' '}
-              <span style={{ color: '#4A9EC4' }}>영상</span> 위성 래스터
+            <p className="flex items-center gap-6">
+              <StatusChip status="information" showIcon={false} className="bg-transparent text-[#4A9E6B]">
+                통계
+              </StatusChip>
+              기준일 고정 공식 통계
+            </p>
+            <p className="flex items-center gap-6">
+              <StatusChip status="information" showIcon={false} className="bg-transparent text-[#C45C4A]">
+                분석
+              </StatusChip>
+              EarthPaper 자체 모델
+            </p>
+            <p className="flex items-center gap-6">
+              <StatusChip status="brand" showIcon={false} className="bg-transparent text-[#4A9EC4]">
+                영상
+              </StatusChip>
+              위성 래스터
             </p>
           </div>
 
@@ -735,19 +725,15 @@ export default function GyeonggiPage() {
 
       {/* 지도 하단 크레딧 */}
       <div
-        className="absolute bottom-0 right-0 z-10 max-w-full md:max-w-[60%] px-12 py-6 text-xs font-mono leading-relaxed text-right pointer-events-none"
-        style={{
-          color: 'var(--text-muted)',
-          background: 'linear-gradient(to top, color-mix(in srgb, var(--bg) 85%, transparent), transparent)',
-        }}
+        className="pointer-events-none absolute right-0 bottom-0 z-10 max-w-full bg-linear-to-t from-[color-mix(in_srgb,var(--bg)_85%,transparent)] to-transparent px-12 py-6 text-right text-body-xs-regular text-text-tertiary md:max-w-[60%]"
       >
         출처: {GYEONGGI_SOURCE_PROVIDERS.join(' · ')} · 상세는 좌측 패널
       </div>
 
+      {/* 모바일 사이드바 스크림 — 버튼 모양이 아닌 배경 클릭 영역이라 NDS Button 대상이 아니다 */}
       {sidebarOpen && (
         <button
-          className="md:hidden absolute inset-0 z-10"
-          style={{ background: 'color-mix(in srgb, var(--bg) 50%, transparent)' }}
+          className="absolute inset-0 z-10 bg-[color-mix(in_srgb,var(--bg)_50%,transparent)] md:hidden"
           onClick={() => setSidebarOpen(false)}
           aria-label="닫기"
         />
@@ -759,14 +745,9 @@ export default function GyeonggiPage() {
 function Stat({ label, value, unit }: { label: string; value: string; unit: string }) {
   return (
     <div className="text-right">
-      <div className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
-        {label}
-      </div>
-      <div className="text-sm" style={{ color: 'var(--text)' }}>
-        <span className="font-semibold">{value}</span>{' '}
-        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-          {unit}
-        </span>
+      <div className="text-body-xs-regular text-text-tertiary">{label}</div>
+      <div className="text-body-sm-medium text-text-primary tabular-nums">
+        {value} <span className="text-body-xs-regular text-text-tertiary">{unit}</span>
       </div>
     </div>
   );

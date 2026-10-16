@@ -4,6 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { createPortal } from 'react-dom';
 import { driver, type Driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
+import { Button } from '@naraspace-technology/nds/components';
 import {
   HIGHLIGHT_STEPS,
   TUTORIAL_STEPS,
@@ -63,13 +64,13 @@ export default function AgentTutorialDemo() {
         element: `#tut-hotspot-${s.id}`,
         popover: {
           title: s.title,
-          description: `${s.body}<div class="ep-tutorial-click-hint"><span class="ep-tutorial-click-arrow" aria-hidden="true">▸</span> ${
+          description: `${s.body}<div class="ep-tutorial-click-hint"><span class="ep-tutorial-click-arrow" aria-hidden="true"></span><span>${
             s.action === 'click'
               ? s.advanceLabel
                 ? `화면의 '${s.advanceLabel}' 버튼을 직접 클릭해 보세요 — '다음'으로도 진행됩니다`
                 : "하이라이트된 영역을 직접 클릭해 보세요 — '다음'으로도 진행됩니다"
               : "체험해 본 뒤 아래 '다음' 버튼으로 진행하세요"
-          }</div>`,
+          }</span></div>`,
           // 리뷰 반영: 툴팁을 다음 액션 대상 근처에 붙인다 (미지정 시 driver 자동 배치)
           side: s.popoverSide,
           align: s.popoverAlign,
@@ -249,10 +250,9 @@ export default function AgentTutorialDemo() {
       <div
         className={
           fullscreen
-            ? 'dark fixed inset-0 z-[100] flex flex-col px-24 py-16'
+            ? 'dark fixed inset-0 z-[100] flex flex-col px-24 py-16 bg-[rgba(10,10,12,0.98)]'
             : ''
         }
-        style={fullscreen ? { background: 'rgba(10, 10, 12, 0.98)' } : undefined}
       >
       {/* 스텝 인디케이터 — 진행 가시화 (완주율 모범사례) */}
       <div className="flex items-center justify-between mb-12">
@@ -263,18 +263,19 @@ export default function AgentTutorialDemo() {
             return (
               <li key={s.id} className="flex items-center gap-8">
                 <span
-                  className="flex items-center justify-center w-28 h-28 rounded-full text-sm font-mono transition-colors"
-                  style={{
-                    background: active ? 'var(--accent)' : passed ? 'var(--surface-elevated)' : 'transparent',
-                    color: active ? 'var(--text-inverse)' : passed ? 'var(--text)' : 'var(--text-muted)',
-                    border: active ? 'none' : '1px solid var(--border)',
-                  }}
+                  className={`flex items-center justify-center size-28 rounded-full text-body-sm-regular tabular-nums transition-colors ${
+                    active
+                      ? 'bg-bg-interactive-primary text-text-inverse'
+                      : passed
+                        ? 'bg-bg-primary text-text-primary inset-ring-1 inset-ring-border-tertiary'
+                        : 'text-text-tertiary inset-ring-1 inset-ring-border-tertiary'
+                  }`}
                   aria-current={active ? 'step' : undefined}
                 >
                   {i + 1}
                 </span>
                 {i < TUTORIAL_STEPS.length - 1 && (
-                  <span className="w-16 h-px" style={{ background: 'var(--border)' }} aria-hidden />
+                  <span className="w-16 h-px bg-border-tertiary" aria-hidden />
                 )}
               </li>
             );
@@ -282,13 +283,15 @@ export default function AgentTutorialDemo() {
         </ol>
 
         {phase === 'running' && (
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => openModal('skipped')}
-            className="text-sm px-14 py-8 rounded-[6px] transition-colors hover:bg-[var(--surface)]"
-            style={{ color: 'var(--text-muted)', border: '1px solid var(--border)' }}
+            // 색만 운영 값(§8): muted 글자 + border 테두리, hover 시 surface 채움
+            className="text-text-tertiary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-bg-secondary not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary not-data-disabled:data-active:not-hover:bg-transparent not-data-disabled:data-active:not-hover:inset-ring-border-tertiary not-data-disabled:data-active:not-hover:text-text-tertiary"
           >
             건너뛰기
-          </button>
+          </Button>
         )}
       </div>
 
@@ -297,14 +300,11 @@ export default function AgentTutorialDemo() {
       <div className={fullscreen ? 'flex-1 flex items-center justify-center min-h-0' : ''}>
       <div
         ref={stageRef}
-        className="dark relative w-full overflow-hidden select-none"
+        // @container: 채팅 시뮬레이션의 폰트가 스테이지 폭에 비례(cqw)해 캡쳐와 같은 배율로 보이게.
+        // 테두리는 inset-ring 대신 border — 안쪽 그림자는 캡쳐 이미지에 가려진다
+        className="dark @container relative w-full overflow-hidden select-none rounded-sm border border-border-tertiary bg-bg-tertiary"
         style={{
           aspectRatio: `${CAPTURE_WIDTH} / ${CAPTURE_HEIGHT}`,
-          border: '1px solid var(--border)',
-          borderRadius: 'var(--radius-sm)',
-          background: 'var(--bg)',
-          // 채팅 시뮬레이션의 폰트가 스테이지 폭에 비례(cqw)해 캡쳐와 같은 배율로 보이게
-          containerType: 'inline-size',
           ...(fullscreen
             ? {
                 width: `min(100%, calc((100vh - 130px) * ${CAPTURE_WIDTH / CAPTURE_HEIGHT}))`,
@@ -364,6 +364,7 @@ export default function AgentTutorialDemo() {
             {s.widget === 'article' && phase === 'running' && i === stepIndex && (
               <div
                 className="absolute inset-0 overflow-y-auto overflow-x-hidden"
+                // 라이브 복제(§7 예외): 실서비스 아티클 iframe 배경색 실측값 — 세그먼트 캡쳐 여백과 이어지게
                 style={{ background: '#F2F3F7' }}
                 aria-label="분석 아티클 (스크롤 가능)"
               >
@@ -397,20 +398,20 @@ export default function AgentTutorialDemo() {
 
         {/* 시작/재시작 오버레이 */}
         {(phase === 'idle' || phase === 'done') && (
-          <div
-            className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-16"
-            style={{ background: 'rgba(14,14,16,0.65)', backdropFilter: 'blur(2px)' }}
-          >
-            <p className="text-base" style={{ color: 'var(--text-muted)' }}>
+          // 스크림 색 = 운영 값 rgba(14,14,16,0.65) (§8)
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-16 bg-[rgba(14,14,16,0.65)] backdrop-blur-[2px]">
+            <p className="text-body-md-regular text-text-tertiary">
               승인자가 직접 클릭하며 체험하는 6스텝 데모입니다
             </p>
-            <button
+            <Button
+              variant="solid"
+              size="lg"
               onClick={startTour}
-              className="px-28 py-14 rounded-[6px] text-base font-semibold transition-opacity hover:opacity-85"
-              style={{ background: 'var(--accent)', color: 'var(--text-inverse)' }}
+              // 색만 운영 값(§8): 민트 CTA(accent) + 어두운 글자, hover opacity 0.85
+              className="bg-bg-interactive-primary text-text-inverse transition-opacity hover:opacity-85 not-data-disabled:not-aria-invalid:hover:bg-bg-interactive-primary not-data-disabled:data-active:not-hover:text-text-inverse"
             >
               {phase === 'idle' ? '데모 시작하기' : '데모 다시 보기'}
-            </button>
+            </Button>
           </div>
         )}
 
@@ -419,7 +420,7 @@ export default function AgentTutorialDemo() {
       </div>
       </div>
 
-      <p className="mt-8 text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
+      <p className="mt-8 text-body-xs-regular text-text-tertiary">
         캡쳐: agent.ep.naraspace.com 실화면 (2026-09-28, 산타로사섬 산불 분석) · 대화
         목록·계정 정보는 블러 처리
       </p>
@@ -528,16 +529,10 @@ function AdvanceButton({
       <span className="ep-click-ping" aria-hidden />
       <button
         onClick={onClick}
-        className="absolute inset-0 overflow-hidden ep-advance-pulse ep-advance-btn"
-        style={{
-          // driver.css 의 `.driver-active * { pointer-events: none }` 를 이긴다
-          pointerEvents: 'auto',
-          cursor: 'pointer',
-          border: 'none',
-          padding: 0,
-          background: 'transparent',
-          borderRadius: '6px',
-        }}
+        // pointer-events-auto: driver.css 의 `.driver-active * { pointer-events: none }` 를 이긴다
+        // (tutorial.css .ep-advance-btn 에도 !important 로 한 번 더 걸려 있다).
+        // NDS Button 이 아닌 이유: 캡쳐 속 실제 버튼 픽셀을 그대로 보여주는 투명 클릭 영역이다
+        className="absolute inset-0 overflow-hidden ep-advance-pulse ep-advance-btn pointer-events-auto cursor-pointer border-none p-0 bg-transparent rounded-sm"
         aria-label={label}
         title={label}
       >

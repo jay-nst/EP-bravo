@@ -1,5 +1,4 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -13,6 +12,7 @@
 @import "../styles/nds/breakpoint.css";
 @import "../styles/nds/radius.css";
 @import "../styles/nds/shadow.css";
+@import "../styles/nds/mapbox-controls.css";
 
 /* ==========================================================
    EarthPaper Design System — "Quiet Observatory"
@@ -55,7 +55,6 @@
   /* Typography */
   --font-display: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-body: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', 'Menlo', 'Consolas', monospace;
   --letter-spacing: -0.2px;
 
   /* Spacing (4px base) */
@@ -149,11 +148,6 @@ body {
   font-family: var(--font-display);
 }
 
-.font-mono {
-  font-family: var(--font-mono);
-  font-feature-settings: 'tnum' 1;
-}
-
 /* --- Floating Panel Glass Effect --- */
 .glass-panel {
   background: var(--panel-bg);
@@ -167,33 +161,7 @@ body {
   -webkit-backdrop-filter: blur(12px);
 }
 
-/* --- Mapbox Overrides --- */
-.mapboxgl-ctrl-group {
-  background: var(--surface) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-sm) !important; /* EP --radius-md(8px) */
-}
-
-.mapboxgl-ctrl-group button {
-  border-color: var(--border) !important;
-}
-
-.mapboxgl-ctrl-group button:hover {
-  background: var(--surface-elevated) !important;
-}
-
-/* Mapbox 기본 아이콘은 검정 — 다크에서만 반전 */
-.dark .mapboxgl-ctrl-group button {
-  filter: invert(1) hue-rotate(180deg);
-}
-
-.dark .mapboxgl-ctrl-group button:hover {
-  filter: invert(1) hue-rotate(180deg) brightness(1.2);
-}
-
-.mapboxgl-ctrl-group button + button {
-  border-top-color: var(--border) !important;
-}
+/* --- Mapbox 컨트롤 --- NDS 모양은 src/styles/nds/mapbox-controls.css (자동 생성) */
 
 /* --- Focus Visible --- */
 :focus-visible {
@@ -202,17 +170,7 @@ body {
   border-radius: 4px;
 }
 
-/* --- Interactive Card Hover --- */
-/* 코드모드 후 클래스명: EP rounded-xl → rounded-[12px], rounded-lg → rounded-sm */
-a[class*="rounded-[12px]"],
-a[class*="rounded-sm"] {
-  transition: border-color 0.2s ease-out, background-color 0.2s ease-out;
-}
-
-a[class*="rounded-[12px]"]:hover,
-a[class*="rounded-sm"]:hover {
-  border-color: var(--text-muted) !important;
-}
+/* (카드 hover 는 NDS Card interactive 가 처리 — 전역 a[class*=rounded] 규칙 제거) */
 
 /* --- Scrollbar --- */
 ::-webkit-scrollbar {

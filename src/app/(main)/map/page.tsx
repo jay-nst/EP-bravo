@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import { Spinner } from '@naraspace-technology/nds/components';
 import AoiPanel from '@/components/map/AoiPanel';
 import type { SatelliteType } from '@/types/database';
 import { createClient } from '@/lib/supabase/client';
@@ -10,8 +11,11 @@ import { requestTossPayment } from '@/lib/toss/widget';
 const EarthMap = dynamic(() => import('@/components/map/EarthMap'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full flex items-center justify-center" style={{ background: 'var(--bg)' }}>
-      <p className="text-sm" style={{ color: 'var(--text-muted)' }}>지도 로딩 중...</p>
+    <div className="flex h-full w-full items-center justify-center bg-bg-tertiary">
+      <div className="flex flex-col items-center gap-12">
+        <Spinner aria-label="지도 로딩 중" />
+        <p className="text-body-sm-regular text-text-tertiary">지도 로딩 중...</p>
+      </div>
     </div>
   ),
 });
@@ -88,7 +92,7 @@ export default function MapPage() {
   }, [aoi, catalogItemId, userEmail]);
 
   return (
-    <div className="flex" style={{ height: 'calc(100vh - var(--header-height))' }}>
+    <div className="flex h-[calc(100vh-var(--header-height))]">
       <div className="flex-1">
         <EarthMap
           onAoiChange={handleAoiChange}
