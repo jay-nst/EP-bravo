@@ -1,7 +1,7 @@
 # Design: 위성영상 구매 튜토리얼 — 기획 시연 페이지
 
-작성 2026-10-08 · 라우트 `/proposals/order-tutorial` · 배포는 master 위 (NDS 1단계 기반). 개발 브랜치 `feat/order-tutorial`(base `feat/nds-phase2`)에는
-렌더 테스트 `TaskingSim.test.tsx` 가 추가로 있다 — master 에 Testing Library·jsdom 이 없어 2단계가 master 에 들어올 때 옮긴다.
+작성 2026-10-08 · 라우트 `/proposals/order-tutorial` · 2026-10-16 NDS 2단계·라이트모드와 함께 master 로 통합되면서
+렌더 테스트 `TaskingSim.test.tsx`(Testing Library·jsdom)도 master 에 들어왔다.
 선행 작업: Agent 튜토리얼 (`docs/AGENT_TUTORIAL_PROPOSAL_DESIGN.md`) — 구조·연출 방식을 그대로 따른다.
 
 ## 무엇을 만드나
@@ -78,7 +78,7 @@ driver 오버레이 10000, 팝오버 1e9. 캡쳐 버튼·스포트라이트·궤
 
 ## 검증 (2026-10-08)
 
-- vitest: 스펙 계약 10개 (master). 개발 브랜치에서는 TaskingSim 렌더 6개 포함 187개 통과.
+- vitest: 스펙 계약 10개 + TaskingSim 렌더 6개 (master 통합 후 전체 187개 통과).
   `scripts/nds-codemod.test.ts` 는 base 커밋(78abc3e)부터 로드 단계 SyntaxError — 이 작업과 무관, 미수정.
 - tsc·eslint 클린.
 - 로컬 dev 서버에서 browse 로 두 트랙 전 구간 클릭 확인 (분기 → 연출 → 각 스텝 → 가입 모달, 건너뛰기 → 모달).
