@@ -19,6 +19,12 @@ const SERVICES = [
   { key: 'gyeonggi', label: '경기 공원', desc: '공원 접근성 지도', color: '#4A9E6B', href: '/gyeonggi' },
 ] as const;
 
+// 튜토리얼 제안 페이지 — 헤더 'Tutorial' 드롭다운에 묶는다
+const TUTORIALS = [
+  { key: 'agent', label: 'EP Agent Tutorial', desc: 'Agent 분석 온보딩', href: '/proposals/agent-tutorial' },
+  { key: 'map', label: 'EP Map Tutorial', desc: '위성영상 구매 흐름', href: '/proposals/order-tutorial' },
+] as const;
+
 // 내비 항목은 링크로 둔다 (NDS 에 내비게이션 컴포넌트 없음, Button 은 색 커스텀 불가 —
 // 비활성 muted / 활성 accent 색을 유지해야 함). NDS 타이포·토큰·radius 만 적용
 const desktopNavClass = (active: boolean) =>
@@ -47,12 +53,30 @@ export default function Header() {
     timerRef.current = setTimeout(() => setDropdownOpen(false), 200);
   };
 
+  // 'Tutorial' 드롭다운 — 서비스 드롭다운과 같은 호버 동작
+  const [tutorialOpen, setTutorialOpen] = useState(false);
+  const tutorialTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const handleTutorialEnter = () => {
+    clearTimeout(tutorialTimerRef.current);
+    setTutorialOpen(true);
+  };
+
+  const handleTutorialLeave = () => {
+    tutorialTimerRef.current = setTimeout(() => setTutorialOpen(false), 200);
+  };
+
+  const tutorialActive = TUTORIALS.some((t) => pathname.startsWith(t.href));
+
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
 
   useEffect(() => {
-    return () => clearTimeout(timerRef.current);
+    return () => {
+      clearTimeout(timerRef.current);
+      clearTimeout(tutorialTimerRef.current);
+    };
   }, []);
 
   return (
@@ -113,19 +137,45 @@ export default function Header() {
               )}
             </div>
 
-            <Link
-              href="/proposals/agent-tutorial"
-              className={desktopNavClass(pathname.startsWith('/proposals/agent-tutorial'))}
+            <div
+              className="relative"
+              onMouseEnter={handleTutorialEnter}
+              onMouseLeave={handleTutorialLeave}
             >
-              EP Agent
-            </Link>
+              {/* 서비스 드롭다운과 같은 모양 — 튜토리얼 페이지에 있으면 활성 색 */}
+              <button
+                type="button"
+                className={`${desktopNavClass(tutorialActive)} flex items-center gap-4`}
+              >
+                Tutorial
+                <IconChevronDown className="size-16" />
+              </button>
 
-            <Link
-              href="/proposals/order-tutorial"
-              className={desktopNavClass(pathname.startsWith('/proposals/order-tutorial'))}
-            >
-              EP Map Tutorial
-            </Link>
+              {tutorialOpen && (
+                <div className="absolute top-full left-0 mt-4 py-8 min-w-220 rounded-md bg-bg-secondary inset-ring-1 inset-ring-border-tertiary shadow-6">
+                  {TUTORIALS.map((t) => {
+                    const active = pathname.startsWith(t.href);
+                    return (
+                      <Link
+                        key={t.key}
+                        href={t.href}
+                        className="block px-16 py-10 transition-colors hover:bg-bg-primary"
+                        onClick={() => setTutorialOpen(false)}
+                      >
+                        <p
+                          className={`text-body-sm-medium ${
+                            active ? 'text-text-interactive-primary' : 'text-text-primary'
+                          }`}
+                        >
+                          {t.label}
+                        </p>
+                        <p className="text-body-xs-regular text-text-tertiary">{t.desc}</p>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
 
             <Link href="/climate" className={desktopNavClass(pathname.startsWith('/climate'))}>
               기후 인텔리전스
@@ -164,23 +214,19 @@ export default function Header() {
               오늘의 지구
             </Link>
 
-            <Link
-              href="/proposals/agent-tutorial"
-              className={mobileNavClass(pathname.startsWith('/proposals/agent-tutorial'))}
-            >
-              EP Agent
-            </Link>
-
-            <Link
-              href="/proposals/order-tutorial"
-              className={mobileNavClass(pathname.startsWith('/proposals/order-tutorial'))}
-            >
-              EP Map Tutorial
-            </Link>
-
             <Link href="/climate" className={mobileNavClass(pathname.startsWith('/climate'))}>
               기후 인텔리전스
             </Link>
+
+            {/* 모바일은 서비스 목록과 같은 그룹 헤더 + 하위 링크 */}
+            <div className="px-24 pt-8 pb-4 mt-4 border-t border-border-tertiary">
+              <span className="text-body-sm-medium text-text-tertiary">Tutorial</span>
+            </div>
+            {TUTORIALS.map((t) => (
+              <Link key={t.key} href={t.href} className={mobileNavClass(pathname.startsWith(t.href))}>
+                {t.label}
+              </Link>
+            ))}
 
             <div className="px-24 pt-8 pb-4 mt-4 border-t border-border-tertiary">
               <span className="text-body-sm-medium text-text-tertiary">서비스</span>
