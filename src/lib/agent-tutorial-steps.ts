@@ -71,6 +71,11 @@ export interface TutorialChatSim {
    * rect 는 캡쳐(스테이지) % 좌표 — 전환 후 캡쳐 속 카드 위치와 일치해야 한다.
    */
   resultCards?: { capture: string; rect: TutorialHotspot };
+  /**
+   * 재생 중 안내 + 건너뛰기 (2026-10-19 피그마 리뷰: 재생 시간이 길다) —
+   * 건너뛰면 결과 카드가 나온 다음 스텝으로 바로 넘어간다.
+   */
+  skipNotice?: string;
 }
 
 /** 마스코트 이미지 — step1 캡쳐에서 크롭 (배경색 CHAT_BG 포함) */
@@ -141,7 +146,8 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     // 산타로사섬 예시 칩만 하이라이트 — 라이브 DOM 실측 (284,768,351,32) + 패딩
     hotspot: { x: 17.5, y: 76.4, w: 22.4, h: 4 },
     title: '무엇을 물어볼지 막막하다면',
-    body: "분석할 산불 지역과 시기만 입력하면 됩니다. '산타로사섬 산불 피해 보고서' 예시를 클릭해 보세요.",
+    // 2026-10-19 피그마 리뷰 카피 (Miyoung Lee)
+    body: '산타로사섬 산불 예시를 클릭해 분석을 시작해 보세요.',
     action: 'click',
     // 실서비스 응답 생성 연출 재현: 유저 버블 → 마스코트 흔들림 + 타이핑 스트리밍
     // → "분석 중" 대기 → (스텝 2) 분석 완료. 문구는 실제 대화 그대로.
@@ -160,6 +166,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
         capture: `${CAPTURE_BASE}/step2-premap.png`,
         rect: { x: 20.5, y: 10.5, w: 19.5, h: 36 },
       },
+      skipNotice: '분석 예시를 보여드리고 있습니다.',
     },
   },
   {
@@ -226,10 +233,24 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
   {
     id: 'signup',
     type: 'modal',
-    title: '진짜 데이터로 써볼 준비가 되셨나요?',
-    body: '지금 본 산불 피해 분석을 실제 위성 데이터로 그대로 실행할 수 있습니다. 회원가입하면 바로 시작됩니다.',
+    // 2026-10-19 피그마 리뷰 카피 (Miyoung Lee)
+    title: '이제, 관심 지역을 직접 분석해 보세요!',
+    body: '분석할 지역과 시기를 알려주면 Agent가 위성영상을 찾아 분석하고 보고서로 정리합니다. 회원가입 후 바로 시작할 수 있습니다.',
   },
 ];
+
+/** 가입 모달 CTA 라벨 (2026-10-19 피그마 리뷰) */
+export const SIGNUP_CTA_LABEL = '가입하고 분석 시작하기';
+
+/**
+ * 튜토리얼 재진입 버튼 — Agent 첫 화면 빈 상태 안내문 아래 (2026-10-19 피그마 리뷰).
+ * '다시 보지 않기'를 저장했어도 이 버튼은 항상 튜토리얼을 연다.
+ * rect: step1-home.png(1600×1000) 실측 — 안내문 둘째 줄(y≈430) 아래, 채팅 컬럼(260~660) 중앙
+ */
+export const TOUR_ENTRY = {
+  label: 'EP Agent 둘러보기',
+  rect: { x: 22.5, y: 45.4, w: 12.25, h: 3.6 },
+} as const;
 
 // 전·후 비교 위젯 자산 — 지도 영역(940×944)만 슬라이더 양 극단에서 클립 캡쳐한 것.
 // 화재 후는 심각도 오버레이 0%/100% 두 장을 겹쳐 불투명도 조절을 실동작으로 재현한다:

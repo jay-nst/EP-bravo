@@ -4,16 +4,20 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { createPortal } from 'react-dom';
 import { driver, type Driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
-import { Button } from '@naraspace-technology/nds/components';
+import { Button, Checkbox, Field } from '@naraspace-technology/nds/components';
+import { IconPlay } from '@naraspace-technology/nds/icons';
 import {
   HIGHLIGHT_STEPS,
   TUTORIAL_STEPS,
   CAPTURE_WIDTH,
   CAPTURE_HEIGHT,
+  CHAT_COLORS,
   COMPARE_ASSETS,
   ARTICLE_ASSETS,
+  TOUR_ENTRY,
   type TutorialHotspot,
 } from '@/lib/agent-tutorial-steps';
+import { isTutorialDismissed, saveTutorialDismissed } from '@/lib/agent-tutorial-dismiss';
 import SignupConversionModal from '@/components/proposals/SignupConversionModal';
 import BeforeAfterSlider from '@/components/proposals/BeforeAfterSlider';
 import AnalysisChatSim from '@/components/proposals/AnalysisChatSim';
@@ -38,6 +42,24 @@ export default function AgentTutorialDemo() {
   const stageRef = useRef<HTMLDivElement>(null);
   // 팝오버 '다음' 버튼이 최신 advanceStep 을 부르도록 (startTour 가 advanceStep 보다 먼저 정의됨)
   const advanceRef = useRef<(i: number) => void>(() => {});
+  const [chatExiting, setChatExiting] = useState(false);
+  // '다시 보지 않기' (2026-10-19 피그마 리뷰) — 체크 상태는 닫는 순간에만 저장한다.
+  // driver 의 X·ESC 훅이 최신 값을 읽도록 ref 로도 들고 있다.
+  const [dontShowAgain, setDontShowAgain] = useState(false);
+  const dontShowAgainRef = useRef(false);
+  // 저장된 선택 — true 면 첫 진입 자동 표시(시작 오버레이)를 건너뛰고
+  // 'EP Agent 둘러보기' 재진입 버튼만 보여준다. localStorage 는 마운트 후에만 읽는다.
+  const [dismissed, setDismissed] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 브라우저 저장소는 hydration 후에만 읽을 수 있다
+    setDismissed(isTutorialDismissed());
+  }, []);
+
+  const toggleDontShowAgain = useCallback((checked: boolean) => {
+    dontShowAgainRef.current = checked;
+    setDontShowAgain(checked);
+  }, []);
 
   const openModal = useCallback((reason: 'completed' | 'skipped') => {
     driverRef.current?.destroy();
@@ -47,13 +69,40 @@ export default function AgentTutorialDemo() {
     trackEvent('cta_click', `agent_tutorial_demo_${reason}`, {});
   }, []);
 
+  // 닫기 (2026-10-19 피그마 리뷰): 어느 단계에서든 데모를 끝내고 Agent 첫 화면으로
+  // 돌아간다 — 가입 모달로 점프하지 않는다. '다시 보지 않기'가 체크돼 있으면 저장.
+  const closeTour = useCallback(() => {
+    const timers = loadingTimersRef.current;
+    timers.forEach(clearTimeout);
+    timers.length = 0;
+    driverRef.current?.destroy();
+    driverRef.current = null;
+    if (dontShowAgainRef.current) {
+      saveTutorialDismissed();
+      setDismissed(true);
+    }
+    setChatExiting(false);
+    setCapture(HIGHLIGHT_STEPS[0].capture);
+    setStepIndex(0);
+    setPhase('done');
+    trackEvent('cta_click', 'agent_tutorial_demo_closed', {
+      dont_show_again: dontShowAgainRef.current,
+    });
+  }, []);
+
   const startTour = useCallback(() => {
     driverRef.current?.destroy();
+    dontShowAgainRef.current = false;
+    setDontShowAgain(false);
 
     const d = driver({
-      showProgress: false,
+      // 전체화면에서 상단 스텝 인디케이터를 없앤 대신 팝오버에 진행 표시 (n / 6)
+      showProgress: true,
       animate: true,
       allowClose: true,
+      // 닫기가 '데모 종료'가 되면서, 오버레이 빈 곳을 잘못 눌러 끝나지 않도록 막는다
+      // (닫기는 상단 [닫기]·팝오버 X·ESC 로만)
+      overlayClickBehavior: () => {},
       overlayOpacity: 0.72,
       stagePadding: 6,
       popoverClass: 'ep-tutorial-popover',
@@ -68,13 +117,14 @@ export default function AgentTutorialDemo() {
             s.action === 'click'
               ? s.advanceLabel
                 ? `화면의 '${s.advanceLabel}' 버튼을 직접 클릭해 보세요 — '다음'으로도 진행됩니다`
-                : "하이라이트된 영역을 직접 클릭해 보세요 — '다음'으로도 진행됩니다"
+                : "강조된 버튼을 클릭하거나 '다음'을 눌러 진행하세요." // 2026-10-19 피그마 리뷰 카피
               : "체험해 본 뒤 아래 '다음' 버튼으로 진행하세요"
           }</span></div>`,
           // 리뷰 반영: 툴팁을 다음 액션 대상 근처에 붙인다 (미지정 시 driver 자동 배치)
           side: s.popoverSide,
           align: s.popoverAlign,
           showButtons: ['next', 'previous', 'close'],
+          progressText: `${i + 1} / ${TUTORIAL_STEPS.length}`,
           // '다음' 버튼도 실제 클릭과 동일 경로로 진행 (로딩 연출 포함)
           onNextClick: () => advanceRef.current(i),
         },
@@ -83,11 +133,13 @@ export default function AgentTutorialDemo() {
           setCapture(s.capture);
         },
       })),
-      // 건너뛰기(닫기·ESC·오버레이 클릭)와 마지막 스텝 완료가 모두 여기로 온다.
-      // 어느 쪽이든 스텝 5(가입 모달)로 점프 — 전환 지점은 항상 통과시킨다.
+      // 닫기(X·ESC)와 마지막 스텝 완료가 모두 여기로 온다.
+      // 완료 → 가입 모달, 닫기 → 데모 종료 (2026-10-19 피그마 리뷰: '닫기' 시 데모 종료.
+      // 이전에는 닫기도 가입 모달로 점프시켰다)
       onDestroyStarted: () => {
         const completed = !d.hasNextStep() && d.isLastStep();
-        openModal(completed ? 'completed' : 'skipped');
+        if (completed) openModal('completed');
+        else closeTour();
       },
     });
 
@@ -100,7 +152,7 @@ export default function AgentTutorialDemo() {
     setTimeout(() => {
       if (driverRef.current === d) d.drive();
     }, 80);
-  }, [openModal]);
+  }, [openModal, closeTour]);
 
   // 로딩 연출: driver 오버레이를 잠시 내리고, 실제 대화가 차오르는 화면 캡쳐를
   // 순서대로 전환한 뒤 다음 스텝에서 투어를 재개한다. 별도 UI 없이 실화면만 쓴다.
@@ -145,7 +197,6 @@ export default function AgentTutorialDemo() {
   // 컬럼은 오버레이가 덮고 있어 지도 영역만 바뀐다 (loading 캡쳐에 구워진 옛
   // 채팅이 비쳐 보이는 문제 방지). ② 채팅 컬럼을 페이드 아웃 — 결과 카드는
   // 캡쳐 속 같은 위치에 안착해 있어 끊김 없이 이어진다.
-  const [chatExiting, setChatExiting] = useState(false);
   const handleChatSimDone = useCallback(() => {
     const d = driverRef.current;
     if (!d) return;
@@ -159,6 +210,23 @@ export default function AgentTutorialDemo() {
         d.drive(next);
       }, 700), // 배경 크로스페이드(350ms) + 컬럼 페이드(300ms, 350ms 지연)
     );
+  }, [stepIndex]);
+
+  // 분석 연출 건너뛰기 (2026-10-19 피그마 리뷰: 재생 시간이 길다) — 채팅 시뮬레이션을
+  // 끊고 결과 카드가 나온 다음 스텝으로 바로 넘어간다. phase 가 바뀌면 시뮬레이션이
+  // 언마운트되며 자체 타이머를 정리한다.
+  const skipAnalysis = useCallback(() => {
+    const d = driverRef.current;
+    if (!d) return;
+    const timers = loadingTimersRef.current;
+    timers.forEach(clearTimeout);
+    timers.length = 0;
+    const next = stepIndex + 1;
+    setCapture(HIGHLIGHT_STEPS[next].capture);
+    setChatExiting(false);
+    setPhase('running');
+    d.drive(next);
+    trackEvent('cta_click', 'agent_tutorial_demo_analysis_skipped', {});
   }, [stepIndex]);
 
   // 스텝 진행 — 로딩 연출이 있으면 재생 후, 없으면 즉시 다음 스텝으로.
@@ -250,11 +318,15 @@ export default function AgentTutorialDemo() {
       <div
         className={
           fullscreen
-            ? 'dark fixed inset-0 z-[100] flex flex-col px-24 py-16 bg-[rgba(10,10,12,0.98)]'
+            ? // 실제 화면처럼: 사이트 헤더(z-50)·여백 없이 캡쳐가 뷰포트를 채운다.
+              // 비율이 다른 뷰포트에서 남는 가장자리만 불투명 검정 레터박스
+              'dark fixed inset-0 z-[100] flex items-center justify-center bg-[#0a0a0c]'
             : ''
         }
       >
-      {/* 스텝 인디케이터 — 진행 가시화 (완주율 모범사례) */}
+      {/* 스텝 인디케이터 — 진행 가시화 (완주율 모범사례). 전체화면에서는 화면 위
+          크롬을 없애고 팝오버의 진행 표시(n / 6)로 대신한다 */}
+      {!fullscreen && (
       <div className="flex items-center justify-between mb-12">
         <ol className="flex items-center gap-8" aria-label="튜토리얼 진행 단계">
           {TUTORIAL_STEPS.map((s, i) => {
@@ -281,34 +353,33 @@ export default function AgentTutorialDemo() {
             );
           })}
         </ol>
-
-        {phase === 'running' && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => openModal('skipped')}
-            // 색만 운영 값(§8): muted 글자 + border 테두리, hover 시 surface 채움
-            className="text-text-tertiary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-bg-secondary not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary not-data-disabled:data-active:not-hover:bg-transparent not-data-disabled:data-active:not-hover:inset-ring-border-tertiary not-data-disabled:data-active:not-hover:text-text-tertiary"
-          >
-            건너뛰기
-          </Button>
-        )}
       </div>
+      )}
+
+      {/* 모든 화면 공통 [다시 보지 않기] [닫기] (2026-10-19 피그마 리뷰) — 기존
+          '건너뛰기(→ 가입 모달)'를 대체. driver 오버레이 위에서 클릭돼야 하므로 portal */}
+      {(phase === 'running' || phase === 'analyzing') && (
+        <TourControls
+          checked={dontShowAgain}
+          onCheckedChange={toggleDontShowAgain}
+          onClose={closeTour}
+        />
+      )}
 
       {/* 캡쳐 스테이지 — aspect-ratio 고정, 핫스팟은 % 절대배치로 스케일 추종.
-          전체화면에서는 뷰포트에 꽉 차게 (비율 유지, 레터박스) */}
-      <div className={fullscreen ? 'flex-1 flex items-center justify-center min-h-0' : ''}>
+          전체화면에서는 뷰포트를 꽉 채운다 (비율 유지 contain — 크롭하면 핫스팟·헤더가 잘린다) */}
       <div
         ref={stageRef}
         // @container: 채팅 시뮬레이션의 폰트가 스테이지 폭에 비례(cqw)해 캡쳐와 같은 배율로 보이게.
-        // 테두리는 inset-ring 대신 border — 안쪽 그림자는 캡쳐 이미지에 가려진다
-        className="dark @container relative w-full overflow-hidden select-none rounded-sm border border-border-tertiary bg-bg-tertiary"
+        // 테두리는 inset-ring 대신 border — 안쪽 그림자는 캡쳐 이미지에 가려진다.
+        // 전체화면에서는 테두리·라운드 없이 실화면처럼
+        className={`dark @container relative overflow-hidden select-none bg-bg-tertiary ${
+          fullscreen ? 'shrink-0' : 'w-full rounded-sm border border-border-tertiary'
+        }`}
         style={{
           aspectRatio: `${CAPTURE_WIDTH} / ${CAPTURE_HEIGHT}`,
           ...(fullscreen
-            ? {
-                width: `min(100%, calc((100vh - 130px) * ${CAPTURE_WIDTH / CAPTURE_HEIGHT}))`,
-              }
+            ? { width: `min(100vw, calc(100vh * ${CAPTURE_WIDTH / CAPTURE_HEIGHT}))` }
             : {}),
         }}
       >
@@ -382,6 +453,31 @@ export default function AgentTutorialDemo() {
           <AnalysisChatSim sim={chatSim} onDone={handleChatSimDone} exiting={chatExiting} />
         )}
 
+        {/* 분석 연출 안내 + 건너뛰기 — 지도 영역 상단, 검색창 아래 (피그마 댓글 위치) */}
+        {chatSim?.skipNotice && !chatExiting && (
+          <div
+            role="status"
+            className="absolute z-10 flex items-center gap-12 rounded-full bg-bg-secondary py-4 pl-16 pr-4 shadow-6 inset-ring-1 inset-ring-border-tertiary"
+            style={{ left: '43.5%', top: '13.5%' }}
+          >
+            <span className="text-body-sm-regular text-text-secondary">{chatSim.skipNotice}</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={skipAnalysis}
+              className="rounded-full text-text-primary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-bg-tertiary not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary"
+            >
+              건너뛰기
+            </Button>
+          </div>
+        )}
+
+        {/* 튜토리얼 재진입 — Agent 첫 화면 빈 상태 안내문 아래 (2026-10-19 피그마 리뷰).
+            닫은 뒤, 또는 '다시 보지 않기'가 저장돼 자동 표시를 건너뛴 첫 진입에서 보인다 */}
+        {(phase === 'done' || (phase === 'idle' && dismissed)) && (
+          <TourEntryButton onClick={startTour} />
+        )}
+
         {/* 진행 클릭 버튼 — 실제 UX 의 버튼 위치를 오버레이 위에 밝게 띄운다.
             전체화면 컨테이너(fixed)가 스태킹 컨텍스트를 만들어 z-index 가 갇히므로
             portal 로 body 에 직접 렌더한다 (driver 오버레이 z 1e9 위) */}
@@ -396,8 +492,9 @@ export default function AgentTutorialDemo() {
         )}
 
 
-        {/* 시작/재시작 오버레이 */}
-        {(phase === 'idle' || phase === 'done') && (
+        {/* 시작 오버레이 — 실서비스의 '첫 진입 자동 표시' 자리. 다시 보지 않기가
+            저장돼 있으면 띄우지 않는다. 닫은 뒤에는 재진입 버튼(TourEntryButton)이 대신한다 */}
+        {phase === 'idle' && !dismissed && (
           // 스크림 색 = 운영 값 rgba(14,14,16,0.65) (§8)
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-16 bg-[rgba(14,14,16,0.65)] backdrop-blur-[2px]">
             <p className="text-body-md-regular text-text-tertiary">
@@ -410,7 +507,7 @@ export default function AgentTutorialDemo() {
               // 색만 운영 값(§8): 민트 CTA(accent) + 어두운 글자, hover opacity 0.85
               className="bg-bg-interactive-primary text-text-inverse transition-opacity hover:opacity-85 not-data-disabled:not-aria-invalid:hover:bg-bg-interactive-primary not-data-disabled:data-active:not-hover:text-text-inverse"
             >
-              {phase === 'idle' ? '데모 시작하기' : '데모 다시 보기'}
+              데모 시작하기
             </Button>
           </div>
         )}
@@ -418,11 +515,14 @@ export default function AgentTutorialDemo() {
         <SignupConversionModal open={phase === 'modal'} onReplay={replay} onClose={closeModal} />
       </div>
       </div>
-      </div>
 
       <p className="mt-8 text-body-xs-regular text-text-tertiary">
         캡쳐: agent.ep.naraspace.com 실화면 (2026-09-28, 산타로사섬 산불 분석) · 대화
         목록·계정 정보는 블러 처리
+        {(phase === 'done' || (phase === 'idle' && dismissed)) &&
+          ` · 튜토리얼은 'EP Agent 둘러보기'로 언제든 다시 열 수 있습니다${
+            dismissed ? " ('다시 보지 않기' 저장됨 — 사이트 데이터를 지우면 다시 자동 표시)" : ''
+          }`}
       </p>
     </div>
   );
@@ -465,6 +565,73 @@ function StageCapture({ src, alt }: { src: string; alt: string }) {
         draggable={false}
       />
     </>
+  );
+}
+
+// 모든 화면 공통 [다시 보지 않기] [닫기] — 전체화면 상단 바 오른쪽 자리(px-24 py-16)에
+// 고정. AdvanceButton 과 같은 이유로 body 에 portal 하고 driver 오버레이 위에 띄운다
+// (tutorial.css .ep-tour-controls 가 driver 의 pointer-events 차단을 푼다).
+// 다크 토큰을 쓰도록 portal 루트에 .dark 를 다시 건다.
+function TourControls({
+  checked,
+  onCheckedChange,
+  onClose,
+}: {
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+  onClose: () => void;
+}) {
+  return createPortal(
+    <div
+      // 전체화면에서는 캡쳐 위에 바로 떠 있으므로 표면(pill)을 깔아 어떤 배경에서도 읽히게
+      className="dark ep-tour-controls fixed right-16 top-16 flex items-center gap-16 rounded-full bg-bg-secondary py-4 pl-16 pr-4 shadow-6 inset-ring-1 inset-ring-border-tertiary"
+      style={{ zIndex: 1000000001 }}
+    >
+      <Field.Root orientation="horizontal" className="w-fit">
+        <Field.Control>
+          <Checkbox checked={checked} onCheckedChange={(c) => onCheckedChange(c === true)} />
+        </Field.Control>
+        <Field.Label className="text-body-sm-regular text-text-secondary">다시 보지 않기</Field.Label>
+      </Field.Root>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={onClose}
+        // 색만 운영 값(§8): 기존 건너뛰기 버튼과 같은 muted 글자 + border 테두리
+        className="text-text-tertiary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-bg-secondary not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary not-data-disabled:data-active:not-hover:bg-transparent not-data-disabled:data-active:not-hover:inset-ring-border-tertiary not-data-disabled:data-active:not-hover:text-text-tertiary"
+      >
+        닫기
+      </Button>
+    </div>,
+    document.body,
+  );
+}
+
+// 'EP Agent 둘러보기' 재진입 버튼 — 실서비스 첫 화면 빈 상태 안내문 바로 아래에 놓일
+// DOM 을 캡쳐 위에 재현한다. 캡쳐와 같은 배율로 보이도록 글자는 cqw 로 스케일
+// (AnalysisChatSim 과 같은 방식: 14px / 1600px = 0.875cqw), 색은 캡쳐 실측 채팅 색.
+function TourEntryButton({ onClick }: { onClick: () => void }) {
+  const { x, y, w, h } = TOUR_ENTRY.rect;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="absolute z-10 flex cursor-pointer items-center justify-center rounded-full border-none p-0 transition-colors hover:bg-[rgba(231,235,239,0.08)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-focus-ring"
+      style={{
+        left: `${x}%`,
+        top: `${y}%`,
+        width: `${w}%`,
+        height: `${h}%`,
+        gap: '0.35em',
+        fontSize: '0.875cqw',
+        color: CHAT_COLORS.agentText,
+        // 라이브 복제(§7 예외): 채팅 컬럼 구분선 실측값 (MAP_TOP_BARS.colors.border)
+        boxShadow: 'inset 0 0 0 1px #24405b',
+      }}
+    >
+      <IconPlay style={{ width: '1.15em', height: '1.15em' }} aria-hidden />
+      <span>{TOUR_ENTRY.label}</span>
+    </button>
   );
 }
 

@@ -411,6 +411,13 @@
   pointer-events: auto !important;
 }
 
+/* 상단 [다시 보지 않기] [닫기] — 체크박스·라벨 등 자식까지 클릭돼야 하므로
+   하위 요소 전체의 차단을 푼다 (2026-10-19 피그마 리뷰) */
+.driver-active .ep-tour-controls,
+.driver-active .ep-tour-controls * {
+  pointer-events: auto !important;
+}
+
 /* 진행 클릭 버튼 — 오버레이 위에 뜬 실제 버튼 크롭에 시선 유도 펄스 */
 .ep-advance-pulse {
   box-shadow:

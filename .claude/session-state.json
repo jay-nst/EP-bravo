@@ -1,23 +1,22 @@
 {
-  "timestamp": "2026-10-08T19:30:00+09:00",
-  "branch": "feat/nds-phase2 (worktree ../earthpaper-nds)",
-  "last_commit": "7e7c3d6 feat(nds): full NDS adoption except colors",
+  "timestamp": "2026-10-21T11:40:00+09:00",
+  "branch": "feat/agent-tutorial-review2 (worktree ../earthpaper-agent-review2, base origin/master 2e4c5e0)",
+  "last_commit": "feat(proposals): apply Figma review (2026-10-19) to agent tutorial",
   "completed_tasks": [
-    "NDS 1단계 운영 배포 (master 597a0fd)",
-    "LeadCaptureModal NDS 참조 구현 (Dialog/Form/Field anatomy) dff450a",
-    "전면 NDS 적용(색 제외) 50파일 7e7c3d6 — :3001 미리보기 배포"
+    "Miyoung Lee 피그마 댓글 8건(2026-10-19) 반영 — 닫기=데모 종료, 다시 보지 않기, EP Agent 둘러보기, 분석 재생 건너뛰기, 카피",
+    "튜토리얼 전체화면 실화면 모드 (헤더·스텝바·프레임 제거, 진행 표시는 팝오버 n / 6)"
   ],
-  "in_progress": ["사용자 육안 QA (:3001) 및 판단 사항 결정"],
+  "in_progress": [],
   "remaining_tasks": [
-    "QA 피드백 반영 후 master 병합·운영 배포 (npm ci 포함, master push 는 사용자 실행)",
-    "warden/** climate/** 는 다른 세션 작업 종료 후 같은 규칙으로 적용",
-    "EP 별칭 변수·typography/shadow 재등록 블록 정리"
+    "push / master 병합·배포 여부 사용자 결정",
+    "피그마 댓글 반영 완료 회신 (Figma PAT 필요 — 사용한 토큰은 폐기 권고)"
   ],
   "blockers": [],
-  "test_status": "vitest 183/183, tsc ok, next build ok, eslint 7 pre-existing",
+  "test_status": "tsc ok, agent-tutorial vitest 11/11, 전체 196/196 (scripts/nds-codemod.test.ts 는 master 에서도 실패하는 기존 문제)",
   "decisions_made": [
-    "색 제외 전부 NDS, docs/NDS_FULL_ADOPTION_RULES.md 기준",
-    "NDS 컴포넌트에 색·크기 덧칠 금지 (튜토리얼 MapTopBars 는 실서비스 마크업 재현이라 예외)",
-    "IBM Plex Mono 제거"
+    "닫기는 가입 모달로 점프하지 않고 데모 종료 (피그마 스펙, 기존 '건너뛰기→모달' 결정 대체)",
+    "오버레이 빈 곳 클릭으로는 닫히지 않음",
+    "전체화면은 비율 유지(contain) — 16:9 에서 좌우 레터박스",
+    "이 worktree 의 node_modules 는 light-mode junction 이라 dev 는 next dev --webpack 으로만 실행"
   ]
 }
