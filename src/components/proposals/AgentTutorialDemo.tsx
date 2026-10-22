@@ -4,7 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { createPortal } from 'react-dom';
 import { driver, type Driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
-import { Button, Checkbox, Field } from '@naraspace-technology/nds/components';
+import { Button, Checkbox, Field, Tabs } from '@naraspace-technology/nds/components';
 import { IconPlay } from '@naraspace-technology/nds/icons';
 import {
   HIGHLIGHT_STEPS,
@@ -18,6 +18,11 @@ import {
   type TutorialHotspot,
 } from '@/lib/agent-tutorial-steps';
 import { isTutorialDismissed, saveTutorialDismissed } from '@/lib/agent-tutorial-dismiss';
+import {
+  HIGHLIGHT_STEPS_BY_LOCALE,
+  TUTORIAL_UI_COPY,
+  type TutorialLocale,
+} from '@/lib/agent-tutorial-i18n';
 import SignupConversionModal from '@/components/proposals/SignupConversionModal';
 import BeforeAfterSlider from '@/components/proposals/BeforeAfterSlider';
 import AnalysisChatSim from '@/components/proposals/AnalysisChatSim';
@@ -31,7 +36,20 @@ const MODAL_STEP_INDEX = TUTORIAL_STEPS.length - 1;
 // driver.js 는 단일 정적 페이지를 가정하므로, 스텝별 onHighlightStarted 훅에서
 // 배경 캡쳐 이미지를 교체한다. 핫스팟 div 는 스텝마다 별도 요소로 미리 깔아두므로
 // 하이라이트 위치 재계산은 driver 가 다음 요소로 이동하며 자연히 처리한다.
-export default function AgentTutorialDemo() {
+interface AgentTutorialDemoProps {
+  /** 카피 언어 (2026-10-22 한/영 토글). 캡쳐 이미지는 한국어 실화면 그대로다 */
+  locale?: TutorialLocale;
+  /** 지정하면 상단에 한/영 전환 탭을 보여준다 */
+  onLocaleChange?: (locale: TutorialLocale) => void;
+}
+
+export default function AgentTutorialDemo({
+  locale = 'ko',
+  onLocaleChange,
+}: AgentTutorialDemoProps = {}) {
+  // 문구만 로케일별 — 좌표·캡쳐는 두 로케일이 같아서 HIGHLIGHT_STEPS 를 그대로 써도 된다
+  const steps = HIGHLIGHT_STEPS_BY_LOCALE[locale];
+  const t = TUTORIAL_UI_COPY[locale];
   const [phase, setPhase] = useState<DemoPhase>('idle');
   const [stepIndex, setStepIndex] = useState(0);
   const [capture, setCapture] = useState(HIGHLIGHT_STEPS[0].capture);
@@ -106,19 +124,19 @@ export default function AgentTutorialDemo() {
       overlayOpacity: 0.72,
       stagePadding: 6,
       popoverClass: 'ep-tutorial-popover',
-      nextBtnText: '다음',
-      prevBtnText: '이전',
-      doneBtnText: '계속',
-      steps: HIGHLIGHT_STEPS.map((s, i) => ({
+      nextBtnText: t.nextBtn,
+      prevBtnText: t.prevBtn,
+      doneBtnText: t.doneBtn,
+      steps: steps.map((s, i) => ({
         element: `#tut-hotspot-${s.id}`,
         popover: {
           title: s.title,
           description: `${s.body}<div class="ep-tutorial-click-hint"><span class="ep-tutorial-click-arrow" aria-hidden="true"></span><span>${
             s.action === 'click'
               ? s.advanceLabel
-                ? `화면의 '${s.advanceLabel}' 버튼을 직접 클릭해 보세요 — '다음'으로도 진행됩니다`
-                : "강조된 버튼을 클릭하거나 '다음'을 눌러 진행하세요." // 2026-10-19 피그마 리뷰 카피
-              : "체험해 본 뒤 아래 '다음' 버튼으로 진행하세요"
+                ? t.clickHintWithLabel(s.advanceLabel)
+                : t.clickHint
+              : t.nextHint
           }</span></div>`,
           // 리뷰 반영: 툴팁을 다음 액션 대상 근처에 붙인다 (미지정 시 driver 자동 배치)
           side: s.popoverSide,
@@ -152,7 +170,7 @@ export default function AgentTutorialDemo() {
     setTimeout(() => {
       if (driverRef.current === d) d.drive();
     }, 80);
-  }, [openModal, closeTour]);
+  }, [openModal, closeTour, steps, t]);
 
   // 로딩 연출: driver 오버레이를 잠시 내리고, 실제 대화가 차오르는 화면 캡쳐를
   // 순서대로 전환한 뒤 다음 스텝에서 투어를 재개한다. 별도 UI 없이 실화면만 쓴다.
@@ -295,8 +313,8 @@ export default function AgentTutorialDemo() {
     setPhase('done');
   }, []);
 
-  const activeStep = phase === 'running' ? HIGHLIGHT_STEPS[stepIndex] : undefined;
-  const chatSim = phase === 'analyzing' ? HIGHLIGHT_STEPS[stepIndex]?.loadingChat : undefined;
+  const activeStep = phase === 'running' ? steps[stepIndex] : undefined;
+  const chatSim = phase === 'analyzing' ? steps[stepIndex]?.loadingChat : undefined;
 
   // 데모 진행 중에는 전체화면(시어터 모드) — 화면 안의 화면이 아니라 실사용 크기로 보여준다
   const fullscreen = phase === 'running' || phase === 'analyzing' || phase === 'modal';
@@ -314,7 +332,7 @@ export default function AgentTutorialDemo() {
   }, [startTour]);
 
   return (
-    <div>
+    <div lang={locale}>
       <div
         className={
           fullscreen
@@ -328,7 +346,7 @@ export default function AgentTutorialDemo() {
           크롬을 없애고 팝오버의 진행 표시(n / 6)로 대신한다 */}
       {!fullscreen && (
       <div className="flex items-center justify-between mb-12">
-        <ol className="flex items-center gap-8" aria-label="튜토리얼 진행 단계">
+        <ol className="flex items-center gap-8" aria-label={t.stepsLabel}>
           {TUTORIAL_STEPS.map((s, i) => {
             const active = phase !== 'idle' && i === stepIndex;
             const passed = phase !== 'idle' && i < stepIndex;
@@ -353,6 +371,17 @@ export default function AgentTutorialDemo() {
             );
           })}
         </ol>
+        {onLocaleChange && (
+          <Tabs.Root
+            value={locale}
+            onValueChange={(v) => onLocaleChange(v === 'en' ? 'en' : 'ko')}
+          >
+            <Tabs.List aria-label={t.languageLabel}>
+              <Tabs.Tab value="ko">한국어</Tabs.Tab>
+              <Tabs.Tab value="en">English</Tabs.Tab>
+            </Tabs.List>
+          </Tabs.Root>
+        )}
       </div>
       )}
 
@@ -363,6 +392,8 @@ export default function AgentTutorialDemo() {
           checked={dontShowAgain}
           onCheckedChange={toggleDontShowAgain}
           onClose={closeTour}
+          dontShowAgainLabel={t.dontShowAgain}
+          closeLabel={t.close}
         />
       )}
 
@@ -383,10 +414,10 @@ export default function AgentTutorialDemo() {
             : {}),
         }}
       >
-        <StageCapture src={capture} alt={`Agent 화면 캡쳐 — 스텝 ${stepIndex + 1}`} />
+        <StageCapture src={capture} alt={t.stageAlt(stepIndex + 1)} />
 
         {/* 투명 핫스팟 — driver.js 타겟. 스텝별로 미리 깔아두고 활성 스텝만 클릭 허용 */}
-        {HIGHLIGHT_STEPS.map((s, i) => (
+        {steps.map((s, i) => (
           <div
             key={s.id}
             id={`tut-hotspot-${s.id}`}
@@ -426,9 +457,10 @@ export default function AgentTutorialDemo() {
                 beforeSrc={COMPARE_ASSETS.before}
                 afterBaseSrc={COMPARE_ASSETS.afterBase}
                 severitySrc={COMPARE_ASSETS.severity}
-                beforeLabel={COMPARE_ASSETS.beforeLabel}
-                afterLabel={COMPARE_ASSETS.afterLabel}
+                beforeLabel={t.map.beforeLabel}
+                afterLabel={t.map.afterLabel}
                 hintsEnabled={i === stepIndex}
+                locale={locale}
               />
             )}
             {/* 분석 아티클 — 실제 iframe 영역처럼 원본 해상도 세그먼트를 세로로 스크롤 */}
@@ -437,7 +469,7 @@ export default function AgentTutorialDemo() {
                 className="absolute inset-0 overflow-y-auto overflow-x-hidden"
                 // 라이브 복제(§7 예외): 실서비스 아티클 iframe 배경색 실측값 — 세그먼트 캡쳐 여백과 이어지게
                 style={{ background: '#F2F3F7' }}
-                aria-label="분석 아티클 (스크롤 가능)"
+                aria-label={t.articleLabel}
               >
                 {ARTICLE_ASSETS.segments.map((seg) => (
                   // eslint-disable-next-line @next/next/no-img-element -- 정적 캡쳐, 최적화 불필요
@@ -450,7 +482,12 @@ export default function AgentTutorialDemo() {
 
         {/* 분석 채팅 시뮬레이션 — 유저 버블 → 마스코트 흔들림 + 타이핑 스트리밍 → 분석 중 */}
         {chatSim && (
-          <AnalysisChatSim sim={chatSim} onDone={handleChatSimDone} exiting={chatExiting} />
+          <AnalysisChatSim
+            sim={chatSim}
+            onDone={handleChatSimDone}
+            exiting={chatExiting}
+            locale={locale}
+          />
         )}
 
         {/* 분석 연출 안내 + 건너뛰기 — 지도 영역 상단, 검색창 아래 (피그마 댓글 위치) */}
@@ -467,7 +504,7 @@ export default function AgentTutorialDemo() {
               onClick={skipAnalysis}
               className="rounded-full text-text-primary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-bg-tertiary not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary"
             >
-              건너뛰기
+              {t.skip}
             </Button>
           </div>
         )}
@@ -475,7 +512,7 @@ export default function AgentTutorialDemo() {
         {/* 튜토리얼 재진입 — Agent 첫 화면 빈 상태 안내문 아래 (2026-10-19 피그마 리뷰).
             닫은 뒤, 또는 '다시 보지 않기'가 저장돼 자동 표시를 건너뛴 첫 진입에서 보인다 */}
         {(phase === 'done' || (phase === 'idle' && dismissed)) && (
-          <TourEntryButton onClick={startTour} />
+          <TourEntryButton onClick={startTour} label={t.tourEntry} />
         )}
 
         {/* 진행 클릭 버튼 — 실제 UX 의 버튼 위치를 오버레이 위에 밝게 띄운다.
@@ -486,7 +523,7 @@ export default function AgentTutorialDemo() {
             stageRef={stageRef}
             capture={activeStep.capture}
             hotspot={activeStep.advanceHotspot}
-            label={activeStep.advanceLabel ?? '다음'}
+            label={activeStep.advanceLabel ?? t.nextBtn}
             onClick={() => advanceStep(stepIndex)}
           />
         )}
@@ -497,9 +534,7 @@ export default function AgentTutorialDemo() {
         {phase === 'idle' && !dismissed && (
           // 스크림 색 = 운영 값 rgba(14,14,16,0.65) (§8)
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-16 bg-[rgba(14,14,16,0.65)] backdrop-blur-[2px]">
-            <p className="text-body-md-regular text-text-tertiary">
-              승인자가 직접 클릭하며 체험하는 6스텝 데모입니다
-            </p>
+            <p className="text-body-md-regular text-text-tertiary">{t.startIntro}</p>
             <Button
               variant="solid"
               size="lg"
@@ -507,22 +542,24 @@ export default function AgentTutorialDemo() {
               // 색만 운영 값(§8): 민트 CTA(accent) + 어두운 글자, hover opacity 0.85
               className="bg-bg-interactive-primary text-text-inverse transition-opacity hover:opacity-85 not-data-disabled:not-aria-invalid:hover:bg-bg-interactive-primary not-data-disabled:data-active:not-hover:text-text-inverse"
             >
-              데모 시작하기
+              {t.startButton}
             </Button>
           </div>
         )}
 
-        <SignupConversionModal open={phase === 'modal'} onReplay={replay} onClose={closeModal} />
+        <SignupConversionModal
+          open={phase === 'modal'}
+          onReplay={replay}
+          onClose={closeModal}
+          locale={locale}
+        />
       </div>
       </div>
 
       <p className="mt-8 text-body-xs-regular text-text-tertiary">
-        캡쳐: agent.ep.naraspace.com 실화면 (2026-09-28, 산타로사섬 산불 분석) · 대화
-        목록·계정 정보는 블러 처리
+        {t.captureNote}
         {(phase === 'done' || (phase === 'idle' && dismissed)) &&
-          ` · 튜토리얼은 'EP Agent 둘러보기'로 언제든 다시 열 수 있습니다${
-            dismissed ? " ('다시 보지 않기' 저장됨 — 사이트 데이터를 지우면 다시 자동 표시)" : ''
-          }`}
+          `${t.reopenNote}${dismissed ? t.dismissedNote : ''}`}
       </p>
     </div>
   );
@@ -576,10 +613,14 @@ function TourControls({
   checked,
   onCheckedChange,
   onClose,
+  dontShowAgainLabel,
+  closeLabel,
 }: {
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
   onClose: () => void;
+  dontShowAgainLabel: string;
+  closeLabel: string;
 }) {
   return createPortal(
     <div
@@ -591,7 +632,7 @@ function TourControls({
         <Field.Control>
           <Checkbox checked={checked} onCheckedChange={(c) => onCheckedChange(c === true)} />
         </Field.Control>
-        <Field.Label className="text-body-sm-regular text-text-secondary">다시 보지 않기</Field.Label>
+        <Field.Label className="text-body-sm-regular text-text-secondary">{dontShowAgainLabel}</Field.Label>
       </Field.Root>
       <Button
         variant="outline"
@@ -600,7 +641,7 @@ function TourControls({
         // 색만 운영 값(§8): 기존 건너뛰기 버튼과 같은 muted 글자 + border 테두리
         className="text-text-tertiary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-bg-secondary not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary not-data-disabled:data-active:not-hover:bg-transparent not-data-disabled:data-active:not-hover:inset-ring-border-tertiary not-data-disabled:data-active:not-hover:text-text-tertiary"
       >
-        닫기
+        {closeLabel}
       </Button>
     </div>,
     document.body,
@@ -610,7 +651,7 @@ function TourControls({
 // 'EP Agent 둘러보기' 재진입 버튼 — 실서비스 첫 화면 빈 상태 안내문 바로 아래에 놓일
 // DOM 을 캡쳐 위에 재현한다. 캡쳐와 같은 배율로 보이도록 글자는 cqw 로 스케일
 // (AnalysisChatSim 과 같은 방식: 14px / 1600px = 0.875cqw), 색은 캡쳐 실측 채팅 색.
-function TourEntryButton({ onClick }: { onClick: () => void }) {
+function TourEntryButton({ onClick, label }: { onClick: () => void; label: string }) {
   const { x, y, w, h } = TOUR_ENTRY.rect;
   return (
     <button
@@ -630,7 +671,7 @@ function TourEntryButton({ onClick }: { onClick: () => void }) {
       }}
     >
       <IconPlay style={{ width: '1.15em', height: '1.15em' }} aria-hidden />
-      <span>{TOUR_ENTRY.label}</span>
+      <span>{label}</span>
     </button>
   );
 }

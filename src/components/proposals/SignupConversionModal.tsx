@@ -2,12 +2,18 @@
 
 import { useState } from 'react';
 import { Dialog } from '@naraspace-technology/nds/components';
-import { MODAL_STEP, SIGNUP_CTA_LABEL } from '@/lib/agent-tutorial-steps';
+import {
+  MODAL_STEP_BY_LOCALE,
+  TUTORIAL_UI_COPY,
+  type TutorialLocale,
+} from '@/lib/agent-tutorial-i18n';
 
 interface SignupConversionModalProps {
   open: boolean;
   onReplay: () => void;
   onClose: () => void;
+  /** 카피 언어 (2026-10-22 한/영 토글) */
+  locale?: TutorialLocale;
 }
 
 // 스텝 5 — 튜토리얼의 클라이맥스이자 전환 지점.
@@ -29,10 +35,13 @@ export default function SignupConversionModal({
   open,
   onReplay,
   onClose,
+  locale = 'ko',
 }: SignupConversionModalProps) {
   const [ctaHint, setCtaHint] = useState(false);
+  const modalStep = MODAL_STEP_BY_LOCALE[locale];
+  const t = TUTORIAL_UI_COPY[locale];
 
-  if (!MODAL_STEP) return null;
+  if (!modalStep) return null;
 
   return (
     <Dialog.Root
@@ -45,12 +54,12 @@ export default function SignupConversionModal({
         className="bg-bg-secondary"
         slotProps={{ backdrop: { className: 'bg-[rgba(14,14,16,0.75)] backdrop-blur-[4px]' } }}
       >
-        <Dialog.Title>{MODAL_STEP.title}</Dialog.Title>
-        <Dialog.Description className="text-text-tertiary">{MODAL_STEP.body}</Dialog.Description>
+        <Dialog.Title>{modalStep.title}</Dialog.Title>
+        <Dialog.Description className="text-text-tertiary">{modalStep.body}</Dialog.Description>
 
         {ctaHint && (
           <p role="status" className="text-body-sm-regular text-text-primary">
-            실서비스에서는 여기서 가입 플로우로 연결됩니다
+            {t.signupCtaHint}
           </p>
         )}
 
@@ -63,13 +72,13 @@ export default function SignupConversionModal({
               onReplay();
             }}
           >
-            데모 다시 보기
+            {t.replay}
           </Dialog.Cancel>
           <Dialog.Action
             className="bg-bg-interactive-primary text-text-inverse transition-opacity hover:opacity-85 not-data-disabled:not-aria-invalid:hover:bg-bg-interactive-primary not-data-disabled:data-active:not-hover:text-text-inverse"
             onClick={() => setCtaHint(true)}
           >
-            {SIGNUP_CTA_LABEL}
+            {t.signupCta}
           </Dialog.Action>
         </Dialog.Footer>
       </Dialog.Popup>

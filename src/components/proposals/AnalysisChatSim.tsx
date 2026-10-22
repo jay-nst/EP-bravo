@@ -8,12 +8,15 @@ import {
   MASCOT_SRC,
   type TutorialChatSim,
 } from '@/lib/agent-tutorial-steps';
+import { TUTORIAL_UI_COPY, type TutorialLocale } from '@/lib/agent-tutorial-i18n';
 
 interface AnalysisChatSimProps {
   sim: TutorialChatSim;
   onDone: () => void;
   /** 결과 화면 전환 중 — 배경이 먼저 바뀐 뒤 채팅 컬럼이 페이드 아웃된다 */
   exiting?: boolean;
+  /** 접근성 라벨 언어 (메시지 문구는 sim 에 이미 로케일별로 들어 있다) */
+  locale?: TutorialLocale;
 }
 
 // 재생 배속 (2026-10-22 요청: 1.2배) — 아래 기준 시간을 모두 이 배율로 나눈다.
@@ -46,7 +49,13 @@ type SimState = {
 
 // 실서비스의 응답 생성 연출 재현 — 유저 버블, 마스코트 좌우 흔들림, 타이핑 스트리밍,
 // "분석 중" 말풍선. 채팅 컬럼 영역 위에 겹쳐 렌더되며 색·문구는 실캡쳐 실측값이다.
-export default function AnalysisChatSim({ sim, onDone, exiting }: AnalysisChatSimProps) {
+export default function AnalysisChatSim({
+  sim,
+  onDone,
+  exiting,
+  locale = 'ko',
+}: AnalysisChatSimProps) {
+  const t = TUTORIAL_UI_COPY[locale];
   const [state, setState] = useState<SimState>({
     done: 0,
     typed: -1,
@@ -156,7 +165,7 @@ export default function AnalysisChatSim({ sim, onDone, exiting }: AnalysisChatSi
       }}
       role="log"
       aria-live="polite"
-      aria-label="분석 진행 중"
+      aria-label={t.chatLog}
     >
     {/* 스크롤 래퍼 — 결과 카드 안착 시 실채팅 autoscroll 처럼 위로 밀어 올린다 */}
     <div
@@ -241,7 +250,7 @@ export default function AnalysisChatSim({ sim, onDone, exiting }: AnalysisChatSi
             aspectRatio: `${sim.resultCards.rect.w * CAPTURE_WIDTH} / ${sim.resultCards.rect.h * CAPTURE_HEIGHT}`,
             borderRadius: '0.6em',
           }}
-          aria-label="분석 결과 카드"
+          aria-label={t.resultCards}
         >
           {/* eslint-disable-next-line @next/next/no-img-element -- 캡쳐 크롭 표시용 */}
           <img

@@ -11,6 +11,11 @@ import {
   IconX,
 } from '@naraspace-technology/nds/icons';
 import { DAMAGE_PANEL, MAP_TOP_BARS } from '@/lib/agent-tutorial-steps';
+import {
+  TUTORIAL_UI_COPY,
+  type TutorialLocale,
+  type TutorialUiCopy,
+} from '@/lib/agent-tutorial-i18n';
 
 interface BeforeAfterSliderProps {
   beforeSrc: string;
@@ -22,6 +27,8 @@ interface BeforeAfterSliderProps {
   afterLabel: string;
   /** false 면 깜빡임 힌트를 숨긴다 (비활성 스텝에서 위젯이 유지될 때) */
   hintsEnabled?: boolean;
+  /** 패널·지도 UI 카피 언어 (2026-10-22 한/영 토글) */
+  locale?: TutorialLocale;
 }
 
 // 실서비스(mapbox-gl-compare)의 전·후 비교를 정적 캡쳐로 재현한 위젯.
@@ -36,7 +43,9 @@ export default function BeforeAfterSlider({
   beforeLabel,
   afterLabel,
   hintsEnabled = true,
+  locale = 'ko',
 }: BeforeAfterSliderProps) {
+  const t = TUTORIAL_UI_COPY[locale].map;
   const [pct, setPct] = useState(15);
   const [opacity, setOpacity] = useState<number>(DAMAGE_PANEL.defaultOpacity);
   // 조작 가능 어포던스 — 핸들은 테두리 깜빡임, 패널은 민트 점 깜빡임. 첫 조작 시 해제
@@ -118,7 +127,7 @@ export default function BeforeAfterSlider({
       onPointerUp={endDrag}
       onPointerCancel={endDrag}
       role="slider"
-      aria-label="화재 전·후 비교 슬라이더"
+      aria-label={t.sliderLabel}
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={Math.round(pct)}
@@ -181,7 +190,7 @@ export default function BeforeAfterSlider({
       >
         {/* 지도 상단 UI — 실서비스 현행 마크업 그대로 (장식용, 조작 불가).
             캡쳐의 옛 통합 바(검색+비교 겹침)는 이미지에서 지웠다 */}
-        <MapTopBars />
+        <MapTopBars copy={t} />
 
         {/* '산불 피해 보기' 패널 — 실캡쳐 위치·색 실측값으로 DOM 재현 (불투명도 실동작).
             라이브 복제(§7 예외): 아래 text-[#…] / 배경 / 심각도 swatch 는 실서비스 패널의
@@ -202,13 +211,13 @@ export default function BeforeAfterSlider({
           }}
         >
           <div className="flex items-center justify-between mb-12">
-            <span className="text-body-md-medium">산불 피해 보기</span>
+            <span className="text-body-md-medium">{t.damagePanel}</span>
             {/* 라이브 복제: 닫기 아이콘색 실측 */}
             <IconX aria-hidden className="size-16 text-[#8fa0b3]" />
           </div>
 
           <div className="flex items-center justify-between mb-6">
-            <span className="text-body-sm-medium">불투명도</span>
+            <span className="text-body-sm-medium">{t.opacity}</span>
             {/* 라이브 복제: 값 텍스트색 실측 */}
             <span className="text-body-sm-regular tabular-nums text-[#9db0c4]">{opacity}%</span>
           </div>
@@ -225,18 +234,18 @@ export default function BeforeAfterSlider({
             className={`ep-opacity-range w-full${
               panelHinted && hintsEnabled ? ' ep-opacity-hint' : ''
             }`}
-            aria-label="심각도 오버레이 불투명도"
+            aria-label={t.opacityLabel}
           />
 
           <div className="mt-12">
             {/* 라이브 복제: 라벨색 실측 */}
-            <p className="text-body-xs-regular text-[#8fa0b3] mb-4">심각도</p>
+            <p className="text-body-xs-regular text-[#8fa0b3] mb-4">{t.severity}</p>
             <div className="flex items-center gap-16">
               {(
                 [
-                  ['상', colors.high],
-                  ['중', colors.mid],
-                  ['하', colors.low],
+                  [t.severityLevels[0], colors.high],
+                  [t.severityLevels[1], colors.mid],
+                  [t.severityLevels[2], colors.low],
                 ] as const
               ).map(([label, color]) => (
                 <span key={label} className="flex items-center gap-6 text-body-sm-regular">
@@ -309,14 +318,14 @@ const LIVE_STATUS_LIGHT = {
 // (showIcon=false, solid, rounded-full leading-[16px]), 도움말·닫기 = NDS Button
 // (text, sm, iconOnly). 장식용이라 inert — 포커스·클릭·보조기술 모두 받지 않고
 // 클릭/드래그는 아래 비교 슬라이더로 통과한다.
-function MapTopBars() {
-  const { search, compare } = MAP_TOP_BARS;
+function MapTopBars({ copy }: { copy: TutorialUiCopy['map'] }) {
+  const { compare } = MAP_TOP_BARS;
   return (
     <div inert>
       <div className="absolute top-20 left-20 w-280">
         <Input
           leftIcon={<IconSearch />}
-          placeholder={search.placeholder}
+          placeholder={copy.searchPlaceholder}
           className="bg-bg-tertiary shadow-6"
           readOnly
         />
@@ -347,11 +356,11 @@ function MapTopBars() {
             </StatusChip>
             <span className="text-body-sm-medium text-text-primary">{compare.afterDate}</span>
           </div>
-          <Button variant="text" size="sm" iconOnly aria-label="비교 도움말">
+          <Button variant="text" size="sm" iconOnly aria-label={copy.compareHelp}>
             <IconInfoCircle />
           </Button>
         </div>
-        <Button variant="text" size="sm" iconOnly aria-label="비교 닫기">
+        <Button variant="text" size="sm" iconOnly aria-label={copy.compareClose}>
           <IconX />
         </Button>
       </div>
