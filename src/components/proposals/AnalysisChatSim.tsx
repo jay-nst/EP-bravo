@@ -16,14 +16,19 @@ interface AnalysisChatSimProps {
   exiting?: boolean;
 }
 
-const TYPE_MS = 26; // 글자당 타이핑 간격
-const USER_DELAY = 350; // 유저 버블 등장
-const MSG_GAP = 550; // 메시지 사이 숨 고르기
-const PENDING_MS = 1800; // "분석 중" 대기 표시 시간
-const DONE_HOLD_MS = 900; // 완료 메시지를 읽을 시간 (결과 카드 없을 때의 전환 대기)
-const CARDS_ENTER_MS = 450; // 결과 카드 등장 애니메이션을 기다리는 시간
-const SCROLL_MS = 600; // 채팅 스크롤업 (실채팅 autoscroll 재현)
-const CARDS_HOLD_MS = 800; // 스크롤 후 카드가 제자리에 안착한 걸 보여주는 시간
+// 재생 배속 (2026-10-22 요청: 1.2배) — 아래 기준 시간을 모두 이 배율로 나눈다.
+// SCROLL_MS 를 바꾸면 tutorial.css 의 .ep-chat-scroll transition 도 맞출 것.
+const SPEED = 1.2;
+const scaled = (ms: number) => Math.round(ms / SPEED);
+
+const TYPE_MS = scaled(26); // 글자당 타이핑 간격
+const USER_DELAY = scaled(350); // 유저 버블 등장
+const MSG_GAP = scaled(550); // 메시지 사이 숨 고르기
+const PENDING_MS = scaled(1800); // "분석 중" 대기 표시 시간
+const DONE_HOLD_MS = scaled(900); // 완료 메시지를 읽을 시간 (결과 카드 없을 때의 전환 대기)
+const CARDS_ENTER_MS = scaled(450); // 결과 카드 등장 애니메이션을 기다리는 시간
+const SCROLL_MS = scaled(600); // 채팅 스크롤업 (실채팅 autoscroll 재현)
+const CARDS_HOLD_MS = scaled(800); // 스크롤 후 카드가 제자리에 안착한 걸 보여주는 시간
 
 /** 채팅 컬럼의 스테이지 % 좌표 — 캡쳐(loading-1.png) 실측값 */
 const COLUMN = { x: 16.25, y: 5.6, w: 25, h: 80.8 } as const;
