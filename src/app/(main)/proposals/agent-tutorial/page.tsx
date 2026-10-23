@@ -34,8 +34,10 @@ export default function AgentTutorialProposalPage() {
     window.history.replaceState(null, '', url);
   }, []);
 
+  // w-full: 부모 main 이 flex-col 이라 mx-auto 만 두면 내용 폭으로 줄어든다 —
+  // 한/영 전환 때 안내 문구 길이에 따라 데모 크기가 바뀌던 원인
   return (
-    <div className="max-w-6xl mx-auto px-24 py-40">
+    <div className="w-full max-w-6xl mx-auto px-24 py-40">
       <div className="hidden xl:block">
         <AgentTutorialDemo locale={locale} onLocaleChange={changeLocale} />
       </div>

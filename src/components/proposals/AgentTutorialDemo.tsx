@@ -342,46 +342,19 @@ export default function AgentTutorialDemo({
             : ''
         }
       >
-      {/* 스텝 인디케이터 — 진행 가시화 (완주율 모범사례). 전체화면에서는 화면 위
-          크롬을 없애고 팝오버의 진행 표시(n / 6)로 대신한다 */}
-      {!fullscreen && (
-      <div className="flex items-center justify-between mb-12">
-        <ol className="flex items-center gap-8" aria-label={t.stepsLabel}>
-          {TUTORIAL_STEPS.map((s, i) => {
-            const active = phase !== 'idle' && i === stepIndex;
-            const passed = phase !== 'idle' && i < stepIndex;
-            return (
-              <li key={s.id} className="flex items-center gap-8">
-                <span
-                  className={`flex items-center justify-center size-28 rounded-full text-body-sm-regular tabular-nums transition-colors ${
-                    active
-                      ? 'bg-bg-interactive-primary text-text-inverse'
-                      : passed
-                        ? 'bg-bg-primary text-text-primary inset-ring-1 inset-ring-border-tertiary'
-                        : 'text-text-tertiary inset-ring-1 inset-ring-border-tertiary'
-                  }`}
-                  aria-current={active ? 'step' : undefined}
-                >
-                  {i + 1}
-                </span>
-                {i < TUTORIAL_STEPS.length - 1 && (
-                  <span className="w-16 h-px bg-border-tertiary" aria-hidden />
-                )}
-              </li>
-            );
-          })}
-        </ol>
-        {onLocaleChange && (
-          <Tabs.Root
-            value={locale}
-            onValueChange={(v) => onLocaleChange(v === 'en' ? 'en' : 'ko')}
-          >
-            <Tabs.List aria-label={t.languageLabel}>
-              <Tabs.Tab value="ko">한국어</Tabs.Tab>
-              <Tabs.Tab value="en">English</Tabs.Tab>
-            </Tabs.List>
-          </Tabs.Root>
-        )}
+      {/* 한/영 전환 — 시작 전·종료 후에만. 스텝 인디케이터(1-6)는 2026-10-23 요청으로 제거
+          (팝오버의 n / 6 진행 표시만 남김) */}
+      {!fullscreen && onLocaleChange && (
+      <div className="flex items-center justify-end mb-12">
+        <Tabs.Root
+          value={locale}
+          onValueChange={(v) => onLocaleChange(v === 'en' ? 'en' : 'ko')}
+        >
+          <Tabs.List aria-label={t.languageLabel}>
+            <Tabs.Tab value="ko">한국어</Tabs.Tab>
+            <Tabs.Tab value="en">English</Tabs.Tab>
+          </Tabs.List>
+        </Tabs.Root>
       </div>
       )}
 
@@ -559,12 +532,6 @@ export default function AgentTutorialDemo({
         />
       </div>
       </div>
-
-      <p className="mt-8 text-body-xs-regular text-text-tertiary">
-        {t.captureNote}
-        {(phase === 'done' || (phase === 'idle' && dismissed)) &&
-          `${t.reopenNote}${dismissed ? t.dismissedNote : ''}`}
-      </p>
     </div>
   );
 }
