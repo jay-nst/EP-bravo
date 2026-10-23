@@ -230,23 +230,6 @@ export default function AgentTutorialDemo({
     );
   }, [stepIndex, steps]);
 
-  // 분석 연출 건너뛰기 (2026-10-19 피그마 리뷰: 재생 시간이 길다) — 채팅 시뮬레이션을
-  // 끊고 결과 카드가 나온 다음 스텝으로 바로 넘어간다. phase 가 바뀌면 시뮬레이션이
-  // 언마운트되며 자체 타이머를 정리한다.
-  const skipAnalysis = useCallback(() => {
-    const d = driverRef.current;
-    if (!d) return;
-    const timers = loadingTimersRef.current;
-    timers.forEach(clearTimeout);
-    timers.length = 0;
-    const next = stepIndex + 1;
-    setCapture(steps[next].capture);
-    setChatExiting(false);
-    setPhase('running');
-    d.drive(next);
-    trackEvent('cta_click', 'agent_tutorial_demo_analysis_skipped', {});
-  }, [stepIndex, steps]);
-
   // 스텝 진행 — 로딩 연출이 있으면 재생 후, 없으면 즉시 다음 스텝으로.
   // 마지막 스텝에서는 driver 내부 destroy → onDestroyStarted → 가입 모달로 이어진다.
   const advanceStep = useCallback(
@@ -465,25 +448,6 @@ export default function AgentTutorialDemo({
             exiting={chatExiting}
             locale={locale}
           />
-        )}
-
-        {/* 분석 연출 안내 + 건너뛰기 — 지도 영역 상단, 검색창 아래 (피그마 댓글 위치) */}
-        {chatSim?.skipNotice && !chatExiting && (
-          <div
-            role="status"
-            className="absolute z-10 flex items-center gap-12 rounded-full bg-bg-secondary py-4 pl-16 pr-4 shadow-6 inset-ring-1 inset-ring-border-tertiary"
-            style={{ left: '43.5%', top: '13.5%' }}
-          >
-            <span className="text-body-sm-regular text-text-secondary">{chatSim.skipNotice}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={skipAnalysis}
-              className="rounded-full text-text-primary inset-ring-border-tertiary not-data-disabled:not-aria-invalid:hover:bg-bg-tertiary not-data-disabled:not-aria-invalid:hover:inset-ring-border-tertiary"
-            >
-              {t.skip}
-            </Button>
-          </div>
         )}
 
         {/* 튜토리얼 재진입 — Agent 첫 화면 빈 상태 안내문 아래 (2026-10-19 피그마 리뷰).

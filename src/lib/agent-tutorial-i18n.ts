@@ -67,7 +67,6 @@ export const STEP_COPY_EN: Record<string, StepCopy> = {
       ],
       pendingLabel: 'Analyzing',
       doneMessage: 'Analysis complete: total burned area 6,670.3 ha within the analyzed extent.',
-      skipNotice: "You're watching an example analysis.",
     },
   },
   'analysis-result': {

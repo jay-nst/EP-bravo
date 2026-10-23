@@ -72,8 +72,8 @@ export interface TutorialChatSim {
    */
   resultCards?: { capture: string; rect: TutorialHotspot };
   /**
-   * 재생 중 안내 + 건너뛰기 (2026-10-19 피그마 리뷰: 재생 시간이 길다) —
-   * 건너뛰면 결과 카드가 나온 다음 스텝으로 바로 넘어간다.
+   * 재생 중 안내 + 건너뛰기 (2026-10-19 피그마 리뷰) — 2026-10-23 요청으로 화면에서
+   * 제거했다(한·영 공통). 필드만 남겨 두며 현재 어디서도 렌더링하지 않는다.
    */
   skipNotice?: string;
 }
@@ -166,7 +166,6 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
         capture: `${CAPTURE_BASE}/step2-premap.png`,
         rect: { x: 20.5, y: 10.5, w: 19.5, h: 36 },
       },
-      skipNotice: '분석 예시를 보여드리고 있습니다.',
     },
   },
   {
