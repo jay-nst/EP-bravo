@@ -1,0 +1,243 @@
+/* EP Agent 튜토리얼 — driver.js 말풍선 테마 + 상단 컨트롤 + 클릭 유도 펄스
+   driver.css 다음에 import 한다. 색은 아래 변수만 서비스 디자인 토큰으로 바꾸면 된다
+   (기본값 = agent.ep.naraspace.com 다크 테마 실측값). */
+
+:root {
+  --agent-tour-surface: #101f2f; /* 말풍선·컨트롤 배경 */
+  --agent-tour-surface-hover: #1a2d42;
+  --agent-tour-border: #24405b;
+  --agent-tour-text: #eff0f1;
+  --agent-tour-text-secondary: #bcc3cc;
+  --agent-tour-text-muted: #7d828a;
+  --agent-tour-accent: #35d9c0; /* 민트 — 다음 버튼·안내 문구·펄스 */
+  --agent-tour-on-accent: #0d1a26;
+}
+
+/* ── 말풍선 ─────────────────────────────────────────────── */
+
+.driver-popover.agent-tour-popover {
+  background: var(--agent-tour-surface);
+  color: var(--agent-tour-text);
+  border-radius: 12px;
+  box-shadow:
+    inset 0 0 0 1px var(--agent-tour-border),
+    0 8px 32px rgba(0, 0, 0, 0.5);
+  padding: 16px;
+  max-width: 380px;
+  font-family: inherit;
+}
+
+.agent-tour-popover .driver-popover-title {
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 28px;
+  color: var(--agent-tour-text);
+  /* X 버튼 자리 — 긴 제목이 X 밑으로 흘러들지 않게 */
+  padding-right: 40px;
+}
+
+.agent-tour-popover .driver-popover-description {
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: -0.2px;
+  color: var(--agent-tour-text-secondary);
+}
+
+.agent-tour-popover .driver-popover-progress-text {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--agent-tour-text-muted);
+}
+
+/* 다음 = 민트 채움, 이전 = 외곽선 */
+.agent-tour-popover .driver-popover-navigation-btns button {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  min-height: 32px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  border: none;
+  text-shadow: none;
+  background: var(--agent-tour-accent);
+  color: var(--agent-tour-on-accent);
+  transition: opacity 0.15s ease-out;
+}
+
+.agent-tour-popover .driver-popover-navigation-btns button:hover {
+  background: var(--agent-tour-accent);
+  opacity: 0.85;
+}
+
+.agent-tour-popover .driver-popover-navigation-btns button.driver-popover-prev-btn {
+  background: transparent;
+  color: var(--agent-tour-text);
+  box-shadow: inset 0 0 0 1px var(--agent-tour-text-muted);
+}
+
+.agent-tour-popover .driver-popover-navigation-btns button.driver-popover-prev-btn:hover {
+  background: var(--agent-tour-surface-hover);
+  box-shadow: inset 0 0 0 1px var(--agent-tour-text);
+  opacity: 1;
+}
+
+/* 닫기(X) — 디자인 리뷰: 기본 X 가 너무 작다 → 32px 히트 영역 + 24px 아이콘 */
+.agent-tour-popover .driver-popover-close-btn {
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 0;
+  line-height: 0;
+  color: var(--agent-tour-text);
+  background: transparent;
+}
+
+.agent-tour-popover .driver-popover-close-btn::before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  background-color: currentColor;
+  -webkit-mask: var(--agent-tour-icon-x) center / contain no-repeat;
+  mask: var(--agent-tour-icon-x) center / contain no-repeat;
+}
+
+/* driver.css 는 :focus 에 라이트 테마용 어두운 색을 입힌다 — 다크 말풍선에서 X 가 사라짐 */
+.agent-tour-popover .driver-popover-close-btn:hover,
+.agent-tour-popover .driver-popover-close-btn:focus {
+  color: var(--agent-tour-text);
+  background: var(--agent-tour-surface-hover);
+}
+
+.agent-tour-popover .driver-popover-close-btn:focus-visible {
+  outline: 2px solid var(--agent-tour-accent);
+  outline-offset: 2px;
+}
+
+.agent-tour-popover .driver-popover-arrow-side-left.driver-popover-arrow {
+  border-left-color: var(--agent-tour-surface);
+}
+.agent-tour-popover .driver-popover-arrow-side-right.driver-popover-arrow {
+  border-right-color: var(--agent-tour-surface);
+}
+.agent-tour-popover .driver-popover-arrow-side-top.driver-popover-arrow {
+  border-top-color: var(--agent-tour-surface);
+}
+.agent-tour-popover .driver-popover-arrow-side-bottom.driver-popover-arrow {
+  border-bottom-color: var(--agent-tour-surface);
+}
+
+/* 액션 안내 (› 아이콘 + 민트 문구) */
+.agent-tour-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+  margin-top: 8px;
+  color: var(--agent-tour-accent);
+}
+
+.agent-tour-hint-arrow {
+  flex-shrink: 0;
+  width: 20px;
+  height: 24px;
+  background-color: currentColor;
+  -webkit-mask: var(--agent-tour-icon-chevron) center / 20px 20px no-repeat;
+  mask: var(--agent-tour-icon-chevron) center / 20px 20px no-repeat;
+}
+
+.agent-tour-popover {
+  --agent-tour-icon-x: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M17.5095 5.2047C17.8681 4.91217 18.3979 4.93295 18.7322 5.2672L18.7947 5.33654C19.0677 5.67127 19.0677 6.15512 18.7947 6.48986L18.7322 6.55822L13.2908 11.9996L18.7322 17.441C19.0887 17.7975 19.0885 18.3755 18.7322 18.732C18.3756 19.0886 17.7977 19.0886 17.4412 18.732L11.9998 13.2906L6.55835 18.732C6.22405 19.0663 5.69432 19.0881 5.33569 18.7955L5.26733 18.732C4.91082 18.3755 4.91079 17.7976 5.26733 17.441L10.7087 11.9996L5.26733 6.55822C4.91077 6.20165 4.91077 5.62377 5.26733 5.2672L5.33569 5.2047C5.69432 4.91215 6.22405 4.9329 6.55835 5.2672L11.9998 10.7086L17.4412 5.2672L17.5095 5.2047Z'/%3E%3C/svg%3E");
+  --agent-tour-icon-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M11.3787 17.7708C11.0633 18.0765 10.552 18.0765 10.2365 17.7708C9.92117 17.4652 9.92113 16.9698 10.2365 16.6642L15.0502 12L10.2365 7.33592C9.92118 7.03029 9.92113 6.53486 10.2365 6.22925C10.552 5.92364 11.0633 5.92368 11.3787 6.22925L16.7634 11.4467C17.0789 11.7523 17.0789 12.2477 16.7634 12.5534L11.3787 17.7708Z'/%3E%3C/svg%3E");
+}
+
+/* ── 상단 우측 [다시 보지 않기] [닫기] ───────────────────── */
+
+.agent-tour-controls {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1000000001; /* driver 오버레이(1e9) 위 */
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 4px 4px 16px;
+  border-radius: 9999px;
+  background: var(--agent-tour-surface);
+  box-shadow:
+    inset 0 0 0 1px var(--agent-tour-border),
+    0 4px 10px rgba(0, 0, 0, 0.32);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--agent-tour-text-secondary);
+}
+
+/* driver.css 의 `.driver-active * { pointer-events: none }` 를 이 영역만 푼다 */
+.driver-active .agent-tour-controls,
+.driver-active .agent-tour-controls * {
+  pointer-events: auto !important;
+}
+
+.agent-tour-controls label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.agent-tour-controls input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--agent-tour-accent);
+}
+
+.agent-tour-controls button {
+  min-height: 32px;
+  padding: 4px 12px;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--agent-tour-text-muted);
+  box-shadow: inset 0 0 0 1px var(--agent-tour-border);
+  font: inherit;
+  cursor: pointer;
+}
+
+.agent-tour-controls button:hover {
+  color: var(--agent-tour-text);
+  background: var(--agent-tour-surface-hover);
+}
+
+/* ── 클릭 대상 시선 유도 펄스 (useAgentTour 가 클래스를 붙인다) ── */
+
+.agent-tour-pulse {
+  animation: agent-tour-pulse 1.6s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@keyframes agent-tour-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px var(--agent-tour-accent),
+      0 0 12px 2px rgba(53, 217, 192, 0.45);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px var(--agent-tour-accent),
+      0 0 22px 6px rgba(53, 217, 192, 0.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-tour-pulse {
+    animation: none;
+    box-shadow: 0 0 0 2px var(--agent-tour-accent);
+  }
+}
