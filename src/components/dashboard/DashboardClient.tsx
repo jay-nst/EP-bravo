@@ -34,6 +34,7 @@ const PLATFORMS = [
 
 const PLATFORM_TYPES = new Set<FeedType>(['citadel', 'predict', 'warden', 'northpaper']);
 
+
 const PLATFORM_HREF: Record<string, string> = {
   citadel: '/citadel',
   predict: '/predict',
@@ -204,23 +205,32 @@ export default function DashboardClient() {
       <BreakingStrip items={feedItems} />
 
       {/* ===== FEATURED HERO (Bloomberg-style) ===== */}
-      <section className="dark relative overflow-hidden cursor-pointer min-h-280 md:min-h-400 bg-bg-secondary border-b border-border-tertiary">
+      {/* 테마 추종 (2026-10-22): 라이트는 NDS 라이트 토큰 + 글자 영역만 밝은 페이드, 다크는 기존 모습 그대로 */}
+      <section className="relative overflow-hidden cursor-pointer min-h-280 md:min-h-400 bg-bg-secondary border-b border-border-tertiary">
         {/* Satellite background image */}
+        {/* 다크 0.45 그대로, 라이트는 밝은 배경에서 회색으로 바래지 않게 더 선명하게 */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-0 pointer-events-none opacity-45 [:root:not(.dark)_&]:opacity-90"
           style={{
             backgroundImage: 'url(https://earthpaper.s3.ap-northeast-2.amazonaws.com/post/v2/editor/48/en-20260430-north-korea-nampo-port-and-nampo-shipyard.png)',
             backgroundSize: 'cover',
             backgroundPosition: 'center 40%',
-            opacity: 0.45,
           }}
         />
-        {/* Left-side gradient overlay for text readability (운영 색, §8) */}
+        {/* Left-side gradient overlay for text readability (운영 색, §8) — 다크 전용 */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-0 pointer-events-none [:root:not(.dark)_&]:hidden"
           style={{
             background:
               'linear-gradient(to right, rgba(14,14,16,0.97) 0%, rgba(14,14,16,0.82) 45%, rgba(14,14,16,0.4) 75%, rgba(14,14,16,0.25) 100%)',
+          }}
+        />
+        {/* 라이트 전용 — 글자 영역만 밝히고 오른쪽 사진은 덮지 않는다 (전체 페이드는 사진이 흐려 보임) */}
+        <div
+          className="absolute inset-0 pointer-events-none hidden [:root:not(.dark)_&]:block"
+          style={{
+            background:
+              'linear-gradient(to right, color-mix(in srgb, var(--bg-tertiary) 88%, transparent) 0%, color-mix(in srgb, var(--bg-tertiary) 72%, transparent) 50%, color-mix(in srgb, var(--bg-tertiary) 15%, transparent) 65%, transparent 75%)',
           }}
         />
         {/* Subtle scanline texture (운영 색, §8) */}
@@ -245,7 +255,7 @@ export default function DashboardClient() {
               <h1 className="text-heading-3xl md:text-display-md text-text-primary mb-12 md:mb-16 max-w-2xl">
                 {editorPick.title}
               </h1>
-              <p className="text-body-md-regular text-text-tertiary max-w-xl mb-20 md:mb-24">
+              <p className="text-body-md-regular text-text-tertiary [:root:not(.dark)_&]:text-text-primary max-w-xl mb-20 md:mb-24">
                 {editorPick.description}
               </p>
               <div className="flex items-center gap-12 md:gap-16 flex-wrap">
@@ -257,9 +267,9 @@ export default function DashboardClient() {
                 >
                   인터랙티브
                 </StatusChip>
-                <span className="text-body-xs-regular text-text-tertiary tabular-nums">6분 읽기</span>
-                <span className="text-body-xs-regular text-text-tertiary hidden sm:inline">{editorPick.source}</span>
-                <span className="text-body-xs-regular text-text-tertiary tabular-nums">
+                <span className="text-body-xs-regular text-text-tertiary [:root:not(.dark)_&]:text-text-secondary tabular-nums">6분 읽기</span>
+                <span className="text-body-xs-regular text-text-tertiary [:root:not(.dark)_&]:text-text-secondary hidden sm:inline">{editorPick.source}</span>
+                <span className="text-body-xs-regular text-text-tertiary [:root:not(.dark)_&]:text-text-secondary tabular-nums">
                   {new Date(editorPick.published_at).toLocaleDateString('ko-KR')}
                 </span>
               </div>
