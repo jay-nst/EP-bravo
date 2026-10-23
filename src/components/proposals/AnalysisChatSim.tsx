@@ -19,19 +19,29 @@ interface AnalysisChatSimProps {
   locale?: TutorialLocale;
 }
 
-// 재생 배속 (2026-10-22 요청: 1.2배) — 아래 기준 시간을 모두 이 배율로 나눈다.
-// SCROLL_MS 를 바꾸면 tutorial.css 의 .ep-chat-scroll transition 도 맞출 것.
-const SPEED = 1.2;
-const scaled = (ms: number) => Math.round(ms / SPEED);
+// 재생 배속 — 아래 기준 시간을 모두 이 배율로 나눈다. 한국어 1.2배(2026-10-22 요청),
+// 영어 2배(2026-10-23 요청: 영문은 메시지가 길어 글자 수가 많다).
+// 스크롤업 시간은 .ep-chat-scroll transition 에 CSS 변수(--ep-chat-scroll-ms)로 넘긴다.
+const SPEED: Record<TutorialLocale, number> = { ko: 1.2, en: 2 };
 
-const TYPE_MS = scaled(26); // 글자당 타이핑 간격
-const USER_DELAY = scaled(350); // 유저 버블 등장
-const MSG_GAP = scaled(550); // 메시지 사이 숨 고르기
-const PENDING_MS = scaled(1800); // "분석 중" 대기 표시 시간
-const DONE_HOLD_MS = scaled(900); // 완료 메시지를 읽을 시간 (결과 카드 없을 때의 전환 대기)
-const CARDS_ENTER_MS = scaled(450); // 결과 카드 등장 애니메이션을 기다리는 시간
-const SCROLL_MS = scaled(600); // 채팅 스크롤업 (실채팅 autoscroll 재현)
-const CARDS_HOLD_MS = scaled(800); // 스크롤 후 카드가 제자리에 안착한 걸 보여주는 시간
+function chatTiming(speed: number) {
+  const scaled = (ms: number) => Math.round(ms / speed);
+  return {
+    TYPE_MS: scaled(26), // 글자당 타이핑 간격
+    USER_DELAY: scaled(350), // 유저 버블 등장
+    MSG_GAP: scaled(550), // 메시지 사이 숨 고르기
+    PENDING_MS: scaled(1800), // "분석 중" 대기 표시 시간
+    DONE_HOLD_MS: scaled(900), // 완료 메시지를 읽을 시간 (결과 카드 없을 때의 전환 대기)
+    CARDS_ENTER_MS: scaled(450), // 결과 카드 등장 애니메이션을 기다리는 시간
+    SCROLL_MS: scaled(600), // 채팅 스크롤업 (실채팅 autoscroll 재현)
+    CARDS_HOLD_MS: scaled(800), // 스크롤 후 카드가 제자리에 안착한 걸 보여주는 시간
+  };
+}
+
+const CHAT_TIMING: Record<TutorialLocale, ReturnType<typeof chatTiming>> = {
+  ko: chatTiming(SPEED.ko),
+  en: chatTiming(SPEED.en),
+};
 
 /** 채팅 컬럼의 스테이지 % 좌표 — 캡쳐(loading-1.png) 실측값 */
 const COLUMN = { x: 16.25, y: 5.6, w: 25, h: 80.8 } as const;
@@ -56,6 +66,7 @@ export default function AnalysisChatSim({
   locale = 'ko',
 }: AnalysisChatSimProps) {
   const t = TUTORIAL_UI_COPY[locale];
+  const timing = CHAT_TIMING[locale];
   const [state, setState] = useState<SimState>({
     done: 0,
     typed: -1,
@@ -82,6 +93,17 @@ export default function AnalysisChatSim({
       new Promise<void>((resolve) => {
         timers.push(setTimeout(resolve, ms));
       });
+
+    const {
+      TYPE_MS,
+      USER_DELAY,
+      MSG_GAP,
+      PENDING_MS,
+      DONE_HOLD_MS,
+      CARDS_ENTER_MS,
+      SCROLL_MS,
+      CARDS_HOLD_MS,
+    } = timing;
 
     void (async () => {
       await wait(USER_DELAY);
@@ -141,7 +163,7 @@ export default function AnalysisChatSim({
       cancelled = true;
       timers.forEach(clearTimeout);
     };
-  }, [sim]);
+  }, [sim, timing]);
 
   const typingMsg = state.typed >= 0 ? sim.agentMessages[state.done] : null;
 
@@ -174,6 +196,7 @@ export default function AnalysisChatSim({
         gap: '1.4em',
         padding: '2.4em 1.8em 0 2.1em',
         transform: `translateY(${-scrollY}px)`,
+        ['--ep-chat-scroll-ms' as string]: `${timing.SCROLL_MS}ms`,
       }}
     >
       {/* 유저 버블 (우측 정렬, 크림색 — 실측) */}

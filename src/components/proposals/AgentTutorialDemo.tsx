@@ -7,19 +7,17 @@ import 'driver.js/dist/driver.css';
 import { Button, Checkbox, Field, Tabs } from '@naraspace-technology/nds/components';
 import { IconPlay } from '@naraspace-technology/nds/icons';
 import {
-  HIGHLIGHT_STEPS,
   TUTORIAL_STEPS,
   CAPTURE_WIDTH,
   CAPTURE_HEIGHT,
   CHAT_COLORS,
   COMPARE_ASSETS,
-  ARTICLE_ASSETS,
-  TOUR_ENTRY,
   type TutorialHotspot,
 } from '@/lib/agent-tutorial-steps';
 import { isTutorialDismissed, saveTutorialDismissed } from '@/lib/agent-tutorial-dismiss';
 import {
   HIGHLIGHT_STEPS_BY_LOCALE,
+  TUTORIAL_SCREEN_ASSETS,
   TUTORIAL_UI_COPY,
   type TutorialLocale,
 } from '@/lib/agent-tutorial-i18n';
@@ -47,12 +45,14 @@ export default function AgentTutorialDemo({
   locale = 'ko',
   onLocaleChange,
 }: AgentTutorialDemoProps = {}) {
-  // 문구만 로케일별 — 좌표·캡쳐는 두 로케일이 같아서 HIGHLIGHT_STEPS 를 그대로 써도 된다
+  // 문구·캡쳐·좌표 모두 로케일별 (2026-10-23 영문 실화면 재캡쳐). 모듈 레벨 상수라
+  // 로케일이 같으면 참조가 유지된다
   const steps = HIGHLIGHT_STEPS_BY_LOCALE[locale];
+  const screen = TUTORIAL_SCREEN_ASSETS[locale];
   const t = TUTORIAL_UI_COPY[locale];
   const [phase, setPhase] = useState<DemoPhase>('idle');
   const [stepIndex, setStepIndex] = useState(0);
-  const [capture, setCapture] = useState(HIGHLIGHT_STEPS[0].capture);
+  const [capture, setCapture] = useState(steps[0].capture);
   // driverRef 는 투어 진행 중에만 non-null — openModal/언마운트에서 null 로 되돌린다.
   const driverRef = useRef<Driver | null>(null);
   const loadingTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -100,13 +100,13 @@ export default function AgentTutorialDemo({
       setDismissed(true);
     }
     setChatExiting(false);
-    setCapture(HIGHLIGHT_STEPS[0].capture);
+    setCapture(steps[0].capture);
     setStepIndex(0);
     setPhase('done');
     trackEvent('cta_click', 'agent_tutorial_demo_closed', {
       dont_show_again: dontShowAgainRef.current,
     });
-  }, []);
+  }, [steps]);
 
   const startTour = useCallback(() => {
     driverRef.current?.destroy();
@@ -162,7 +162,7 @@ export default function AgentTutorialDemo({
     });
 
     driverRef.current = d;
-    setCapture(HIGHLIGHT_STEPS[0].capture);
+    setCapture(steps[0].capture);
     setStepIndex(0);
     setPhase('running');
     trackEvent('cta_click', 'agent_tutorial_demo_started', {});
@@ -175,7 +175,7 @@ export default function AgentTutorialDemo({
   // 로딩 연출: driver 오버레이를 잠시 내리고, 실제 대화가 차오르는 화면 캡쳐를
   // 순서대로 전환한 뒤 다음 스텝에서 투어를 재개한다. 별도 UI 없이 실화면만 쓴다.
   const runLoadingThen = useCallback((index: number) => {
-    const step = HIGHLIGHT_STEPS[index];
+    const step = steps[index];
     const loading = step.loadingAfter;
     const d = driverRef.current;
     if (!d || !loading) return;
@@ -198,18 +198,18 @@ export default function AgentTutorialDemo({
         d.drive(index + 1); // onHighlightStarted 가 캡쳐·인디케이터를 갱신한다
       }, at),
     );
-  }, []);
+  }, [steps]);
 
   // 채팅 시뮬레이션 (타이핑 스트리밍) — 배경 캡쳐로 바꾸고 driver 를 잠시 내린다.
   // 완료 콜백(handleChatSimDone)에서 다음 스텝으로 재개한다.
   const runChatSim = useCallback((index: number) => {
-    const step = HIGHLIGHT_STEPS[index];
+    const step = steps[index];
     const d = driverRef.current;
     if (!d || !step.loadingChat) return;
     d.destroy();
     setCapture(step.loadingChat.background);
     setPhase('analyzing');
-  }, []);
+  }, [steps]);
 
   // 채팅 → 결과 전환은 2단계: ① 배경을 먼저 다음 캡쳐로 크로스페이드 — 채팅
   // 컬럼은 오버레이가 덮고 있어 지도 영역만 바뀐다 (loading 캡쳐에 구워진 옛
@@ -219,7 +219,7 @@ export default function AgentTutorialDemo({
     const d = driverRef.current;
     if (!d) return;
     const next = stepIndex + 1; // 시뮬레이션 동안 stepIndex 는 시작 스텝에 머물러 있다
-    setCapture(HIGHLIGHT_STEPS[next].capture);
+    setCapture(steps[next].capture);
     setChatExiting(true);
     loadingTimersRef.current.push(
       setTimeout(() => {
@@ -228,7 +228,7 @@ export default function AgentTutorialDemo({
         d.drive(next);
       }, 700), // 배경 크로스페이드(350ms) + 컬럼 페이드(300ms, 350ms 지연)
     );
-  }, [stepIndex]);
+  }, [stepIndex, steps]);
 
   // 분석 연출 건너뛰기 (2026-10-19 피그마 리뷰: 재생 시간이 길다) — 채팅 시뮬레이션을
   // 끊고 결과 카드가 나온 다음 스텝으로 바로 넘어간다. phase 가 바뀌면 시뮬레이션이
@@ -240,12 +240,12 @@ export default function AgentTutorialDemo({
     timers.forEach(clearTimeout);
     timers.length = 0;
     const next = stepIndex + 1;
-    setCapture(HIGHLIGHT_STEPS[next].capture);
+    setCapture(steps[next].capture);
     setChatExiting(false);
     setPhase('running');
     d.drive(next);
     trackEvent('cta_click', 'agent_tutorial_demo_analysis_skipped', {});
-  }, [stepIndex]);
+  }, [stepIndex, steps]);
 
   // 스텝 진행 — 로딩 연출이 있으면 재생 후, 없으면 즉시 다음 스텝으로.
   // 마지막 스텝에서는 driver 내부 destroy → onDestroyStarted → 가입 모달로 이어진다.
@@ -253,15 +253,15 @@ export default function AgentTutorialDemo({
     (index: number) => {
       const d = driverRef.current;
       if (!d || d.getActiveIndex() !== index) return;
-      if (HIGHLIGHT_STEPS[index].loadingChat) {
+      if (steps[index].loadingChat) {
         runChatSim(index);
-      } else if (HIGHLIGHT_STEPS[index].loadingAfter) {
+      } else if (steps[index].loadingAfter) {
         runLoadingThen(index);
       } else {
         d.moveNext();
       }
     },
-    [runChatSim, runLoadingThen],
+    [runChatSim, runLoadingThen, steps],
   );
 
   useEffect(() => {
@@ -270,26 +270,26 @@ export default function AgentTutorialDemo({
 
   const handleHotspotClick = useCallback(
     (index: number) => {
-      const s = HIGHLIGHT_STEPS[index];
+      const s = steps[index];
       // 진행 버튼(advanceHotspot)이 따로 있는 스텝은 핫스팟 클릭으로 진행하지 않는다
       if (s.action !== 'click' || s.advanceHotspot) return;
       advanceStep(index);
     },
-    [advanceStep],
+    [advanceStep, steps],
   );
 
   // 캡쳐 프리로드 — 로딩 프레임 전환이 이미지 로딩 없이 즉시 일어나야 실화면처럼 보인다
   useEffect(() => {
     const urls = new Set<string>();
-    HIGHLIGHT_STEPS.forEach((s) => {
+    steps.forEach((s) => {
       urls.add(s.capture);
       s.loadingAfter?.frames.forEach((f) => urls.add(f.capture));
     });
     urls.add(COMPARE_ASSETS.before);
     urls.add(COMPARE_ASSETS.afterBase);
     urls.add(COMPARE_ASSETS.severity);
-    ARTICLE_ASSETS.segments.forEach((seg) => urls.add(seg));
-    HIGHLIGHT_STEPS.forEach((s) => {
+    screen.articleSegments.forEach((seg) => urls.add(seg));
+    steps.forEach((s) => {
       if (s.loadingChat) urls.add(s.loadingChat.background);
     });
     urls.add('/proposals/agent-tutorial/mascot.png');
@@ -297,7 +297,7 @@ export default function AgentTutorialDemo({
       const img = new window.Image();
       img.src = u;
     });
-  }, []);
+  }, [steps, screen]);
 
   // 언마운트 시 driver 오버레이·로딩 타이머 잔재 제거
   useEffect(() => {
@@ -414,7 +414,11 @@ export default function AgentTutorialDemo({
             : {}),
         }}
       >
-        <StageCapture src={capture} alt={t.stageAlt(stepIndex + 1)} />
+        {/* 대기·종료 화면은 항상 현재 로케일의 첫 화면 — 투어 밖에서 한/영을 바꿔도 따라온다 */}
+        <StageCapture
+          src={phase === 'idle' || phase === 'done' ? steps[0].capture : capture}
+          alt={t.stageAlt(stepIndex + 1)}
+        />
 
         {/* 투명 핫스팟 — driver.js 타겟. 스텝별로 미리 깔아두고 활성 스텝만 클릭 허용 */}
         {steps.map((s, i) => (
@@ -452,7 +456,7 @@ export default function AgentTutorialDemo({
                 움직여 둔 슬라이더·불투명도가 캡쳐의 구운 상태로 점프한다 */}
             {s.widget === 'compare' &&
               phase === 'running' &&
-              (i === stepIndex || HIGHLIGHT_STEPS[stepIndex]?.capture === s.capture) && (
+              (i === stepIndex || steps[stepIndex]?.capture === s.capture) && (
               <BeforeAfterSlider
                 beforeSrc={COMPARE_ASSETS.before}
                 afterBaseSrc={COMPARE_ASSETS.afterBase}
@@ -471,7 +475,7 @@ export default function AgentTutorialDemo({
                 style={{ background: '#F2F3F7' }}
                 aria-label={t.articleLabel}
               >
-                {ARTICLE_ASSETS.segments.map((seg) => (
+                {screen.articleSegments.map((seg) => (
                   // eslint-disable-next-line @next/next/no-img-element -- 정적 캡쳐, 최적화 불필요
                   <img key={seg} src={seg} alt="" className="block w-full max-w-none" draggable={false} />
                 ))}
@@ -512,7 +516,7 @@ export default function AgentTutorialDemo({
         {/* 튜토리얼 재진입 — Agent 첫 화면 빈 상태 안내문 아래 (2026-10-19 피그마 리뷰).
             닫은 뒤, 또는 '다시 보지 않기'가 저장돼 자동 표시를 건너뛴 첫 진입에서 보인다 */}
         {(phase === 'done' || (phase === 'idle' && dismissed)) && (
-          <TourEntryButton onClick={startTour} label={t.tourEntry} />
+          <TourEntryButton onClick={startTour} label={t.tourEntry} rect={screen.tourEntryRect} />
         )}
 
         {/* 진행 클릭 버튼 — 실제 UX 의 버튼 위치를 오버레이 위에 밝게 띄운다.
@@ -651,8 +655,16 @@ function TourControls({
 // 'EP Agent 둘러보기' 재진입 버튼 — 실서비스 첫 화면 빈 상태 안내문 바로 아래에 놓일
 // DOM 을 캡쳐 위에 재현한다. 캡쳐와 같은 배율로 보이도록 글자는 cqw 로 스케일
 // (AnalysisChatSim 과 같은 방식: 14px / 1600px = 0.875cqw), 색은 캡쳐 실측 채팅 색.
-function TourEntryButton({ onClick, label }: { onClick: () => void; label: string }) {
-  const { x, y, w, h } = TOUR_ENTRY.rect;
+function TourEntryButton({
+  onClick,
+  label,
+  rect,
+}: {
+  onClick: () => void;
+  label: string;
+  rect: TutorialHotspot;
+}) {
+  const { x, y, w, h } = rect;
   return (
     <button
       type="button"

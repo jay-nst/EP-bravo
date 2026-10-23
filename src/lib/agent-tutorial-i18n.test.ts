@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { TUTORIAL_STEPS, HIGHLIGHT_STEPS, MODAL_STEP } from './agent-tutorial-steps';
 import {
   STEP_COPY_EN,
@@ -6,6 +8,8 @@ import {
   HIGHLIGHT_STEPS_BY_LOCALE,
   MODAL_STEP_BY_LOCALE,
   TUTORIAL_UI_COPY,
+  TUTORIAL_SCREEN_ASSETS,
+  CAPTURE_BASE_EN,
   parseTutorialLocale,
 } from './agent-tutorial-i18n';
 
@@ -32,23 +36,54 @@ describe('agent-tutorial-i18n', () => {
     expect(Object.keys(STEP_COPY_EN).sort()).toEqual(ids);
   });
 
-  it('영어 스텝은 문구만 다르고 좌표·캡쳐·액션은 한국어 스펙과 같다', () => {
+  it('영어 스텝은 흐름(id·액션·위젯)이 한국어 스펙과 같다', () => {
     const en = HIGHLIGHT_STEPS_BY_LOCALE.en;
     expect(en).toHaveLength(HIGHLIGHT_STEPS.length);
     en.forEach((s, i) => {
       const ko = HIGHLIGHT_STEPS[i];
       expect(s.id).toBe(ko.id);
-      expect(s.capture).toBe(ko.capture);
-      expect(s.hotspot).toEqual(ko.hotspot);
-      expect(s.advanceHotspot).toEqual(ko.advanceHotspot);
       expect(s.action).toBe(ko.action);
       expect(s.widget).toBe(ko.widget);
-      expect(s.loadingAfter).toEqual(ko.loadingAfter);
-      expect(s.loadingChat?.background).toBe(ko.loadingChat?.background);
-      expect(s.loadingChat?.resultCards).toEqual(ko.loadingChat?.resultCards);
-      // 진행 버튼 라벨은 버튼이 있는 스텝에만 붙는다
+      expect(s.loadingChat === undefined).toBe(ko.loadingChat === undefined);
+      expect(s.loadingAfter === undefined).toBe(ko.loadingAfter === undefined);
+      // 진행 버튼 라벨·위치는 버튼이 있는 스텝에만 붙는다
       expect(s.advanceLabel === undefined).toBe(ko.advanceLabel === undefined);
+      expect(s.advanceHotspot === undefined).toBe(ko.advanceHotspot === undefined);
     });
+  });
+
+  // 2026-10-23 영문 실화면 재캡쳐: 영어 모드는 한글 캡쳐를 하나도 쓰지 않아야 한다
+  // (지도 비교 위젯 자산 map-* 은 글자 없는 지도 크롭이라 예외 — STEP 캡쳐가 아니다)
+  it('영어 스텝의 캡쳐는 모두 영문 캡쳐 폴더에 있고 실제 파일이 존재한다', () => {
+    const urls = HIGHLIGHT_STEPS_BY_LOCALE.en.flatMap((s) => [
+      s.capture,
+      ...(s.loadingAfter?.frames.map((f) => f.capture) ?? []),
+      ...(s.loadingChat ? [s.loadingChat.background, s.loadingChat.resultCards?.capture ?? ''] : []),
+    ]);
+    for (const url of [...urls.filter(Boolean), ...TUTORIAL_SCREEN_ASSETS.en.articleSegments]) {
+      expect(url.startsWith(`${CAPTURE_BASE_EN}/`)).toBe(true);
+      expect(existsSync(join(process.cwd(), 'public', url))).toBe(true);
+    }
+  });
+
+  it('영어 핫스팟도 캡쳐 % 좌표계 안에 있다', () => {
+    const rects = HIGHLIGHT_STEPS_BY_LOCALE.en.flatMap((s) => [
+      s.hotspot,
+      ...(s.advanceHotspot ? [s.advanceHotspot] : []),
+      ...(s.loadingChat?.resultCards ? [s.loadingChat.resultCards.rect] : []),
+    ]);
+    for (const { x, y, w, h } of [...rects, TUTORIAL_SCREEN_ASSETS.en.tourEntryRect]) {
+      expect(x).toBeGreaterThanOrEqual(0);
+      expect(y).toBeGreaterThanOrEqual(0);
+      expect(x + w).toBeLessThanOrEqual(100);
+      expect(y + h).toBeLessThanOrEqual(100);
+    }
+  });
+
+  it('결과 카드 크롭 위치는 다음 스텝의 카드 하이라이트와 같다 (제자리 안착)', () => {
+    const [first, second] = HIGHLIGHT_STEPS_BY_LOCALE.en;
+    expect(first.loadingChat?.resultCards?.capture).toBe(second.capture);
+    expect(first.loadingChat?.resultCards?.rect).toEqual(second.hotspot);
   });
 
   it('영어 카피에 한글이 남아 있지 않다', () => {
