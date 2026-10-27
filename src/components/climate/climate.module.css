@@ -1047,3 +1047,524 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── 메탄 정보 포털 (2026-10-27, 기획 예시) ─────────────────────────────
+   승인 목업 B "에디토리얼 뉴스데스크": 토큰(--w-*)·민트 단일 강조는 그대로, 화면 문법만 정보원형으로.
+   - 섹션: 메타줄 → 왼쪽 정렬 h2 → 본문 → 출처 (가운데 정렬 거대 헤드라인 쓰지 않음)
+   - 모노 폰트는 날짜·숫자(.pNum)에만. 한글에 쓰면 자간이 깨진다 (articleFormula 와 같은 이유)
+   - 모션은 기본 페이드업(data-reveal) 1종만, h2 에는 붙이지 않는다 */
+.pInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.pNum {
+  font-family: var(--font-mono, ui-monospace, 'SFMono-Regular', Menlo, monospace);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.pMeta {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--w-muted);
+  margin-bottom: 14px;
+}
+.pH1 {
+  font-size: clamp(32px, 3.6vw, 48px);
+  text-wrap: balance;
+  font-weight: 700;
+  line-height: 1.14;
+  letter-spacing: -0.025em;
+  margin-bottom: 18px;
+}
+.pH2 {
+  font-size: clamp(30px, 3.4vw, 40px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+.pH3 {
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  margin-bottom: 14px;
+}
+.pLead {
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--w-muted);
+  max-width: 680px;
+}
+.pBody {
+  display: block;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--w-muted);
+}
+.pSource {
+  display: block;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--w-muted);
+}
+.pSource a,
+.pFooter a {
+  color: var(--w-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.pSource a:hover {
+  color: var(--w-text);
+}
+.pSource a:visited {
+  color: var(--w-faint);
+}
+
+/* 섹션 */
+.pSection {
+  padding: 96px 0;
+  background: var(--w-black);
+}
+.pSection.tileAlt {
+  background: var(--w-tile);
+}
+.pHead {
+  margin-bottom: 48px;
+  max-width: 760px;
+}
+.pSub {
+  margin-top: 72px;
+}
+.pSub .article {
+  margin: 0;
+}
+
+/* 첫 화면 */
+.pHero {
+  padding: 56px 0 88px;
+  background: var(--w-black);
+  border-bottom: 1px solid var(--w-hair);
+}
+.pHeroGrid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  grid-template-areas:
+    'head news'
+    'stats news'
+    'video slot';
+  /* 뉴스 열이 head·stats 두 줄에 걸쳐 길어지면 남는 높이를 stats 줄이 받는다 (head 아래 빈틈 방지) */
+  grid-template-rows: auto 1fr auto;
+  gap: 24px 56px;
+  align-items: start;
+}
+.pHeroHead { grid-area: head; }
+.pStats { grid-area: stats; }
+.pVideo { grid-area: video; }
+.pNews { grid-area: news; }
+.pSlot { grid-area: slot; }
+
+.pStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.pStat,
+.pFact {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px;
+  border-radius: 12px;
+  background: var(--w-card);
+}
+.tileAlt .pFact {
+  background: var(--w-card-on-tile);
+}
+.pStatValue {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--w-text);
+}
+.pUnit {
+  font-family: inherit;
+  font-size: 0.45em;
+  font-weight: 600;
+  margin-left: 4px;
+}
+.pStatLabel {
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--w-text);
+}
+
+.pVideo {
+  margin: 0;
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--w-tile);
+}
+.pVideo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 24px 24px 56px;
+}
+.pVideo figcaption {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 16px;
+  font-size: 14px;
+  color: var(--w-text);
+}
+.pVideoNote {
+  display: block;
+  font-size: 12px;
+  color: var(--w-muted);
+}
+
+.pNewsHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  border-bottom: 1px solid var(--w-hair);
+  padding-bottom: 6px;
+}
+.pNewsHead .pH3 {
+  margin-bottom: 0;
+}
+.pNewsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.pNewsList li {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--w-hair);
+}
+.pNewsMeta {
+  display: block;
+  font-size: 13px;
+  color: var(--w-muted);
+  margin-bottom: 6px;
+}
+.pNewsTitle {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--w-text);
+  text-decoration: none;
+}
+.pNewsTitle:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.pNewsTitle:visited {
+  color: var(--w-body);
+}
+.pNewsTitle:focus-visible,
+.pResources a:focus-visible {
+  outline: 2px solid var(--w-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.pNewsSummary {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--w-muted);
+  margin-top: 4px;
+}
+.pTag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.6;
+  padding: 0 8px;
+  margin-right: 8px;
+  border-radius: 999px;
+  color: var(--w-accent);
+  background: color-mix(in srgb, var(--w-accent) 14%, transparent);
+  vertical-align: 2px;
+}
+
+.pSlot {
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px dashed var(--w-hair);
+}
+.pSlotLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--w-accent);
+  margin-bottom: 6px;
+}
+.pSlotBody {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--w-text);
+  margin-bottom: 4px;
+}
+
+/* 한국의 메탄 */
+.pSplit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+}
+.pBars {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+  display: grid;
+  gap: 14px;
+}
+.pBars li {
+  display: grid;
+  grid-template-columns: 64px 1fr 64px;
+  gap: 14px;
+  align-items: center;
+}
+.pBarLabel {
+  font-size: 15px;
+  color: var(--w-text);
+}
+.pBarTrack {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--w-hair);
+  overflow: hidden;
+}
+.pBarFill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--w-accent);
+}
+.pBarValue {
+  font-size: 15px;
+  text-align: right;
+  color: var(--w-text);
+}
+.pSplit .pFact {
+  margin-top: 32px;
+}
+
+/* 단계 목록 */
+.pSteps {
+  list-style: none;
+  padding: 0;
+  margin: 28px 0 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.pSplit .pSteps {
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+.pSteps4 {
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 48px;
+}
+.pSteps li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 1px solid var(--w-hair);
+  padding-top: 14px;
+}
+.pStepKey {
+  font-size: 13px;
+  color: var(--w-accent);
+}
+.pStepTitle {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--w-text);
+}
+
+/* 사실 카드 줄 */
+.pFacts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+/* 그림 */
+.pFigures {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+.pFigure {
+  margin: 0;
+}
+.pFigure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  background: #000;
+}
+.pFigure figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.pNotes {
+  list-style: none;
+  padding: 0;
+  margin: 40px 0 0;
+  display: grid;
+  gap: 6px;
+  max-width: 760px;
+}
+.pNotes li {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--w-muted);
+  padding-left: 14px;
+  position: relative;
+}
+.pNotes li::before {
+  content: '·';
+  position: absolute;
+  left: 2px;
+}
+
+/* 데이터 요청 · 리소스 · 푸터 */
+.pRequest {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 24px 56px;
+  align-items: end;
+}
+.pRequest .pHead {
+  margin-bottom: 0;
+}
+.pRequestAction {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+.pResources {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid var(--w-hair);
+}
+.pResources li {
+  border-bottom: 1px solid var(--w-hair);
+}
+.pResources a {
+  display: grid;
+  grid-template-columns: 260px 140px 1fr;
+  gap: 16px;
+  align-items: baseline;
+  padding: 18px 0;
+  min-height: 44px;
+  text-decoration: none;
+}
+.pResourceName {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--w-text);
+}
+.pResources a:hover .pResourceName {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.pFooter {
+  padding: 32px 0 48px;
+  background: var(--w-black);
+  border-top: 1px solid var(--w-hair);
+}
+
+/* 상단바 */
+.pNavSub {
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--w-muted);
+}
+.pNavInner {
+  max-width: 1200px;
+}
+.pLang {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--w-muted);
+}
+.pLangOn {
+  color: var(--w-text);
+  font-weight: 600;
+}
+.pLangOff {
+  color: var(--w-faint);
+  cursor: not-allowed;
+}
+
+/* 반응형 (설계 결정 5A: 기본 대응만) */
+@media (max-width: 900px) {
+  .pHeroGrid {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'head' 'stats' 'news' 'video' 'slot';
+    grid-template-rows: none;
+    gap: 28px;
+  }
+  .pSplit,
+  .pFigures,
+  .pRequest {
+    grid-template-columns: 1fr;
+  }
+  .pSteps,
+  .pSteps4 {
+    grid-template-columns: 1fr 1fr;
+  }
+  .pResources a {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .pNavSub {
+    display: none;
+  }
+}
+@media (max-width: 640px) {
+  .pSection {
+    padding: 72px 0;
+  }
+  .pStats,
+  .pSteps,
+  .pSteps4 {
+    grid-template-columns: 1fr;
+  }
+  .pLead {
+    font-size: 17px;
+  }
+  .pLang {
+    display: none;
+  }
+  .pNavLink {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}

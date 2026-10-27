@@ -2,6 +2,32 @@
 
 ## Open
 
+### 메탄 정보 포털 — 모바일 세부 다듬기
+
+**What:** `/climate` 메탄 포털의 모바일 레이아웃 다듬기 (뉴스 카드 밀도, 영상 위치, 메뉴 칩)
+
+**Why:** 1/1 나르샤 보도 이후 기자·독자가 휴대폰 기사 링크로 유입된다. 기획 예시 단계에서는 900px 이하 1단 전환만 했다
+
+**Context:** 설계 문서 `~/.gstack/projects/earthpaper/jayoh-master-design-20261027-133532.md` (Design Spec 5A)
+
+**Depends on:** 운영 포털 전환(C안: 독립 route group + 도메인) 결정
+
+**Effort:** S
+**Priority:** P2
+
+### 메탄 정보 포털 — 영문판(EN)
+
+**What:** `[locale]` 구조로 EN 페이지 제공. 뉴스·해설 영문화
+
+**Why:** 회의록(NST-20261019) "국영문으로 같이 올라가야함" 요구. 해외에 나라스페이스 메탄 역량을 보여주는 창구
+
+**Context:** 기획 예시에서는 EN 토글을 비활성(`aria-disabled`, "EN 준비 중")으로만 둠
+
+**Depends on:** 운영 포털 C안, 주간 뉴스 AI 초안 + 검수 파이프라인
+
+**Effort:** M
+**Priority:** P2
+
 ### 서울 기후 대시보드 후속
 
 **What:** `/seoul` 데모 페이지의 남은 DEMO 레이어를 실데이터로 교체

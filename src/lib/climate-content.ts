@@ -398,7 +398,8 @@ export const METHANE_INDUSTRIES = [
 ] as const;
 
 export const METHANE_REGULATIONS = [
-  { value: '$1,500', label: '미국 메탄 배출 부과금 (2026년, 톤당)', detail: '2024년 $900 → 2025년 $1,200 → 2026년 $1,500' },
+  // 2026-10-27 사실 감사: 부과금 규칙은 2025-03 의회검토법(CRA) 결의로 시행 전 폐지됨. 이전 문구 "$1,500 (2026년, 톤당)"은 사실과 다름
+  { value: '폐지', label: '미국 메탄 배출 부과금', detail: '2025년 3월 의회 결의로 시행 전 폐지 · 석유·가스 누출 규제는 유지' },
   { value: 'MRV', label: 'EU 메탄 규제', detail: '석유·가스·석탄의 측정·보고·검증 의무, 수입분 포함' },
   { value: '30%', label: '글로벌 메탄 서약', detail: '150개국 이상, 2030년까지 2020년 대비 30% 감축' },
 ] as const;
@@ -604,7 +605,153 @@ export const SOURCES = [
   { label: 'IEA Global Methane Tracker', href: 'https://www.iea.org/reports/global-methane-tracker-2022/methane-and-climate-change' },
   { label: '한국 메탄 전략 2023', href: 'https://content.forourclimate.org/files/research/6AjmFUe.pdf' },
   { label: 'NOAA 메탄 순환', href: 'https://gml.noaa.gov/outreach/info_activities/pdfs/CTA_the_methane_cycle.pdf' },
-  { label: 'US EPA 메탄 부과금', href: 'https://www.epa.gov/newsreleases/epa-finalizes-rule-reduce-wasteful-methane-emissions-and-drive-innovation-oil-and-gas' },
+  { label: '미국 메탄 부과금 폐지', href: 'https://eelp.law.harvard.edu/understanding-the-waste-emissions-charge-for-methane-whats-changed-and-whats-next' },
   { label: 'EU 메탄 규제', href: 'https://energy.ec.europa.eu/news/new-eu-methane-regulation-reduce-harmful-emissions-fossil-fuels-europe-and-abroad-2024-05-27_en' },
   { label: 'Global Methane Pledge', href: 'https://www.globalmethanepledge.org/' },
 ] as const;
+
+// ── 메탄 정보 포털 (2026-10-27 개편, 기획 예시) ─────────────────────────────
+// 설계: ~/.gstack/projects/earthpaper/jayoh-master-design-20261027-133532.md (회의록 NST-20261019 기반)
+// 규칙: 뉴스는 실제 공개 기사만 (원문 URL·발행일 확인), 수치는 출처·기준연도를 함께 표기.
+// 2026-10-27 확인:
+// - 한국 2030 메탄 감축 로드맵 (2023년 말): 2020년 대비 30%, 폐기물 49 · 농축산 34.2 · 에너지 22.7% — 기후솔루션 research/535
+//   (설계 초안의 "2018년 대비 40%"는 틀린 수치였음)
+// - MRV 3단계 제안: 기후변화재단·한양대 김진수 교수 연구팀 보고서 (국제뉴스 2026-09-11) — 정부 계획 아닌 민간 제안
+
+/** 콘텐츠를 실제로 작성·확인한 날짜 = "최종 업데이트" */
+export const PORTAL_UPDATED = '2026.10.27';
+
+export const PORTAL_SECTIONS = [
+  { id: 'news', label: '최근 메탄 소식' },
+  { id: 'korea', label: '한국의 메탄' },
+  { id: 'observe', label: '위성 관측' },
+  { id: 'explain', label: '해설' },
+  { id: 'narsha', label: '나르샤·경기샛' },
+] as const;
+
+export interface PortalStat {
+  value: string;
+  label: string;
+  basis: string;
+  source: string;
+  href: string;
+}
+
+export const PORTAL_STATS: PortalStat[] = [
+  {
+    value: '−30%',
+    label: '한국 2030 메탄 감축 목표',
+    basis: '2020년 대비',
+    source: '2030 메탄 감축 로드맵 (2023)',
+    href: 'https://forourclimate.org/ko/research/535',
+  },
+  {
+    value: '82배',
+    label: 'CO₂ 대비 온난화 효과',
+    basis: '20년 기준',
+    source: 'IPCC AR6',
+    href: 'https://www.ipcc.ch/assessment-report/ar6/',
+  },
+];
+
+export type NewsTag = '국제' | '국내' | '관측' | '연구';
+
+export interface MethaneNews {
+  /** YYYY.MM.DD — 원문 발행일 */
+  date: string;
+  outlet: string;
+  tag: NewsTag;
+  title: string;
+  summary: string;
+  href: string;
+}
+
+/** 최신순. 원문 확인한 공개 기사만 */
+export const METHANE_NEWS: MethaneNews[] = [
+  {
+    date: '2026.10.23',
+    outlet: 'ABC News',
+    tag: '국제',
+    title: 'UNEP, 고르곤 LNG 플랜트 메탄 플룸으로 셰브론에 경고',
+    summary: 'Tanager-1 위성이 8월 관측에서 시간당 약 7.8톤 규모의 메탄 플룸을 포착했습니다.',
+    href: 'https://www.abc.net.au/news/2026-10-23/large-methane-plumes-above-chevron-gorgon-project-investigation/107288658',
+  },
+  {
+    date: '2026.10.21',
+    outlet: 'Capital & Main',
+    tag: '관측',
+    title: '위성으로 찾은 뉴멕시코 석유·가스 시설 대형 누출 166건',
+    summary: 'Gas Leaks Project와 Earthworks가 Tanager-1 영상으로 시설 121곳의 누출을 집계했습니다 (2025.01–2026.04).',
+    href: 'https://capitalandmain.com/satellite-detects-166-major-methane-leaks-at-new-mexico-oil-and-gas-operations',
+  },
+  {
+    date: '2026.10.14',
+    outlet: 'Nature · Stanford',
+    tag: '연구',
+    title: '위성 11기, 통제 방출 481회로 검증한 메탄 탐지 성능',
+    summary: '맑은 날 메탄 전용 센서는 시험 플룸의 92–100%, 범용 지상관측 위성은 29–37%를 찾아냈습니다.',
+    href: 'https://phys.org/news/2026-10-satellites-accurately-methane-emissions-largest.html',
+  },
+  {
+    date: '2026.09.11',
+    outlet: '국제뉴스',
+    tag: '국내',
+    title: '한국 에너지 부문 메탄, 2027년부터 실측 체계 구축 제안',
+    summary: '기후변화재단·한양대 연구팀이 2035년까지 단계적으로 측정·보고·검증(MRV)을 도입하는 로드맵을 제안했습니다.',
+    href: 'https://www.gukjenews.com/news/articleView.html?idxno=3691786',
+  },
+];
+
+export const KOREA_SECTOR_TARGETS = [
+  { sector: '폐기물', value: 49 },
+  { sector: '농축산', value: 34.2 },
+  { sector: '에너지', value: 22.7 },
+] as const;
+
+export const KOREA_MRV_PROPOSAL = [
+  { key: '2027–2028', title: 'MRV 체계 구축', detail: '실측 기반 측정 체계를 만들고 시범 사업을 진행합니다.' },
+  { key: '2029–2030', title: '보고·검증 확대', detail: '실측 기반 보고와 검증 절차를 넓힙니다.' },
+  { key: '2031–2035', title: '제도 고도화', detail: '조달 기준과 감축 제도에 실측 결과를 반영합니다.' },
+] as const;
+
+export const METHANE_RESOURCES = [
+  {
+    name: 'Eye on Methane',
+    org: 'UNEP IMEO',
+    desc: '위성 관측, 기업 보고, 연구 결과를 모은 공개 메탄 데이터 플랫폼',
+    href: 'https://methanedata.unep.org',
+  },
+  {
+    name: 'MARS',
+    org: 'UNEP IMEO',
+    desc: '대형 메탄 배출을 위성으로 찾아 정부와 기업에 알리는 시스템 (2024년 운영 시작)',
+    href: 'https://www.unep.org/topics/energy/methane/methane-alert-and-response-system-mars',
+  },
+  {
+    name: 'Carbon Mapper',
+    org: 'Carbon Mapper',
+    desc: 'Tanager 위성으로 찾은 메탄·CO₂ 플룸 공개 데이터',
+    href: 'https://carbonmapper.org',
+  },
+  {
+    name: 'Global Methane Pledge',
+    org: '국제 서약',
+    desc: '2030년까지 전 세계 메탄 배출을 2020년 대비 30% 줄이자는 서약',
+    href: 'https://www.globalmethanepledge.org',
+  },
+  {
+    name: '2030 메탄 감축 로드맵 분석',
+    org: '기후솔루션',
+    desc: '국내 메탄 감축 로드맵의 부문별 목표와 한계를 정리한 보고서',
+    href: 'https://forourclimate.org/ko/research/535',
+  },
+] as const;
+
+export const DATA_REQUEST_EMAIL = 'support@naraspace.com';
+
+export const DATA_REQUEST_MAILTO = `mailto:${DATA_REQUEST_EMAIL}?subject=${encodeURIComponent(
+  '[메탄 정보 포털] 데이터 요청',
+)}&body=${encodeURIComponent('기관명:\n담당 부서:\n관심 지역:\n활용 목적:\n')}`;
+
+/** 푸터 운영 주체. 서울대 기후연구실 표기는 협의 완료 후 추가 (설계 결정 6B) */
+export const PORTAL_OPERATORS = ['나라스페이스'] as const;

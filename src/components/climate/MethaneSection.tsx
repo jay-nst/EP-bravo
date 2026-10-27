@@ -18,7 +18,7 @@ const CEO_QUOTE =
 const QUOTE_WORDS = CEO_QUOTE.split(' ');
 
 /** 메탄 흡수 개념도 — 실측 스펙트럼 아님. 1625–1670 nm 구간에 흡수선이 파인 모양만 표현 */
-function SpectrumDiagram() {
+export function SpectrumDiagram() {
   const W = 880;
   const H = 220;
   const x0 = 40;
